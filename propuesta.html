@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuesta Comercial — GestFact IsabSoft</title>
+<style>
+:root {
+  --teal: #3DBFBF;
+  --teal-dark: #2a9d9d;
+  --teal-light: #eaf7f7;
+  --dark: #1a2332;
+  --gray: #5a6472;
+  --light: #f0f4f8;
+  --white: #ffffff;
+  --border: #dde4ec;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--light); color: var(--dark); }
+
+/* ─── FORM SCREEN ─────────────────────── */
+#form-screen {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px 16px;
+}
+.form-card {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 36px 32px;
+  width: 100%; max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  border-top: 4px solid var(--teal);
+}
+.form-logo {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+}
+.form-logo .lc {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--teal); color: white;
+  font-weight: 900; font-size: .9rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.form-logo .lt h2 { font-size: .95rem; font-weight: 800; letter-spacing: 1.5px; }
+.form-logo .lt p  { font-size: .7rem; color: var(--teal-dark); font-weight: 700; letter-spacing: .5px; }
+
+.fg { margin-bottom: 16px; }
+.flbl { font-size: .78rem; font-weight: 700; color: var(--gray); margin-bottom: 6px; display: block; }
+.finp {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  font-size: .9rem; outline: none; background: var(--white);
+  transition: border-color .2s;
+}
+.finp:focus { border-color: var(--teal); }
+
+.plan-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.plan-opt {
+  border: 2px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; cursor: pointer; transition: .15s;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.plan-opt:hover { border-color: var(--teal); background: var(--teal-light); }
+.plan-opt.sel { border-color: var(--teal); background: var(--teal-light); }
+.plan-opt input { margin-top: 3px; accent-color: var(--teal); flex-shrink: 0; }
+.plan-opt-txt .pname { font-weight: 800; font-size: .88rem; }
+.plan-opt-txt .pprice { font-size: .82rem; color: var(--teal-dark); font-weight: 700; margin-top: 2px; }
+.plan-opt-txt .pdesc { font-size: .72rem; color: var(--gray); margin-top: 2px; }
+
+.btn-gen {
+  width: 100%; padding: 13px; background: var(--teal); color: white;
+  border: none; border-radius: 12px; font-size: 1rem; font-weight: 800;
+  cursor: pointer; margin-top: 8px; transition: .15s; letter-spacing: .5px;
+}
+.btn-gen:hover { background: var(--teal-dark); }
+
+/* ─── PROPOSAL SCREEN ─────────────────── */
+#prop-screen { display: none; }
+
+.prop-wrap {
+  max-width: 760px; margin: 0 auto;
+  background: var(--white); min-height: 100vh;
+}
+
+/* Header */
+.prop-hdr {
+  background: var(--dark);
+  padding: 32px 40px 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.prop-hdr::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 4px; background: var(--teal);
+}
+.prop-hdr-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.prop-logo { display: flex; align-items: center; gap: 12px; }
+.prop-logo .lc {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: var(--teal); color: white;
+  font-weight: 900; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.prop-logo .lt h1 { font-size: 1rem; font-weight: 900; letter-spacing: 2px; }
+.prop-logo .lt p  { font-size: .68rem; color: rgba(255,255,255,.65); letter-spacing: 1px; margin-top: 2px; }
+.prop-date { font-size: .75rem; color: rgba(255,255,255,.6); text-align: right; }
+.prop-date strong { display: block; font-size: 1rem; color: white; }
+
+.prop-title { font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; }
+.prop-subtitle { font-size: .85rem; color: rgba(255,255,255,.7); margin-top: 4px; }
+
+/* Client block */
+.prop-client {
+  background: var(--teal-light);
+  border-left: 4px solid var(--teal);
+  padding: 16px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px;
+}
+.prop-client .pc-lbl { font-size: .72rem; color: var(--gray); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.prop-client .pc-val { font-size: 1rem; font-weight: 800; color: var(--dark); margin-top: 2px; }
+.prop-client .pc-n { font-size: .8rem; color: var(--teal-dark); }
+
+/* Body */
+.prop-body { padding: 32px 40px; }
+
+.sec-title {
+  font-size: .72rem; font-weight: 800; letter-spacing: 2px;
+  color: var(--teal-dark); text-transform: uppercase;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.sec-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--teal-light);
+}
+
+/* Plan badge */
+.plan-badge {
+  background: var(--teal); color: white;
+  font-size: .72rem; font-weight: 800; padding: 4px 12px;
+  border-radius: 20px; letter-spacing: 1px;
+  display: inline-block; margin-bottom: 16px;
+}
+
+/* Feature list */
+.feat-list { list-style: none; margin-bottom: 8px; }
+.feat-list li {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: .86rem;
+}
+.feat-list li:last-child { border-bottom: none; }
+.feat-list .ck {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--teal); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .6rem; font-weight: 900; flex-shrink: 0; margin-top: 1px;
+}
+.feat-list .xk {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #dee2e6; color: var(--gray);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .6rem; font-weight: 900; flex-shrink: 0; margin-top: 1px;
+}
+.feat-list li .ft { flex: 1; }
+.feat-list li .ft strong { display: block; font-weight: 700; }
+.feat-list li .ft small { color: var(--gray); font-size: .78rem; }
+
+/* Investment block */
+.inv-card {
+  background: var(--dark); border-radius: 14px;
+  padding: 24px 28px; margin: 24px 0; color: white;
+  position: relative; overflow: hidden;
+}
+.inv-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: var(--teal);
+}
+.inv-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.1);
+  font-size: .84rem;
+}
+.inv-row:last-child { border-bottom: none; }
+.inv-lbl { color: rgba(255,255,255,.7); }
+.inv-val { font-weight: 700; }
+.inv-total {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 0 6px; margin-top: 4px;
+}
+.inv-total .tlbl { font-size: .85rem; color: rgba(255,255,255,.7); font-weight: 700; letter-spacing: 1px; }
+.inv-total .tval { font-size: 1.8rem; font-weight: 900; color: var(--teal); }
+
+/* Payment steps */
+.pay-steps { display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
+.pay-step {
+  flex: 1; min-width: 160px; background: var(--teal-light);
+  border: 1.5px solid var(--teal-mid, #c0e8e8); border-radius: 12px;
+  padding: 14px 16px; text-align: center;
+}
+.pay-step .ps-num { font-size: 1.4rem; font-weight: 900; color: var(--teal); }
+.pay-step .ps-lbl { font-size: .75rem; font-weight: 700; color: var(--dark); margin-top: 4px; }
+.pay-step .ps-sub { font-size: .68rem; color: var(--gray); margin-top: 2px; }
+
+/* Support block */
+.support-row {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;
+}
+.support-item {
+  flex: 1; min-width: 140px;
+  background: var(--light); border-radius: 10px; padding: 14px;
+  border: 1px solid var(--border);
+}
+.support-item .si-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.support-item .si-title { font-size: .78rem; font-weight: 800; margin-bottom: 3px; }
+.support-item .si-desc  { font-size: .72rem; color: var(--gray); }
+
+/* Footer */
+.prop-footer {
+  background: var(--dark); color: white;
+  padding: 24px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.prop-footer .pf-left { font-size: .78rem; color: rgba(255,255,255,.7); }
+.prop-footer .pf-left strong { display: block; font-size: .9rem; color: white; margin-bottom: 4px; }
+.prop-footer .pf-contacts { display: flex; gap: 16px; flex-wrap: wrap; }
+.prop-footer .pf-contact { font-size: .75rem; color: rgba(255,255,255,.8); }
+.prop-footer .pf-contact span { color: var(--teal); }
+
+/* Action bar (screen only) */
+.action-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--white); border-top: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex; gap: 10px; justify-content: center;
+  box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+  z-index: 100;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; border-radius: 10px; font-size: .84rem;
+  font-weight: 700; cursor: pointer; border: none; text-decoration: none;
+  transition: .15s;
+}
+.btn-teal { background: var(--teal); color: white; }
+.btn-teal:hover { background: var(--teal-dark); }
+.btn-out { background: transparent; border: 2px solid var(--teal); color: var(--teal-dark); }
+.btn-out:hover { background: var(--teal-light); }
+.btn-wa { background: #25D366; color: white; }
+.btn-wa:hover { background: #1eb356; }
+
+/* ─── PRINT ───────────────────────────── */
+@media print {
+  body { background: white; }
+  .action-bar, #form-screen { display: none !important; }
+  #prop-screen { display: block !important; }
+  .prop-wrap { max-width: 100%; box-shadow: none; }
+  .prop-body { padding: 24px 32px; }
+  .prop-hdr { padding: 24px 32px 18px; }
+  .prop-client { padding: 12px 32px; }
+  .prop-footer { padding: 18px 32px; }
+}
+
+@media (max-width: 500px) {
+  .prop-hdr { padding: 24px 20px 18px; }
+  .prop-client { padding: 14px 20px; }
+  .prop-body { padding: 24px 20px; }
+  .prop-footer { padding: 20px; }
+  .prop-hdr-top { flex-direction: column; gap: 12px; }
+  .prop-date { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- FORM SCREEN                             -->
+<!-- ═══════════════════════════════════════ -->
+<div id="form-screen">
+  <div class="form-card">
+    <div class="form-logo">
+      <div class="lc">IS</div>
+      <div class="lt">
+        <h2>GestFact</h2>
+        <p>GENERADOR DE PROPUESTA</p>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="flbl">Nombre del taller / empresa</label>
+      <input class="finp" id="f-taller" type="text" placeholder="Ej: Taller San José">
+    </div>
+
+    <div class="fg">
+      <label class="flbl">Nombre del contacto</label>
+      <input class="finp" id="f-contacto" type="text" placeholder="Ej: Sr. Roberto">
+    </div>
+
+    <div class="fg">
+      <label class="flbl">Fecha de la propuesta</label>
+      <input class="finp" id="f-fecha" type="date">
+    </div>
+
+    <div class="fg">
+      <label class="flbl" style="margin-bottom:10px">Seleccioná el plan</label>
+      <div class="plan-cards">
+        <label class="plan-opt sel" id="opt-basico">
+          <input type="radio" name="plan" value="basico" checked onchange="selectPlan(this.closest('.plan-opt'))">
+          <div class="plan-opt-txt">
+            <div class="pname">Plan Básico</div>
+            <div class="pprice">₲ 2.000.000 pago único</div>
+            <div class="pdesc">Clientes, vehículos, presupuestos e historial</div>
+          </div>
+        </label>
+        <label class="plan-opt" id="opt-estandar">
+          <input type="radio" name="plan" value="estandar" onchange="selectPlan(this.closest('.plan-opt'))">
+          <div class="plan-opt-txt">
+            <div class="pname">Plan Estándar</div>
+            <div class="pprice">₲ 2.500.000 pago único</div>
+            <div class="pdesc">Todo lo básico + facturación autoimpresor</div>
+          </div>
+        </label>
+        <label class="plan-opt" id="opt-avanzado">
+          <input type="radio" name="plan" value="avanzado" onchange="selectPlan(this.closest('.plan-opt'))">
+          <div class="plan-opt-txt">
+            <div class="pname">Plan Avanzado</div>
+            <div class="pprice">₲ 2.900.000 pago único</div>
+            <div class="pdesc">Todo + libro de ventas + acceso móvil</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <button class="btn-gen" onclick="generar()">Generar Propuesta →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PROPOSAL SCREEN                         -->
+<!-- ═══════════════════════════════════════ -->
+<div id="prop-screen">
+  <div class="prop-wrap">
+
+    <!-- Header -->
+    <div class="prop-hdr">
+      <div class="prop-hdr-top">
+        <div class="prop-logo">
+          <div class="lc">IS</div>
+          <div class="lt">
+            <h1>GESTFACT</h1>
+            <p>IsabSoft Soluciones Oportunas</p>
+          </div>
+        </div>
+        <div class="prop-date">
+          <span>Propuesta Comercial</span>
+          <strong id="p-fecha-hdr"></strong>
+        </div>
+      </div>
+      <div class="prop-title">PROPUESTA COMERCIAL</div>
+      <div class="prop-subtitle">Sistema de Gestión para Talleres Mecánicos</div>
+    </div>
+
+    <!-- Client -->
+    <div class="prop-client">
+      <div>
+        <div class="pc-lbl">Presentado a</div>
+        <div class="pc-val" id="p-taller">—</div>
+        <div class="pc-n" id="p-contacto">—</div>
+      </div>
+      <div style="text-align:right">
+        <div class="pc-lbl">Preparado por</div>
+        <div class="pc-val" style="font-size:.88rem">Carlos Coronel</div>
+        <div class="pc-n">IsabSoft Soluciones Oportunas</div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="prop-body">
+
+      <!-- Descripción -->
+      <div class="sec-title">Descripción del sistema</div>
+      <p style="font-size:.86rem;color:var(--gray);line-height:1.7;margin-bottom:24px">
+        GestFact es el sistema de gestión diseñado para talleres mecánicos que necesitan
+        organizar clientes, vehículos, presupuestos y facturación en un solo lugar.
+        Funciona desde la computadora y desde el celular, sin necesidad de conocimientos técnicos.
+      </p>
+
+      <!-- Plan -->
+      <div class="sec-title">Plan seleccionado</div>
+      <span class="plan-badge" id="p-plan-badge">—</span>
+
+      <ul class="feat-list" id="p-features"></ul>
+
+      <!-- Inversión -->
+      <div class="sec-title" style="margin-top:28px">Inversión</div>
+      <div class="inv-card">
+        <div class="inv-total">
+          <span class="tlbl">INVERSIÓN TOTAL</span>
+          <span class="tval" id="p-precio">—</span>
+        </div>
+        <div class="inv-row">
+          <span class="inv-lbl">Tipo de pago</span>
+          <span class="inv-val">Pago único — sin cuotas adicionales</span>
+        </div>
+        <div class="inv-row">
+          <span class="inv-lbl">Soporte primer año</span>
+          <span class="inv-val" style="color:#4ECDC4">✔ Incluido sin costo</span>
+        </div>
+        <div class="inv-row">
+          <span class="inv-lbl">Mantenimiento desde 2° año</span>
+          <span class="inv-val">₲ 220.000 / mes</span>
+        </div>
+      </div>
+
+      <!-- Forma de pago -->
+      <div class="sec-title">Forma de pago</div>
+      <div class="pay-steps">
+        <div class="pay-step">
+          <div class="ps-num" id="p-cuota1">—</div>
+          <div class="ps-lbl">Al confirmar</div>
+          <div class="ps-sub">Para reservar e iniciar la instalación</div>
+        </div>
+        <div class="pay-step">
+          <div class="ps-num" id="p-cuota2">—</div>
+          <div class="ps-lbl">Al entregar</div>
+          <div class="ps-sub">Solo cuando el sistema esté funcionando</div>
+        </div>
+      </div>
+
+      <!-- Soporte -->
+      <div class="sec-title" style="margin-top:28px">Soporte y garantía</div>
+      <div class="support-row">
+        <div class="support-item">
+          <div class="si-icon">🛠</div>
+          <div class="si-title">Instalación incluida</div>
+          <div class="si-desc">Instalamos y configuramos el sistema en su equipo sin costo adicional</div>
+        </div>
+        <div class="support-item">
+          <div class="si-icon">📞</div>
+          <div class="si-title">Soporte 1 año</div>
+          <div class="si-desc">Consultas por WhatsApp, ajustes y actualizaciones durante el primer año</div>
+        </div>
+        <div class="support-item">
+          <div class="si-icon">🔄</div>
+          <div class="si-title">Capacitación</div>
+          <div class="si-desc">Sesión de capacitación incluida para que el equipo use el sistema desde el día 1</div>
+        </div>
+      </div>
+
+      <!-- Pasos para arrancar -->
+      <div class="sec-title" style="margin-top:28px">¿Cómo arrancamos?</div>
+      <ul class="feat-list">
+        <li><div class="ck">1</div><div class="ft"><strong>Confirmación del plan</strong><small>Nos avisa que acepta esta propuesta</small></div></li>
+        <li><div class="ck">2</div><div class="ft"><strong>Pago del 50% inicial</strong><small>Gira al confirmar para reservar e iniciar</small></div></li>
+        <li><div class="ck">3</div><div class="ft"><strong>Instalación y configuración</strong><small>Instalamos en su equipo, cargamos sus datos iniciales</small></div></li>
+        <li><div class="ck">4</div><div class="ft"><strong>Capacitación en su taller</strong><small>Le mostramos todo en 30 minutos, en persona o por video</small></div></li>
+        <li><div class="ck">5</div><div class="ft"><strong>Sistema funcionando — pago del saldo</strong><small>El 50% restante recién cuando todo esté operativo</small></div></li>
+      </ul>
+
+    </div><!-- /prop-body -->
+
+    <!-- Footer -->
+    <div class="prop-footer">
+      <div class="pf-left">
+        <strong>IsabSoft Soluciones Oportunas</strong>
+        Esta propuesta tiene vigencia de 15 días desde la fecha de emisión.
+      </div>
+      <div class="pf-contacts">
+        <div class="pf-contact">📞 <span>+595 981 153-477</span></div>
+        <div class="pf-contact">💬 <span>WhatsApp mismo número</span></div>
+        <div class="pf-contact">✉️ <span>carcoragu@gmail.com</span></div>
+      </div>
+    </div>
+
+  </div><!-- /prop-wrap -->
+
+  <!-- Action bar -->
+  <div class="action-bar">
+    <button class="btn btn-teal" onclick="window.print()">🖨️ Guardar PDF</button>
+    <button id="btn-wa" class="btn btn-wa" onclick="compartirWA()">📲 WhatsApp</button>
+    <button class="btn btn-out" onclick="volver()">✏️ Editar</button>
+  </div>
+  <div style="height:70px"></div>
+
+</div><!-- /prop-screen -->
+
+<script>
+const planes = {
+  basico: {
+    label: 'PLAN BÁSICO',
+    precio: 2000000,
+    features: [
+      {ok:true,  title:'Registro de clientes',          desc:'Nombre, contacto, datos completos'},
+      {ok:true,  title:'Búsqueda por chapa',            desc:'Historial al instante con solo tipear la patente'},
+      {ok:true,  title:'Ficha del vehículo',            desc:'Marca, modelo, año, color, kilometraje'},
+      {ok:true,  title:'Historial de servicios',        desc:'Todo el trabajo realizado al vehículo, con fechas y montos'},
+      {ok:true,  title:'Presupuestos',                  desc:'Creación rápida con múltiples ítems y total automático'},
+      {ok:true,  title:'Envío por WhatsApp',            desc:'Presupuesto formateado listo para enviar al cliente'},
+      {ok:true,  title:'Impresión de presupuestos',     desc:'Versión imprimible profesional'},
+      {ok:true,  title:'Acceso desde celular',          desc:'Para revisar clientes y vehículos en cualquier momento'},
+      {ok:true,  title:'Instalación en 1 equipo',       desc:'PC o notebook de su elección'},
+      {ok:false, title:'Facturación autoimpresor',      desc:'Disponible en Plan Estándar o Avanzado'},
+      {ok:false, title:'Libro de ventas',               desc:'Disponible en Plan Avanzado'},
+    ]
+  },
+  estandar: {
+    label: 'PLAN ESTÁNDAR',
+    precio: 2500000,
+    features: [
+      {ok:true,  title:'Todo lo incluido en Plan Básico',   desc:'Clientes, vehículos, historial, presupuestos'},
+      {ok:true,  title:'Facturación autoimpresor',          desc:'Facturas electrónicas coordinadas con su contadora (SET)'},
+      {ok:true,  title:'Anulación de facturas',             desc:'Proceso de anulación desde el sistema'},
+      {ok:true,  title:'Refacturación',                     desc:'Emitir nueva factura sobre una anulada'},
+      {ok:true,  title:'Gestión con contadora',             desc:'Coordinación y activación del autoimpresor incluida'},
+      {ok:true,  title:'Acceso desde celular',              desc:'Para presupuestos y consultas en cualquier momento'},
+      {ok:true,  title:'Instalación en 1 equipo',           desc:'PC o notebook de su elección'},
+      {ok:false, title:'Libro de ventas',                   desc:'Disponible en Plan Avanzado'},
+    ]
+  },
+  avanzado: {
+    label: 'PLAN AVANZADO',
+    precio: 2900000,
+    features: [
+      {ok:true, title:'Todo lo incluido en Plan Estándar',  desc:'Clientes, vehículos, historial, presupuestos, facturación'},
+      {ok:true, title:'Libro de ventas',                    desc:'Registro mensual de todas las ventas e ingresos'},
+      {ok:true, title:'Informes de gestión',                desc:'Resumen de trabajos por vehículo, tipo de servicio y período'},
+      {ok:true, title:'Acceso completo desde celular',      desc:'Presupuestos, clientes, vehículos y órdenes desde el teléfono'},
+      {ok:true, title:'Instalación en 1 equipo',            desc:'PC o notebook, con opción de ampliar a 2 equipos'},
+      {ok:true, title:'Anulación y refacturación',          desc:'Control completo del ciclo de facturación'},
+      {ok:true, title:'Soporte prioritario',                desc:'Atención dentro de las 24 hs hábiles'},
+    ]
+  }
+};
+
+function selectPlan(el) {
+  document.querySelectorAll('.plan-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function fmt(n) {
+  return '₲ ' + n.toLocaleString('es-PY');
+}
+
+function generar() {
+  const taller   = document.getElementById('f-taller').value.trim();
+  const contacto = document.getElementById('f-contacto').value.trim();
+  const fecha    = document.getElementById('f-fecha').value;
+  const planKey  = document.querySelector('input[name="plan"]:checked').value;
+
+  if (!taller || !contacto) { alert('Completá el nombre del taller y el contacto.'); return; }
+
+  const plan = planes[planKey];
+  const mitad = Math.round(plan.precio / 2);
+
+  // Fecha formateada
+  const fd = fecha ? new Date(fecha + 'T12:00:00') : new Date();
+  const fechaStr = fd.toLocaleDateString('es-PY', {day:'2-digit', month:'long', year:'numeric'});
+
+  // Populate
+  document.getElementById('p-fecha-hdr').textContent = fechaStr;
+  document.getElementById('p-taller').textContent = taller;
+  document.getElementById('p-contacto').textContent = contacto;
+  document.getElementById('p-plan-badge').textContent = plan.label;
+  document.getElementById('p-precio').textContent = fmt(plan.precio);
+  document.getElementById('p-cuota1').textContent = fmt(mitad);
+  document.getElementById('p-cuota2').textContent = fmt(plan.precio - mitad);
+
+  document.getElementById('p-features').innerHTML = plan.features.map(f => `
+    <li>
+      <div class="${f.ok ? 'ck' : 'xk'}">${f.ok ? '✓' : '✗'}</div>
+      <div class="ft">
+        <strong>${f.title}</strong>
+        <small>${f.desc}</small>
+      </div>
+    </li>`).join('');
+
+  // WhatsApp message
+  const waMsg = encodeURIComponent(
+    `*PROPUESTA COMERCIAL — GestFact*\n` +
+    `IsabSoft Soluciones Oportunas\n\n` +
+    `📋 *${plan.label}*\n` +
+    `Taller: ${taller}\n` +
+    `Fecha: ${fechaStr}\n\n` +
+    `✅ Incluye:\n` +
+    plan.features.filter(f => f.ok).map(f => `• ${f.title}`).join('\n') +
+    `\n\n💰 *Inversión: ${fmt(plan.precio)}*\n` +
+    `Forma de pago:\n` +
+    `• ${fmt(mitad)} al confirmar\n` +
+    `• ${fmt(plan.precio - mitad)} al entregar el sistema funcionando\n\n` +
+    `🛠 Soporte primer año incluido\n` +
+    `📞 +595 981 153-477 | IsabSoft`
+  );
+  document.getElementById('btn-wa').setAttribute('data-wa', waMsg);
+
+  document.getElementById('form-screen').style.display = 'none';
+  document.getElementById('prop-screen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function compartirWA() {
+  const msg = document.getElementById('btn-wa').getAttribute('data-wa');
+  window.open('https://wa.me/?text=' + msg, '_blank');
+}
+
+function volver() {
+  document.getElementById('prop-screen').style.display = 'none';
+  document.getElementById('form-screen').style.display = 'flex';
+  window.scrollTo(0, 0);
+}
+
+// Set today's date
+document.getElementById('f-fecha').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
