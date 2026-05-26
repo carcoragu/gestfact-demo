@@ -1,813 +1,746 @@
+﻿
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GestFact | IsabSoft</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="theme-color" content="#0a1628"/>
+<link rel="manifest" href="/gestfact-demo/manifest.json"/>
+<title>IsabSoft GestFact — Demo</title>
 <style>
-:root {
-  --teal: #3DBFBF;
-  --teal-dark: #2a9d9d;
-  --teal-light: #eaf7f7;
-  --teal-mid: #c0e8e8;
-  --dark: #1a2332;
-  --gray: #6c757d;
-  --light: #f0f4f8;
-  --white: #ffffff;
-  --border: #dde4ec;
-  --success-bg: #d4edda; --success-txt: #155724;
-  --warning-bg: #fff3cd; --warning-txt: #856404;
-  --info-bg: #d1ecf1;    --info-txt: #0c5460;
-  --danger-bg: #f8d7da;  --danger-txt: #721c24;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--light); color: var(--dark); min-height: 100vh; }
-
-/* ─── HEADER ─────────────────────────────── */
-.hdr {
-  background: var(--white);
-  border-bottom: 3px solid var(--teal);
-  padding: 10px 16px;
-  display: flex; align-items: center; gap: 12px;
-  position: sticky; top: 0; z-index: 200;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-.logo {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--teal); display: flex; align-items: center; justify-content: center;
-  font-weight: 900; color: white; font-size: .9rem; flex-shrink: 0;
-  border: 2px solid var(--teal-dark);
-}
-.hdr-txt h1 { font-size: .88rem; font-weight: 800; letter-spacing: 2px; color: var(--dark); }
-.hdr-txt p  { font-size: .68rem; color: var(--teal-dark); font-weight: 700; letter-spacing: 1px; }
-.btn-home {
-  margin-left: auto; background: var(--teal-light); border: none;
-  color: var(--teal-dark); padding: 7px 14px; border-radius: 8px;
-  cursor: pointer; font-size: .78rem; font-weight: 700; flex-shrink: 0;
-}
-.btn-home:hover { background: var(--teal-mid); }
-
-/* ─── SECTIONS ───────────────────────────── */
-.sec { display: none; padding: 18px 16px; max-width: 680px; margin: 0 auto; }
-.sec.on { display: block; }
-
-/* ─── SECTION HEADER ─────────────────────── */
-.sec-hdr { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-.sec-hdr h2 { font-size: .95rem; font-weight: 800; letter-spacing: .5px; }
-.badge { background: var(--teal); color: white; font-size: .68rem; padding: 3px 9px; border-radius: 20px; font-weight: 700; }
-
-/* ─── PANEL TILES ────────────────────────── */
-.grid {
-  display: grid; grid-template-columns: repeat(2,1fr); gap: 14px;
-  margin-top: 4px;
-}
-@media(min-width:480px){ .grid { grid-template-columns: repeat(3,1fr); } }
-
-.tile {
-  background: var(--white); border-radius: 14px; padding: 22px 12px 16px;
-  text-align: center; cursor: pointer; position: relative;
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: transform .15s, box-shadow .15s;
-  user-select: none; -webkit-tap-highlight-color: transparent;
-}
-.tile:active, .tile:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(61,191,191,.2); }
-
-/* corner brackets */
-.tile::before, .tile::after,
-.tile .br-tl, .tile .br-br { content: ''; position: absolute; width: 13px; height: 13px; }
-.tile::before  { top:7px;    left:7px;    border-top:3px solid var(--teal); border-left:3px solid var(--teal); }
-.tile::after   { top:7px;    right:7px;   border-top:3px solid var(--teal); border-right:3px solid var(--teal); }
-.tile .br-bl   { position:absolute; bottom:7px; left:7px;  width:13px; height:13px; border-bottom:3px solid var(--teal); border-left:3px solid var(--teal); }
-.tile .br-br   { position:absolute; bottom:7px; right:7px; width:13px; height:13px; border-bottom:3px solid var(--teal); border-right:3px solid var(--teal); }
-
-.tile-icon { font-size: 2.6rem; margin-bottom: 10px; display: block; }
-.tile-lbl  { font-size: .7rem; font-weight: 800; color: var(--dark); letter-spacing: .5px; line-height: 1.3; }
-
-/* ─── SEARCH ──────────────────────────────── */
-.search {
-  width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
-  border-radius: 10px; font-size: .9rem; margin-bottom: 14px;
-  background: var(--white); outline: none;
-}
-.search:focus { border-color: var(--teal); }
-
-/* ─── CARDS ───────────────────────────────── */
-.card {
-  background: var(--white); border-radius: 12px; padding: 13px 15px;
-  margin-bottom: 10px; border: 1px solid var(--border);
-  cursor: pointer; transition: box-shadow .15s;
-}
-.card:hover { box-shadow: 0 4px 14px rgba(61,191,191,.18); }
-.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
-.card-name { font-weight: 700; font-size: .9rem; }
-.card-sub  { font-size: .77rem; color: var(--gray); margin-top: 2px; }
-.chapa-tag {
-  background: var(--teal-light); color: var(--teal-dark);
-  font-weight: 800; font-size: .72rem; padding: 4px 9px;
-  border-radius: 6px; letter-spacing: 1px; flex-shrink: 0;
-}
-
-/* ─── STATUS BADGES ──────────────────────── */
-.st { display: inline-block; font-size: .68rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
-.st-pend { background: var(--warning-bg); color: var(--warning-txt); }
-.st-apro { background: var(--info-bg);    color: var(--info-txt); }
-.st-fact { background: var(--success-bg); color: var(--success-txt); }
-.st-anul { background: var(--danger-bg);  color: var(--danger-txt); }
-
-/* ─── DETAIL ──────────────────────────────── */
-.dcard {
-  background: var(--white); border-radius: 14px; padding: 18px;
-  border: 1px solid var(--border); margin-bottom: 14px;
-}
-.drow {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 9px 0; border-bottom: 1px solid var(--border); font-size: .84rem;
-}
-.drow:last-child { border-bottom: none; }
-.dlbl { color: var(--gray); }
-.dval { font-weight: 600; text-align: right; max-width: 60%; }
-
-/* ─── TABLE ───────────────────────────────── */
-.tbl { width: 100%; border-collapse: collapse; font-size: .8rem; margin: 10px 0; }
-.tbl th { background: var(--teal); color: white; padding: 8px 10px; text-align: left; font-size: .72rem; }
-.tbl td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
-.tbl tbody tr:last-child td { border-bottom: none; }
-.tbl .tr-total td { background: var(--teal-light); color: var(--teal-dark); font-weight: 800; border-top: 2px solid var(--teal); }
-
-/* ─── BUTTONS ─────────────────────────────── */
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 10px 18px; border-radius: 10px; font-size: .84rem;
-  font-weight: 700; cursor: pointer; border: none; text-decoration: none;
-  transition: .15s; -webkit-tap-highlight-color: transparent;
-}
-.btn-teal    { background: var(--teal); color: white; }
-.btn-teal:hover { background: var(--teal-dark); }
-.btn-wa      { background: #25D366; color: white; }
-.btn-wa:hover { background: #1eb356; }
-.btn-out     { background: transparent; border: 2px solid var(--teal); color: var(--teal-dark); }
-.btn-out:hover { background: var(--teal-light); }
-.btn-gray    { background: #e9ecef; color: var(--dark); }
-.btn-gray:hover { background: #dee2e6; }
-.btn-row     { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-
-/* ─── FORM ────────────────────────────────── */
-.fg { margin-bottom: 13px; }
-.flbl { font-size: .77rem; font-weight: 700; color: var(--gray); margin-bottom: 5px; display: block; }
-.finp {
-  width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
-  border-radius: 9px; font-size: .88rem; outline: none; background: var(--white);
-}
-.finp:focus { border-color: var(--teal); }
-.finp-row { display: flex; gap: 10px; }
-.finp-row .fg { flex: 1; }
-
-/* ─── STATS ───────────────────────────────── */
-.stat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 18px; }
-.stat-card { background: var(--white); border-radius: 12px; padding: 16px; text-align: center; border: 1px solid var(--border); }
-.stat-num { font-size: 1.5rem; font-weight: 900; color: var(--teal); line-height: 1; }
-.stat-lbl { font-size: .7rem; color: var(--gray); margin-top: 5px; }
-
-/* ─── ITEMS PRESUPUESTO ───────────────────── */
-.item-row {
-  display: flex; gap: 8px; align-items: flex-end; margin-bottom: 10px;
-  background: var(--light); border-radius: 8px; padding: 10px;
-}
-.item-row .fg { margin: 0; }
-.item-row .fg:first-child { flex: 2; }
-.item-row .fg:nth-child(2) { flex: 0 0 70px; }
-.item-row .fg:nth-child(3) { flex: 0 0 110px; }
-.btn-del { background: var(--danger-bg); color: var(--danger-txt); border: none; padding: 10px 11px; border-radius: 8px; cursor: pointer; font-size: .9rem; flex-shrink: 0; align-self: flex-end; }
-
-/* ─── HISTORIAL ───────────────────────────── */
-.hist-item {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  padding: 10px 0; border-bottom: 1px solid var(--border); font-size: .83rem;
-}
-.hist-item:last-child { border-bottom: none; }
-.hist-left { flex: 1; }
-.hist-date { font-size: .7rem; color: var(--gray); margin-bottom: 2px; }
-.hist-work { font-weight: 600; }
-.hist-right { text-align: right; flex-shrink: 0; padding-left: 12px; }
-.hist-amt  { font-weight: 700; color: var(--teal-dark); }
-
-/* ─── PRINT ───────────────────────────────── */
-@media print {
-  .hdr, .btn-row, .btn-home { display: none !important; }
-  .sec { display: block !important; padding: 0; }
-  .dcard { box-shadow: none; border: 1px solid #ccc; }
-}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;height:100vh;overflow:hidden;user-select:none;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;background:#0a1628;}
+.screen.active{display:flex;}
+#s-login{background:#000;justify-content:flex-end;}
+.login-bg{position:absolute;inset:0;background:url('portada.jpg') center/cover no-repeat;}
+.login-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,22,40,.3) 0%,rgba(10,22,40,.85) 55%,#0a1628 100%);}
+.login-box{position:relative;z-index:2;padding:0 32px 48px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+.login-logo{width:88px;height:88px;object-fit:contain;border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.5);}
+.login-title{font-size:1.5rem;font-weight:800;text-align:center;}
+.login-title span{color:#1e88e5;}
+.login-sub{font-size:.82rem;color:#8b949e;text-align:center;margin-top:-8px;}
+.login-btn{width:100%;padding:15px;background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;}
+.topbar{background:#0d1b2e;padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1e3a5f;flex-shrink:0;}
+.topbar .menu-btn{background:none;border:none;color:#e6edf3;font-size:1.4rem;cursor:pointer;padding:4px;}
+.topbar .title{font-size:1rem;font-weight:700;flex:1;}
+.topbar .badge{background:#e53935;color:#fff;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;}
+.content{flex:1;overflow-y:auto;padding:16px;}
+.content::-webkit-scrollbar{width:3px;}
+.content::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:4px;}
+.botnav{background:#0d1b2e;border-top:1px solid #1e3a5f;display:flex;padding:8px 0 4px;flex-shrink:0;}
+.botnav button{flex:1;background:none;border:none;color:#6e7681;font-size:.6rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;}
+.botnav button span:first-child{font-size:1.3rem;}
+.botnav button.active{color:#1e88e5;}
+.sidebar{position:fixed;top:0;left:-280px;width:280px;height:100%;background:#0d1b2e;border-right:1px solid #1e3a5f;z-index:100;transition:.3s;overflow-y:auto;display:flex;flex-direction:column;}
+.sidebar.open{left:0;}
+.sidebar-head{padding:24px 20px 16px;border-bottom:1px solid #1e3a5f;display:flex;align-items:center;gap:12px;}
+.sidebar-head img{width:42px;height:42px;border-radius:10px;object-fit:contain;}
+.sb-title{font-size:.95rem;font-weight:700;}
+.sb-sub{font-size:.72rem;color:#8b949e;}
+.sidebar-close{margin-left:auto;background:none;border:none;color:#8b949e;font-size:1.2rem;cursor:pointer;}
+.sidebar-item{display:flex;align-items:center;gap:12px;padding:14px 20px;color:#c9d1d9;font-size:.88rem;cursor:pointer;border-bottom:1px solid #0a1628;}
+.sidebar-item:hover{background:#1e3a5f20;color:#1e88e5;}
+.si-icon{font-size:1.1rem;width:20px;text-align:center;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90;display:none;}
+.overlay.show{display:block;}
+.card{background:#0d1b2e;border:1px solid #1e3a5f;border-radius:14px;padding:16px;margin-bottom:12px;}
+.card-title{font-size:.75rem;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.kpi{background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:14px 12px;}
+.kpi-val{font-size:1.5rem;font-weight:800;color:#1e88e5;line-height:1;}
+.kpi-lbl{font-size:.7rem;color:#8b949e;margin-top:4px;}
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.mod{border-radius:14px;padding:16px 14px;cursor:pointer;}
+.mod.blue{background:linear-gradient(135deg,#1565c0,#1e88e5);}
+.mod.green{background:linear-gradient(135deg,#1b5e20,#43a047);}
+.mod.purple{background:linear-gradient(135deg,#4a148c,#7b1fa2);}
+.mod.orange{background:linear-gradient(135deg,#e65100,#fb8c00);}
+.mod-icon{font-size:1.6rem;margin-bottom:6px;}
+.mod-name{font-size:.8rem;font-weight:700;}
+.mod-sub{font-size:.68rem;opacity:.8;margin-top:2px;}
+.qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.qa{background:#0d1b2e;border:1px solid #1e3a5f;border-radius:10px;padding:10px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:.65rem;color:#8b949e;text-align:center;}
+.qa:hover{border-color:#1e88e5;color:#1e88e5;}
+.qa span:first-child{font-size:1.2rem;}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid #1e3a5f20;}
+.alert-item:last-child{border-bottom:none;}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.alert-dot.red{background:#e53935;}.alert-dot.orange{background:#fb8c00;}.alert-dot.blue{background:#1e88e5;}
+.alert-txt{font-size:.8rem;line-height:1.4;}
+.alert-txt strong{display:block;font-weight:700;}
+.alert-time{margin-left:auto;font-size:.7rem;color:#6e7681;flex-shrink:0;}
+.act-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #1e3a5f15;}
+.act-icon{font-size:1.1rem;flex-shrink:0;}
+.act-txt{font-size:.8rem;color:#c9d1d9;line-height:1.4;}
+.act-time{margin-left:auto;font-size:.68rem;color:#6e7681;flex-shrink:0;}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #1e3a5f20;cursor:pointer;}
+.list-avatar{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#1565c0,#1e88e5);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.list-info{flex:1;}
+.list-name{font-size:.9rem;font-weight:700;}
+.list-sub{font-size:.75rem;color:#8b949e;margin-top:2px;}
+.status{display:inline-block;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:10px;}
+.status.presupuesto{background:#1565c020;color:#1e88e5;border:1px solid #1e88e530;}
+.status.aprobado{background:#1b5e2020;color:#43a047;border:1px solid #43a04730;}
+.status.facturado{background:#1b5e2030;color:#69f0ae;border:1px solid #69f0ae30;}
+.status.listo{background:#fb8c0020;color:#fb8c00;border:1px solid #fb8c0030;}
+.status.anulado{background:#e5393520;color:#e53935;border:1px solid #e5393530;}
+.det-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1e3a5f20;font-size:.85rem;}
+.det-row:last-child{border-bottom:none;}
+.det-total{display:flex;justify-content:space-between;padding:12px 0;font-weight:800;font-size:1rem;border-top:2px solid #1e3a5f;margin-top:4px;}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:.75rem;color:#8b949e;margin-bottom:5px;display:block;}
+.form-input{width:100%;background:#0a1628;border:1px solid #1e3a5f;border-radius:8px;padding:10px 12px;color:#e6edf3;font-size:.88rem;outline:none;}
+.form-input:focus{border-color:#1e88e5;}
+.form-select{width:100%;background:#0a1628;border:1px solid #1e3a5f;border-radius:8px;padding:10px 12px;color:#e6edf3;font-size:.88rem;outline:none;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn{padding:12px 20px;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;justify-content:center;}
+.btn-primary{background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;}
+.btn-green{background:linear-gradient(135deg,#1b5e20,#43a047);color:#fff;}
+.btn-outline{background:transparent;border:1.5px solid #1e88e5;color:#1e88e5;}
+.btn-red{background:linear-gradient(135deg,#b71c1c,#e53935);color:#fff;}
+.btn-wa{background:linear-gradient(135deg,#075e54,#25D366);color:#fff;}
+.btn-block{width:100%;margin-bottom:10px;}
+.factura-box{background:#fff;color:#000;border-radius:8px;padding:16px;margin-bottom:12px;font-size:.78rem;}
+.fact-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;border-bottom:2px solid #000;padding-bottom:10px;}
+.fact-timbrado{font-size:.7rem;color:#555;text-align:right;}
+.fact-timbrado strong{color:#1565c0;display:block;font-size:.85rem;}
+.fact-table{width:100%;border-collapse:collapse;font-size:.72rem;margin:10px 0;}
+.fact-table th{background:#f5f5f5;padding:5px 4px;text-align:left;border:1px solid #ddd;}
+.fact-table td{padding:5px 4px;border:1px solid #ddd;}
+.fact-row{display:flex;justify-content:space-between;padding:2px 0;font-size:.75rem;}
+.fact-total{display:flex;justify-content:space-between;padding:4px 0;font-weight:700;border-top:1px solid #000;margin-top:4px;}
+.dnit-badge{display:inline-block;background:#1565c0;color:#fff;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:4px;margin-bottom:8px;letter-spacing:.5px;}
+.stock-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #1e3a5f20;}
+.stock-info{flex:1;}.stock-name{font-size:.85rem;font-weight:700;}.stock-code{font-size:.7rem;color:#8b949e;}
+.stock-qty{font-size:1.2rem;font-weight:800;color:#1e88e5;}.stock-qty.bajo{color:#e53935;}
+.tag{font-size:.65rem;padding:2px 7px;border-radius:8px;font-weight:700;}
+.tag.bajo{background:#e5393520;color:#e53935;border:1px solid #e5393530;}
+.tag.ok{background:#1b5e2020;color:#43a047;border:1px solid #43a04730;}
+.libro-table{width:100%;border-collapse:collapse;font-size:.72rem;}
+.libro-table th{background:#1e3a5f;padding:7px 5px;text-align:left;font-size:.68rem;color:#8b949e;}
+.libro-table td{padding:6px 5px;border-bottom:1px solid #1e3a5f20;}
+.libro-total{background:#0d1b2e;border:1px solid #1e3a5f;border-radius:10px;padding:12px;margin-top:12px;}
+.libro-total-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;border-bottom:1px solid #1e3a5f20;}
+.libro-total-row.grand{font-weight:800;color:#1e88e5;border-bottom:none;padding-top:8px;}
+.section-title{font-size:.8rem;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;}
+#s-chat .content{padding:0;display:flex;flex-direction:column;}
+.chat-chips{display:flex;gap:8px;padding:10px 16px;overflow-x:auto;flex-shrink:0;background:#0d1b2e;border-bottom:1px solid #1e3a5f;}
+.chat-chips::-webkit-scrollbar{display:none;}
+.chip{background:#1e3a5f;color:#e6edf3;border:none;border-radius:20px;padding:6px 14px;font-size:.75rem;cursor:pointer;white-space:nowrap;}
+.chip:hover{background:#1565c0;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.msg{display:flex;flex-direction:column;max-width:85%;}
+.msg.user{align-self:flex-end;align-items:flex-end;}
+.msg.bot{align-self:flex-start;}
+.bubble{padding:10px 14px;border-radius:16px;font-size:.83rem;line-height:1.5;}
+.msg.user .bubble{background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;border-radius:16px 16px 4px 16px;}
+.msg.bot .bubble{background:#0d1b2e;border:1px solid #1e3a5f;color:#e6edf3;border-radius:16px 16px 16px 4px;}
+.bubble strong{display:block;margin-bottom:4px;}
+.ia-row{display:flex;justify-content:space-between;font-size:.8rem;padding:2px 0;border-bottom:1px solid #1e3a5f20;}
+.ia-action{display:flex;gap:6px;margin-top:8px;}
+.ia-btn{padding:6px 12px;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;border:none;}
+.ia-btn.confirm{background:#1e88e5;color:#fff;}
+.ia-btn.cancel{background:#1e3a5f;color:#e6edf3;}
+.typing{display:flex;gap:4px;align-items:center;}
+.dot{width:7px;height:7px;border-radius:50%;background:#1e88e5;animation:bounce .8s infinite;}
+.dot:nth-child(2){animation-delay:.15s;}.dot:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.chat-bar{display:flex;gap:8px;padding:12px 16px;background:#0d1b2e;border-top:1px solid #1e3a5f;flex-shrink:0;}
+.chat-in{flex:1;background:#0a1628;border:1px solid #1e3a5f;border-radius:20px;padding:10px 16px;color:#e6edf3;font-size:.88rem;outline:none;}
+.chat-btn{background:linear-gradient(135deg,#1565c0,#1e88e5);border:none;border-radius:50%;width:42px;height:42px;color:#fff;font-size:1.1rem;cursor:pointer;flex-shrink:0;}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
-<div class="hdr">
-  <div class="logo" style="background:#000;overflow:hidden"><img src="logo.jpg" alt="IsabSoft" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-  <div class="hdr-txt">
-    <h1>PANEL DE CONTROL</h1>
-    <p>PLAN ESTÁNDAR — GestFact</p>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <img src="logo.png" alt="IsabSoft"/>
+    <div><div class="sb-title">GestFact</div><div class="sb-sub">IsabSoft Soluciones Oportunas</div></div>
+    <button class="sidebar-close" onclick="closeSidebar()">x</button>
   </div>
-  <button class="btn-home" onclick="go('panel')">⌂ Inicio</button>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- PANEL PRINCIPAL                         -->
-<!-- ═══════════════════════════════════════ -->
-<div id="panel" class="sec on">
-  <div class="grid">
-
-    <div class="tile" onclick="go('clientes')">
-      <div class="br-bl"></div><div class="br-br"></div>
-      <span class="tile-icon">👥</span>
-      <span class="tile-lbl">FICHA DE CLIENTES</span>
-    </div>
-
-    <div class="tile" onclick="go('vehiculos')">
-      <div class="br-bl"></div><div class="br-br"></div>
-      <span class="tile-icon">🚗</span>
-      <span class="tile-lbl">ADMINISTRACIÓN DE FICHA</span>
-    </div>
-
-    <div class="tile" onclick="go('presupuestos')">
-      <div class="br-bl"></div><div class="br-br"></div>
-      <span class="tile-icon">📋</span>
-      <span class="tile-lbl">MOVIMIENTOS</span>
-    </div>
-
-    <div class="tile" onclick="go('documentos')">
-      <div class="br-bl"></div><div class="br-br"></div>
-      <span class="tile-icon">📄</span>
-      <span class="tile-lbl">DOCUMENTOS DIGITALIZADOS</span>
-    </div>
-
-    <div class="tile" onclick="go('informes')">
-      <div class="br-bl"></div><div class="br-br"></div>
-      <span class="tile-icon">📊</span>
-      <span class="tile-lbl">INFORMES</span>
-    </div>
-
-    <div class="tile" onclick="go('gestion')">
-      <div class="br-bl"></div><div class="br-br"></div>
-      <span class="tile-icon">💰</span>
-      <span class="tile-lbl">GESTIÓN</span>
-    </div>
-
+  <div class="sidebar-item" onclick="go('s-dashboard');closeSidebar()"><span class="si-icon">&#127968;</span>Inicio</div>
+  <div class="sidebar-item" onclick="go('s-clientes');closeSidebar()"><span class="si-icon">&#128101;</span>Clientes</div>
+  <div class="sidebar-item" onclick="go('s-ordenes');closeSidebar()"><span class="si-icon">&#128295;</span>Ordenes de Trabajo</div>
+  <div class="sidebar-item" onclick="go('s-libro');closeSidebar()"><span class="si-icon">&#128218;</span>Libro de Ventas</div>
+  <div class="sidebar-item" onclick="go('s-stock');closeSidebar()"><span class="si-icon">&#128230;</span>Stock / Inventario</div>
+  <div class="sidebar-item" onclick="go('s-chat');closeSidebar()"><span class="si-icon">&#129302;</span>IA Asistente</div>
+  <div class="sidebar-item" style="color:#6e7681;font-size:.78rem;" onclick="closeSidebar()"><span class="si-icon">&#128222;</span>+595 981 153 477</div>
+</nav>
+<!-- LOGIN -->
+<div class="screen active" id="s-login">
+  <div class="login-bg"></div><div class="login-overlay"></div>
+  <div class="login-box">
+    <img src="logo.png" class="login-logo" alt="IsabSoft"/>
+    <div class="login-title">IsabSoft <span>GestFact</span></div>
+    <div class="login-sub">Sistema de Taller &amp; Facturacion SET DNIT</div>
+    <input class="form-input" placeholder="Usuario" value="admin"/>
+    <input class="form-input" type="password" placeholder="Contrasena" value="1234"/>
+    <button class="login-btn" onclick="go('s-dashboard')">Ingresar al sistema</button>
+    <div style="font-size:.72rem;color:#6e7681;">Demo -- IsabSoft Soluciones Oportunas</div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- FICHA DE CLIENTES                       -->
-<!-- ═══════════════════════════════════════ -->
-<div id="clientes" class="sec">
-  <div class="sec-hdr">
-    <h2>👥 FICHA DE CLIENTES</h2>
-    <span class="badge" id="cnt-clientes">5</span>
+<!-- DASHBOARD -->
+<div class="screen" id="s-dashboard">
+  <div class="topbar">
+    <button class="menu-btn" onclick="openSidebar()">&#9776;</button>
+    <span class="title">IsabSoft GestFact</span>
+    <span class="badge">3</span>
   </div>
-  <input class="search" type="text" placeholder="🔍 Buscar por nombre o chapa..." oninput="filtrarClientes(this.value)">
-  <div id="lista-clientes"></div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- DETALLE CLIENTE                         -->
-<!-- ═══════════════════════════════════════ -->
-<div id="cliente-det" class="sec">
-  <div id="cliente-det-body"></div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- ADMINISTRACIÓN DE FICHA / VEHÍCULOS    -->
-<!-- ═══════════════════════════════════════ -->
-<div id="vehiculos" class="sec">
-  <div class="sec-hdr">
-    <h2>🚗 ADMINISTRACIÓN DE FICHA</h2>
-    <span class="badge">5 vehículos</span>
-  </div>
-  <input class="search" type="text" placeholder="🔍 Buscar por chapa, modelo o cliente..." oninput="filtrarVehiculos(this.value)">
-  <div id="lista-vehiculos"></div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- MOVIMIENTOS / PRESUPUESTOS              -->
-<!-- ═══════════════════════════════════════ -->
-<div id="presupuestos" class="sec">
-  <div class="sec-hdr">
-    <h2>📋 MOVIMIENTOS</h2>
-    <span class="badge" id="cnt-pres">4</span>
-  </div>
-  <div class="btn-row" style="margin-bottom:16px">
-    <button class="btn btn-teal" onclick="go('pres-nuevo')">+ Nuevo Presupuesto</button>
-  </div>
-  <div id="lista-presupuestos"></div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- VER PRESUPUESTO                         -->
-<!-- ═══════════════════════════════════════ -->
-<div id="pres-ver" class="sec">
-  <div id="pres-ver-body"></div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- NUEVO PRESUPUESTO                       -->
-<!-- ═══════════════════════════════════════ -->
-<div id="pres-nuevo" class="sec">
-  <div class="sec-hdr"><h2>✏️ NUEVO PRESUPUESTO</h2></div>
-  <div class="dcard">
-    <div class="fg">
-      <label class="flbl">Cliente</label>
-      <select class="finp" id="np-cliente" onchange="autoChapa()">
-        <option value="">Seleccionar cliente...</option>
-      </select>
+  <div class="content">
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-val">4</div><div class="kpi-lbl">Ordenes hoy</div></div>
+      <div class="kpi"><div class="kpi-val" style="font-size:1.1rem;">Gs.8.4M</div><div class="kpi-lbl">Facturado mayo</div></div>
+      <div class="kpi"><div class="kpi-val">3</div><div class="kpi-lbl">Pres. pendientes</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:#e53935;">2</div><div class="kpi-lbl">Stock bajo minimo</div></div>
     </div>
-    <div class="finp-row">
-      <div class="fg">
-        <label class="flbl">Chapa</label>
-        <input class="finp" id="np-chapa" type="text" placeholder="ABC 123" readonly style="background:#f8f9fa">
-      </div>
-      <div class="fg">
-        <label class="flbl">Fecha</label>
-        <input class="finp" id="np-fecha" type="date">
+    <div class="section-title">Modulos</div>
+    <div class="mod-grid">
+      <div class="mod blue" onclick="go('s-ordenes')"><div class="mod-icon">&#128295;</div><div class="mod-name">Ordenes de Trabajo</div><div class="mod-sub">4 activas hoy</div></div>
+      <div class="mod green" onclick="go('s-factura')"><div class="mod-icon">&#129534;</div><div class="mod-name">Facturacion SET DNIT</div><div class="mod-sub">Autoimpresor activo</div></div>
+      <div class="mod purple" onclick="go('s-stock')"><div class="mod-icon">&#128230;</div><div class="mod-name">Stock &amp; Inventario</div><div class="mod-sub">2 bajo minimo</div></div>
+      <div class="mod orange" onclick="go('s-libro')"><div class="mod-icon">&#128218;</div><div class="mod-name">Libro de Ventas</div><div class="mod-sub">IVA del mes</div></div>
+    </div>
+    <div class="section-title">Acciones rapidas</div>
+    <div class="qa-grid">
+      <div class="qa" onclick="go('s-nuevo')"><span>&#10133;</span><span>Nueva Orden</span></div>
+      <div class="qa" onclick="go('s-clientes')"><span>&#128101;</span><span>Clientes</span></div>
+      <div class="qa" onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></div>
+      <div class="qa" onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></div>
+      <div class="qa" onclick="go('s-libro')"><span>&#128218;</span><span>Libro</span></div>
+      <div class="qa" onclick="go('s-presupuesto')"><span>&#128203;</span><span>Presupuesto</span></div>
+      <div class="qa" onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></div>
+      <div class="qa" onclick="alert('Soporte: +595 981 153 477')"><span>&#128172;</span><span>Soporte</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Alertas del dia</div>
+      <div class="alert-item"><div class="alert-dot red"></div><div class="alert-txt"><strong>Toyota Hilux -- lista para facturar</strong>Orden #002 completada. Cliente espera factura.</div><div class="alert-time">Ahora</div></div>
+      <div class="alert-item"><div class="alert-dot orange"></div><div class="alert-txt"><strong>Stock bajo -- Filtro de aceite HF-111</strong>Quedan 2 unidades (minimo: 5)</div><div class="alert-time">09:15</div></div>
+      <div class="alert-item"><div class="alert-dot blue"></div><div class="alert-txt"><strong>Presupuesto sin respuesta -- Ford Ranger</strong>Enviado hace 3 dias. Cliente: Luis Benitez.</div><div class="alert-time">Ayer</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Actividad reciente</div>
+      <div id="actList">
+        <div class="act-item"><span class="act-icon">&#129534;</span><div class="act-txt">Factura F-0089 emitida -- Honda CR-V<br><span style="color:#8b949e;font-size:.72rem;">Carlos Sanchez -- Gs. 395.000</span></div><div class="act-time">Hoy</div></div>
+        <div class="act-item"><span class="act-icon">&#128295;</span><div class="act-txt">Orden #003 completada -- Ford Ranger<br><span style="color:#8b949e;font-size:.72rem;">Cambio de frenos delanteros</span></div><div class="act-time">Hoy</div></div>
+        <div class="act-item"><span class="act-icon">&#128203;</span><div class="act-txt">Presupuesto aprobado -- Toyota Hilux<br><span style="color:#8b949e;font-size:.72rem;">Gaston Perez -- Gs. 1.200.000</span></div><div class="act-time">Ayer</div></div>
+        <div class="act-item"><span class="act-icon">&#128230;</span><div class="act-txt">Ingreso stock -- Aceite 5W-30 x 12 L<br><span style="color:#8b949e;font-size:.72rem;">Proveedor: AutoRepuestos SA</span></div><div class="act-time">Ayer</div></div>
       </div>
     </div>
-    <div class="fg">
-      <label class="flbl">Observaciones</label>
-      <input class="finp" id="np-obs" type="text" placeholder="Opcional...">
+  </div>
+  <div class="botnav">
+    <button class="active" onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- CLIENTES -->
+<div class="screen" id="s-clientes">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Clientes</span><button class="menu-btn" onclick="go('s-nuevo')">+</button></div>
+  <div class="content"><input class="form-input" style="margin-bottom:12px;" placeholder="Buscar cliente..."/><div id="clienteList"></div></div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- CLIENTE DETALLE -->
+<div class="screen" id="s-cliente">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-clientes')">&#8249;</button><span class="title" id="cli-title">Cliente</span></div>
+  <div class="content" id="cli-content"></div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- ORDENES -->
+<div class="screen" id="s-ordenes">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Ordenes de Trabajo</span><button class="menu-btn" onclick="go('s-nuevo')">+</button></div>
+  <div class="content"><div id="ordenesList"></div></div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button class="active"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- ORDEN DETALLE -->
+<div class="screen" id="s-orden-det">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-ordenes')">&#8249;</button><span class="title" id="ord-title">Orden</span></div>
+  <div class="content" id="ord-content"></div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button class="active"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- NUEVA ORDEN -->
+<div class="screen" id="s-nuevo">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-ordenes')">&#8249;</button><span class="title">Nueva Orden de Trabajo</span></div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Cliente y Vehiculo</div>
+      <div class="form-group"><label class="form-label">Cliente</label>
+        <select class="form-select">
+          <option>Carlos Sanchez -- Honda CR-V</option><option>Gaston Perez -- Toyota Hilux</option>
+          <option>Luis Benitez -- Ford Ranger</option><option>Ana Gonzalez -- Nissan Frontier</option>
+          <option>Nuevo cliente...</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Vehiculo</label><input class="form-input" value="Honda CR-V"/></div>
+        <div class="form-group"><label class="form-label">Patente</label><input class="form-input" value="AKM-782"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Anio</label><input class="form-input" value="2019"/></div>
+        <div class="form-group"><label class="form-label">Km actuales</label><input class="form-input" value="78.400"/></div>
+      </div>
     </div>
+    <div class="card">
+      <div class="card-title">Detalle del Servicio</div>
+      <div class="form-group"><label class="form-label">Descripcion</label><textarea class="form-input" rows="2">Cambio de aceite 5W-30 + filtros</textarea></div>
+      <div id="items-list">
+        <div class="det-row"><span>Aceite 5W-30 x 4 L</span><span>Gs. 240.000</span></div>
+        <div class="det-row"><span>Filtro de aceite HF-111</span><span>Gs. 45.000</span></div>
+        <div class="det-row"><span>Mano de obra</span><span>Gs. 80.000</span></div>
+      </div>
+      <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="agregarRepuesto()">+ Agregar repuesto / servicio</button>
+      <div class="det-total"><span>Total estimado</span><span>Gs. 365.000</span></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="go('s-presupuesto')">Generar Presupuesto</button>
+    <button class="btn btn-green btn-block" onclick="go('s-orden-det')">Guardar sin presupuesto</button>
   </div>
-
-  <div class="dcard">
-    <div class="sec-hdr" style="margin-bottom:12px"><h2 style="font-size:.85rem">🔧 ÍTEMS DEL PRESUPUESTO</h2></div>
-    <div id="items-container"></div>
-    <button class="btn btn-out" style="width:100%;justify-content:center;margin-top:4px" onclick="addItem()">+ Agregar ítem</button>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
   </div>
-
-  <div class="dcard" style="text-align:right">
-    <div style="font-size:.8rem;color:var(--gray);margin-bottom:4px">TOTAL ESTIMADO</div>
-    <div id="np-total" style="font-size:1.6rem;font-weight:900;color:var(--teal)">₲ 0</div>
+</div>
+<!-- PRESUPUESTO -->
+<div class="screen" id="s-presupuesto">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-nuevo')">&#8249;</button><span class="title">Presupuesto #P-0042</span></div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Datos del trabajo</div>
+      <div class="det-row"><span style="color:#8b949e">Cliente</span><span>Carlos Sanchez</span></div>
+      <div class="det-row"><span style="color:#8b949e">Vehiculo</span><span>Honda CR-V 2019</span></div>
+      <div class="det-row"><span style="color:#8b949e">Patente</span><span>AKM-782</span></div>
+      <div class="det-row"><span style="color:#8b949e">Km</span><span>78.400 km</span></div>
+      <div class="det-row"><span style="color:#8b949e">Fecha</span><span>25/05/2026</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Detalle de servicios y repuestos</div>
+      <div class="det-row"><span>Aceite sintetico 5W-30 x 4 L</span><span>Gs. 240.000</span></div>
+      <div class="det-row"><span>Filtro de aceite HF-111</span><span>Gs. 45.000</span></div>
+      <div class="det-row"><span>Filtro de aire</span><span>Gs. 30.000</span></div>
+      <div class="det-row"><span>Mano de obra</span><span>Gs. 80.000</span></div>
+      <div class="det-total"><span>Total</span><span>Gs. 395.000</span></div>
+    </div>
+    <button class="btn btn-wa btn-block" onclick="alert('Presupuesto enviado por WhatsApp a Carlos Sanchez!')">&#128172; Enviar por WhatsApp</button>
+    <button class="btn btn-outline btn-block" onclick="alert('Presupuesto enviado por Email!')">&#128231; Enviar por Email</button>
+    <button class="btn btn-outline btn-block" onclick="alert('Imprimiendo presupuesto...')">&#128424; Imprimir</button>
+    <button class="btn btn-green btn-block" onclick="go('s-factura')">Aprobado &rarr; Generar Factura SET DNIT</button>
   </div>
-
-  <div class="btn-row">
-    <button class="btn btn-teal" onclick="guardarPres()">💾 Guardar Presupuesto</button>
-    <button class="btn btn-gray" onclick="go('presupuestos')">Cancelar</button>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button class="active"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- DOCUMENTOS DIGITALIZADOS               -->
-<!-- ═══════════════════════════════════════ -->
-<div id="documentos" class="sec">
-  <div class="sec-hdr">
-    <h2>📄 DOCUMENTOS DIGITALIZADOS</h2>
-  </div>
-  <div id="lista-docs"></div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- INFORMES                               -->
-<!-- ═══════════════════════════════════════ -->
-<div id="informes" class="sec">
-  <div class="sec-hdr"><h2>📊 INFORMES — MAYO 2026</h2></div>
-  <div class="stat-grid">
-    <div class="stat-card"><div class="stat-num">12</div><div class="stat-lbl">Trabajos este mes</div></div>
-    <div class="stat-card"><div class="stat-num">8</div><div class="stat-lbl">Clientes atendidos</div></div>
-    <div class="stat-card"><div class="stat-num" style="font-size:1.15rem">₲ 4.850.000</div><div class="stat-lbl">Facturado mayo</div></div>
-    <div class="stat-card"><div class="stat-num">2</div><div class="stat-lbl">Pendientes de cobro</div></div>
-  </div>
-
-  <div class="dcard">
-    <div class="sec-hdr" style="margin-bottom:12px"><h2 style="font-size:.82rem">🚗 HISTORIAL POR VEHÍCULO</h2></div>
-    <div id="informe-vehiculos"></div>
-  </div>
-
-  <div class="dcard">
-    <div class="sec-hdr" style="margin-bottom:12px"><h2 style="font-size:.82rem">📈 TRABAJOS POR TIPO</h2></div>
-    <div class="drow"><span class="dlbl">Cambio de aceite y filtros</span><span class="dval">4 veces</span></div>
-    <div class="drow"><span class="dlbl">Alineación y balanceo</span><span class="dval">3 veces</span></div>
-    <div class="drow"><span class="dlbl">Frenos</span><span class="dval">3 veces</span></div>
-    <div class="drow"><span class="dlbl">Service general</span><span class="dval">2 veces</span></div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- GESTIÓN / LIBRO DE VENTAS              -->
-<!-- ═══════════════════════════════════════ -->
-<div id="gestion" class="sec">
-  <div class="sec-hdr"><h2>💰 GESTIÓN — LIBRO DE VENTAS</h2></div>
-  <div class="dcard">
-    <div class="sec-hdr" style="margin-bottom:12px"><h2 style="font-size:.82rem">MAYO 2026</h2></div>
-    <div style="overflow-x:auto">
-      <table class="tbl">
-        <thead>
-          <tr><th>Fecha</th><th>Cliente</th><th>N° Factura</th><th>Monto</th><th>Estado</th></tr>
-        </thead>
+<!-- FACTURA SET DNIT -->
+<div class="screen" id="s-factura">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-presupuesto')">&#8249;</button><span class="title">Factura -- Autoimpresor SET</span></div>
+  <div class="content">
+    <div class="dnit-badge">&#127963; AUTOIMPRESOR SET DNIT -- TIMBRADO VIGENTE</div>
+    <div class="factura-box">
+      <div class="fact-header">
+        <div>
+          <div style="font-weight:700;font-size:.95rem;">AutoTaller Central</div>
+          <div style="font-size:.7rem;color:#555;">RUC: 80063425-0</div>
+          <div style="font-size:.7rem;color:#555;">Av. Eusebio Ayala 1420, Asuncion</div>
+          <div style="font-size:.7rem;color:#555;">Tel: 021-555-123</div>
+        </div>
+        <div class="fact-timbrado">
+          <div>FACTURA</div>
+          <strong>001-001-0000090</strong>
+          <div>Timbrado: 15462831</div>
+          <div>Vto: 31/12/2026</div>
+          <div>Fecha: 25/05/2026</div>
+        </div>
+      </div>
+      <div style="margin-bottom:8px;font-size:.75rem;">
+        <div><strong>Sr.(es):</strong> Carlos Sanchez</div>
+        <div><strong>RUC/CI:</strong> 3.456.789</div>
+        <div><strong>Direccion:</strong> San Lorenzo, Central</div>
+        <div><strong>Condicion:</strong> Contado</div>
+      </div>
+      <table class="fact-table">
+        <thead><tr><th>Cant</th><th>Descripcion</th><th>P/U</th><th>Exentas</th><th>IVA 10%</th><th>IVA 5%</th></tr></thead>
         <tbody>
-          <tr><td>05/05</td><td>Juan Martínez</td><td>001-001-0001</td><td>₲ 350.000</td><td><span class="st st-fact">Cobrado</span></td></tr>
-          <tr><td>08/05</td><td>Carlos López</td><td>001-001-0002</td><td>₲ 850.000</td><td><span class="st st-fact">Cobrado</span></td></tr>
-          <tr><td>12/05</td><td>Ana Benítez</td><td>001-001-0003</td><td>₲ 620.000</td><td><span class="st st-fact">Cobrado</span></td></tr>
-          <tr><td>15/05</td><td>Pedro Ramírez</td><td>001-001-0004</td><td>₲ 1.280.000</td><td><span class="st st-fact">Cobrado</span></td></tr>
-          <tr><td>18/05</td><td>María González</td><td>001-001-0005</td><td>₲ 280.000</td><td><span class="st st-apro">Pendiente</span></td></tr>
-          <tr><td>20/05</td><td>Juan Martínez</td><td>001-001-0006</td><td>₲ 470.000</td><td><span class="st st-pend">Por facturar</span></td></tr>
+          <tr><td>4</td><td>Aceite 5W-30 1L</td><td>60.000</td><td>--</td><td>240.000</td><td>--</td></tr>
+          <tr><td>1</td><td>Filtro aceite HF-111</td><td>45.000</td><td>--</td><td>45.000</td><td>--</td></tr>
+          <tr><td>1</td><td>Filtro de aire</td><td>30.000</td><td>--</td><td>30.000</td><td>--</td></tr>
+          <tr><td>1</td><td>Mano de obra</td><td>80.000</td><td>--</td><td>80.000</td><td>--</td></tr>
         </tbody>
-        <tfoot>
-          <tr class="tr-total">
-            <td colspan="3">TOTAL MAYO</td>
-            <td colspan="2">₲ 3.850.000</td>
-          </tr>
-        </tfoot>
+      </table>
+      <div style="margin-top:8px;font-size:.75rem;">
+        <div class="fact-row"><span>Sub-total Exentas:</span><span>Gs. --</span></div>
+        <div class="fact-row"><span>Sub-total IVA 5%:</span><span>Gs. --</span></div>
+        <div class="fact-row"><span>Sub-total IVA 10%:</span><span>Gs. 395.000</span></div>
+        <div class="fact-row"><span>IVA 10% incluido:</span><span>Gs. 35.909</span></div>
+        <div class="fact-total"><span>TOTAL:</span><span>Gs. 395.000</span></div>
+      </div>
+      <div style="margin-top:8px;font-size:.65rem;color:#777;border-top:1px dashed #ccc;padding-top:6px;">
+        Son: Trescientos noventa y cinco mil guaranies<br/>
+        Original: Cliente -- Duplicado: Empresa -- Triplicado: SET DNIT
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="alert('Imprimiendo en impresora local...')">&#128424; Imprimir Factura</button>
+    <button class="btn btn-wa btn-block" onclick="alert('Factura enviada como PDF por WhatsApp!')">&#128172; Enviar PDF por WhatsApp</button>
+    <button class="btn btn-red btn-block" onclick="anularFactura()">x Anular Factura</button>
+  </div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button class="active"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- LIBRO DE VENTAS -->
+<div class="screen" id="s-libro">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Libro de Ventas -- Mayo 2026</span></div>
+  <div class="content">
+    <div class="card" style="overflow-x:auto;padding:12px;">
+      <table class="libro-table">
+        <thead><tr><th>Nro.</th><th>Fecha</th><th>Cliente</th><th>RUC/CI</th><th>Exentas</th><th>IVA 5%</th><th>IVA 10%</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>F-0086</td><td>05/05</td><td>Luis Benitez</td><td>2.345.678</td><td>--</td><td>--</td><td>520.000</td><td>520.000</td></tr>
+          <tr><td>F-0087</td><td>12/05</td><td>Ana Gonzalez</td><td>4.567.890</td><td>--</td><td>--</td><td>280.000</td><td>280.000</td></tr>
+          <tr><td>F-0088</td><td>18/05</td><td>Gaston Perez</td><td>1.234.567</td><td>--</td><td>--</td><td>1.200.000</td><td>1.200.000</td></tr>
+          <tr><td>F-0089</td><td>25/05</td><td>Carlos Sanchez</td><td>3.456.789</td><td>--</td><td>--</td><td>395.000</td><td>395.000</td></tr>
+        </tbody>
       </table>
     </div>
-    <div class="btn-row">
-      <button class="btn btn-out" onclick="window.print()">🖨️ Imprimir Libro</button>
+    <div class="libro-total">
+      <div class="libro-total-row"><span>Sub-total Exentas:</span><span>Gs. --</span></div>
+      <div class="libro-total-row"><span>Sub-total IVA 5%:</span><span>Gs. --</span></div>
+      <div class="libro-total-row"><span>Sub-total IVA 10% (gravado):</span><span>Gs. 2.395.000</span></div>
+      <div class="libro-total-row"><span>IVA 10% a declarar:</span><span>Gs. 217.727</span></div>
+      <div class="libro-total-row grand"><span>TOTAL MAYO 2026:</span><span>Gs. 2.395.000</span></div>
     </div>
+    <button class="btn btn-primary btn-block" onclick="alert('Exportado para presentacion SET DNIT!')">&#128228; Exportar para SET DNIT</button>
+    <button class="btn btn-outline btn-block" onclick="alert('Libro exportado en Excel!')">&#128202; Exportar Excel / CSV</button>
+  </div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════ -->
+<!-- STOCK -->
+<div class="screen" id="s-stock">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Stock &amp; Inventario</span><button class="menu-btn" onclick="alert('Ingreso de stock')">+</button></div>
+  <div class="content"><input class="form-input" style="margin-bottom:12px;" placeholder="Buscar repuesto o codigo..."/><div id="stockList"></div></div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button class="active"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- IA CHAT -->
+<div class="screen" id="s-chat">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">&#129302; IA Asistente -- GestFact</span></div>
+  <div class="content">
+    <div class="chat-chips">
+      <button class="chip" onclick="sc('Registrar orden Honda CR-V cambio de aceite Carlos')">Nueva orden</button>
+      <button class="chip" onclick="sc('Stock filtro de aceite HF-111')">Ver stock</button>
+      <button class="chip" onclick="sc('Presupuesto Ford Ranger frenos Luis Gs. 650.000')">Presupuesto</button>
+      <button class="chip" onclick="sc('Cobro factura F-0089 Carlos Gs. 395.000')">Cobro</button>
+      <button class="chip" onclick="sc('Reporte de facturacion de mayo')">Reporte</button>
+      <button class="chip" onclick="sc('Ingreso stock aceite 5W-30 12 litros')">Stock entrada</button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="msg bot">
+        <div class="bubble">
+          <strong>IA GestFact lista</strong>
+          Podes decirme cosas como:<br/>
+          - "Orden Honda CR-V cambio aceite Carlos"<br/>
+          - "Presupuesto Ranger frenos Luis Gs. 650.000"<br/>
+          - "Cobro F-0089 Gs. 395.000"<br/>
+          - "Stock aceite 5W-30 x 12 litros"
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chat-bar">
+    <input class="chat-in" id="chatIn" placeholder="Escribi una orden, presupuesto, cobro..." onkeydown="if(event.key==='Enter')enviar()"/>
+    <button class="chat-btn" onclick="simVoz()">&#127908;</button>
+    <button class="chat-btn" onclick="enviar()">&#10148;</button>
+  </div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button class="active"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
 <script>
-// ─── DATA ─────────────────────────────────
-const clientes = [
-  { id:1, nombre:'Juan Martínez', tel:'+595981111111', chapa:'ABC 123',
-    vehiculo:'Toyota Corolla', modelo:'Corolla', año:2018, color:'Blanco', km:'48.000',
-    historial:[
-      {fecha:'20/05/2026', trabajo:'Alineación y balanceo 4 ruedas + rotación', monto:470000, estado:'pend'},
-      {fecha:'05/05/2026', trabajo:'Cambio de aceite 10W40 + filtro de aceite', monto:350000, estado:'fact'},
-      {fecha:'10/03/2026', trabajo:'Alineación y balanceo 4 ruedas', monto:280000, estado:'fact'},
-      {fecha:'15/01/2026', trabajo:'Cambio de frenos delanteros completo', monto:720000, estado:'fact'},
-    ]},
-  { id:2, nombre:'María González', tel:'+595982222222', chapa:'XYZ 456',
-    vehiculo:'Nissan Sentra', modelo:'Sentra', año:2020, color:'Gris', km:'32.500',
-    historial:[
-      {fecha:'18/05/2026', trabajo:'Revisión general + cambio de pastillas delanteras', monto:280000, estado:'apro'},
-      {fecha:'20/02/2026', trabajo:'Cambio de batería 60 Ah', monto:380000, estado:'fact'},
-    ]},
-  { id:3, nombre:'Carlos López', tel:'+595983333333', chapa:'DEF 789',
-    vehiculo:'Honda Civic', modelo:'Civic', año:2015, color:'Negro', km:'95.200',
-    historial:[
-      {fecha:'08/05/2026', trabajo:'Frenos delanteros + traseros completos', monto:850000, estado:'fact'},
-      {fecha:'14/04/2026', trabajo:'Cambio de aceite 5W30 sintético + filtros', monto:350000, estado:'fact'},
-      {fecha:'10/02/2026', trabajo:'Alineación computarizada + diagnóstico eléctrico', monto:420000, estado:'fact'},
-      {fecha:'05/01/2026', trabajo:'Cambio de bujías NGK + limpieza inyectores', monto:290000, estado:'fact'},
-    ]},
-  { id:4, nombre:'Pedro Ramírez', tel:'+595984444444', chapa:'GHI 012',
-    vehiculo:'Ford Ranger', modelo:'Ranger', año:2019, color:'Rojo', km:'67.800',
-    historial:[
-      {fecha:'15/05/2026', trabajo:'Service 65.000 km — aceite, filtros, correa distribución', monto:1280000, estado:'fact'},
-    ]},
-  { id:5, nombre:'Ana Benítez', tel:'+595985555555', chapa:'JKL 345',
-    vehiculo:'Volkswagen Gol', modelo:'Gol', año:2017, color:'Azul', km:'51.000',
-    historial:[
-      {fecha:'12/05/2026', trabajo:'Cambio de aceite semisintético + escobillas + revisión', monto:620000, estado:'fact'},
-      {fecha:'28/03/2026', trabajo:'Alineación y balanceo 4 ruedas', monto:280000, estado:'fact'},
-    ]},
+var clientes=[
+  {id:1,nombre:'Carlos Sanchez',tel:'+595981234001',ruc:'3.456.789',dir:'San Lorenzo, Central',vehiculo:'Honda CR-V 2019',patente:'AKM-782',km:'78.400'},
+  {id:2,nombre:'Gaston Perez',tel:'+595981234002',ruc:'1.234.567',dir:'Luque, Central',vehiculo:'Toyota Hilux 2021',patente:'BCJ-331',km:'45.200'},
+  {id:3,nombre:'Luis Benitez',tel:'+595981234003',ruc:'2.345.678',dir:'Fernando de la Mora',vehiculo:'Ford Ranger 2020',patente:'CDM-115',km:'62.800'},
+  {id:4,nombre:'Ana Gonzalez',tel:'+595981234004',ruc:'4.567.890',dir:'Lambare, Central',vehiculo:'Nissan Frontier 2018',patente:'DEP-447',km:'91.000'},
+];
+var ordenes=[
+  {id:'#001',cliente:'Carlos Sanchez',vehiculo:'Honda CR-V',servicio:'Cambio de aceite y filtros',monto:395000,estado:'presupuesto',fecha:'25/05/2026'},
+  {id:'#002',cliente:'Gaston Perez',vehiculo:'Toyota Hilux',servicio:'Service completo 45.000 km',monto:1200000,estado:'aprobado',fecha:'24/05/2026'},
+  {id:'#003',cliente:'Luis Benitez',vehiculo:'Ford Ranger',servicio:'Cambio de frenos delanteros + rotores',monto:850000,estado:'listo',fecha:'23/05/2026'},
+  {id:'#004',cliente:'Ana Gonzalez',vehiculo:'Nissan Frontier',servicio:'Diagnostico + cambio alternador',monto:680000,estado:'facturado',fecha:'22/05/2026'},
+];
+var stockItems=[
+  {id:'HF-111',nombre:'Filtro de aceite',marca:'Honda OEM',qty:2,min:5,unit:'unidades',precio:45000},
+  {id:'AC-5W30',nombre:'Aceite 5W-30 sintetico',marca:'Mobil 1',qty:8,min:10,unit:'litros',precio:60000},
+  {id:'FB-DELANT',nombre:'Freno disco delantero',marca:'Brembo',qty:4,min:2,unit:'juegos',precio:280000},
+  {id:'FA-TOYOTA',nombre:'Filtro de aire Toyota',marca:'Toyota OEM',qty:6,min:3,unit:'unidades',precio:38000},
+  {id:'BTR-12V',nombre:'Bateria 12V 60Ah',marca:'Bosch',qty:3,min:2,unit:'unidades',precio:420000},
+  {id:'AGL-CORR',nombre:'Anticongelante 1L',marca:'Havoline',qty:12,min:5,unit:'litros',precio:22000},
+  {id:'LT-DISC',nombre:'Pastilla de freno',marca:'Brembo',qty:8,min:4,unit:'juegos',precio:95000},
+  {id:'FI-COMB',nombre:'Filtro de combustible',marca:'Bosch',qty:1,min:3,unit:'unidades',precio:55000},
 ];
 
-const presupuestos = [
-  { id:'PRES-004', fecha:'20/05/2026', cid:1,
-    items:[
-      {desc:'Alineación 4 ruedas (computarizada)', qty:1, precio:180000},
-      {desc:'Balanceo 4 ruedas', qty:1, precio:120000},
-      {desc:'Rotación de neumáticos', qty:1, precio:80000},
-      {desc:'Verificación de suspensión', qty:1, precio:90000},
-    ], obs:'Vibración en volante a 80 km/h', estado:'pend'},
-  { id:'PRES-003', fecha:'18/05/2026', cid:2,
-    items:[
-      {desc:'Pastillas de freno delanteras (juego)', qty:1, precio:180000},
-      {desc:'Revisión general 30 puntos', qty:1, precio:100000},
-    ], obs:'', estado:'apro'},
-  { id:'PRES-002', fecha:'15/05/2026', cid:4,
-    items:[
-      {desc:'Aceite motor 10W40 (5 litros)', qty:1, precio:180000},
-      {desc:'Filtro de aceite', qty:1, precio:45000},
-      {desc:'Filtro de aire', qty:1, precio:55000},
-      {desc:'Correa de distribución + tensores', qty:1, precio:650000},
-      {desc:'Mano de obra service completo', qty:1, precio:350000},
-    ], obs:'Service 65.000 km — todo en un trabajo', estado:'fact'},
-  { id:'PRES-001', fecha:'08/05/2026', cid:3,
-    items:[
-      {desc:'Kit frenos delanteros (discos + pastillas)', qty:1, precio:450000},
-      {desc:'Kit frenos traseros (tambores + zapatas)', qty:1, precio:280000},
-      {desc:'Líquido de frenos DOT4 (1 litro)', qty:2, precio:60000},
-      {desc:'Mano de obra frenos completo', qty:1, precio:120000},
-    ], obs:'URGENTE — desgaste crítico en todos los frenos', estado:'fact'},
-];
-
-const stLabel = {pend:'Pendiente', apro:'Aprobado', fact:'Facturado', anul:'Anulado'};
-
-// ─── NAVIGATION ───────────────────────────
-function go(id) {
-  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
-  const el = document.getElementById(id);
-  if (el) { el.classList.add('on'); window.scrollTo(0, 0); }
-  if (id === 'pres-nuevo') initNuevoPres();
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var t=document.getElementById(id);
+  if(t)t.classList.add('active');
+  if(id==='s-clientes')renderClientes();
+  if(id==='s-ordenes')renderOrdenes();
+  if(id==='s-stock')renderStock();
 }
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
 
-// ─── CLIENTES ─────────────────────────────
-function renderClientes(lista) {
-  document.getElementById('lista-clientes').innerHTML = lista.length
-    ? lista.map(c => `
-        <div class="card" onclick="verCliente(${c.id})">
-          <div class="card-top">
-            <div class="card-name">${c.nombre}</div>
-            <div class="chapa-tag">${c.chapa}</div>
-          </div>
-          <div class="card-sub">🚗 ${c.vehiculo} ${c.año} · ${c.color}</div>
-          <div class="card-sub">📋 ${c.historial.length} servicio${c.historial.length!==1?'s':''} · 📞 ${c.tel}</div>
-        </div>`).join('')
-    : '<div style="text-align:center;color:var(--gray);padding:30px">No se encontraron resultados</div>';
-}
-
-function filtrarClientes(q) {
-  const r = q.toLowerCase();
-  renderClientes(clientes.filter(c =>
-    c.nombre.toLowerCase().includes(r) ||
-    c.chapa.toLowerCase().includes(r) ||
-    c.vehiculo.toLowerCase().includes(r)
-  ));
-}
-
-function verCliente(id) {
-  const c = clientes.find(x => x.id === id);
-  const hist = c.historial.map(h => `
-    <div class="hist-item">
-      <div class="hist-left">
-        <div class="hist-date">📅 ${h.fecha}</div>
-        <div class="hist-work">${h.trabajo}</div>
-      </div>
-      <div class="hist-right">
-        <div class="hist-amt">₲ ${h.monto.toLocaleString()}</div>
-        <span class="st st-${h.estado}">${stLabel[h.estado]}</span>
-      </div>
-    </div>`).join('');
-  const totalHist = c.historial.reduce((s, h) => s + h.monto, 0);
-
-  document.getElementById('cliente-det-body').innerHTML = `
-    <div class="sec-hdr"><h2>👤 DETALLE CLIENTE</h2></div>
-
-    <div class="dcard">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-        <div>
-          <div style="font-size:1.1rem;font-weight:800">${c.nombre}</div>
-          <div style="font-size:.8rem;color:var(--gray);margin-top:3px">📞 ${c.tel}</div>
-        </div>
-        <div class="chapa-tag" style="font-size:.85rem;padding:8px 12px">${c.chapa}</div>
-      </div>
-      <div class="drow"><span class="dlbl">Vehículo</span><span class="dval">${c.vehiculo} ${c.modelo} ${c.año}</span></div>
-      <div class="drow"><span class="dlbl">Color</span><span class="dval">${c.color}</span></div>
-      <div class="drow"><span class="dlbl">Kilometraje actual</span><span class="dval">${c.km} km</span></div>
-    </div>
-
-    <div class="dcard">
-      <div class="sec-hdr" style="margin-bottom:12px">
-        <h2 style="font-size:.82rem">📋 HISTORIAL DE SERVICIOS</h2>
-        <span class="badge">${c.historial.length}</span>
-      </div>
-      ${hist}
-      <div style="text-align:right;margin-top:12px;padding-top:10px;border-top:2px solid var(--teal);font-size:.82rem;color:var(--gray)">
-        Total histórico: <strong style="color:var(--teal-dark);font-size:.95rem">₲ ${totalHist.toLocaleString()}</strong>
-      </div>
-    </div>
-
-    <div class="btn-row">
-      <a href="https://wa.me/${c.tel.replace(/\D/g,'')}" target="_blank" class="btn btn-wa">📲 WhatsApp</a>
-      <button class="btn btn-out" onclick="go('clientes')">← Volver</button>
-    </div>`;
-  go('cliente-det');
-}
-
-// ─── VEHÍCULOS ────────────────────────────
-function renderVehiculos(lista) {
-  document.getElementById('lista-vehiculos').innerHTML = lista.map(c => `
-    <div class="card" onclick="verCliente(${c.id})">
-      <div class="card-top">
-        <div class="card-name">🚗 ${c.vehiculo} ${c.año}</div>
-        <div class="chapa-tag">${c.chapa}</div>
-      </div>
-      <div class="card-sub">Propietario: <strong>${c.nombre}</strong></div>
-      <div class="card-sub">Color: ${c.color} · Km: ${c.km} · ${c.historial.length} servicio${c.historial.length!==1?'s':''}</div>
-    </div>`).join('');
-}
-
-function filtrarVehiculos(q) {
-  const r = q.toLowerCase();
-  renderVehiculos(clientes.filter(c =>
-    c.chapa.toLowerCase().includes(r) ||
-    c.vehiculo.toLowerCase().includes(r) ||
-    c.nombre.toLowerCase().includes(r) ||
-    c.modelo.toLowerCase().includes(r)
-  ));
-}
-
-// ─── PRESUPUESTOS ─────────────────────────
-function renderPresupuestos() {
-  const cont = document.getElementById('lista-presupuestos');
-  document.getElementById('cnt-pres').textContent = presupuestos.length;
-  cont.innerHTML = presupuestos.map(p => {
-    const c = clientes.find(x => x.id === p.cid);
-    const total = p.items.reduce((s, i) => s + i.precio * i.qty, 0);
-    return `
-      <div class="card" onclick="verPres('${p.id}')">
-        <div class="card-top">
-          <div class="card-name">${p.id}</div>
-          <span class="st st-${p.estado}">${stLabel[p.estado]}</span>
-        </div>
-        <div class="card-sub">👤 ${c.nombre} · 🚗 ${c.vehiculo} <span class="chapa-tag" style="font-size:.65rem">${c.chapa}</span></div>
-        <div class="card-sub" style="margin-top:5px">
-          <strong style="color:var(--teal-dark)">₲ ${total.toLocaleString()}</strong> · 📅 ${p.fecha}
-        </div>
-      </div>`;
+function renderClientes(){
+  document.getElementById('clienteList').innerHTML=clientes.map(function(cl,i){
+    return('<div class="list-item" onclick="openCliente('+i+')">'+
+    '<div class="list-avatar">&#128100;</div>'+
+    '<div class="list-info"><div class="list-name">'+cl.nombre+'</div><div class="list-sub">'+cl.vehiculo+' -- '+cl.patente+'</div></div>'+
+    '<div style="color:#6e7681">&#8250;</div></div>');
   }).join('');
 }
 
-function verPres(id) {
-  const p = presupuestos.find(x => x.id === id);
-  const c = clientes.find(x => x.id === p.cid);
-  const total = p.items.reduce((s, i) => s + i.precio * i.qty, 0);
-
-  const rows = p.items.map(i => `
-    <tr>
-      <td>${i.desc}</td>
-      <td style="text-align:center">${i.qty}</td>
-      <td style="text-align:right">₲ ${i.precio.toLocaleString()}</td>
-      <td style="text-align:right;font-weight:700">₲ ${(i.precio*i.qty).toLocaleString()}</td>
-    </tr>`).join('');
-
-  const waText = encodeURIComponent(
-    `*PRESUPUESTO ${p.id}*\n` +
-    `IsabSoft Soluciones Oportunas\n\n` +
-    `Cliente: ${c.nombre}\n` +
-    `Vehículo: ${c.vehiculo} ${c.año}\n` +
-    `Chapa: ${c.chapa}\n` +
-    `Fecha: ${p.fecha}\n\n` +
-    `*DETALLE:*\n` +
-    p.items.map(i => `• ${i.desc} x${i.qty} — ₲ ${(i.precio*i.qty).toLocaleString()}`).join('\n') +
-    `\n\n*TOTAL: ₲ ${total.toLocaleString()}*` +
-    (p.obs ? `\n\n📌 ${p.obs}` : '') +
-    `\n\nGracias por confiar en IsabSoft 🙌`
-  );
-
-  document.getElementById('pres-ver-body').innerHTML = `
-    <div class="sec-hdr"><h2>📋 ${p.id}</h2><span class="st st-${p.estado}">${stLabel[p.estado]}</span></div>
-
-    <div class="dcard">
-      <div class="drow">
-        <span class="dlbl">Cliente</span>
-        <span class="dval">${c.nombre}</span>
-      </div>
-      <div class="drow">
-        <span class="dlbl">Vehículo</span>
-        <span class="dval">${c.vehiculo} ${c.año}</span>
-      </div>
-      <div class="drow">
-        <span class="dlbl">Chapa</span>
-        <span class="dval" style="color:var(--teal-dark);font-weight:800">${c.chapa}</span>
-      </div>
-      <div class="drow">
-        <span class="dlbl">Fecha</span>
-        <span class="dval">${p.fecha}</span>
-      </div>
-      ${p.obs ? `<div class="drow"><span class="dlbl">📌 Observación</span><span class="dval" style="color:#856404">${p.obs}</span></div>` : ''}
-    </div>
-
-    <div class="dcard">
-      <div style="overflow-x:auto">
-        <table class="tbl">
-          <thead><tr><th>Descripción</th><th>Cant</th><th>Precio</th><th>Total</th></tr></thead>
-          <tbody>${rows}</tbody>
-          <tfoot>
-            <tr class="tr-total">
-              <td colspan="3">TOTAL</td>
-              <td>₲ ${total.toLocaleString()}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
-
-    <div class="btn-row">
-      <a href="https://wa.me/${c.tel.replace(/\D/g,'')}?text=${waText}" target="_blank" class="btn btn-wa">📲 Enviar por WhatsApp</a>
-      <button class="btn btn-out" onclick="window.print()">🖨️ Imprimir</button>
-      <button class="btn btn-gray" onclick="go('presupuestos')">← Volver</button>
-    </div>`;
-  go('pres-ver');
+function openCliente(i){
+  var cl=clientes[i];
+  document.getElementById('cli-title').textContent=cl.nombre;
+  document.getElementById('cli-content').innerHTML=
+    '<div class="card"><div class="card-title">Datos del cliente</div>'+
+    '<div class="det-row"><span style="color:#8b949e">Nombre</span><span>'+cl.nombre+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">RUC/CI</span><span>'+cl.ruc+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Direccion</span><span>'+cl.dir+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Telefono</span><span>'+cl.tel+'</span></div></div>'+
+    '<div class="card"><div class="card-title">Vehiculo registrado</div>'+
+    '<div class="det-row"><span style="color:#8b949e">Modelo</span><span>'+cl.vehiculo+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+cl.patente+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Kilometros</span><span>'+cl.km+' km</span></div></div>'+
+    '<button class="btn btn-primary btn-block" onclick="go(\'s-nuevo\')">Nueva Orden de Trabajo</button>'+
+    '<button class="btn btn-wa btn-block" onclick="alert(\'WhatsApp: '+cl.tel+'\')">Enviar WhatsApp</button>';
+  go('s-cliente');
 }
 
-// ─── NUEVO PRESUPUESTO ────────────────────
-let items = [];
-
-function initNuevoPres() {
-  const sel = document.getElementById('np-cliente');
-  sel.innerHTML = '<option value="">Seleccionar cliente...</option>' +
-    clientes.map(c => `<option value="${c.id}">${c.nombre} — ${c.chapa}</option>`).join('');
-  document.getElementById('np-chapa').value = '';
-  document.getElementById('np-obs').value = '';
-  document.getElementById('np-fecha').value = new Date().toISOString().split('T')[0];
-  items = [{desc:'', qty:1, precio:0}];
-  renderItems();
+function renderOrdenes(){
+  document.getElementById('ordenesList').innerHTML=ordenes.map(function(ord,i){
+    var st=ord.estado.charAt(0).toUpperCase()+ord.estado.slice(1);
+    return('<div class="list-item" onclick="openOrden('+i+')">'+
+    '<div class="list-avatar">&#128295;</div>'+
+    '<div class="list-info">'+
+    '<div class="list-name">'+ord.cliente+' -- '+ord.vehiculo+'</div>'+
+    '<div class="list-sub">'+ord.servicio+'</div>'+
+    '<div style="margin-top:4px"><span class="status '+ord.estado+'">'+st+'</span></div></div>'+
+    '<div style="text-align:right">'+
+    '<div style="font-size:.8rem;font-weight:700">Gs.'+Math.round(ord.monto/1000)+'k</div>'+
+    '<div style="font-size:.65rem;color:#6e7681">'+ord.fecha+'</div></div></div>');
+  }).join('');
 }
 
-function autoChapa() {
-  const cid = parseInt(document.getElementById('np-cliente').value);
-  const c = clientes.find(x => x.id === cid);
-  document.getElementById('np-chapa').value = c ? c.chapa : '';
+function openOrden(i){
+  var ord=ordenes[i];
+  var st=ord.estado.charAt(0).toUpperCase()+ord.estado.slice(1);
+  document.getElementById('ord-title').textContent='Orden '+ord.id;
+  document.getElementById('ord-content').innerHTML=
+    '<div class="card"><div class="card-title">Orden de Trabajo '+ord.id+'</div>'+
+    '<div class="det-row"><span style="color:#8b949e">Estado</span><span class="status '+ord.estado+'">'+st+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Cliente</span><span>'+ord.cliente+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Vehiculo</span><span>'+ord.vehiculo+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Servicio</span><span>'+ord.servicio+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Fecha</span><span>'+ord.fecha+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Monto</span><span style="font-weight:700;color:#1e88e5">Gs. '+ord.monto.toLocaleString()+'</span></div></div>'+
+    '<button class="btn btn-primary btn-block" onclick="go(\'s-presupuesto\')">Ver / Editar Presupuesto</button>'+
+    '<button class="btn btn-green btn-block" onclick="go(\'s-factura\')">Generar Factura SET DNIT</button>'+
+    '<button class="btn btn-wa btn-block" onclick="alert(\'WhatsApp enviado a '+ord.cliente+'!\')">Notificar por WhatsApp</button>';
+  go('s-orden-det');
 }
 
-function renderItems() {
-  document.getElementById('items-container').innerHTML = items.map((it, i) => `
-    <div class="item-row">
-      <div class="fg">
-        <label class="flbl">Descripción</label>
-        <input class="finp" type="text" placeholder="Ej: Cambio de aceite" value="${it.desc}"
-          oninput="items[${i}].desc=this.value">
-      </div>
-      <div class="fg">
-        <label class="flbl">Cant.</label>
-        <input class="finp" type="number" min="1" value="${it.qty}"
-          oninput="items[${i}].qty=parseInt(this.value)||1;calcTotal()">
-      </div>
-      <div class="fg">
-        <label class="flbl">Precio (₲)</label>
-        <input class="finp" type="number" min="0" value="${it.precio||''}" placeholder="0"
-          oninput="items[${i}].precio=parseInt(this.value)||0;calcTotal()">
-      </div>
-      ${items.length > 1
-        ? `<button class="btn-del" onclick="removeItem(${i})">🗑</button>`
-        : '<div style="width:38px"></div>'}
-    </div>`).join('');
-  calcTotal();
+function renderStock(){
+  document.getElementById('stockList').innerHTML=stockItems.map(function(item){
+    var bajo=item.qty<item.min;
+    return('<div class="stock-item">'+
+    '<div style="font-size:1.4rem">&#128230;</div>'+
+    '<div class="stock-info">'+
+    '<div class="stock-name">'+item.nombre+'</div>'+
+    '<div class="stock-code">'+item.id+' -- '+item.marca+' -- Gs.'+item.precio.toLocaleString()+'</div></div>'+
+    '<div style="text-align:right">'+
+    '<div class="stock-qty '+(bajo?'bajo':'')+'">'+item.qty+'</div>'+
+    '<div style="font-size:.65rem;color:#8b949e">'+item.unit+'</div>'+
+    '<span class="tag '+(bajo?'bajo':'ok')+'">'+(bajo?'Bajo min.':'OK')+'</span></div></div>');
+  }).join('');
 }
 
-function addItem() {
-  items.push({desc:'', qty:1, precio:0});
-  renderItems();
+function agregarRepuesto(){
+  var rep=prompt('Repuesto o servicio y precio (ej: Bujias x4 -- Gs. 90.000)');
+  if(rep){
+    var list=document.getElementById('items-list');
+    var div=document.createElement('div');div.className='det-row';
+    var parts=rep.split('--');
+    div.innerHTML='<span>'+(parts[0]||rep)+'</span><span>'+(parts[1]||'Gs. 0')+'</span>';
+    list.appendChild(div);
+  }
 }
 
-function removeItem(i) {
-  items.splice(i, 1);
-  renderItems();
+function anularFactura(){
+  if(confirm('Confirmar anulacion de factura? Esta accion se registra en el libro de ventas.')){
+    alert('Factura anulada. Nota de credito generada.');
+  }
 }
 
-function calcTotal() {
-  const t = items.reduce((s, it) => s + (it.precio * it.qty), 0);
-  document.getElementById('np-total').textContent = '₲ ' + t.toLocaleString();
+function addMsg(txt,type){
+  var m=document.getElementById('chatMsgs');
+  var d=document.createElement('div');d.className='msg '+type;
+  d.innerHTML='<div class="bubble">'+txt+'</div>';
+  m.appendChild(d);m.scrollTop=m.scrollHeight;return d;
 }
-
-function guardarPres() {
-  const cidVal = document.getElementById('np-cliente').value;
-  if (!cidVal) { alert('Seleccioná un cliente.'); return; }
-  if (items.every(it => !it.desc || !it.precio)) { alert('Completá al menos un ítem.'); return; }
-
-  const newId = 'PRES-' + String(presupuestos.length + 1).padStart(3,'0');
-  const fecha = document.getElementById('np-fecha').value.split('-').reverse().join('/');
-  presupuestos.unshift({
-    id: newId,
-    fecha,
-    cid: parseInt(cidVal),
-    items: items.filter(it => it.desc && it.precio),
-    obs: document.getElementById('np-obs').value,
-    estado: 'pend'
-  });
-  renderPresupuestos();
-  renderDocs();
-  alert('✅ Presupuesto ' + newId + ' guardado correctamente.');
-  go('presupuestos');
+function showTyping(){
+  var m=document.getElementById('chatMsgs');
+  var d=document.createElement('div');d.className='msg bot';
+  d.innerHTML='<div class="bubble"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+  m.appendChild(d);m.scrollTop=m.scrollHeight;return d;
 }
-
-// ─── DOCUMENTOS ───────────────────────────
-function renderDocs() {
-  document.getElementById('lista-docs').innerHTML = presupuestos
-    .filter(p => p.estado === 'fact' || p.estado === 'apro')
-    .map(p => {
-      const c = clientes.find(x => x.id === p.cid);
-      const total = p.items.reduce((s,i) => s + i.precio*i.qty, 0);
-      return `
-        <div class="card" onclick="verPres('${p.id}')">
-          <div class="card-top">
-            <div class="card-name">📄 ${p.id}</div>
-            <span class="st st-${p.estado}">${stLabel[p.estado]}</span>
-          </div>
-          <div class="card-sub">👤 ${c.nombre} · 🚗 ${c.vehiculo} <span class="chapa-tag" style="font-size:.65rem">${c.chapa}</span></div>
-          <div class="card-sub" style="margin-top:4px"><strong style="color:var(--teal-dark)">₲ ${total.toLocaleString()}</strong> · ${p.fecha}</div>
-        </div>`;
-    }).join('');
+function parse(txt){
+  var t=txt.toLowerCase();
+  if(/orden|reparac|cambio|service|diagnos|trabajo|arreglo/.test(t))return{tipo:'orden',raw:txt};
+  if(/presupuest/.test(t))return{tipo:'presupuesto',raw:txt};
+  if(/cobr|pag|factur|recib/.test(t))return{tipo:'cobro',raw:txt};
+  if(/stock|repuest|ingres|compr|litro/.test(t))return{tipo:'stock',raw:txt};
+  if(/reporte|resumen|total|mes|facturac/.test(t))return{tipo:'reporte',raw:txt};
+  return{tipo:'?',raw:txt};
 }
-
-// ─── INFORMES ─────────────────────────────
-function renderInforme() {
-  document.getElementById('informe-vehiculos').innerHTML = clientes.map(c => `
-    <div class="drow">
-      <span class="dlbl">${c.vehiculo} <span class="chapa-tag" style="font-size:.65rem">${c.chapa}</span></span>
-      <span class="dval">${c.historial.length} servicio${c.historial.length!==1?'s':''}</span>
-    </div>`).join('');
+function buildResp(p){
+  var now=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+  var cli,veh,m,item;
+  if(p.tipo==='orden'){
+    cli=(p.raw.match(/carlos|gaston|luis|ana/i)||['Cliente'])[0];
+    veh=(p.raw.match(/honda|toyota|ford|nissan|cr.v|hilux|ranger|frontier/i)||['Vehiculo'])[0];
+    return '<strong>&#128295; Nueva Orden detectada</strong>'+
+      '<div class="ia-row"><span>Cliente</span><span>'+cli+'</span></div>'+
+      '<div class="ia-row"><span>Vehiculo</span><span>'+veh+'</span></div>'+
+      '<div class="ia-row"><span>Hora</span><span>'+now+'</span></div>'+
+      '<div class="ia-action">'+
+      '<button class="ia-btn confirm" onclick="confirmarIA(this,\'orden\',\''+cli+'\',\''+veh+'\')">Confirmar</button>'+
+      '<button class="ia-btn cancel" onclick="this.closest(\'.msg\').remove()">Cancelar</button></div>';
+  }
+  if(p.tipo==='presupuesto'){
+    cli=(p.raw.match(/carlos|gaston|luis|ana/i)||['Cliente'])[0];
+    m=(p.raw.match(/gs\.?\s*[\d\.,]+/i)||['Por definir'])[0];
+    return '<strong>&#128203; Presupuesto detectado</strong>'+
+      '<div class="ia-row"><span>Cliente</span><span>'+cli+'</span></div>'+
+      '<div class="ia-row"><span>Monto</span><span>'+m+'</span></div>'+
+      '<div class="ia-action">'+
+      '<button class="ia-btn confirm" onclick="confirmarIA(this,\'presupuesto\',\''+cli+'\',\''+m+'\')">Confirmar</button>'+
+      '<button class="ia-btn cancel" onclick="this.closest(\'.msg\').remove()">Cancelar</button></div>';
+  }
+  if(p.tipo==='cobro'){
+    cli=(p.raw.match(/carlos|gaston|luis|ana/i)||['Cliente'])[0];
+    m=(p.raw.match(/gs\.?\s*[\d\.,]+/i)||['Gs. ?'])[0];
+    return '<strong>&#128176; Cobro detectado</strong>'+
+      '<div class="ia-row"><span>Cliente</span><span>'+cli+'</span></div>'+
+      '<div class="ia-row"><span>Monto</span><span>'+m+'</span></div>'+
+      '<div class="ia-action">'+
+      '<button class="ia-btn confirm" onclick="confirmarIA(this,\'cobro\',\''+cli+'\',\''+m+'\')">Confirmar</button>'+
+      '<button class="ia-btn cancel" onclick="this.closest(\'.msg\').remove()">Cancelar</button></div>';
+  }
+  if(p.tipo==='stock'){
+    item=p.raw.replace(/stock|repuest|ingres|compr/gi,'').trim().slice(0,35);
+    return '<strong>&#128230; Movimiento de stock</strong>'+
+      '<div class="ia-row"><span>Item</span><span>'+item+'</span></div>'+
+      '<div class="ia-action">'+
+      '<button class="ia-btn confirm" onclick="confirmarIA(this,\'stock\',\''+item.slice(0,20)+'\',\'\')">Confirmar</button>'+
+      '<button class="ia-btn cancel" onclick="this.closest(\'.msg\').remove()">Cancelar</button></div>';
+  }
+  if(p.tipo==='reporte'){
+    return '<strong>&#128202; Reporte Mayo 2026</strong>'+
+      '<div class="ia-row"><span>Facturas emitidas</span><span>4</span></div>'+
+      '<div class="ia-row"><span>Total facturado</span><span>Gs. 2.395.000</span></div>'+
+      '<div class="ia-row"><span>IVA 10% a declarar</span><span>Gs. 217.727</span></div>'+
+      '<div class="ia-row"><span>Ordenes activas</span><span>4</span></div>';
+  }
+  return 'No pude interpretar eso. Proba: "Orden Honda CR-V cambio aceite Carlos" o "Reporte de mayo"';
 }
-
-// ─── INIT ──────────────────────────────────
-renderClientes(clientes);
-renderVehiculos(clientes);
-renderPresupuestos();
-renderDocs();
-renderInforme();
+function confirmarIA(btn,tipo,a,b){
+  btn.parentElement.innerHTML='<span style="color:#43a047">Registrado en el sistema</span>';
+  var iconos={orden:'&#128295;',presupuesto:'&#128203;',cobro:'&#128176;',stock:'&#128230;'};
+  var texts={orden:'Orden -- '+a+' ('+b+')',presupuesto:'Presupuesto '+b+' -- '+a,cobro:'Cobro '+b+' -- '+a,stock:'Stock -- '+a};
+  var al=document.getElementById('actList');
+  if(al){
+    var now=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+    var d=document.createElement('div');d.className='act-item';
+    d.innerHTML='<span class="act-icon">'+(iconos[tipo]||'&#128221;')+'</span>'+
+      '<div class="act-txt">'+(texts[tipo]||tipo)+'<br>'+
+      '<span style="color:#8b949e;font-size:.72rem">Registrado por IA -- '+now+'</span></div>'+
+      '<div class="act-time">Ahora</div>';
+    al.prepend(d);
+  }
+}
+function enviar(){
+  var inp=document.getElementById('chatIn');
+  var txt=inp.value.trim();if(!txt)return;
+  addMsg(txt,'user');inp.value='';
+  var ty=showTyping();
+  setTimeout(function(){ty.remove();addMsg(buildResp(parse(txt)),'bot');},1200);
+}
+function sc(txt){document.getElementById('chatIn').value=txt;enviar();}
+function simVoz(){
+  var frases=['Registrar orden Honda CR-V cambio aceite Carlos','Presupuesto Ford Ranger frenos Luis Gs. 650.000','Cobro factura F-0089 Carlos Gs. 395.000','Ingreso stock aceite 5W-30 12 litros','Reporte de facturacion de mayo'];
+  document.getElementById('chatIn').value=frases[Math.floor(Math.random()*frases.length)];
+}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/gestfact-demo/sw.js').catch(function(){});}
 </script>
 </body>
 </html>
