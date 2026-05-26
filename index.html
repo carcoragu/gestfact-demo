@@ -149,6 +149,17 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 .chat-bar{display:flex;gap:8px;padding:12px 16px;background:#0d1b2e;border-top:1px solid #1e3a5f;flex-shrink:0;}
 .chat-in{flex:1;background:#0a1628;border:1px solid #1e3a5f;border-radius:20px;padding:10px 16px;color:#e6edf3;font-size:.88rem;outline:none;}
 .chat-btn{background:linear-gradient(135deg,#1565c0,#1e88e5);border:none;border-radius:50%;width:42px;height:42px;color:#fff;font-size:1.1rem;cursor:pointer;flex-shrink:0;}
+.monto-input{background:#0a1628;border:1px solid #1e3a5f;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:.85rem;font-weight:700;width:110px;text-align:right;outline:none;}
+.monto-input:focus{border-color:#1e88e5;}
+.cobro-bar{display:flex;gap:8px;margin:10px 0 6px;}
+.cobro-btn{flex:1;padding:10px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:.15s;}
+.cobro-btn.cobrado{background:#1b5e2020;border-color:#43a047;color:#43a047;}
+.cobro-btn.cobrado.active{background:#43a047;color:#fff;}
+.cobro-btn.pendiente{background:#e5393520;border-color:#e53935;color:#e53935;}
+.cobro-btn.pendiente.active{background:#e53935;color:#fff;}
+.edit-mode .det-row span:last-child{display:none;}
+.edit-mode .monto-edit{display:inline-block !important;}
+.monto-edit{display:none;background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:.85rem;font-weight:700;width:110px;text-align:right;outline:none;}
 </style>
 </head>
 <body>
@@ -316,12 +327,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
       <div class="card-title">Detalle del Servicio</div>
       <div class="form-group"><label class="form-label">Descripcion</label><textarea class="form-input" rows="2">Cambio de aceite 5W-30 + filtros</textarea></div>
       <div id="items-list">
-        <div class="det-row"><span>Aceite 5W-30 x 4 L</span><span>Gs. 240.000</span></div>
-        <div class="det-row"><span>Filtro de aceite HF-111</span><span>Gs. 45.000</span></div>
-        <div class="det-row"><span>Mano de obra</span><span>Gs. 80.000</span></div>
+        <div class="det-row"><span>Aceite 5W-30 x 4 L</span><input class="monto-input" value="240.000" oninput="calcTotal()"/></div>
+        <div class="det-row"><span>Filtro de aceite HF-111</span><input class="monto-input" value="45.000" oninput="calcTotal()"/></div>
+        <div class="det-row"><span>Mano de obra</span><input class="monto-input" value="80.000" oninput="calcTotal()"/></div>
       </div>
       <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="agregarRepuesto()">+ Agregar repuesto / servicio</button>
-      <div class="det-total"><span>Total estimado</span><span>Gs. 365.000</span></div>
+      <div class="det-total"><span>Total estimado</span><span id="total-val">Gs. 365.000</span></div>
     </div>
     <button class="btn btn-primary btn-block" onclick="go('s-presupuesto')">Generar Presupuesto</button>
     <button class="btn btn-green btn-block" onclick="go('s-orden-det')">Guardar sin presupuesto</button>
@@ -354,6 +365,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
       <div class="det-row"><span>Mano de obra</span><span>Gs. 80.000</span></div>
       <div class="det-total"><span>Total</span><span>Gs. 395.000</span></div>
     </div>
+    <button class="btn btn-outline btn-block" onclick="editarPresupuesto()" id="btn-editar-pres">&#9998; Editar Presupuesto</button>
     <button class="btn btn-wa btn-block" onclick="alert('Presupuesto enviado por WhatsApp a Carlos Sanchez!')">&#128172; Enviar por WhatsApp</button>
     <button class="btn btn-outline btn-block" onclick="alert('Presupuesto enviado por Email!')">&#128231; Enviar por Email</button>
     <button class="btn btn-outline btn-block" onclick="alert('Imprimiendo presupuesto...')">&#128424; Imprimir</button>
@@ -522,10 +534,10 @@ var clientes=[
   {id:4,nombre:'Ana Gonzalez',tel:'+595981234004',ruc:'4.567.890',dir:'Lambare, Central',vehiculo:'Nissan Frontier 2018',patente:'DEP-447',km:'91.000'},
 ];
 var ordenes=[
-  {id:'#001',cliente:'Carlos Sanchez',vehiculo:'Honda CR-V',servicio:'Cambio de aceite y filtros',monto:395000,estado:'presupuesto',fecha:'25/05/2026'},
-  {id:'#002',cliente:'Gaston Perez',vehiculo:'Toyota Hilux',servicio:'Service completo 45.000 km',monto:1200000,estado:'aprobado',fecha:'24/05/2026'},
-  {id:'#003',cliente:'Luis Benitez',vehiculo:'Ford Ranger',servicio:'Cambio de frenos delanteros + rotores',monto:850000,estado:'listo',fecha:'23/05/2026'},
-  {id:'#004',cliente:'Ana Gonzalez',vehiculo:'Nissan Frontier',servicio:'Diagnostico + cambio alternador',monto:680000,estado:'facturado',fecha:'22/05/2026'},
+  {id:'#001',cliente:'Carlos Sanchez',vehiculo:'Honda CR-V',servicio:'Cambio de aceite y filtros',monto:395000,estado:'presupuesto',fecha:'25/05/2026',cobrado:false},
+  {id:'#002',cliente:'Gaston Perez',vehiculo:'Toyota Hilux',servicio:'Service completo 45.000 km',monto:1200000,estado:'aprobado',fecha:'24/05/2026',cobrado:false},
+  {id:'#003',cliente:'Luis Benitez',vehiculo:'Ford Ranger',servicio:'Cambio de frenos delanteros + rotores',monto:850000,estado:'listo',fecha:'23/05/2026',cobrado:true},
+  {id:'#004',cliente:'Ana Gonzalez',vehiculo:'Nissan Frontier',servicio:'Diagnostico + cambio alternador',monto:680000,estado:'facturado',fecha:'22/05/2026',cobrado:true},
 ];
 var stockItems=[
   {id:'HF-111',nombre:'Filtro de aceite',marca:'Honda OEM',qty:2,min:5,unit:'unidades',precio:45000},
@@ -603,6 +615,11 @@ function openOrden(i){
     '<div class="det-row"><span style="color:#8b949e">Servicio</span><span>'+ord.servicio+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Fecha</span><span>'+ord.fecha+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Monto</span><span style="font-weight:700;color:#1e88e5">Gs. '+ord.monto.toLocaleString()+'</span></div></div>'+
+    '<div class="card" style="margin-top:0"><div class="card-title">Estado de cobro</div>'+
+    '<div class="cobro-bar">'+
+    '<button class="cobro-btn cobrado '+(ord.cobrado?'active':'')+'" id="btn-cobrado" onclick="toggleCobro('+i+',true)">&#10003; Cobrado</button>'+
+    '<button class="cobro-btn pendiente '+(ord.cobrado?'':'active')+'" id="btn-pendiente" onclick="toggleCobro('+i+',false)">&#9201; Pendiente</button>'+
+    '</div></div>'+
     '<button class="btn btn-primary btn-block" onclick="go(\'s-presupuesto\')">Ver / Editar Presupuesto</button>'+
     '<button class="btn btn-green btn-block" onclick="go(\'s-factura\')">Generar Factura SET DNIT</button>'+
     '<button class="btn btn-wa btn-block" onclick="alert(\'WhatsApp enviado a '+ord.cliente+'!\')">Notificar por WhatsApp</button>';
@@ -624,15 +641,72 @@ function renderStock(){
   }).join('');
 }
 
+function calcTotal(){
+  var inputs=document.querySelectorAll('#items-list .monto-input');
+  var total=0;
+  inputs.forEach(function(inp){total+=parseFloat(inp.value.replace(/\./g,'').replace(',','.'))||0;});
+  var tv=document.getElementById('total-val');
+  if(tv)tv.textContent='Gs. '+total.toLocaleString('es-PY');
+}
+
 function agregarRepuesto(){
-  var rep=prompt('Repuesto o servicio y precio (ej: Bujias x4 -- Gs. 90.000)');
-  if(rep){
-    var list=document.getElementById('items-list');
-    var div=document.createElement('div');div.className='det-row';
-    var parts=rep.split('--');
-    div.innerHTML='<span>'+(parts[0]||rep)+'</span><span>'+(parts[1]||'Gs. 0')+'</span>';
-    list.appendChild(div);
+  var rep=prompt('Repuesto o servicio (ej: Bujias NGK x4)');
+  if(!rep)return;
+  var monto=prompt('Monto en Gs. (ej: 90000)');
+  var list=document.getElementById('items-list');
+  var div=document.createElement('div');div.className='det-row';
+  div.innerHTML='<span>'+rep+'</span><input class="monto-input" value="'+(monto||'0')+'" oninput="calcTotal()"/>';
+  list.appendChild(div);
+  calcTotal();
+}
+
+function toggleCobro(idx,cobrado){
+  ordenes[idx].cobrado=cobrado;
+  var bc=document.getElementById('btn-cobrado');
+  var bp=document.getElementById('btn-pendiente');
+  if(bc&&bp){
+    bc.classList.toggle('active',cobrado);
+    bp.classList.toggle('active',!cobrado);
   }
+  var al=document.getElementById('actList');
+  if(al){
+    var now=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+    var d=document.createElement('div');d.className='act-item';
+    var ord=ordenes[idx];
+    d.innerHTML='<span class="act-icon">'+(cobrado?'&#128176;':'&#9201;')+'</span>'+
+      '<div class="act-txt">'+ord.id+' marcada como '+(cobrado?'Cobrada':'Pendiente')+'<br>'+
+      '<span style="color:#8b949e;font-size:.72rem">'+ord.cliente+' -- '+now+'</span></div>'+
+      '<div class="act-time">Ahora</div>';
+    al.prepend(d);
+  }
+}
+
+function editarPresupuesto(){
+  var card=document.querySelector('#s-presupuesto .card:nth-child(2)');
+  if(!card)return;
+  var editing=card.classList.toggle('edit-mode');
+  var rows=card.querySelectorAll('.det-row');
+  rows.forEach(function(row){
+    var spans=row.querySelectorAll('span');
+    if(spans.length<2)return;
+    var lastSpan=spans[spans.length-1];
+    var existing=row.querySelector('.monto-edit');
+    if(editing){
+      if(!existing){
+        var inp=document.createElement('input');
+        inp.className='monto-edit';inp.type='text';
+        inp.value=lastSpan.textContent.replace('Gs. ','');
+        inp.style.display='inline-block';
+        row.appendChild(inp);
+      } else { existing.style.display='inline-block'; }
+      lastSpan.style.display='none';
+    } else {
+      if(existing){lastSpan.textContent='Gs. '+existing.value;existing.style.display='none';}
+      lastSpan.style.display='';
+    }
+  });
+  var btn=document.getElementById('btn-editar-pres');
+  if(btn)btn.textContent=editing?'&#10003; Guardar cambios':'&#9998; Editar Presupuesto';
 }
 
 function anularFactura(){
