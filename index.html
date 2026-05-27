@@ -674,6 +674,13 @@ var GF_PASS='1234';
     if(url)GESTFACT_URL=url;
     GF_USER=sessionStorage.getItem('gf_user')||GF_USER;
     GF_PASS=sessionStorage.getItem('gf_pass')||GF_PASS;
+    window.addEventListener('DOMContentLoaded',function(){
+      var u=document.getElementById('login-user');
+      var p=document.getElementById('login-pass');
+      if(u)u.value=GF_USER;
+      if(p)p.value=GF_PASS;
+      loginAndLoad();
+    });
   }
 })();
 function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=btoa(unescape(encodeURIComponent(JSON.stringify(body))));sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res({ok:true,timeout:true});},10000);});}
