@@ -160,6 +160,16 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 .edit-mode .det-row span:last-child{display:none;}
 .edit-mode .monto-edit{display:inline-block !important;}
 .monto-edit{display:none;background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:.85rem;font-weight:700;width:110px;text-align:right;outline:none;}
+@media print{
+  body *{visibility:hidden;}
+  #print-pres,#print-pres *{visibility:visible;}
+  #print-pres{position:fixed;top:0;left:0;width:100%;background:#fff;color:#000;padding:20px;font-family:Arial,sans-serif;font-size:12px;}
+  #print-pres .card{background:#fff;border:1px solid #ccc;border-radius:4px;padding:12px;margin-bottom:10px;}
+  #print-pres .card-title{color:#555;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  #print-pres .det-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;color:#000;}
+  #print-pres .det-total{display:flex;justify-content:space-between;padding:8px 0;font-weight:700;font-size:14px;color:#000;}
+  #print-pres .print-header{text-align:center;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #000;}
+}
 </style>
 </head>
 <body>
@@ -187,7 +197,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
     <div class="login-sub">Sistema de Taller &amp; Facturacion SET DNIT</div>
     <input class="form-input" placeholder="Usuario" value="admin"/>
     <input class="form-input" type="password" placeholder="Contrasena" value="1234"/>
-    <button class="login-btn" onclick="go('s-dashboard')">Ingresar al sistema</button>
+    <button class="login-btn" onclick="loginAndLoad()">Ingresar al sistema</button>
     <div style="font-size:.72rem;color:#6e7681;">Demo -- IsabSoft Soluciones Oportunas</div>
   </div>
 </div>
@@ -249,9 +259,32 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
   </div>
 </div>
 
+<!-- NUEVO CLIENTE -->
+<div class="screen" id="s-nuevo-cliente">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-clientes')">&#8249;</button><span class="title">Nuevo Cliente</span></div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Datos del cliente</div>
+      <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" id="nc-nombre" placeholder="Ej: Juan Benitez"/></div>
+      <div class="form-group"><label class="form-label">CI / RUC</label><input class="form-input" id="nc-ruc" placeholder="Ej: 3.456.789"/></div>
+      <div class="form-group"><label class="form-label">Telefono</label><input class="form-input" id="nc-tel" placeholder="Ej: 0981 123 456" type="tel"/></div>
+      <div class="form-group"><label class="form-label">Direccion</label><input class="form-input" id="nc-dir" placeholder="Ej: San Lorenzo, Central"/></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Vehiculo</div>
+      <div class="form-group"><label class="form-label">Marca y modelo</label><input class="form-input" id="nc-vehiculo" placeholder="Ej: Toyota Hilux 2020"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Patente</label><input class="form-input" id="nc-patente" placeholder="Ej: ABC-123"/></div>
+        <div class="form-group"><label class="form-label">Km actuales</label><input class="form-input" id="nc-km" placeholder="Ej: 45.000"/></div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="guardarCliente()">Guardar Cliente</button>
+  </div>
+</div>
+
 <!-- CLIENTES -->
 <div class="screen" id="s-clientes">
-  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Clientes</span><button class="menu-btn" onclick="go('s-nuevo')">+</button></div>
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Clientes</span><button class="menu-btn" onclick="go('s-nuevo-cliente')">+</button></div>
   <div class="content"><input class="form-input" style="margin-bottom:12px;" placeholder="Buscar cliente..."/><div id="clienteList"></div></div>
   <div class="botnav">
     <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
@@ -308,10 +341,10 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
     <div class="card">
       <div class="card-title">Cliente y Vehiculo</div>
       <div class="form-group"><label class="form-label">Cliente</label>
-        <select class="form-select">
+        <select class="form-select" onchange="if(this.value==='__nuevo__')go('s-nuevo-cliente');">
           <option>Carlos Sanchez -- Honda CR-V</option><option>Gaston Perez -- Toyota Hilux</option>
           <option>Luis Benitez -- Ford Ranger</option><option>Ana Gonzalez -- Nissan Frontier</option>
-          <option>Nuevo cliente...</option>
+          <option value="__nuevo__">+ Nuevo cliente...</option>
         </select>
       </div>
       <div class="form-row">
@@ -334,8 +367,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
       <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="agregarRepuesto()">+ Agregar repuesto / servicio</button>
       <div class="det-total"><span>Total estimado</span><span id="total-val">Gs. 365.000</span></div>
     </div>
-    <button class="btn btn-primary btn-block" onclick="go('s-presupuesto')">Generar Presupuesto</button>
-    <button class="btn btn-green btn-block" onclick="go('s-orden-det')">Guardar sin presupuesto</button>
+    <button class="btn btn-primary btn-block" onclick="guardarOrden('s-presupuesto')">Generar Presupuesto</button>
+    <button class="btn btn-green btn-block" onclick="guardarOrden('s-orden-det')">Guardar sin presupuesto</button>
   </div>
   <div class="botnav">
     <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
@@ -347,28 +380,29 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 </div>
 <!-- PRESUPUESTO -->
 <div class="screen" id="s-presupuesto">
-  <div class="topbar"><button class="menu-btn" onclick="go('s-nuevo')">&#8249;</button><span class="title">Presupuesto #P-0042</span></div>
+  <div class="topbar"><button class="menu-btn" onclick="go('s-nuevo')">&#8249;</button><span class="title" id="pres-titulo">Presupuesto #P-0042</span></div>
   <div class="content">
-    <div class="card">
-      <div class="card-title">Datos del trabajo</div>
-      <div class="det-row"><span style="color:#8b949e">Cliente</span><span>Carlos Sanchez</span></div>
-      <div class="det-row"><span style="color:#8b949e">Vehiculo</span><span>Honda CR-V 2019</span></div>
-      <div class="det-row"><span style="color:#8b949e">Patente</span><span>AKM-782</span></div>
-      <div class="det-row"><span style="color:#8b949e">Km</span><span>78.400 km</span></div>
-      <div class="det-row"><span style="color:#8b949e">Fecha</span><span>25/05/2026</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Detalle de servicios y repuestos</div>
-      <div class="det-row"><span>Aceite sintetico 5W-30 x 4 L</span><span>Gs. 240.000</span></div>
-      <div class="det-row"><span>Filtro de aceite HF-111</span><span>Gs. 45.000</span></div>
-      <div class="det-row"><span>Filtro de aire</span><span>Gs. 30.000</span></div>
-      <div class="det-row"><span>Mano de obra</span><span>Gs. 80.000</span></div>
-      <div class="det-total"><span>Total</span><span>Gs. 395.000</span></div>
+    <div id="print-pres">
+      <div class="card">
+        <div class="card-title">Datos del trabajo</div>
+        <div class="det-row"><span style="color:#8b949e">Cliente</span><span id="pres-cliente">Carlos Sanchez</span></div>
+        <div class="det-row"><span style="color:#8b949e">Vehiculo</span><span id="pres-vehiculo">Honda CR-V 2019</span></div>
+        <div class="det-row"><span style="color:#8b949e">Patente</span><span id="pres-patente">AKM-782</span></div>
+        <div class="det-row"><span style="color:#8b949e">Km</span><span id="pres-km">78.400 km</span></div>
+        <div class="det-row"><span style="color:#8b949e">Fecha</span><span id="pres-fecha">25/05/2026</span></div>
+      </div>
+      <div class="card" id="pres-detalle">
+        <div class="card-title">Detalle de servicios y repuestos</div>
+        <div class="det-row"><span>Aceite sintetico 5W-30 x 4 L</span><span>Gs. 240.000</span></div>
+        <div class="det-row"><span>Filtro de aceite HF-111</span><span>Gs. 45.000</span></div>
+        <div class="det-row"><span>Filtro de aire</span><span>Gs. 30.000</span></div>
+        <div class="det-row"><span>Mano de obra</span><span>Gs. 80.000</span></div>
+        <div class="det-total"><span>Total</span><span id="pres-total">Gs. 395.000</span></div>
+      </div>
     </div>
     <button class="btn btn-outline btn-block" onclick="editarPresupuesto()" id="btn-editar-pres">&#9998; Editar Presupuesto</button>
-    <button class="btn btn-wa btn-block" onclick="alert('Presupuesto enviado por WhatsApp a Carlos Sanchez!')">&#128172; Enviar por WhatsApp</button>
-    <button class="btn btn-outline btn-block" onclick="alert('Presupuesto enviado por Email!')">&#128231; Enviar por Email</button>
-    <button class="btn btn-outline btn-block" onclick="alert('Imprimiendo presupuesto...')">&#128424; Imprimir</button>
+    <button class="btn btn-wa btn-block" onclick="alert('Presupuesto enviado por WhatsApp!')">&#128172; Enviar por WhatsApp</button>
+    <button class="btn btn-outline btn-block" onclick="window.print()">&#128424; Imprimir / Guardar PDF</button>
     <button class="btn btn-green btn-block" onclick="go('s-factura')">Aprobado &rarr; Generar Factura SET DNIT</button>
   </div>
   <div class="botnav">
@@ -527,6 +561,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
   </div>
 </div>
 <script>
+var GESTFACT_URL='YOUR_APPS_SCRIPT_URL_HERE';
+function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=btoa(unescape(encodeURIComponent(JSON.stringify(body))));sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res({ok:true,timeout:true});},10000);});}
+function apiFire(body){if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return;apiCall(body).catch(function(){});}
 var clientes=[
   {id:1,nombre:'Carlos Sanchez',tel:'+595981234001',ruc:'3.456.789',dir:'San Lorenzo, Central',vehiculo:'Honda CR-V 2019',patente:'AKM-782',km:'78.400'},
   {id:2,nombre:'Gaston Perez',tel:'+595981234002',ruc:'1.234.567',dir:'Luque, Central',vehiculo:'Toyota Hilux 2021',patente:'BCJ-331',km:'45.200'},
@@ -549,6 +586,76 @@ var stockItems=[
   {id:'LT-DISC',nombre:'Pastilla de freno',marca:'Brembo',qty:8,min:4,unit:'juegos',precio:95000},
   {id:'FI-COMB',nombre:'Filtro de combustible',marca:'Bosch',qty:1,min:3,unit:'unidades',precio:55000},
 ];
+function loadAllData(){
+  if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return Promise.resolve();
+  return apiCall({action:'loadAll'}).then(function(r){
+    if(!r.ok)return;
+    if(r.empty){return apiCall({action:'initData',clientes:clientes,ordenes:ordenes,stock:stockItems});}
+    if(r.clientes&&r.clientes.length){clientes=r.clientes.map(function(c){return{id:c.id,nombre:String(c.nombre||''),tel:String(c.tel||''),ruc:String(c.ruc||''),dir:String(c.dir||''),vehiculo:String(c.vehiculo||''),patente:String(c.patente||''),km:String(c.km||'')};});}
+    if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),servicio:String(o.servicio||''),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
+    if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
+  }).catch(function(){});
+}
+function loginAndLoad(){
+  var btn=document.querySelector('.login-btn');
+  if(btn){btn.textContent='Conectando...';btn.disabled=true;}
+  loadAllData().then(function(){go('s-dashboard');}).catch(function(){go('s-dashboard');});
+}
+function guardarOrden(target){
+  var sel=document.querySelector('#s-nuevo .form-select');
+  var desc=document.querySelector('#s-nuevo textarea');
+  var inputs=document.querySelectorAll('#items-list .monto-input');
+  var total=0;inputs.forEach(function(inp){total+=Number((inp.value||'0').replace(/\./g,'').replace(',',''));});
+  var partes=(sel?sel.value:'').split('--');
+  var clienteNombre=(partes[0]||'Cliente').trim();
+  var vehiculoNombre=(partes[1]||'Vehiculo').trim();
+  var fecha=new Date().toLocaleDateString('es-PY');
+  var numPres='P-'+String(Date.now()).slice(-4);
+  var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,servicio:desc?desc.value:'Servicio',monto:total,estado:'presupuesto',fecha:fecha,cobrado:false};
+  ordenes.unshift(newOrd);
+  apiFire({action:'saveOrden',data:newOrd});
+  // Poblar presupuesto con datos reales
+  var cl=clientes.find(function(c){return c.nombre===clienteNombre;})||{patente:'',km:''};
+  var el=function(id){return document.getElementById(id);};
+  if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto #'+numPres;
+  if(el('pres-cliente'))el('pres-cliente').textContent=clienteNombre;
+  if(el('pres-vehiculo'))el('pres-vehiculo').textContent=vehiculoNombre;
+  if(el('pres-patente'))el('pres-patente').textContent=cl.patente||'--';
+  if(el('pres-km'))el('pres-km').textContent=(cl.km||'--')+' km';
+  if(el('pres-fecha'))el('pres-fecha').textContent=fecha;
+  if(el('pres-total'))el('pres-total').textContent='Gs. '+total.toLocaleString('es-PY');
+  var det=el('pres-detalle');
+  if(det){
+    var rows='<div class="card-title">Detalle de servicios y repuestos</div>';
+    inputs.forEach(function(inp){
+      var label=inp.closest('.det-row').querySelector('span');
+      rows+='<div class="det-row"><span>'+(label?label.textContent:'Servicio')+'</span><span>Gs. '+Number((inp.value||'0').replace(/\./g,'').replace(',','')).toLocaleString('es-PY')+'</span></div>';
+    });
+    rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+total.toLocaleString('es-PY')+'</span></div>';
+    det.innerHTML=rows;
+  }
+  go(target);
+}
+
+function guardarCliente(){
+  var g=function(id){return(document.getElementById(id)||{}).value||'';};
+  var nombre=g('nc-nombre').trim();
+  if(!nombre){alert('Ingrese el nombre del cliente');return;}
+  var nuevo={id:clientes.length+1,nombre:nombre,tel:g('nc-tel'),ruc:g('nc-ruc'),dir:g('nc-dir'),vehiculo:g('nc-vehiculo'),patente:g('nc-patente'),km:g('nc-km')};
+  clientes.push(nuevo);
+  apiFire({action:'saveCliente',data:nuevo});
+  // Agregar al select de nueva orden
+  var sel=document.querySelector('#s-nuevo .form-select');
+  if(sel){
+    var opt=document.createElement('option');
+    opt.value=nuevo.nombre+' -- '+nuevo.vehiculo;
+    opt.textContent=nuevo.nombre+' -- '+nuevo.vehiculo;
+    sel.insertBefore(opt,sel.lastElementChild);
+    sel.value=opt.value;
+  }
+  alert('Cliente '+nombre+' guardado!');
+  go('s-nuevo');
+}
 
 function go(id){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
@@ -662,6 +769,7 @@ function agregarRepuesto(){
 
 function toggleCobro(idx,cobrado){
   ordenes[idx].cobrado=cobrado;
+  apiFire({action:'updateOrden',id:ordenes[idx].id,fields:{cobrado:cobrado}});
   var bc=document.getElementById('btn-cobrado');
   var bp=document.getElementById('btn-pendiente');
   if(bc&&bp){
