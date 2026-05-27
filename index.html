@@ -230,8 +230,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
     <img src="logo.png" class="login-logo" alt="IsabSoft"/>
     <div class="login-title">IsabSoft <span>GestFact</span></div>
     <div class="login-sub">Sistema de Taller &amp; Facturacion SET DNIT</div>
-    <input class="form-input" placeholder="Usuario" value="admin"/>
-    <input class="form-input" type="password" placeholder="Contrasena" value="1234"/>
+    <input class="form-input" id="login-user" placeholder="Usuario" value="admin"/>
+    <input class="form-input" id="login-pass" type="password" placeholder="Contrasena" value="1234"/>
     <button class="login-btn" onclick="loginAndLoad()">Ingresar al sistema</button>
     <div style="font-size:.72rem;color:#6e7681;">Demo -- IsabSoft Soluciones Oportunas</div>
   </div>
@@ -662,6 +662,20 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 var GESTFACT_URL='YOUR_APPS_SCRIPT_URL_HERE';
 var CLIENT_KEY='DEMO';
 var CLIENT_NOMBRE='Demo';
+var GF_USER='admin';
+var GF_PASS='1234';
+// Cargar config del cliente si viene de una pagina de acceso personalizada
+(function(){
+  var k=sessionStorage.getItem('gf_client_key');
+  if(k){
+    CLIENT_KEY=k;
+    CLIENT_NOMBRE=sessionStorage.getItem('gf_client_nombre')||CLIENT_NOMBRE;
+    var url=sessionStorage.getItem('gf_gestfact_url');
+    if(url)GESTFACT_URL=url;
+    GF_USER=sessionStorage.getItem('gf_user')||GF_USER;
+    GF_PASS=sessionStorage.getItem('gf_pass')||GF_PASS;
+  }
+})();
 function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=btoa(unescape(encodeURIComponent(JSON.stringify(body))));sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res({ok:true,timeout:true});},10000);});}
 function apiFire(body){if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return;apiCall(body).catch(function(){});}
 var clientes=[
@@ -725,6 +739,13 @@ function applyLicense(lic){
   return true;
 }
 function loginAndLoad(){
+  var u=(document.getElementById('login-user')||{}).value||'';
+  var p=(document.getElementById('login-pass')||{}).value||'';
+  if(u!==GF_USER||p!==GF_PASS){
+    var inp=document.getElementById('login-pass');
+    if(inp){inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';},1500);}
+    return;
+  }
   var btn=document.querySelector('.login-btn');
   if(btn){btn.textContent='Conectando...';btn.disabled=true;}
   checkLicense().then(function(lic){
