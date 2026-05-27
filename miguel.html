@@ -2,28 +2,56 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="theme-color" content="#0a1628"/>
+<link rel="manifest" href="/gestfact-demo/manifest.json"/>
 <title>GestFact — Miguel Acuña</title>
 <style>
-  body{background:#0a1628;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:Arial,sans-serif;color:#e6edf3;}
-  .box{text-align:center;padding:32px;}
-  .spinner{width:40px;height:40px;border:3px solid #1e3a5f;border-top-color:#1e88e5;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  p{color:#8b949e;font-size:.88rem;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a1628;display:flex;align-items:flex-end;justify-content:center;height:100vh;font-family:'Segoe UI',Arial,sans-serif;color:#e6edf3;overflow:hidden;}
+.bg{position:fixed;inset:0;background:url('portada.jpg') center/cover no-repeat;}
+.overlay{position:fixed;inset:0;background:linear-gradient(to bottom,rgba(10,22,40,.3) 0%,rgba(10,22,40,.85) 55%,#0a1628 100%);}
+.box{position:relative;z-index:2;width:100%;padding:0 32px 52px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+.logo{width:88px;height:88px;object-fit:contain;border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.5);}
+.title{font-size:1.5rem;font-weight:800;text-align:center;}
+.title span{color:#1e88e5;}
+.sub{font-size:.82rem;color:#8b949e;text-align:center;margin-top:-8px;}
+.inp{width:100%;background:rgba(10,22,40,.8);border:1px solid #1e3a5f;border-radius:12px;padding:14px 16px;color:#e6edf3;font-size:1rem;outline:none;text-align:center;letter-spacing:3px;}
+.inp:focus{border-color:#1e88e5;}
+.inp.error{border-color:#e53935;animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.btn{width:100%;padding:15px;background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;}
+.hint{font-size:.72rem;color:#6e7681;}
 </style>
 </head>
 <body>
+<div class="bg"></div>
+<div class="overlay"></div>
 <div class="box">
-  <div class="spinner"></div>
-  <p>Cargando sistema...</p>
+  <img src="logo.png" class="logo" alt="IsabSoft"/>
+  <div class="title">IsabSoft <span>GestFact</span></div>
+  <div class="sub">Taller de Miguel Acuña</div>
+  <input class="inp" id="clave" type="password" placeholder="Clave de acceso" maxlength="20" onkeydown="if(event.key==='Enter')ingresar()"/>
+  <button class="btn" onclick="ingresar()">Ingresar</button>
+  <div class="hint">IsabSoft — Soluciones Oportunas</div>
 </div>
 <script>
-sessionStorage.setItem('gf_client_key','MIGUEL_001');
-sessionStorage.setItem('gf_client_nombre','Miguel Acuna');
-sessionStorage.setItem('gf_gestfact_url','https://script.google.com/macros/s/AKfycbz0TLELdJmd0gxt0DJfaCpOhOFzoVR_rppf51oamevr2NUr9Xv-DaftD3cWevuS2GJ0Rw/exec');
-sessionStorage.setItem('gf_user','miguel');
-sessionStorage.setItem('gf_pass','taller2026');
-window.location.replace('./index.html');
+function ingresar(){
+  var inp=document.getElementById('clave');
+  if(inp.value==='taller2026'){
+    sessionStorage.setItem('gf_client_key','MIGUEL_001');
+    sessionStorage.setItem('gf_client_nombre','Miguel Acuna');
+    sessionStorage.setItem('gf_gestfact_url','https://script.google.com/macros/s/AKfycbz0TLELdJmd0gxt0DJfaCpOhOFzoVR_rppf51oamevr2NUr9Xv-DaftD3cWevuS2GJ0Rw/exec');
+    sessionStorage.setItem('gf_user','miguel');
+    sessionStorage.setItem('gf_pass','taller2026');
+    window.location.replace('./index.html');
+  } else {
+    inp.value='';
+    inp.classList.add('error');
+    setTimeout(function(){inp.classList.remove('error');inp.focus();},400);
+  }
+}
+document.getElementById('clave').focus();
 </script>
 </body>
 </html>
