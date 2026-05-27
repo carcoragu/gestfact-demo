@@ -168,6 +168,23 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 .susp-title{font-size:1.2rem;font-weight:800;color:#f85149;}
 .susp-msg{font-size:.85rem;color:#8b949e;line-height:1.6;}
 .susp-tel{font-size:1rem;font-weight:700;color:#25D366;}
+.mode-btns{display:flex;gap:8px;margin-bottom:12px;}
+.mode-btn{flex:1;padding:10px 6px;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;border:2px solid #1e3a5f;background:#0a1628;color:#8b949e;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.15s;}
+.mode-btn.active{border-color:#1e88e5;color:#1e88e5;background:#1e88e515;}
+.mode-btn span:first-child{font-size:1.4rem;}
+.scan-box{background:#000;border-radius:12px;overflow:hidden;position:relative;margin-bottom:12px;}
+.scan-box video{width:100%;display:block;max-height:200px;object-fit:cover;}
+.scan-line{position:absolute;top:50%;left:10%;right:10%;height:2px;background:#1e88e5;box-shadow:0 0 8px #1e88e5;}
+.margen-info{font-size:.78rem;color:#8b949e;margin-top:6px;padding:8px 12px;background:#1e3a5f20;border-radius:8px;}
+.margen-info strong{color:#43a047;}
+.picker-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #1e3a5f20;cursor:pointer;}
+.picker-item:active{background:#1e3a5f15;border-radius:8px;}
+.picker-qty{font-size:1.1rem;font-weight:800;min-width:32px;text-align:center;}
+.picker-qty.bajo{color:#e53935;}
+.picker-agotado{opacity:.3;pointer-events:none;}
+.voz-btn{background:none;border:none;color:#8b949e;font-size:1.1rem;cursor:pointer;padding:0 6px;vertical-align:middle;}
+.voz-btn.escuchando{color:#e53935;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @media print{
   body *{visibility:hidden;}
   #print-pres,#print-pres *{visibility:visible;}
@@ -530,7 +547,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 
 <!-- STOCK -->
 <div class="screen" id="s-stock">
-  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Stock &amp; Inventario</span><button class="menu-btn" onclick="alert('Ingreso de stock')">+</button></div>
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Stock &amp; Inventario</span><button class="menu-btn" onclick="abrirNuevoStock()">+</button></div>
   <div class="content"><input class="form-input" style="margin-bottom:12px;" placeholder="Buscar repuesto o codigo..."/><div id="stockList"></div></div>
   <div class="botnav">
     <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
@@ -538,6 +555,68 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
     <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
     <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
     <button class="active"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- STOCK NUEVO INGRESO -->
+<div class="screen" id="s-stock-nuevo">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-stock')">&#8249;</button><span class="title">Ingreso de Repuesto</span></div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Codigo del repuesto</div>
+      <div class="mode-btns">
+        <button class="mode-btn" id="mbtn-scan" onclick="setModo('scan')"><span>&#128247;</span><span>Escanear</span></button>
+        <button class="mode-btn active" id="mbtn-manual" onclick="setModo('manual')"><span>&#9000;&#65039;</span><span>Manual</span></button>
+        <button class="mode-btn" id="mbtn-voz" onclick="setModo('voz')"><span>&#127908;</span><span>Voz</span></button>
+      </div>
+      <div class="scan-box" id="scan-box" style="display:none;">
+        <video id="scan-video" autoplay playsinline muted></video>
+        <div class="scan-line"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Codigo</label>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input class="form-input" id="sn-codigo" placeholder="Ej: HF-111" style="flex:1;"/>
+          <button class="voz-btn" id="vbtn-codigo" onclick="vozCampo('sn-codigo','vbtn-codigo')" title="Dictar codigo">&#127908;</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Datos</div>
+      <div class="form-group">
+        <label class="form-label">Nombre</label>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input class="form-input" id="sn-nombre" placeholder="Ej: Filtro de aceite Honda" style="flex:1;"/>
+          <button class="voz-btn" id="vbtn-nombre" onclick="vozCampo('sn-nombre','vbtn-nombre')" title="Dictar nombre">&#127908;</button>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Marca / Proveedor</label><input class="form-input" id="sn-marca" placeholder="Ej: Bosch / AutoRepuestos SA"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Cantidad</label><input class="form-input" id="sn-qty" type="number" placeholder="10" oninput="calcMargen()"/></div>
+        <div class="form-group"><label class="form-label">Stock minimo</label><input class="form-input" id="sn-min" type="number" placeholder="3"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Unidad</label>
+        <select class="form-select" id="sn-unit">
+          <option>unidades</option><option>litros</option><option>juegos</option><option>metros</option><option>kg</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Precio costo Gs.</label><input class="form-input" id="sn-costo" type="number" placeholder="0" oninput="calcMargen()"/></div>
+        <div class="form-group"><label class="form-label">Precio venta Gs.</label><input class="form-input" id="sn-venta" type="number" placeholder="0" oninput="calcMargen()"/></div>
+      </div>
+      <div id="sn-margen-info"></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="guardarStockIngreso()">Guardar Ingreso</button>
+  </div>
+</div>
+
+<!-- STOCK PICKER (para agregar a una orden) -->
+<div class="screen" id="s-stock-picker">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-nuevo')">&#8249;</button><span class="title">Seleccionar Repuesto</span></div>
+  <div class="content">
+    <input class="form-input" id="picker-search" style="margin-bottom:12px;" placeholder="Buscar repuesto o codigo..." oninput="filtrarPicker(this.value)"/>
+    <div id="pickerList"></div>
+    <button class="btn btn-outline btn-block" style="margin-top:12px;" onclick="go('s-nuevo')">Cancelar</button>
   </div>
 </div>
 
@@ -669,6 +748,16 @@ function guardarOrden(target){
   var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,servicio:desc?desc.value:'Servicio',monto:total,estado:'presupuesto',fecha:fecha,cobrado:false};
   ordenes.unshift(newOrd);
   apiFire({action:'saveOrden',data:newOrd});
+  // Descontar stock de los repuestos usados
+  document.querySelectorAll('#items-list .det-row').forEach(function(row){
+    var sid=row.dataset.stockId;
+    if(!sid)return;
+    var idx=stockItems.findIndex(function(s){return s.id===sid;});
+    if(idx>=0&&stockItems[idx].qty>0){
+      stockItems[idx].qty=Math.max(0,stockItems[idx].qty-1);
+      apiFire({action:'updateStock',id:sid,qty:stockItems[idx].qty});
+    }
+  });
   // Poblar presupuesto con datos reales
   var cl=clientes.find(function(c){return c.nombre===clienteNombre;})||{patente:'',km:''};
   var el=function(id){return document.getElementById(id);};
@@ -713,6 +802,8 @@ function guardarCliente(){
 }
 
 function go(id){
+  var prev=document.querySelector('.screen.active');
+  if(prev&&prev.id==='s-stock-nuevo'&&id!=='s-stock-nuevo')stopScan();
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   var t=document.getElementById(id);
   if(t)t.classList.add('active');
@@ -812,14 +903,10 @@ function calcTotal(){
 }
 
 function agregarRepuesto(){
-  var rep=prompt('Repuesto o servicio (ej: Bujias NGK x4)');
-  if(!rep)return;
-  var monto=prompt('Monto en Gs. (ej: 90000)');
-  var list=document.getElementById('items-list');
-  var div=document.createElement('div');div.className='det-row';
-  div.innerHTML='<span>'+rep+'</span><input class="monto-input" value="'+(monto||'0')+'" oninput="calcTotal()"/>';
-  list.appendChild(div);
-  calcTotal();
+  renderPicker('');
+  var inp=document.getElementById('picker-search');
+  if(inp)inp.value='';
+  go('s-stock-picker');
 }
 
 function toggleCobro(idx,cobrado){
@@ -871,6 +958,153 @@ function editarPresupuesto(){
   var btn=document.getElementById('btn-editar-pres');
   if(btn)btn.textContent=editing?'&#10003; Guardar cambios':'&#9998; Editar Presupuesto';
 }
+
+// ── STOCK MODULE ────────────────────────────────────────
+var scanStream=null;var scanInterval=null;
+
+function abrirNuevoStock(){
+  setModo('manual');
+  ['sn-codigo','sn-nombre','sn-marca','sn-qty','sn-min','sn-costo','sn-venta'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var u=document.getElementById('sn-unit');if(u)u.selectedIndex=0;
+  var mi=document.getElementById('sn-margen-info');if(mi)mi.innerHTML='';
+  go('s-stock-nuevo');
+}
+
+function setModo(modo){
+  ['scan','manual','voz'].forEach(function(m){
+    var b=document.getElementById('mbtn-'+m);if(b)b.classList.toggle('active',m===modo);
+  });
+  var sb=document.getElementById('scan-box');
+  if(modo==='scan'){
+    if(sb)sb.style.display='block';
+    startScan();
+  } else {
+    if(sb)sb.style.display='none';
+    stopScan();
+    if(modo==='voz'){
+      vozCampo('sn-codigo','mbtn-voz');
+    } else {
+      var c=document.getElementById('sn-codigo');if(c)c.focus();
+    }
+  }
+}
+
+function startScan(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    alert('Camara no disponible en este dispositivo');setModo('manual');return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(function(stream){
+    scanStream=stream;
+    var v=document.getElementById('scan-video');
+    if(v){v.srcObject=stream;}
+    if('BarcodeDetector' in window){
+      var bd=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','upc_a','upc_e','qr_code']});
+      scanInterval=setInterval(function(){
+        bd.detect(v).then(function(codes){
+          if(codes.length>0){
+            var c=document.getElementById('sn-codigo');
+            if(c)c.value=codes[0].rawValue;
+            setModo('manual');
+          }
+        }).catch(function(){});
+      },600);
+    }
+  }).catch(function(){alert('No se pudo acceder a la camara');setModo('manual');});
+}
+
+function stopScan(){
+  if(scanStream){scanStream.getTracks().forEach(function(t){t.stop();});scanStream=null;}
+  if(scanInterval){clearInterval(scanInterval);scanInterval=null;}
+}
+
+function vozCampo(campoId,btnId){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Reconocimiento de voz no disponible en este navegador');return;}
+  var rec=new SR();
+  rec.lang='es-PY';rec.continuous=false;rec.interimResults=false;
+  var btn=document.getElementById(btnId);
+  if(btn)btn.classList.add('escuchando');
+  rec.onresult=function(e){
+    var txt=e.results[0][0].transcript;
+    var campo=document.getElementById(campoId);
+    if(campo)campo.value=txt;
+    if(btn)btn.classList.remove('escuchando');
+    calcMargen();
+  };
+  rec.onerror=function(){if(btn)btn.classList.remove('escuchando');};
+  rec.onend=function(){if(btn)btn.classList.remove('escuchando');};
+  rec.start();
+}
+
+function calcMargen(){
+  var costo=parseFloat(document.getElementById('sn-costo')?document.getElementById('sn-costo').value:0)||0;
+  var venta=parseFloat(document.getElementById('sn-venta')?document.getElementById('sn-venta').value:0)||0;
+  var info=document.getElementById('sn-margen-info');if(!info)return;
+  if(costo>0&&venta>0){
+    var pct=Math.round((venta-costo)/costo*100);
+    var gan=venta-costo;
+    info.innerHTML='<div class="margen-info">Margen: <strong>'+pct+'%</strong> &mdash; Ganancia por unidad: <strong>Gs. '+gan.toLocaleString('es-PY')+'</strong></div>';
+  } else { info.innerHTML=''; }
+}
+
+function guardarStockIngreso(){
+  var g=function(id){return(document.getElementById(id)||{value:''}).value;};
+  var codigo=(g('sn-codigo')||'').trim().toUpperCase();
+  var nombre=(g('sn-nombre')||'').trim();
+  if(!codigo||!nombre){alert('Codigo y nombre son obligatorios');return;}
+  var qty=parseInt(g('sn-qty'))||0;
+  var min=parseInt(g('sn-min'))||0;
+  var costo=parseFloat(g('sn-costo'))||0;
+  var venta=parseFloat(g('sn-venta'))||0;
+  var marca=(g('sn-marca')||'').trim();
+  var unit=g('sn-unit')||'unidades';
+  var existing=stockItems.findIndex(function(s){return s.id===codigo;});
+  if(existing>=0){
+    stockItems[existing].qty+=qty;
+    if(venta>0)stockItems[existing].precio=venta;
+    if(costo>0)stockItems[existing].costo=costo;
+    apiFire({action:'saveStock',data:stockItems[existing]});
+    alert('Stock actualizado: '+nombre+' (+'+qty+')');
+  } else {
+    var nuevo={id:codigo,nombre:nombre,marca:marca,qty:qty,min:min,unit:unit,precio:venta,costo:costo};
+    stockItems.push(nuevo);
+    apiFire({action:'saveStock',data:nuevo});
+    alert('Repuesto '+nombre+' registrado!');
+  }
+  stopScan();
+  go('s-stock');
+}
+
+function renderPicker(filtro){
+  var items=filtro?stockItems.filter(function(s){
+    return s.nombre.toLowerCase().indexOf(filtro.toLowerCase())>=0||s.id.toLowerCase().indexOf(filtro.toLowerCase())>=0;
+  }):stockItems;
+  var pl=document.getElementById('pickerList');if(!pl)return;
+  pl.innerHTML=items.length?items.map(function(item){
+    var bajo=item.qty<item.min;var agotado=item.qty<=0;
+    return'<div class="picker-item '+(agotado?'picker-agotado':'')+'" onclick="seleccionarRepuesto(\''+item.id+'\')">'+
+      '<div style="font-size:1.3rem">&#128230;</div>'+
+      '<div style="flex:1"><div style="font-size:.88rem;font-weight:700;">'+item.nombre+'</div>'+
+      '<div style="font-size:.72rem;color:#8b949e;">'+item.id+' &mdash; Gs.'+item.precio.toLocaleString('es-PY')+'</div></div>'+
+      '<div style="text-align:right"><div class="picker-qty '+(bajo?'bajo':'')+'">'+item.qty+'</div>'+
+      '<div style="font-size:.65rem;color:#8b949e;">'+item.unit+'</div></div></div>';
+  }).join(''):'<div style="color:#6e7681;text-align:center;padding:24px;">No hay repuestos en stock</div>';
+}
+
+function filtrarPicker(val){renderPicker(val);}
+
+function seleccionarRepuesto(codigo){
+  var item=stockItems.find(function(s){return s.id===codigo;});
+  if(!item)return;
+  var list=document.getElementById('items-list');if(!list){go('s-nuevo');return;}
+  var div=document.createElement('div');div.className='det-row';
+  div.dataset.stockId=item.id;
+  div.innerHTML='<span>'+item.nombre+' ('+item.id+')</span><input class="monto-input" value="'+item.precio+'" oninput="calcTotal()"/>';
+  list.appendChild(div);
+  calcTotal();
+  go('s-nuevo');
+}
+// ── FIN STOCK MODULE ─────────────────────────────────────
 
 function anularFactura(){
   if(confirm('Confirmar anulacion de factura? Esta accion se registra en el libro de ventas.')){
