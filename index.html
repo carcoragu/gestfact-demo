@@ -160,6 +160,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 .edit-mode .det-row span:last-child{display:none;}
 .edit-mode .monto-edit{display:inline-block !important;}
 .monto-edit{display:none;background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:.85rem;font-weight:700;width:110px;text-align:right;outline:none;}
+.lic-banner{width:100%;padding:10px 16px;font-size:.82rem;font-weight:700;text-align:center;display:none;flex-shrink:0;}
+.lic-banner.aviso{background:#f0a50022;color:#f0a500;border-bottom:1px solid #f0a500;}
+.lic-banner.vencido{background:#e5393522;color:#f85149;border-bottom:1px solid #e53935;}
+.susp-box{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center;gap:16px;}
+.susp-icon{font-size:3rem;}
+.susp-title{font-size:1.2rem;font-weight:800;color:#f85149;}
+.susp-msg{font-size:.85rem;color:#8b949e;line-height:1.6;}
+.susp-tel{font-size:1rem;font-weight:700;color:#25D366;}
 @media print{
   body *{visibility:hidden;}
   #print-pres,#print-pres *{visibility:visible;}
@@ -173,6 +181,16 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 </style>
 </head>
 <body>
+<!-- SISTEMA SUSPENDIDO -->
+<div class="screen" id="s-suspendido" style="justify-content:center;">
+  <div class="susp-box">
+    <div class="susp-icon">&#128274;</div>
+    <div class="susp-title">Sistema suspendido</div>
+    <div class="susp-msg" id="susp-msg">El período de prueba venció. Para reactivar el sistema comunicate con IsabSoft.</div>
+    <div class="susp-tel">+595 981 153 477</div>
+    <div style="font-size:.75rem;color:#6e7681;margin-top:8px;">IsabSoft — Soluciones Oportunas</div>
+  </div>
+</div>
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-head">
@@ -209,6 +227,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
     <span class="title">IsabSoft GestFact</span>
     <span class="badge">3</span>
   </div>
+  <div class="lic-banner" id="lic-banner"></div>
   <div class="content">
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-val">4</div><div class="kpi-lbl">Ordenes hoy</div></div>
@@ -562,6 +581,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 </div>
 <script>
 var GESTFACT_URL='YOUR_APPS_SCRIPT_URL_HERE';
+var CLIENT_KEY='DEMO';
+var CLIENT_NOMBRE='Demo';
 function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=btoa(unescape(encodeURIComponent(JSON.stringify(body))));sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res({ok:true,timeout:true});},10000);});}
 function apiFire(body){if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return;apiCall(body).catch(function(){});}
 var clientes=[
@@ -596,10 +617,44 @@ function loadAllData(){
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
   }).catch(function(){});
 }
+function checkLicense(){
+  if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return Promise.resolve({ok:true,estado:'activo',dias_restantes:999});
+  return apiCall({action:'checkLicense',client_key:CLIENT_KEY}).then(function(r){
+    if(!r||!r.ok)return{ok:true,estado:'activo',dias_restantes:999};
+    return r;
+  }).catch(function(){return{ok:true,estado:'activo',dias_restantes:999};});
+}
+function applyLicense(lic){
+  if(lic.estado==='suspendido'){
+    var msg=document.getElementById('susp-msg');
+    if(msg)msg.textContent='El sistema está suspendido por falta de pago. Para reactivarlo comunicate con IsabSoft.';
+    go('s-suspendido');return false;
+  }
+  var banner=document.getElementById('lic-banner');
+  if(banner){
+    if(lic.estado==='aviso'){
+      banner.className='lic-banner aviso';
+      banner.style.display='block';
+      banner.textContent='⚠️ El sistema vence en '+lic.dias_restantes+' día'+(lic.dias_restantes===1?'':'s')+'. Aboná antes del vencimiento para evitar interrupciones.';
+    } else if(lic.estado==='vencido'){
+      banner.className='lic-banner vencido';
+      banner.style.display='block';
+      var diasVenc=Math.abs(lic.dias_restantes);
+      banner.textContent='🔴 Sistema vencido hace '+diasVenc+' día'+(diasVenc===1?'':'s')+'. Quedan '+(15-diasVenc)+' días antes de la suspensión. Contactá a IsabSoft: +595 981 153 477';
+    }
+  }
+  return true;
+}
 function loginAndLoad(){
   var btn=document.querySelector('.login-btn');
   if(btn){btn.textContent='Conectando...';btn.disabled=true;}
-  loadAllData().then(function(){go('s-dashboard');}).catch(function(){go('s-dashboard');});
+  checkLicense().then(function(lic){
+    if(!applyLicense(lic))return;
+    return loadAllData();
+  }).then(function(){
+    var cur=document.querySelector('.screen.active');
+    if(!cur||cur.id!=='s-suspendido')go('s-dashboard');
+  }).catch(function(){go('s-dashboard');});
 }
 function guardarOrden(target){
   var sel=document.querySelector('#s-nuevo .form-select');
