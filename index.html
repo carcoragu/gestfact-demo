@@ -773,20 +773,36 @@ function loginAndLoad(){
 function guardarOrden(target){
   var sel=document.querySelector('#s-nuevo .form-select');
   var desc=document.querySelector('#s-nuevo textarea');
-  var inputs=document.querySelectorAll('#items-list .monto-input');
-  var total=0;inputs.forEach(function(inp){total+=Number((inp.value||'0').replace(/\./g,'').replace(',',''));});
+  var itemsData=[];
+  var total=0;
+  document.querySelectorAll('#items-list .det-row').forEach(function(row){
+    var di=row.querySelector('.desc-input');
+    var mi=row.querySelector('.monto-input');
+    var d=di?di.value.trim():'';
+    var m=Number((mi?mi.value||'0':'0').replace(/\./g,'').replace(',',''));
+    itemsData.push({desc:d,monto:m});
+    total+=m;
+  });
   var partes=(sel?sel.value:'').split('--');
   var clienteNombre=(partes[0]||'Cliente').trim();
   var vehiculoNombre=(partes[1]||'Vehiculo').trim();
+  var patEl=document.getElementById('ord-patente');
+  var kmEl=document.getElementById('ord-km');
+  var patente=patEl?patEl.value:'';
+  var km=kmEl?kmEl.value:'';
   var fecha=new Date().toLocaleDateString('es-PY');
   var numPres='P-'+String(Date.now()).slice(-4);
+  var servicioDesc=itemsData.map(function(it){return it.desc;}).filter(Boolean).join(' | ')||(desc?desc.value:'Servicio');
   var esEdicion=editandoOrden&&currentOrdenId;
   if(esEdicion){
     var idx=ordenes.findIndex(function(o){return o.id===currentOrdenId;});
     if(idx>=0){
       ordenes[idx].cliente=clienteNombre;
       ordenes[idx].vehiculo=vehiculoNombre;
-      ordenes[idx].servicio=desc?desc.value:'Servicio';
+      ordenes[idx].patente=patente;
+      ordenes[idx].km=km;
+      ordenes[idx].servicio=servicioDesc;
+      ordenes[idx].items=JSON.stringify(itemsData);
       ordenes[idx].monto=total;
       apiFire({action:'saveOrden',data:ordenes[idx]});
     }
@@ -794,7 +810,7 @@ function guardarOrden(target){
     var tt=document.querySelector('#s-nuevo .title');
     if(tt)tt.textContent='Nueva Orden de Trabajo';
   } else {
-    var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,servicio:desc?desc.value:'Servicio',monto:total,estado:'presupuesto',fecha:fecha,cobrado:false};
+    var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,patente:patente,km:km,servicio:servicioDesc,items:JSON.stringify(itemsData),monto:total,estado:'presupuesto',fecha:fecha,cobrado:false};
     ordenes.unshift(newOrd);
     currentOrdenId=newOrd.id;
     apiFire({action:'saveOrden',data:newOrd});
@@ -840,12 +856,13 @@ function editarOrden(){
   editandoOrden=true;
   var tt=document.querySelector('#s-nuevo .title');
   if(tt)tt.textContent='Editar Orden '+ord.id;
-  var sel=document.querySelector('#s-nuevo .form-select');
+  renderNuevoSelect();
+  var sel=document.getElementById('orden-cliente-sel');
   if(sel){
     var val=ord.cliente+' -- '+ord.vehiculo;
     var found=false;
     for(var i=0;i<sel.options.length;i++){
-      if(sel.options[i].text===val||sel.options[i].value===val){sel.selectedIndex=i;found=true;break;}
+      if(sel.options[i].value===val||sel.options[i].text===val){sel.selectedIndex=i;found=true;break;}
     }
     if(!found){
       var opt=document.createElement('option');
@@ -854,13 +871,20 @@ function editarOrden(){
     }
   }
   var veh=document.getElementById('ord-vehiculo');if(veh)veh.value=ord.vehiculo||'';
-  var pat=document.getElementById('ord-patente');if(pat)pat.value='';
-  var desc=document.getElementById('ord-desc');if(desc)desc.value=ord.servicio||'';
+  var pat=document.getElementById('ord-patente');if(pat)pat.value=ord.patente||'';
+  var km=document.getElementById('ord-km');if(km)km.value=ord.km||'';
+  var desc=document.getElementById('ord-desc');if(desc)desc.value='';
   var lista=document.getElementById('items-list');
   if(lista){
     lista.innerHTML='';
-    var mStr=ord.monto?ord.monto.toLocaleString('es-PY'):'0';
-    agregarItem(ord.servicio||'Servicio',mStr);
+    if(ord.items){
+      try{
+        var itemsArr=JSON.parse(ord.items);
+        itemsArr.forEach(function(it){agregarItem(it.desc,it.monto?Number(it.monto).toLocaleString('es-PY'):'');});
+      }catch(e){agregarItem(ord.servicio||'',ord.monto?ord.monto.toLocaleString('es-PY'):'');}
+    } else {
+      agregarItem(ord.servicio||'',ord.monto?ord.monto.toLocaleString('es-PY'):'');
+    }
   }
   calcTotal();
   go('s-nuevo');
@@ -1118,44 +1142,7 @@ function enviarPresupuestoWA(){
 }
 
 function editarPresupuesto(){
-  var card=document.querySelector('#s-presupuesto .card:nth-child(2)');
-  if(!card)return;
-  var editing=card.classList.toggle('edit-mode');
-  var rows=card.querySelectorAll('.det-row');
-  rows.forEach(function(row){
-    var spans=row.querySelectorAll('span');
-    if(spans.length<2)return;
-    var lastSpan=spans[spans.length-1];
-    var existing=row.querySelector('.monto-edit');
-    if(editing){
-      if(!existing){
-        var inp=document.createElement('input');
-        inp.className='monto-edit';inp.type='text';
-        inp.value=lastSpan.textContent.replace('Gs. ','');
-        inp.style.display='inline-block';
-        row.appendChild(inp);
-      } else { existing.style.display='inline-block'; }
-      lastSpan.style.display='none';
-    } else {
-      if(existing){lastSpan.textContent='Gs. '+existing.value;existing.style.display='none';}
-      lastSpan.style.display='';
-    }
-  });
-  var btn=document.getElementById('btn-editar-pres');
-  if(btn)btn.innerHTML=editing?'&#10003; Guardar cambios':'&#9998; Editar Presupuesto';
-  if(!editing){
-    var newTotal=0;
-    card.querySelectorAll('.monto-edit').forEach(function(inp){
-      newTotal+=Number((inp.value||'0').replace(/\./g,'').replace(',',''));
-    });
-    var totalEl=document.getElementById('pres-total');
-    if(totalEl)totalEl.textContent='Gs. '+newTotal.toLocaleString('es-PY');
-    if(currentOrdenId){
-      var idx=ordenes.findIndex(function(o){return o.id===currentOrdenId;});
-      if(idx>=0)ordenes[idx].monto=newTotal;
-      apiFire({action:'updateOrden',id:currentOrdenId,fields:{monto:newTotal}});
-    }
-  }
+  editarOrden();
 }
 
 // ── STOCK MODULE ────────────────────────────────────────
