@@ -1142,7 +1142,7 @@ function editarPresupuesto(){
     }
   });
   var btn=document.getElementById('btn-editar-pres');
-  if(btn)btn.textContent=editing?'&#10003; Guardar cambios':'&#9998; Editar Presupuesto';
+  if(btn)btn.innerHTML=editing?'&#10003; Guardar cambios':'&#9998; Editar Presupuesto';
   if(!editing){
     var newTotal=0;
     card.querySelectorAll('.monto-edit').forEach(function(inp){
