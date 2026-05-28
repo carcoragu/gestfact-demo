@@ -662,6 +662,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
 var GESTFACT_URL='YOUR_APPS_SCRIPT_URL_HERE';
 var CLIENT_KEY='DEMO';
 var currentOrdenId=null;
+var editandoOrden=false;
 var CLIENT_NOMBRE='Demo';
 var GF_USER='admin';
 var GF_PASS='1234';
@@ -774,10 +775,25 @@ function guardarOrden(target){
   var vehiculoNombre=(partes[1]||'Vehiculo').trim();
   var fecha=new Date().toLocaleDateString('es-PY');
   var numPres='P-'+String(Date.now()).slice(-4);
-  var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,servicio:desc?desc.value:'Servicio',monto:total,estado:'presupuesto',fecha:fecha,cobrado:false};
-  ordenes.unshift(newOrd);
-  currentOrdenId=newOrd.id;
-  apiFire({action:'saveOrden',data:newOrd});
+  var esEdicion=editandoOrden&&currentOrdenId;
+  if(esEdicion){
+    var idx=ordenes.findIndex(function(o){return o.id===currentOrdenId;});
+    if(idx>=0){
+      ordenes[idx].cliente=clienteNombre;
+      ordenes[idx].vehiculo=vehiculoNombre;
+      ordenes[idx].servicio=desc?desc.value:'Servicio';
+      ordenes[idx].monto=total;
+      apiFire({action:'saveOrden',data:ordenes[idx]});
+    }
+    editandoOrden=false;
+    var tt=document.querySelector('#s-nuevo .title');
+    if(tt)tt.textContent='Nueva Orden de Trabajo';
+  } else {
+    var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,servicio:desc?desc.value:'Servicio',monto:total,estado:'presupuesto',fecha:fecha,cobrado:false};
+    ordenes.unshift(newOrd);
+    currentOrdenId=newOrd.id;
+    apiFire({action:'saveOrden',data:newOrd});
+  }
   // Descontar stock de los repuestos usados
   document.querySelectorAll('#items-list .det-row').forEach(function(row){
     var sid=row.dataset.stockId;
@@ -809,6 +825,38 @@ function guardarOrden(target){
     det.innerHTML=rows;
   }
   go(target);
+}
+
+function editarOrden(){
+  var ord=ordenes.find(function(o){return o.id===currentOrdenId;});
+  if(!ord)return;
+  editandoOrden=true;
+  var tt=document.querySelector('#s-nuevo .title');
+  if(tt)tt.textContent='Editar Orden '+ord.id;
+  var sel=document.querySelector('#s-nuevo .form-select');
+  if(sel){
+    var val=ord.cliente+' -- '+ord.vehiculo;
+    var found=false;
+    for(var i=0;i<sel.options.length;i++){
+      if(sel.options[i].text===val||sel.options[i].value===val){sel.selectedIndex=i;found=true;break;}
+    }
+    if(!found){
+      var opt=document.createElement('option');
+      opt.value=val;opt.textContent=val;opt.selected=true;
+      sel.insertBefore(opt,sel.lastElementChild);
+    }
+  }
+  var vInputs=document.querySelectorAll('#s-nuevo .form-row .form-input');
+  if(vInputs[0])vInputs[0].value=ord.vehiculo||'';
+  var desc=document.querySelector('#s-nuevo textarea');
+  if(desc)desc.value=ord.servicio||'';
+  var lista=document.getElementById('items-list');
+  if(lista){
+    var mStr=ord.monto?ord.monto.toLocaleString('es-PY'):'0';
+    lista.innerHTML='<div class="det-row"><span>'+(ord.servicio||'Servicio')+'</span><input class="monto-input" value="'+mStr+'" oninput="calcTotal()"/></div>';
+  }
+  calcTotal();
+  go('s-nuevo');
 }
 
 function guardarCliente(){
@@ -904,7 +952,8 @@ function openOrden(i){
     '<button class="cobro-btn cobrado '+(ord.cobrado?'active':'')+'" id="btn-cobrado" onclick="toggleCobro('+i+',true)">&#10003; Cobrado</button>'+
     '<button class="cobro-btn pendiente '+(ord.cobrado?'':'active')+'" id="btn-pendiente" onclick="toggleCobro('+i+',false)">&#9201; Pendiente</button>'+
     '</div></div>'+
-    '<button class="btn btn-primary btn-block" onclick="go(\'s-presupuesto\')">Ver / Editar Presupuesto</button>'+
+    '<button class="btn btn-primary btn-block" onclick="go(\'s-presupuesto\')">Ver / Imprimir Presupuesto</button>'+
+    '<button class="btn btn-outline btn-block" onclick="editarOrden()">&#9998; Editar Orden</button>'+
     '<button class="btn btn-green btn-block" onclick="go(\'s-factura\')">Generar Factura SET DNIT</button>'+
     '<button class="btn btn-wa btn-block" onclick="alert(\'WhatsApp enviado a '+ord.cliente+'!\')">Notificar por WhatsApp</button>';
   go('s-orden-det');
