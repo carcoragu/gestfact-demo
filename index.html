@@ -151,8 +151,11 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 .chat-bar{display:flex;gap:8px;padding:12px 16px;background:#0d1b2e;border-top:1px solid #1e3a5f;flex-shrink:0;}
 .chat-in{flex:1;background:#0a1628;border:1px solid #1e3a5f;border-radius:20px;padding:10px 16px;color:#e6edf3;font-size:.88rem;outline:none;}
 .chat-btn{background:linear-gradient(135deg,#1565c0,#1e88e5);border:none;border-radius:50%;width:42px;height:42px;color:#fff;font-size:1.1rem;cursor:pointer;flex-shrink:0;}
-.monto-input{background:#0a1628;border:1px solid #1e3a5f;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:.85rem;font-weight:700;width:110px;text-align:right;outline:none;}
+.monto-input{background:#0a1628;border:1px solid #1e3a5f;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:.85rem;font-weight:700;width:100px;text-align:right;outline:none;}
 .monto-input:focus{border-color:#1e88e5;}
+.desc-input{flex:1;background:#0a1628;border:1px solid #1e3a5f;border-radius:6px;padding:4px 8px;color:#e6edf3;font-size:.85rem;outline:none;min-width:0;margin-right:6px;}
+.desc-input:focus{border-color:#1e88e5;}
+.del-item{background:none;border:none;color:#e53935;font-size:1.1rem;cursor:pointer;padding:0 4px;flex-shrink:0;line-height:1;}
 .cobro-bar{display:flex;gap:8px;margin:10px 0 6px;}
 .cobro-btn{flex:1;padding:10px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:.15s;}
 .cobro-btn.cobrado{background:#1b5e2020;border-color:#43a047;color:#43a047;}
@@ -384,23 +387,20 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
         </select>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Vehiculo</label><input class="form-input" value="Honda CR-V"/></div>
-        <div class="form-group"><label class="form-label">Patente</label><input class="form-input" value="AKM-782"/></div>
+        <div class="form-group"><label class="form-label">Vehiculo</label><input class="form-input" id="ord-vehiculo" placeholder="Ej: Toyota Hilux 2020"/></div>
+        <div class="form-group"><label class="form-label">Patente</label><input class="form-input" id="ord-patente" placeholder="Ej: ABC-123"/></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Anio</label><input class="form-input" value="2019"/></div>
-        <div class="form-group"><label class="form-label">Km actuales</label><input class="form-input" value="78.400"/></div>
+        <div class="form-group"><label class="form-label">Anio</label><input class="form-input" id="ord-anio" placeholder="Ej: 2021"/></div>
+        <div class="form-group"><label class="form-label">Km actuales</label><input class="form-input" id="ord-km" placeholder="Ej: 45.000"/></div>
       </div>
     </div>
     <div class="card">
       <div class="card-title">Detalle del Servicio</div>
-      <div class="form-group"><label class="form-label">Descripcion</label><textarea class="form-input" rows="2">Cambio de aceite 5W-30 + filtros</textarea></div>
-      <div id="items-list">
-        <div class="det-row"><span>Aceite 5W-30 x 4 L</span><input class="monto-input" value="240.000" oninput="calcTotal()"/></div>
-        <div class="det-row"><span>Filtro de aceite HF-111</span><input class="monto-input" value="45.000" oninput="calcTotal()"/></div>
-        <div class="det-row"><span>Mano de obra</span><input class="monto-input" value="80.000" oninput="calcTotal()"/></div>
-      </div>
-      <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="agregarRepuesto()">+ Agregar repuesto / servicio</button>
+      <div class="form-group"><label class="form-label">Descripcion general</label><textarea class="form-input" id="ord-desc" rows="2" placeholder="Ej: Cambio de aceite y filtros"></textarea></div>
+      <div id="items-list"></div>
+      <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="agregarItem()">+ Agregar ítem</button>
+      <button class="btn btn-outline btn-block" style="margin-top:6px;font-size:.78rem;" onclick="agregarRepuesto()">&#128230; Desde inventario</button>
       <div class="det-total"><span>Total estimado</span><span id="total-val">Gs. 365.000</span></div>
     </div>
     <button class="btn btn-primary btn-block" onclick="guardarOrden('s-presupuesto')">Generar Presupuesto</button>
@@ -818,8 +818,10 @@ function guardarOrden(target){
   if(det){
     var rows='<div class="card-title">Detalle de servicios y repuestos</div>';
     inputs.forEach(function(inp){
-      var label=inp.closest('.det-row').querySelector('span');
-      rows+='<div class="det-row"><span>'+(label?label.textContent:'Servicio')+'</span><span>Gs. '+Number((inp.value||'0').replace(/\./g,'').replace(',','')).toLocaleString('es-PY')+'</span></div>';
+      var label=inp.closest('.det-row').querySelector('.desc-input');
+      var labelTxt=label?label.value:'Servicio';
+      if(!labelTxt)labelTxt='Servicio';
+      rows+='<div class="det-row"><span>'+labelTxt+'</span><span>Gs. '+Number((inp.value||'0').replace(/\./g,'').replace(',','')).toLocaleString('es-PY')+'</span></div>';
     });
     rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+total.toLocaleString('es-PY')+'</span></div>';
     det.innerHTML=rows;
@@ -846,14 +848,14 @@ function editarOrden(){
       sel.insertBefore(opt,sel.lastElementChild);
     }
   }
-  var vInputs=document.querySelectorAll('#s-nuevo .form-row .form-input');
-  if(vInputs[0])vInputs[0].value=ord.vehiculo||'';
-  var desc=document.querySelector('#s-nuevo textarea');
-  if(desc)desc.value=ord.servicio||'';
+  var veh=document.getElementById('ord-vehiculo');if(veh)veh.value=ord.vehiculo||'';
+  var pat=document.getElementById('ord-patente');if(pat)pat.value='';
+  var desc=document.getElementById('ord-desc');if(desc)desc.value=ord.servicio||'';
   var lista=document.getElementById('items-list');
   if(lista){
+    lista.innerHTML='';
     var mStr=ord.monto?ord.monto.toLocaleString('es-PY'):'0';
-    lista.innerHTML='<div class="det-row"><span>'+(ord.servicio||'Servicio')+'</span><input class="monto-input" value="'+mStr+'" oninput="calcTotal()"/></div>';
+    agregarItem(ord.servicio||'Servicio',mStr);
   }
   calcTotal();
   go('s-nuevo');
@@ -893,11 +895,33 @@ function autoFillCliente(val){
   var partes=(val||'').split('--');
   var nombre=(partes[0]||'').trim();
   var cl=clientes.find(function(c){return c.nombre===nombre;});
-  if(!cl)return;
-  var vInputs=document.querySelectorAll('#s-nuevo .form-row .form-input');
-  if(vInputs[0])vInputs[0].value=cl.vehiculo||'';
-  if(vInputs[1])vInputs[1].value=cl.patente||'';
-  if(vInputs[3])vInputs[3].value=cl.km||'';
+  var v=document.getElementById('ord-vehiculo');
+  var p=document.getElementById('ord-patente');
+  var k=document.getElementById('ord-km');
+  if(v)v.value=cl?cl.vehiculo||'':'';
+  if(p)p.value=cl?cl.patente||'':'';
+  if(k)k.value=cl?cl.km||'':'';
+}
+
+function limpiarOrden(){
+  if(editandoOrden)return;
+  var desc=document.getElementById('ord-desc');
+  if(desc)desc.value='';
+  ['ord-vehiculo','ord-patente','ord-anio','ord-km'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var lista=document.getElementById('items-list');
+  if(lista)lista.innerHTML='';
+  agregarItem();
+  calcTotal();
+}
+
+function agregarItem(desc,monto){
+  var lista=document.getElementById('items-list');
+  if(!lista)return;
+  var div=document.createElement('div');
+  div.className='det-row';
+  div.innerHTML='<input class="desc-input" placeholder="Descripción del servicio..." value="'+(desc||'')+'"/><input class="monto-input" placeholder="0" value="'+(monto||'')+'" oninput="calcTotal()"/><button class="del-item" onclick="this.parentNode.remove();calcTotal()">&#215;</button>';
+  lista.appendChild(div);
+  calcTotal();
 }
 
 function guardarCliente(){
@@ -921,7 +945,7 @@ function go(id){
   if(id==='s-clientes'){renderClientes();ncReturnScreen='s-clientes';}
   if(id==='s-ordenes')renderOrdenes();
   if(id==='s-stock')renderStock();
-  if(id==='s-nuevo')renderNuevoSelect();
+  if(id==='s-nuevo'){renderNuevoSelect();limpiarOrden();}
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
@@ -1269,7 +1293,7 @@ function seleccionarRepuesto(codigo){
   var list=document.getElementById('items-list');if(!list){go('s-nuevo');return;}
   var div=document.createElement('div');div.className='det-row';
   div.dataset.stockId=item.id;
-  div.innerHTML='<span>'+item.nombre+' ('+item.id+')</span><input class="monto-input" value="'+item.precio+'" oninput="calcTotal()"/>';
+  div.innerHTML='<input class="desc-input" value="'+item.nombre+'" /><input class="monto-input" value="'+item.precio+'" oninput="calcTotal()"/><button class="del-item" onclick="this.parentNode.remove();calcTotal()">&#215;</button>';
   list.appendChild(div);
   calcTotal();
   go('s-nuevo');
