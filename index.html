@@ -685,7 +685,7 @@ var GF_PASS='1234';
     });
   }
 })();
-function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=btoa(unescape(encodeURIComponent(JSON.stringify(body))));sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];res({ok:true,timeout:true});},45000);});}
+function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(body)))));sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];res({ok:true,timeout:true});},45000);});}
 function apiFire(body){if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return;apiCall(body).catch(function(){});}
 var clientes=[
   {id:1,nombre:'Carlos Sanchez',tel:'+595981234001',ruc:'3.456.789',dir:'San Lorenzo, Central',vehiculo:'Honda CR-V 2019',patente:'AKM-782',km:'78.400'},
