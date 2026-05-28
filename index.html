@@ -717,12 +717,8 @@ function loadAllData(){
     if(r.clientes&&r.clientes.length){
       clientes=r.clientes.map(function(c){return{id:c.id,nombre:String(c.nombre||''),tel:String(c.tel||''),ruc:String(c.ruc||''),dir:String(c.dir||''),vehiculo:String(c.vehiculo||''),patente:String(c.patente||''),km:String(c.km||'')};});
     } else {
-      // Clientes tab vacío o inexistente — guardar demo data en Sheets
-      var delay=0;
-      clientes.forEach(function(c){
-        setTimeout(function(){apiFire({action:'saveCliente',data:c});},delay);
-        delay+=1500;
-      });
+      // Clientes tab vacío o inexistente — inicializar via initData
+      apiFire({action:'initData',clientes:clientes});
     }
     if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),servicio:String(o.servicio||''),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
