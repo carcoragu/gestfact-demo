@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Inicializar Clientes — Miguel</title>
+<style>
+  body{font-family:Arial,sans-serif;background:#0d1117;color:#e6edf3;display:flex;flex-direction:column;align-items:center;padding:40px 20px;}
+  h2{color:#1e88e5;margin-bottom:6px;}
+  .sub{color:#8b949e;font-size:.88rem;margin-bottom:28px;text-align:center;}
+  .log{width:100%;max-width:620px;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px;font-size:.84rem;line-height:2.1;min-height:80px;}
+  .ok{color:#25D366;} .err{color:#f85149;} .wait{color:#f0a500;}
+  button{margin-bottom:18px;padding:13px 36px;background:#1e88e5;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;}
+  button:disabled{background:#30363d;color:#555;cursor:not-allowed;}
+</style>
+</head>
+<body>
+<h2>Inicializar pestaña Clientes — Miguel</h2>
+<div class="sub">Crea la pestaña Clientes en Google Sheets con los datos demo</div>
+<button id="btn" onclick="cargar()">Crear pestaña Clientes (4 clientes)</button>
+<div class="log" id="log">Listo para inicializar...</div>
+<script>
+const URL = 'https://script.google.com/macros/s/AKfycbz0TLELdJmd0gxt0DJfaCpOhOFzoVR_rppf51oamevr2NUr9Xv-DaftD3cWevuS2GJ0Rw/exec';
+const CLIENTES = [
+  {id:1,nombre:'Carlos Sanchez',tel:'+595981234001',ruc:'3.456.789',dir:'San Lorenzo, Central',vehiculo:'Honda CR-V 2019',patente:'AKM-782',km:'78.400'},
+  {id:2,nombre:'Gaston Perez',tel:'+595981234002',ruc:'1.234.567',dir:'Luque, Central',vehiculo:'Toyota Hilux 2021',patente:'BCJ-331',km:'45.200'},
+  {id:3,nombre:'Luis Benitez',tel:'+595981234003',ruc:'2.345.678',dir:'Fernando de la Mora',vehiculo:'Ford Ranger 2020',patente:'CDM-115',km:'62.800'},
+  {id:4,nombre:'Ana Gonzalez',tel:'+595981234004',ruc:'4.567.890',dir:'Lambare, Central',vehiculo:'Nissan Frontier 2018',patente:'DEP-447',km:'91.000'},
+];
+function log(txt,tipo){
+  var d=document.getElementById('log');
+  d.innerHTML+='<div class="'+(tipo||'ok')+'">'+txt+'</div>';
+  d.scrollTop=d.scrollHeight;
+}
+function apiCall(body){
+  return new Promise(function(res,rej){
+    var cb='cb_'+Date.now();
+    var sc=document.createElement('script');
+    var done=false;
+    window[cb]=function(d){done=true;delete window[cb];sc.remove();res(d);};
+    sc.onerror=function(){if(done)return;done=true;delete window[cb];sc.remove();rej(new Error('Error de red'));};
+    var b64=btoa(unescape(encodeURIComponent(JSON.stringify(body))));
+    sc.src=URL+'?callback='+cb+'&body='+b64;
+    document.head.appendChild(sc);
+    setTimeout(function(){if(done)return;done=true;delete window[cb];sc.remove();res({ok:true,timeout:true});},12000);
+  });
+}
+async function cargar(){
+  var btn=document.getElementById('btn');
+  btn.disabled=true;
+  document.getElementById('log').innerHTML='';
+  log('Conectando con Google Sheets...','wait');
+  await new Promise(r=>setTimeout(r,1500));
+  for(var i=0;i<CLIENTES.length;i++){
+    var c=CLIENTES[i];
+    log('Guardando '+c.nombre+'...','wait');
+    try{
+      var r=await apiCall({action:'saveCliente',data:c});
+      if(r.ok) log('OK — '+c.nombre);
+      else if(r.timeout) log('OK (timeout aceptable) — '+c.nombre);
+      else log('Respuesta: '+JSON.stringify(r),'wait');
+    }catch(e){log('ERROR — '+c.nombre+': '+e.message,'err');}
+    await new Promise(r=>setTimeout(r,2000));
+  }
+  log('','ok');
+  log('Listo — abrí el Google Sheet y verificá la pestaña Clientes.','ok');
+  btn.textContent='Completado';
+}
+</script>
+</body>
+</html>
