@@ -935,7 +935,11 @@ function guardarCliente(){
   if(!nombre){alert('Ingrese el nombre del cliente');return;}
   var nuevo={id:clientes.length+1,nombre:nombre,tel:g('nc-tel'),ruc:g('nc-ruc'),dir:g('nc-dir'),vehiculo:g('nc-vehiculo'),patente:g('nc-patente'),km:g('nc-km')};
   clientes.push(nuevo);
-  apiFire({action:'saveCliente',data:nuevo});
+  apiCall({action:'saveCliente',data:nuevo}).then(function(r){
+    alert('Sheets: '+JSON.stringify(r));
+  }).catch(function(e){
+    alert('ERROR red: '+e.message);
+  });
   var presel=nuevo.nombre+' -- '+nuevo.vehiculo;
   renderNuevoSelect(presel);
   go(ncReturnScreen||'s-nuevo');
