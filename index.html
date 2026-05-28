@@ -435,7 +435,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#e6edf3;he
       </div>
     </div>
     <button class="btn btn-outline btn-block" onclick="editarPresupuesto()" id="btn-editar-pres">&#9998; Editar Presupuesto</button>
-    <button class="btn btn-wa btn-block" onclick="alert('Presupuesto enviado por WhatsApp!')">&#128172; Enviar por WhatsApp</button>
+    <button class="btn btn-wa btn-block" onclick="enviarPresupuestoWA()">&#128172; Enviar por WhatsApp</button>
     <button class="btn btn-outline btn-block" onclick="window.print()">&#128424; Imprimir / Guardar PDF</button>
     <button class="btn btn-green btn-block" onclick="go('s-factura')">Aprobado &rarr; Generar Factura SET DNIT</button>
   </div>
@@ -1041,6 +1041,32 @@ function toggleCobro(idx,cobrado){
       '<div class="act-time">Ahora</div>';
     al.prepend(d);
   }
+}
+
+function enviarPresupuestoWA(){
+  var cliente=document.getElementById('pres-cliente');
+  var vehiculo=document.getElementById('pres-vehiculo');
+  var patente=document.getElementById('pres-patente');
+  var km=document.getElementById('pres-km');
+  var fecha=document.getElementById('pres-fecha');
+  var titulo=document.getElementById('pres-titulo');
+  var total=document.getElementById('pres-total');
+  var rows=document.querySelectorAll('#pres-detalle .det-row');
+  var items='';
+  rows.forEach(function(r){
+    var cols=r.querySelectorAll('span');
+    if(cols.length>=2)items+='• '+cols[0].textContent+' — '+cols[1].textContent+'\n';
+  });
+  var txt='*'+( titulo?titulo.textContent:'Presupuesto')+'*\n';
+  txt+='📅 '+(fecha?fecha.textContent:'')+'\n\n';
+  txt+='*Cliente:* '+(cliente?cliente.textContent:'')+'\n';
+  txt+='*Vehículo:* '+(vehiculo?vehiculo.textContent:'')+'\n';
+  txt+='*Patente:* '+(patente?patente.textContent:'')+'\n';
+  txt+='*Km:* '+(km?km.textContent:'')+'\n\n';
+  txt+='*Detalle:*\n'+items+'\n';
+  txt+='*'+(total?total.textContent:'')+'*\n\n';
+  txt+='📞 Consultas: +595 961 807675\n_IsabSoft GestFact_';
+  window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
 }
 
 function editarPresupuesto(){
