@@ -353,7 +353,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 <!-- ORDENES -->
 <div class="screen" id="s-ordenes">
   <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Ordenes de Trabajo</span><button class="menu-btn" onclick="nuevaOrden()">+</button></div>
-  <div class="content"><div id="ordenesList"></div></div>
+  <div class="content"><input class="form-input" style="margin-bottom:12px;" placeholder="Buscar por cliente o patente..." oninput="filtrarOrdenes(this.value)"/><div id="ordenesList"></div></div>
   <div class="botnav">
     <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
     <button class="active"><span>&#128295;</span><span>Ordenes</span></button>
@@ -402,7 +402,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
       <div id="items-list"></div>
       <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="agregarItem()">+ Agregar ítem</button>
       <button class="btn btn-outline btn-block" style="margin-top:6px;font-size:.78rem;" onclick="agregarRepuesto()">&#128230; Desde inventario</button>
-      <div class="det-total"><span>Total estimado</span><span id="total-val">Gs. 365.000</span></div>
+      <div class="det-total"><span>Total (editable)</span><input type="number" id="total-val" min="0" style="background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:1rem;font-weight:700;width:130px;text-align:right;outline:none;" value="0"/></div>
     </div>
     <button class="btn btn-primary btn-block" onclick="guardarOrden('s-presupuesto')">Generar Presupuesto</button>
     <button class="btn btn-green btn-block" onclick="guardarOrden('s-orden-det')">Registrar Orden (sin presupuesto)</button>
@@ -722,7 +722,7 @@ function loadAllData(){
       // Clientes tab vacío o inexistente — inicializar via initData
       apiFire({action:'initData',clientes:clientes});
     }
-    if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),servicio:String(o.servicio||''),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
+    if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
   }).catch(function(){});
 }
@@ -777,15 +777,17 @@ function guardarOrden(target){
   var sel=document.querySelector('#s-nuevo .form-select');
   var desc=document.querySelector('#s-nuevo textarea');
   var itemsData=[];
-  var total=0;
+  var itemsTotal=0;
   document.querySelectorAll('#items-list .det-row').forEach(function(row){
     var di=row.querySelector('.desc-input');
     var mi=row.querySelector('.monto-input');
     var d=di?di.value.trim():'';
     var m=Number((mi?mi.value||'0':'0').replace(/\./g,'').replace(',',''));
     itemsData.push({desc:d,monto:m});
-    total+=m;
+    itemsTotal+=m;
   });
+  var tvEl=document.getElementById('total-val');
+  var total=tvEl&&Number(tvEl.value)>0?Number(tvEl.value):itemsTotal;
   var partes=(sel?sel.value:'').split('--');
   var clienteNombre=(partes[0]||'Cliente').trim();
   var vehiculoNombre=(partes[1]||'Vehiculo').trim();
@@ -1056,12 +1058,44 @@ function openCliente(i){
     '<div class="det-row"><span style="color:#8b949e">Modelo</span><span>'+cl.vehiculo+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+cl.patente+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Kilometros</span><span>'+cl.km+' km</span></div></div>'+
+    (function(){
+      var hist=ordenes.filter(function(o){return o.cliente===cl.nombre;});
+      if(!hist.length)return '<div class="card"><div class="card-title">Historial de órdenes</div><div style="color:#6e7681;font-size:.82rem;text-align:center;padding:8px 0;">Sin órdenes registradas</div></div>';
+      return '<div class="card"><div class="card-title">Historial de órdenes ('+hist.length+')</div>'+
+        hist.map(function(ord){
+          var idx=ordenes.indexOf(ord);
+          var st=ord.estado.charAt(0).toUpperCase()+ord.estado.slice(1);
+          return '<div class="list-item" onclick="openOrden('+idx+')" style="padding:10px 0;border-bottom:1px solid #1e3a5f30;">'+
+            '<div class="list-info">'+
+            '<div class="list-name">'+ord.id+' — '+ord.servicio.substring(0,40)+(ord.servicio.length>40?'...':'')+'</div>'+
+            '<div class="list-sub">'+ord.fecha+(ord.patente?' · '+ord.patente:'')+'</div>'+
+            '<span class="status '+ord.estado+'">'+st+'</span></div>'+
+            '<div style="text-align:right;font-size:.82rem;font-weight:700;color:#1e88e5;min-width:60px">Gs.'+Math.round(ord.monto/1000)+'k</div></div>';
+        }).join('')+'</div>';
+    })()+
     '<button class="btn btn-primary btn-block" onclick="nuevaOrden()">Nueva Orden de Trabajo</button>'+
     '<button class="btn btn-outline btn-block" onclick="editarCliente('+i+')">&#9998; Editar Datos del Cliente</button>'+
     '<button class="btn btn-wa btn-block" onclick="enviarWACliente(\''+cl.nombre+'\',\''+cl.tel+'\')">&#128172; WhatsApp</button>';
   go('s-cliente');
 }
 
+function filtrarOrdenes(q){
+  var term=(q||'').toLowerCase();
+  var lista=term?ordenes.filter(function(o){return(o.cliente||'').toLowerCase().includes(term)||(o.patente||'').toLowerCase().includes(term);}) :ordenes;
+  document.getElementById('ordenesList').innerHTML=lista.map(function(ord){
+    var i=ordenes.indexOf(ord);
+    var st=ord.estado.charAt(0).toUpperCase()+ord.estado.slice(1);
+    return('<div class="list-item" onclick="openOrden('+i+')">'+
+    '<div class="list-avatar">&#128295;</div>'+
+    '<div class="list-info">'+
+    '<div class="list-name">'+ord.cliente+' — '+(ord.patente||ord.vehiculo)+'</div>'+
+    '<div class="list-sub">'+ord.servicio+'</div>'+
+    '<div style="margin-top:4px"><span class="status '+ord.estado+'">'+st+'</span></div></div>'+
+    '<div style="text-align:right">'+
+    '<div style="font-size:.8rem;font-weight:700">Gs.'+Math.round(ord.monto/1000)+'k</div>'+
+    '<div style="font-size:.65rem;color:#6e7681">'+ord.fecha+'</div></div></div>');
+  }).join('');
+}
 function renderOrdenes(){
   document.getElementById('ordenesList').innerHTML=ordenes.map(function(ord,i){
     var st=ord.estado.charAt(0).toUpperCase()+ord.estado.slice(1);
@@ -1123,7 +1157,7 @@ function calcTotal(){
   var total=0;
   inputs.forEach(function(inp){total+=parseFloat(inp.value.replace(/\./g,'').replace(',','.'))||0;});
   var tv=document.getElementById('total-val');
-  if(tv)tv.textContent='Gs. '+total.toLocaleString('es-PY');
+  if(tv)tv.value=total;
 }
 
 function agregarRepuesto(){
