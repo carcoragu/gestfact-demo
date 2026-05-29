@@ -266,7 +266,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
     </div>
     <div class="section-title">Acciones rapidas</div>
     <div class="qa-grid">
-      <div class="qa" onclick="go('s-nuevo')"><span>&#10133;</span><span>Nueva Orden</span></div>
+      <div class="qa" onclick="nuevaOrden()"><span>&#10133;</span><span>Nueva Orden</span></div>
       <div class="qa" onclick="go('s-clientes')"><span>&#128101;</span><span>Clientes</span></div>
       <div class="qa" onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></div>
       <div class="qa" onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></div>
@@ -352,7 +352,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 
 <!-- ORDENES -->
 <div class="screen" id="s-ordenes">
-  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Ordenes de Trabajo</span><button class="menu-btn" onclick="go('s-nuevo')">+</button></div>
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Ordenes de Trabajo</span><button class="menu-btn" onclick="nuevaOrden()">+</button></div>
   <div class="content"><div id="ordenesList"></div></div>
   <div class="botnav">
     <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
@@ -816,6 +816,7 @@ function guardarOrden(target){
     var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,patente:patente,km:km,servicio:servicioDesc,items:JSON.stringify(itemsData),monto:total,estado:'presupuesto',fecha:fecha,cobrado:false};
     ordenes.unshift(newOrd);
     currentOrdenId=newOrd.id;
+    editandoOrden=true;
     apiFire({action:'saveOrden',data:newOrd});
   }
   // Descontar stock de los repuestos usados
@@ -935,8 +936,16 @@ function autoFillCliente(val){
   if(k)k.value=cl?cl.km||'':'';
 }
 
+function nuevaOrden(){
+  editandoOrden=false;
+  currentOrdenId=null;
+  var tt=document.querySelector('#s-nuevo .title');
+  if(tt)tt.textContent='Nueva Orden de Trabajo';
+  go('s-nuevo');
+}
 function limpiarOrden(){
   if(editandoOrden)return;
+  currentOrdenId=null;
   var desc=document.getElementById('ord-desc');
   if(desc)desc.value='';
   ['ord-vehiculo','ord-patente','ord-anio','ord-km'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
@@ -1013,8 +1022,8 @@ function openCliente(i){
     '<div class="det-row"><span style="color:#8b949e">Modelo</span><span>'+cl.vehiculo+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+cl.patente+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Kilometros</span><span>'+cl.km+' km</span></div></div>'+
-    '<button class="btn btn-primary btn-block" onclick="go(\'s-nuevo\')">Nueva Orden de Trabajo</button>'+
-    '<button class="btn btn-wa btn-block" onclick="abrirWA(\''+cl.tel+'\',\'\')">&#128172; WhatsApp</button>';
+    '<button class="btn btn-primary btn-block" onclick="nuevaOrden()">Nueva Orden de Trabajo</button>'+
+    '<button class="btn btn-wa btn-block" onclick="enviarWACliente(\''+cl.nombre+'\',\''+cl.tel+'\')">&#128172; WhatsApp</button>';
   go('s-cliente');
 }
 
@@ -1125,6 +1134,23 @@ function abrirWA(tel, msg){
   var num=(tel||'').replace(/[^0-9]/g,'');
   var url='https://wa.me/'+num+(msg?'?text='+encodeURIComponent(msg):'');
   window.location.href=url;
+}
+function enviarWACliente(nombre, tel){
+  var num=(tel||'').replace(/[^0-9]/g,'');
+  var ord=ordenes.find(function(o){return o.cliente===nombre;});
+  var txt='';
+  if(ord){
+    txt='*Presupuesto '+ord.id+'*\n';
+    txt+='📅 '+ord.fecha+'\n\n';
+    txt+='*Cliente:* '+ord.cliente+'\n';
+    txt+='*Vehículo:* '+ord.vehiculo+'\n\n';
+    txt+='*Detalle:*\n';
+    if(ord.items){try{JSON.parse(ord.items).forEach(function(it){txt+='• '+it.desc+' — Gs. '+Number(it.monto).toLocaleString('es-PY')+'\n';});}catch(e){txt+='• '+ord.servicio+'\n';}}
+    else{txt+='• '+ord.servicio+'\n';}
+    txt+='\n*Total: Gs. '+Number(ord.monto).toLocaleString('es-PY')+'*\n\n';
+    txt+='📞 Consultas: IsabSoft GestFact';
+  }
+  window.location.href='https://wa.me/'+num+(txt?'?text='+encodeURIComponent(txt):'');
 }
 function notificarOrdenWA(){
   var ord=ordenes.find(function(o){return o.id===currentOrdenId;});
