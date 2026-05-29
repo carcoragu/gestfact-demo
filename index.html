@@ -167,6 +167,17 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 .monto-edit{display:none;background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:.85rem;font-weight:700;width:110px;text-align:right;outline:none;}
 .lic-banner{width:100%;padding:10px 16px;font-size:.82rem;font-weight:700;text-align:center;display:none;flex-shrink:0;}
 .lic-banner.aviso{background:#f0a50022;color:#f0a500;border-bottom:1px solid #f0a500;}
+.ep-bar{display:flex;gap:8px;margin-bottom:12px;}
+.ep-btn{flex:1;padding:9px 4px;border:1px solid #1e3a5f;border-radius:8px;background:none;color:#8b949e;font-size:.78rem;font-weight:700;cursor:pointer;}
+.ep-btn.todos.active{background:#1e88e522;border-color:#1e88e5;color:#1e88e5;}
+.ep-btn.pendiente.active{background:#f0a50022;border-color:#f0a500;color:#f0a500;}
+.ep-btn.cerrado.active{background:#25D36622;border-color:#25D366;color:#25D366;}
+.pres-tag{display:inline-block;padding:3px 10px;border-radius:10px;font-size:.7rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+.pres-tag.pendiente{background:#f0a50022;color:#f0a500;border:1px solid #f0a500;}
+.pres-tag.cerrado{background:#25D36622;color:#25D366;border:1px solid #25D366;}
+.gest-total{background:#0d1b2e;border:1px solid #1e88e5;border-radius:12px;padding:20px;text-align:center;margin-top:16px;}
+.gest-total-lbl{font-size:.75rem;color:#8b949e;text-transform:uppercase;letter-spacing:1px;}
+.gest-total-val{font-size:1.8rem;font-weight:800;color:#1e88e5;margin-top:6px;}
 .lic-banner.vencido{background:#e5393522;color:#f85149;border-bottom:1px solid #e53935;}
 .susp-box{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center;gap:16px;}
 .susp-icon{font-size:3rem;}
@@ -223,6 +234,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   <div class="sidebar-item" onclick="go('s-dashboard');closeSidebar()"><span class="si-icon">&#127968;</span>Inicio</div>
   <div class="sidebar-item" onclick="go('s-clientes');closeSidebar()"><span class="si-icon">&#128101;</span>Clientes</div>
   <div class="sidebar-item" onclick="go('s-ordenes');closeSidebar()"><span class="si-icon">&#128295;</span>Ordenes de Trabajo</div>
+  <div class="sidebar-item" onclick="go('s-gestion');closeSidebar()"><span class="si-icon">&#128203;</span>Gestión Presupuestos</div>
   <div class="sidebar-item" onclick="go('s-libro');closeSidebar()"><span class="si-icon">&#128218;</span>Libro de Ventas</div>
   <div class="sidebar-item" onclick="go('s-stock');closeSidebar()"><span class="si-icon">&#128230;</span>Stock / Inventario</div>
   <div class="sidebar-item" onclick="go('s-chat');closeSidebar()"><span class="si-icon">&#129302;</span>IA Asistente</div>
@@ -271,7 +283,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
       <div class="qa" onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></div>
       <div class="qa" onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></div>
       <div class="qa" onclick="go('s-libro')"><span>&#128218;</span><span>Libro</span></div>
-      <div class="qa" onclick="go('s-presupuesto')"><span>&#128203;</span><span>Presupuesto</span></div>
+      <div class="qa" onclick="go('s-gestion')"><span>&#128203;</span><span>Gestión</span></div>
       <div class="qa" onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></div>
       <div class="qa" onclick="alert('Soporte: +595 981 153 477')"><span>&#128172;</span><span>Soporte</span></div>
     </div>
@@ -621,6 +633,34 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   </div>
 </div>
 
+<!-- GESTION PRESUPUESTOS -->
+<div class="screen" id="s-gestion">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">&#128203; Gestión Presupuestos</span></div>
+  <div class="content">
+    <div class="ep-bar">
+      <button class="ep-btn todos active" id="gf-todos" onclick="setFiltroGestion('todos')">Todos</button>
+      <button class="ep-btn pendiente" id="gf-pendiente" onclick="setFiltroGestion('pendiente')">⏳ Pendiente</button>
+      <button class="ep-btn cerrado" id="gf-cerrado" onclick="setFiltroGestion('cerrado')">✓ Cerrado</button>
+    </div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <div class="form-group"><label class="form-label">Desde</label><input class="form-input" type="date" id="gf-desde" onchange="renderGestion()"/></div>
+      <div class="form-group"><label class="form-label">Hasta</label><input class="form-input" type="date" id="gf-hasta" onchange="renderGestion()"/></div>
+    </div>
+    <div id="gestionList"></div>
+    <div class="gest-total">
+      <div class="gest-total-lbl">Total ganancias — Cerrados en el período</div>
+      <div class="gest-total-val" id="gest-total-val">Gs. 0</div>
+    </div>
+  </div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
 <!-- IA CHAT -->
 <div class="screen" id="s-chat">
   <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">&#129302; IA Asistente -- GestFact</span></div>
@@ -722,7 +762,7 @@ function loadAllData(){
       // Clientes tab vacío o inexistente — inicializar via initData
       apiFire({action:'initData',clientes:clientes});
     }
-    if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
+    if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
   }).catch(function(){});
 }
@@ -815,7 +855,7 @@ function guardarOrden(target){
     var tt=document.querySelector('#s-nuevo .title');
     if(tt)tt.textContent='Nueva Orden de Trabajo';
   } else {
-    var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,patente:patente,km:km,servicio:servicioDesc,items:JSON.stringify(itemsData),monto:total,estado:'presupuesto',fecha:fecha,cobrado:false};
+    var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,patente:patente,km:km,servicio:servicioDesc,items:JSON.stringify(itemsData),monto:total,estado:'presupuesto',estado_pres:'pendiente',fecha:fecha,cobrado:false};
     ordenes.unshift(newOrd);
     currentOrdenId=newOrd.id;
     editandoOrden=true;
@@ -1026,6 +1066,7 @@ function go(id){
   if(id==='s-clientes'){renderClientes();ncReturnScreen='s-clientes';}
   if(id==='s-ordenes')renderOrdenes();
   if(id==='s-stock')renderStock();
+  if(id==='s-gestion')renderGestion();
   if(id==='s-nuevo'){renderNuevoSelect();limpiarOrden();}
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
@@ -1079,6 +1120,58 @@ function openCliente(i){
   go('s-cliente');
 }
 
+var filtroGestion='todos';
+function setFiltroGestion(f){
+  filtroGestion=f;
+  ['todos','pendiente','cerrado'].forEach(function(k){
+    var b=document.getElementById('gf-'+k);
+    if(b)b.classList.toggle('active',k===f);
+  });
+  renderGestion();
+}
+function renderGestion(){
+  var desde=document.getElementById('gf-desde');
+  var hasta=document.getElementById('gf-hasta');
+  var desdeVal=desde?desde.value:'';
+  var hastaVal=hasta?hasta.value:'';
+  var lista=ordenes.filter(function(o){
+    var ep=o.estado_pres||'pendiente';
+    if(filtroGestion!=='todos'&&ep!==filtroGestion)return false;
+    if(desdeVal||hastaVal){
+      var p=o.fecha.split('/');
+      if(p.length===3){
+        var iso=p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');
+        if(desdeVal&&iso<desdeVal)return false;
+        if(hastaVal&&iso>hastaVal)return false;
+      }
+    }
+    return true;
+  });
+  var totalCerrado=0;
+  document.getElementById('gestionList').innerHTML=lista.length?lista.map(function(ord){
+    var idx=ordenes.indexOf(ord);
+    var ep=ord.estado_pres||'pendiente';
+    if(ep==='cerrado')totalCerrado+=Number(ord.monto)||0;
+    return '<div class="list-item">'+
+      '<div class="list-info" onclick="openOrden('+idx+')" style="flex:1;cursor:pointer;">'+
+      '<div class="list-name">'+ord.cliente+' — '+(ord.patente||ord.vehiculo)+'</div>'+
+      '<div class="list-sub">'+ord.servicio.substring(0,38)+(ord.servicio.length>38?'...':'')+' · '+ord.fecha+'</div></div>'+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:85px;">'+
+      '<div style="font-size:.82rem;font-weight:700;">Gs.'+Math.round((ord.monto||0)/1000)+'k</div>'+
+      '<span class="pres-tag '+ep+'" onclick="toggleEstadoPres(\''+ord.id+'\',true)">'+
+      (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></div></div>';
+  }).join(''):'<div style="color:#6e7681;text-align:center;padding:24px;font-size:.85rem;">Sin presupuestos en este período</div>';
+  var tv=document.getElementById('gest-total-val');
+  if(tv)tv.textContent='Gs. '+totalCerrado.toLocaleString('es-PY');
+}
+function toggleEstadoPres(id,refresh){
+  var ord=ordenes.find(function(o){return o.id===id;});
+  if(!ord)return;
+  ord.estado_pres=(ord.estado_pres||'pendiente')==='pendiente'?'cerrado':'pendiente';
+  apiFire({action:'saveOrden',data:ord});
+  if(refresh)renderGestion();
+  else openOrden(ordenes.indexOf(ord));
+}
 function filtrarOrdenes(q){
   var term=(q||'').toLowerCase();
   var lista=term?ordenes.filter(function(o){return(o.cliente||'').toLowerCase().includes(term)||(o.patente||'').toLowerCase().includes(term);}) :ordenes;
@@ -1115,6 +1208,7 @@ function openOrden(i){
   var ord=ordenes[i];
   currentOrdenId=ord.id;
   var st=ord.estado.charAt(0).toUpperCase()+ord.estado.slice(1);
+  var epOrd=ord.estado_pres||'pendiente';
   document.getElementById('ord-title').textContent='Orden '+ord.id;
   document.getElementById('ord-content').innerHTML=
     '<div class="card"><div class="card-title">Orden de Trabajo '+ord.id+'</div>'+
@@ -1124,6 +1218,11 @@ function openOrden(i){
     '<div class="det-row"><span style="color:#8b949e">Servicio</span><span>'+ord.servicio+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Fecha</span><span>'+ord.fecha+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Monto</span><span style="font-weight:700;color:#1e88e5">Gs. '+ord.monto.toLocaleString()+'</span></div></div>'+
+    '<div class="card" style="margin-top:0"><div class="card-title">Estado del presupuesto</div>'+
+    '<div class="ep-bar ep-det-bar">'+
+    '<button class="ep-btn pendiente '+(epOrd==='pendiente'?'active':'')+'" onclick="toggleEstadoPres(\''+ord.id+'\')">⏳ Pendiente</button>'+
+    '<button class="ep-btn cerrado '+(epOrd==='cerrado'?'active':'')+'" onclick="toggleEstadoPres(\''+ord.id+'\')">✓ Cerrado</button>'+
+    '</div></div>'+
     '<div class="card" style="margin-top:0"><div class="card-title">Estado de cobro</div>'+
     '<div class="cobro-bar">'+
     '<button class="cobro-btn cobrado '+(ord.cobrado?'active':'')+'" id="btn-cobrado" onclick="toggleCobro('+i+',true)">&#10003; Cobrado</button>'+
