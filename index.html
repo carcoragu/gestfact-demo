@@ -306,6 +306,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   <div class="content">
     <div class="card">
       <div class="card-title">Datos del cliente</div>
+      <div class="form-group"><label class="form-label">Código de cliente <span style="color:#6e7681;font-weight:400">(auto si vacío)</span></label><input class="form-input" id="nc-codigo" placeholder="Ej: CLI-005"/></div>
       <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" id="nc-nombre" placeholder="Ej: Juan Benitez"/></div>
       <div class="form-group"><label class="form-label">CI / RUC</label><input class="form-input" id="nc-ruc" placeholder="Ej: 3.456.789"/></div>
       <div class="form-group"><label class="form-label">Telefono</label><input class="form-input" id="nc-tel" placeholder="Ej: 0981 123 456" type="tel"/></div>
@@ -913,7 +914,7 @@ var ncReturnScreen='s-clientes';
 function selectCliente(val){
   if(val==='__nuevo__'){
     ncReturnScreen='s-nuevo';
-    ['nc-nombre','nc-ruc','nc-tel','nc-dir','nc-vehiculo','nc-patente','nc-km'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    ['nc-codigo','nc-nombre','nc-ruc','nc-tel','nc-dir','nc-vehiculo','nc-patente','nc-km'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     go('s-nuevo-cliente');
     return;
   }
@@ -957,7 +958,10 @@ function guardarCliente(){
   var g=function(id){return(document.getElementById(id)||{}).value||'';};
   var nombre=g('nc-nombre').trim();
   if(!nombre){alert('Ingrese el nombre del cliente');return;}
-  var nuevo={id:clientes.length+1,nombre:nombre,tel:g('nc-tel'),ruc:g('nc-ruc'),dir:g('nc-dir'),vehiculo:g('nc-vehiculo'),patente:g('nc-patente'),km:g('nc-km')};
+  var nextNum=clientes.length+1;
+  var codigoManual=g('nc-codigo').trim();
+  var codigo=codigoManual||('CLI-'+String(nextNum).padStart(3,'0'));
+  var nuevo={id:nextNum,codigo:codigo,nombre:nombre,tel:g('nc-tel'),ruc:g('nc-ruc'),dir:g('nc-dir'),vehiculo:g('nc-vehiculo'),patente:g('nc-patente'),km:g('nc-km')};
   clientes.push(nuevo);
   apiFire({action:'saveCliente',data:nuevo});
   var presel=nuevo.nombre+' -- '+nuevo.vehiculo;
@@ -980,10 +984,13 @@ function openSidebar(){document.getElementById('sidebar').classList.add('open');
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
 
 function renderClientes(){
+  var titulo=document.querySelector('#s-clientes .topbar .title');
+  if(titulo)titulo.textContent='Clientes ('+clientes.length+')';
   document.getElementById('clienteList').innerHTML=clientes.map(function(cl,i){
+    var cod=cl.codigo||('CLI-'+String(cl.id||i+1).padStart(3,'0'));
     return('<div class="list-item" onclick="openCliente('+i+')">'+
-    '<div class="list-avatar">&#128100;</div>'+
-    '<div class="list-info"><div class="list-name">'+cl.nombre+'</div><div class="list-sub">'+cl.vehiculo+' -- '+cl.patente+'</div></div>'+
+    '<div class="list-avatar" style="font-size:.7rem;font-weight:700;color:#1e88e5">'+cod+'</div>'+
+    '<div class="list-info"><div class="list-name">'+cl.nombre+'</div><div class="list-sub">'+cl.vehiculo+' &mdash; '+cl.patente+'</div></div>'+
     '<div style="color:#6e7681">&#8250;</div></div>');
   }).join('');
 }
@@ -991,8 +998,10 @@ function renderClientes(){
 function openCliente(i){
   var cl=clientes[i];
   document.getElementById('cli-title').textContent=cl.nombre;
+  var cod=cl.codigo||('CLI-'+String(cl.id||i+1).padStart(3,'0'));
   document.getElementById('cli-content').innerHTML=
     '<div class="card"><div class="card-title">Datos del cliente</div>'+
+    '<div class="det-row"><span style="color:#8b949e">Código</span><span style="color:#1e88e5;font-weight:700">'+cod+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Nombre</span><span>'+cl.nombre+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">RUC/CI</span><span>'+cl.ruc+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Direccion</span><span>'+cl.dir+'</span></div>'+
