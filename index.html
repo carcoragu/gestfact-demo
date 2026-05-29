@@ -664,6 +664,7 @@ var GESTFACT_URL='YOUR_APPS_SCRIPT_URL_HERE';
 var CLIENT_KEY='DEMO';
 var currentOrdenId=null;
 var editandoOrden=false;
+var _guardando=false;
 var CLIENT_NOMBRE='Demo';
 var GF_USER='admin';
 var GF_PASS='1234';
@@ -772,6 +773,7 @@ function loginAndLoad(){
   }).catch(function(){go('s-dashboard');});
 }
 function guardarOrden(target){
+  if(_guardando)return;_guardando=true;setTimeout(function(){_guardando=false;},3000);
   var sel=document.querySelector('#s-nuevo .form-select');
   var desc=document.querySelector('#s-nuevo textarea');
   var itemsData=[];
@@ -955,6 +957,7 @@ function agregarItem(desc,monto){
 }
 
 function guardarCliente(){
+  if(_guardando)return;_guardando=true;setTimeout(function(){_guardando=false;},3000);
   var g=function(id){return(document.getElementById(id)||{}).value||'';};
   var nombre=g('nc-nombre').trim();
   if(!nombre){alert('Ingrese el nombre del cliente');return;}
@@ -1011,7 +1014,7 @@ function openCliente(i){
     '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+cl.patente+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Kilometros</span><span>'+cl.km+' km</span></div></div>'+
     '<button class="btn btn-primary btn-block" onclick="go(\'s-nuevo\')">Nueva Orden de Trabajo</button>'+
-    '<button class="btn btn-wa btn-block" onclick="alert(\'WhatsApp: '+cl.tel+'\')">Enviar WhatsApp</button>';
+    '<button class="btn btn-wa btn-block" onclick="abrirWA(\''+cl.tel+'\',\'\')">&#128172; WhatsApp</button>';
   go('s-cliente');
 }
 
@@ -1051,7 +1054,7 @@ function openOrden(i){
     '<button class="btn btn-primary btn-block" onclick="go(\'s-presupuesto\')">Ver / Imprimir Presupuesto</button>'+
     '<button class="btn btn-outline btn-block" onclick="editarOrden()">&#9998; Editar Orden</button>'+
     '<button class="btn btn-green btn-block" onclick="go(\'s-factura\')">Generar Factura SET DNIT</button>'+
-    '<button class="btn btn-wa btn-block" onclick="alert(\'WhatsApp enviado a '+ord.cliente+'!\')">Notificar por WhatsApp</button>';
+    '<button class="btn btn-wa btn-block" onclick="notificarOrdenWA()">&#128172; Notificar por WhatsApp</button>';
   go('s-orden-det');
 }
 
@@ -1118,6 +1121,26 @@ function imprimirPresupuesto(){
   setTimeout(function(){ventana.print();},500);
 }
 
+function abrirWA(tel, msg){
+  var num=(tel||'').replace(/[^0-9]/g,'');
+  var url='https://wa.me/'+num+(msg?'?text='+encodeURIComponent(msg):'');
+  window.location.href=url;
+}
+function notificarOrdenWA(){
+  var ord=ordenes.find(function(o){return o.id===currentOrdenId;});
+  if(!ord)return;
+  var cl=clientes.find(function(c){return c.nombre===ord.cliente;})||{};
+  var tel=(cl.tel||'').replace(/[^0-9]/g,'');
+  var txt='*Orden '+ord.id+'*\n';
+  txt+='Cliente: '+ord.cliente+'\n';
+  txt+='Vehículo: '+ord.vehiculo+'\n';
+  txt+='Servicio: '+ord.servicio+'\n';
+  txt+='*Total: Gs. '+Number(ord.monto).toLocaleString('es-PY')+'*\n';
+  txt+='Estado: '+ord.estado+'\n\n';
+  txt+='_IsabSoft GestFact_';
+  var url='https://wa.me/'+(tel||'')+'?text='+encodeURIComponent(txt);
+  window.location.href=url;
+}
 function enviarPresupuestoWA(){
   var cliente=document.getElementById('pres-cliente');
   var vehiculo=document.getElementById('pres-vehiculo');
@@ -1141,13 +1164,10 @@ function enviarPresupuestoWA(){
   txt+='*Detalle:*\n'+items+'\n';
   txt+='*'+(total?total.textContent:'')+'*\n\n';
   txt+='📞 Consultas: +595 961 807675\n_IsabSoft GestFact_';
-  var a=document.createElement('a');
-  a.href='https://wa.me/?text='+encodeURIComponent(txt);
-  a.target='_blank';
-  a.rel='noopener';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  var ord=ordenes.find(function(o){return o.id===currentOrdenId;})||{};
+  var cl=clientes.find(function(c){return c.nombre===(ord.cliente||'');})||{};
+  var num=(cl.tel||'').replace(/[^0-9]/g,'');
+  window.location.href='https://wa.me/'+num+'?text='+encodeURIComponent(txt);
 }
 
 function editarPresupuesto(){
