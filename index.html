@@ -405,7 +405,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
       <div class="det-total"><span>Total estimado</span><span id="total-val">Gs. 365.000</span></div>
     </div>
     <button class="btn btn-primary btn-block" onclick="guardarOrden('s-presupuesto')">Generar Presupuesto</button>
-    <button class="btn btn-green btn-block" onclick="guardarOrden('s-orden-det')">Guardar sin presupuesto</button>
+    <button class="btn btn-green btn-block" onclick="guardarOrden('s-orden-det')">Registrar Orden (sin presupuesto)</button>
   </div>
   <div class="botnav">
     <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
@@ -913,6 +913,8 @@ function renderNuevoSelect(preselect){
 }
 
 var ncReturnScreen='s-clientes';
+var editandoCliente=false;
+var editandoClienteIdx=-1;
 
 function selectCliente(val){
   if(val==='__nuevo__'){
@@ -969,16 +971,48 @@ function guardarCliente(){
   if(_guardando)return;_guardando=true;setTimeout(function(){_guardando=false;},3000);
   var g=function(id){return(document.getElementById(id)||{}).value||'';};
   var nombre=g('nc-nombre').trim();
-  if(!nombre){alert('Ingrese el nombre del cliente');return;}
-  var nextNum=clientes.length+1;
-  var codigoManual=g('nc-codigo').trim();
-  var codigo=codigoManual||('CLI-'+String(nextNum).padStart(3,'0'));
-  var nuevo={id:nextNum,codigo:codigo,nombre:nombre,tel:g('nc-tel'),ruc:g('nc-ruc'),dir:g('nc-dir'),vehiculo:g('nc-vehiculo'),patente:g('nc-patente'),km:g('nc-km')};
-  clientes.push(nuevo);
-  apiFire({action:'saveCliente',data:nuevo});
-  var presel=nuevo.nombre+' -- '+nuevo.vehiculo;
-  renderNuevoSelect(presel);
-  go(ncReturnScreen||'s-nuevo');
+  if(!nombre){alert('Ingrese el nombre del cliente');_guardando=false;return;}
+  if(editandoCliente&&editandoClienteIdx>=0){
+    var cl=clientes[editandoClienteIdx];
+    cl.nombre=nombre;cl.tel=g('nc-tel');cl.ruc=g('nc-ruc');cl.dir=g('nc-dir');
+    cl.vehiculo=g('nc-vehiculo');cl.patente=g('nc-patente');cl.km=g('nc-km');
+    var cm=g('nc-codigo').trim();if(cm)cl.codigo=cm;
+    apiFire({action:'saveCliente',data:cl});
+    editandoCliente=false;editandoClienteIdx=-1;
+    var tt=document.querySelector('#s-nuevo-cliente .topbar .title');if(tt)tt.textContent='Nuevo Cliente';
+    var bb=document.querySelector('#s-nuevo-cliente .btn-primary');if(bb)bb.textContent='Guardar Cliente';
+    renderClientes();go('s-clientes');
+  } else {
+    var nextNum=clientes.length+1;
+    var codigoManual=g('nc-codigo').trim();
+    var codigo=codigoManual||('CLI-'+String(nextNum).padStart(3,'0'));
+    var nuevo={id:nextNum,codigo:codigo,nombre:nombre,tel:g('nc-tel'),ruc:g('nc-ruc'),dir:g('nc-dir'),vehiculo:g('nc-vehiculo'),patente:g('nc-patente'),km:g('nc-km')};
+    clientes.push(nuevo);
+    apiFire({action:'saveCliente',data:nuevo});
+    var presel=nuevo.nombre+' -- '+nuevo.vehiculo;
+    renderNuevoSelect(presel);
+    go(ncReturnScreen||'s-nuevo');
+  }
+}
+function editarCliente(i){
+  var cl=clientes[i];
+  editandoCliente=true;editandoClienteIdx=i;
+  var s=function(id,v){var el=document.getElementById(id);if(el)el.value=v||'';};
+  s('nc-codigo',cl.codigo||'');s('nc-nombre',cl.nombre||'');s('nc-ruc',cl.ruc||'');
+  s('nc-tel',cl.tel||'');s('nc-dir',cl.dir||'');s('nc-vehiculo',cl.vehiculo||'');
+  s('nc-patente',cl.patente||'');s('nc-km',cl.km||'');
+  var tt=document.querySelector('#s-nuevo-cliente .topbar .title');if(tt)tt.textContent='Editar Cliente';
+  var bb=document.querySelector('#s-nuevo-cliente .btn-primary');if(bb)bb.textContent='Actualizar Cliente';
+  ncReturnScreen='s-clientes';
+  go('s-nuevo-cliente');
+}
+function eliminarOrden(){
+  if(!currentOrdenId)return;
+  if(!confirm('¿Eliminar esta orden?'))return;
+  apiFire({action:'deleteOrden',id:currentOrdenId});
+  ordenes=ordenes.filter(function(o){return o.id!==currentOrdenId;});
+  currentOrdenId=null;
+  go('s-ordenes');
 }
 
 function go(id){
@@ -1023,6 +1057,7 @@ function openCliente(i){
     '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+cl.patente+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Kilometros</span><span>'+cl.km+' km</span></div></div>'+
     '<button class="btn btn-primary btn-block" onclick="nuevaOrden()">Nueva Orden de Trabajo</button>'+
+    '<button class="btn btn-outline btn-block" onclick="editarCliente('+i+')">&#9998; Editar Datos del Cliente</button>'+
     '<button class="btn btn-wa btn-block" onclick="enviarWACliente(\''+cl.nombre+'\',\''+cl.tel+'\')">&#128172; WhatsApp</button>';
   go('s-cliente');
 }
@@ -1063,7 +1098,8 @@ function openOrden(i){
     '<button class="btn btn-primary btn-block" onclick="go(\'s-presupuesto\')">Ver / Imprimir Presupuesto</button>'+
     '<button class="btn btn-outline btn-block" onclick="editarOrden()">&#9998; Editar Orden</button>'+
     '<button class="btn btn-green btn-block" onclick="go(\'s-factura\')">Generar Factura SET DNIT</button>'+
-    '<button class="btn btn-wa btn-block" onclick="notificarOrdenWA()">&#128172; Notificar por WhatsApp</button>';
+    '<button class="btn btn-wa btn-block" onclick="notificarOrdenWA()">&#128172; Notificar por WhatsApp</button>'+
+    '<button class="btn btn-block" style="background:#c62828;color:#fff;margin-top:6px;" onclick="eliminarOrden()">&#128465; Eliminar Orden</button>';
   go('s-orden-det');
 }
 
