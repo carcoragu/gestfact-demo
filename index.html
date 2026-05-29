@@ -416,7 +416,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
       <button class="btn btn-outline btn-block" style="margin-top:6px;font-size:.78rem;" onclick="agregarRepuesto()">&#128230; Desde inventario</button>
       <div class="det-total"><span>Total (editable)</span><input type="number" id="total-val" min="0" style="background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:1rem;font-weight:700;width:130px;text-align:right;outline:none;" value="0"/></div>
     </div>
-    <button class="btn btn-primary btn-block" onclick="guardarOrden('s-presupuesto')">Generar Presupuesto</button>
+    <button class="btn btn-primary btn-block" id="btn-generar-pres" onclick="guardarOrden('s-presupuesto')">Generar Presupuesto</button>
     <button class="btn btn-green btn-block" onclick="guardarOrden('s-orden-det')">Registrar Orden (sin presupuesto)</button>
   </div>
   <div class="botnav">
@@ -449,9 +449,9 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
         <div class="det-total"><span>Total</span><span id="pres-total">Gs. 395.000</span></div>
       </div>
     </div>
-    <button class="btn btn-outline btn-block" onclick="editarPresupuesto()" id="btn-editar-pres">&#9998; Editar Presupuesto</button>
     <button class="btn btn-wa btn-block" onclick="enviarPresupuestoWA()">&#128172; Enviar por WhatsApp</button>
     <button class="btn btn-outline btn-block" onclick="imprimirPresupuesto()">&#128424; Imprimir / Guardar PDF</button>
+    <button class="btn btn-outline btn-block" onclick="editarPresupuesto()" id="btn-editar-pres">&#9998; Editar Presupuesto</button>
     <button class="btn btn-green btn-block" onclick="go('s-factura')">Aprobado &rarr; Generar Factura SET DNIT</button>
   </div>
   <div class="botnav">
@@ -894,6 +894,10 @@ function guardarOrden(target){
     det.innerHTML=rows;
   }
   go(target);
+  if(target==='s-presupuesto'){
+    var bg=document.getElementById('btn-generar-pres');
+    if(bg){bg.disabled=true;bg.style.background='#25D366';bg.textContent='✓ Presupuesto generado';}
+  }
 }
 
 function editarOrden(){
@@ -933,6 +937,8 @@ function editarOrden(){
     }
   }
   calcTotal();
+  var tv=document.getElementById('total-val');
+  if(tv&&ord.monto)tv.value=ord.monto;
   go('s-nuevo');
 }
 
@@ -985,6 +991,8 @@ function nuevaOrden(){
   currentOrdenId=null;
   var tt=document.querySelector('#s-nuevo .title');
   if(tt)tt.textContent='Nueva Orden de Trabajo';
+  var bg=document.getElementById('btn-generar-pres');
+  if(bg){bg.disabled=false;bg.style.background='';bg.textContent='Generar Presupuesto';}
   go('s-nuevo');
 }
 function limpiarOrden(){
@@ -1067,7 +1075,7 @@ function go(id){
   if(id==='s-ordenes')renderOrdenes();
   if(id==='s-stock')renderStock();
   if(id==='s-gestion')renderGestion();
-  if(id==='s-nuevo'){renderNuevoSelect();limpiarOrden();}
+  if(id==='s-nuevo'){if(!editandoOrden)renderNuevoSelect();limpiarOrden();}
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
@@ -1228,12 +1236,41 @@ function openOrden(i){
     '<button class="cobro-btn cobrado '+(ord.cobrado?'active':'')+'" id="btn-cobrado" onclick="toggleCobro('+i+',true)">&#10003; Cobrado</button>'+
     '<button class="cobro-btn pendiente '+(ord.cobrado?'':'active')+'" id="btn-pendiente" onclick="toggleCobro('+i+',false)">&#9201; Pendiente</button>'+
     '</div></div>'+
-    '<button class="btn btn-primary btn-block" onclick="go(\'s-presupuesto\')">Ver / Imprimir Presupuesto</button>'+
+    '<button class="btn btn-primary btn-block" onclick="verPresupuestoActual()">Ver / Imprimir Presupuesto</button>'+
     '<button class="btn btn-outline btn-block" onclick="editarOrden()">&#9998; Editar Orden</button>'+
     '<button class="btn btn-green btn-block" onclick="go(\'s-factura\')">Generar Factura SET DNIT</button>'+
     '<button class="btn btn-wa btn-block" onclick="notificarOrdenWA()">&#128172; Notificar por WhatsApp</button>'+
     '<button class="btn btn-block" style="background:#c62828;color:#fff;margin-top:6px;" onclick="eliminarOrden()">&#128465; Eliminar Orden</button>';
   go('s-orden-det');
+}
+
+function verPresupuestoActual(){
+  var ord=ordenes.find(function(o){return o.id===currentOrdenId;});
+  if(!ord)return go('s-presupuesto');
+  var el=function(id){return document.getElementById(id);};
+  var cl=clientes.find(function(c){return c.nombre===ord.cliente;})||{};
+  if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto #'+ord.id;
+  if(el('pres-cliente'))el('pres-cliente').textContent=ord.cliente;
+  if(el('pres-vehiculo'))el('pres-vehiculo').textContent=ord.vehiculo;
+  if(el('pres-patente'))el('pres-patente').textContent=ord.patente||cl.patente||'--';
+  if(el('pres-km'))el('pres-km').textContent=(ord.km||cl.km||'--')+' km';
+  if(el('pres-fecha'))el('pres-fecha').textContent=ord.fecha;
+  var total=Number(ord.monto||0);
+  var items=[];try{items=JSON.parse(ord.items||'[]');}catch(e){}
+  var det=el('pres-detalle');
+  if(det){
+    var rows='<div class="card-title">Detalle de servicios y repuestos</div>';
+    if(items.length){
+      items.forEach(function(it){rows+='<div class="det-row"><span>'+(it.desc||'Servicio')+'</span><span>Gs. '+Number(it.monto||0).toLocaleString('es-PY')+'</span></div>';});
+    } else {
+      rows+='<div class="det-row"><span>'+ord.servicio+'</span><span>Gs. '+total.toLocaleString('es-PY')+'</span></div>';
+    }
+    rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+total.toLocaleString('es-PY')+'</span></div>';
+    det.innerHTML=rows;
+  } else {
+    if(el('pres-total'))el('pres-total').textContent='Gs. '+total.toLocaleString('es-PY');
+  }
+  go('s-presupuesto');
 }
 
 function renderStock(){
