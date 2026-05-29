@@ -1,7 +1,9 @@
-﻿const CACHE = 'gestfact-v1';
+﻿const CACHE = 'gestfact-v2';
 const FILES = [
   '/gestfact-demo/',
   '/gestfact-demo/index.html',
+  '/gestfact-demo/miguel.html',
+  '/gestfact-demo/manifest-miguel.json',
   '/gestfact-demo/logo.png',
   '/gestfact-demo/portada.jpg'
 ];
