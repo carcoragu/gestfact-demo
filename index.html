@@ -917,6 +917,8 @@ function guardarOrden(target){
   if(target==='s-orden-det'){
     var br=document.getElementById('btn-registrar-ord');
     if(br){br.disabled=true;br.style.background='#25D366';br.textContent='✓ Orden registrada';}
+    var oidx=ordenes.findIndex(function(o){return o.id===currentOrdenId;});
+    if(oidx>=0)openOrden(oidx);
   }
 }
 
@@ -1329,6 +1331,8 @@ function openOrden(i){
     '<div class="det-row"><span style="color:#8b949e">Estado</span><span class="status '+ord.estado+'">'+st+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Cliente</span><span>'+ord.cliente+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Vehiculo</span><span>'+ord.vehiculo+'</span></div>'+
+    (ord.anio?'<div class="det-row"><span style="color:#8b949e">Año</span><span>'+ord.anio+'</span></div>':'')+
+    '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+(ord.patente||'--')+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Servicio</span><span>'+ord.servicio+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Fecha</span><span>'+ord.fecha+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Monto</span><span style="font-weight:700;color:#1e88e5">Gs. '+ord.monto.toLocaleString()+'</span></div></div>'+
