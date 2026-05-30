@@ -199,6 +199,9 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 .picker-qty.bajo{color:#e53935;}
 .picker-agotado{opacity:.3;pointer-events:none;}
 .voz-btn{background:none;border:none;color:#8b949e;font-size:1.1rem;cursor:pointer;padding:0 6px;vertical-align:middle;}
+.veh-pick-btn{background:#1e3a5f;border:1px solid #30363d;color:#e6edf3;border-radius:20px;padding:6px 14px;font-size:.78rem;cursor:pointer;margin:3px 3px 3px 0;transition:background .15s;}
+.veh-pick-btn.sel{background:#1e88e5;color:#fff;border-color:#1e88e5;}
+.veh-pick-btn.nuevo{border-style:dashed;color:#8b949e;background:transparent;}
 .voz-btn.escuchando{color:#e53935;animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @media print{
@@ -401,6 +404,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
           <option value="__nuevo__">+ Nuevo cliente...</option>
         </select>
       </div>
+      <div id="veh-picker" style="display:none;margin:8px 0 4px;"></div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Vehiculo</label><input class="form-input" id="ord-vehiculo" placeholder="Ej: Toyota Hilux 2020"/></div>
         <div class="form-group"><label class="form-label">Patente</label><input class="form-input" id="ord-patente" placeholder="Ej: ABC-123"/></div>
@@ -981,16 +985,62 @@ function selectCliente(val){
   autoFillCliente(val);
 }
 
+var _vehsCliente=[];
+
 function autoFillCliente(val){
   var partes=(val||'').split('--');
   var nombre=(partes[0]||'').trim();
   var cl=clientes.find(function(c){return c.nombre===nombre;});
+  var picker=document.getElementById('veh-picker');
+  if(!cl){
+    ['ord-vehiculo','ord-patente','ord-km'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    if(picker)picker.style.display='none';
+    return;
+  }
+  // Recolectar vehículos conocidos del cliente
+  var vmap={};
+  if(cl.patente||cl.vehiculo){
+    var rk=cl.patente||cl.vehiculo;
+    vmap[rk]={vehiculo:cl.vehiculo||'',patente:cl.patente||'',km:cl.km||''};
+  }
+  ordenes.filter(function(o){return o.cliente===nombre;}).forEach(function(o){
+    var key=o.patente||o.vehiculo;
+    if(key&&!vmap[key]){vmap[key]={vehiculo:o.vehiculo||'',patente:o.patente||'',km:o.km||''};}
+  });
+  _vehsCliente=Object.values(vmap);
+  if(_vehsCliente.length>0){
+    var v=document.getElementById('ord-vehiculo');
+    var p=document.getElementById('ord-patente');
+    var k=document.getElementById('ord-km');
+    if(v)v.value=_vehsCliente[0].vehiculo;
+    if(p)p.value=_vehsCliente[0].patente;
+    if(k)k.value=_vehsCliente[0].km;
+  }
+  if(picker&&_vehsCliente.length>1){
+    picker.style.display='block';
+    picker.innerHTML='<div style="font-size:.76rem;color:#8b949e;margin-bottom:6px;">Seleccioná el vehículo:</div>'+
+      _vehsCliente.map(function(vv,vi){
+        var lbl=(vv.vehiculo||'Vehículo')+(vv.patente?' &middot; '+vv.patente:'');
+        return '<button type="button" class="veh-pick-btn'+(vi===0?' sel':'')+'" onclick="selVehiculo('+vi+')">'+lbl+'</button>';
+      }).join('')+
+      '<button type="button" class="veh-pick-btn nuevo" onclick="selVehiculo(-1)">+ Nuevo vehículo</button>';
+  } else if(picker){
+    picker.style.display='none';
+  }
+}
+
+function selVehiculo(vi){
+  var vv=vi>=0?_vehsCliente[vi]:{vehiculo:'',patente:'',km:''};
   var v=document.getElementById('ord-vehiculo');
   var p=document.getElementById('ord-patente');
   var k=document.getElementById('ord-km');
-  if(v)v.value=cl?cl.vehiculo||'':'';
-  if(p)p.value=cl?cl.patente||'':'';
-  if(k)k.value=cl?cl.km||'':'';
+  if(v)v.value=vv.vehiculo||'';
+  if(p)p.value=vv.patente||'';
+  if(k)k.value=vv.km||'';
+  document.querySelectorAll('#veh-picker .veh-pick-btn').forEach(function(b,i){
+    b.classList.toggle('sel',i===vi);
+  });
+  if(vi===-1){if(v)v.focus();}
 }
 
 function nuevaOrden(){
@@ -1008,6 +1058,9 @@ function limpiarOrden(){
   var desc=document.getElementById('ord-desc');
   if(desc)desc.value='';
   ['ord-vehiculo','ord-patente','ord-anio','ord-km'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var picker=document.getElementById('veh-picker');
+  if(picker){picker.style.display='none';picker.innerHTML='';}
+  _vehsCliente=[];
   var lista=document.getElementById('items-list');
   if(lista)lista.innerHTML='';
   agregarItem();
