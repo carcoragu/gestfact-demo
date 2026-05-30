@@ -444,6 +444,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
         <div style="font-size:.78rem;color:#8b949e;margin-top:2px;">Palacio de López casi Augusto Roa Bastos</div>
         <div style="font-size:.78rem;color:#8b949e;">Tel: 0961 807 675</div>
       </div>
+      <div id="pres-num-print" style="text-align:center;font-size:1rem;font-weight:700;color:#1e88e5;margin:10px 0 14px;letter-spacing:.5px;">Presupuesto #P-0042</div>
       <div class="card">
         <div class="card-title">Datos del trabajo</div>
         <div class="det-row"><span style="color:#8b949e">Cliente</span><span id="pres-cliente">Carlos Sanchez</span></div>
@@ -461,7 +462,14 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
         <div class="det-total"><span>Total</span><span id="pres-total">Gs. 395.000</span></div>
       </div>
     </div>
-    <button class="btn btn-wa btn-block" onclick="enviarPresupuestoWA()">&#128172; Enviar por WhatsApp</button>
+    <button class="btn btn-wa btn-block" onclick="elegirEnvioPresupuesto()">&#128172; Enviar por WhatsApp</button>
+    <div id="panel-envio-pres" style="display:none;margin-top:8px;">
+      <div style="text-align:center;font-size:.8rem;color:#8b949e;margin-bottom:8px;">&#191;C&#243;mo quer&#233;s enviarlo?</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-wa" style="flex:1;padding:12px;font-size:.85rem;" onclick="enviarPresupuestoWA()">&#128140; Por mensaje</button>
+        <button class="btn btn-outline" style="flex:1;padding:12px;font-size:.85rem;" onclick="imprimirPresupuesto()">&#128424; Guardar PDF</button>
+      </div>
+    </div>
     <button class="btn btn-outline btn-block" onclick="imprimirPresupuesto()">&#128424; Imprimir / Guardar PDF</button>
     <button class="btn btn-outline btn-block" onclick="editarPresupuesto()" id="btn-editar-pres">&#9998; Editar Presupuesto</button>
     <button class="btn btn-green btn-block" onclick="go('s-factura')">Aprobado &rarr; Generar Factura SET DNIT</button>
@@ -899,19 +907,20 @@ function guardarOrden(target){
   var cl=clientes.find(function(c){return c.nombre===clienteNombre;})||{patente:'',km:''};
   var el=function(id){return document.getElementById(id);};
   if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto #'+numPres;
+  if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto #'+numPres;
   if(el('pres-cliente'))el('pres-cliente').textContent=clienteNombre;
   if(el('pres-vehiculo'))el('pres-vehiculo').textContent=vehiculoNombre;
   if(el('pres-patente'))el('pres-patente').textContent=cl.patente||'--';
   if(el('pres-km'))el('pres-km').textContent=(cl.km||'--')+' km';
-  if(el('pres-fecha'))el('pres-fecha').textContent=fecha;
-  if(el('pres-total'))el('pres-total').textContent='Gs. '+total.toLocaleString('es-PY');
+  if(el('pres-fecha'))el('pres-fecha').textContent=fmtFecha(fecha);
+  if(el('pres-total'))el('pres-total').textContent='Gs. '+fmtGs(total);
   var det=el('pres-detalle');
   if(det){
     var rows='<div class="card-title">Detalle de servicios y repuestos</div>';
     itemsData.forEach(function(it){
-      rows+='<div class="det-row"><span>'+(it.desc||'Servicio')+'</span><span>Gs. '+Number(it.monto||0).toLocaleString('es-PY')+'</span></div>';
+      rows+='<div class="det-row"><span>'+(it.desc||'Servicio')+'</span><span>Gs. '+fmtGs(it.monto)+'</span></div>';
     });
-    rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+total.toLocaleString('es-PY')+'</span></div>';
+    rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+fmtGs(total)+'</span></div>';
     det.innerHTML=rows;
   }
   go(target);
@@ -1359,8 +1368,8 @@ function openOrden(i){
     (ord.anio?'<div class="det-row"><span style="color:#8b949e">Año</span><span>'+ord.anio+'</span></div>':'')+
     '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+(ord.patente||'--')+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Servicio</span><span>'+ord.servicio+'</span></div>'+
-    '<div class="det-row"><span style="color:#8b949e">Fecha</span><span>'+ord.fecha+'</span></div>'+
-    '<div class="det-row"><span style="color:#8b949e">Monto</span><span style="font-weight:700;color:#1e88e5">Gs. '+ord.monto.toLocaleString()+'</span></div></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Fecha</span><span>'+fmtFecha(ord.fecha)+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Monto</span><span style="font-weight:700;color:#1e88e5">Gs. '+fmtGs(ord.monto)+'</span></div></div>'+
     '<div class="card" style="margin-top:0"><div class="card-title">Estado del presupuesto</div>'+
     '<div class="ep-bar ep-det-bar">'+
     '<button class="ep-btn pendiente '+(epOrd==='pendiente'?'active':'')+'" onclick="toggleEstadoPres(\''+ord.id+'\')">⏳ Pendiente</button>'+
@@ -1385,25 +1394,26 @@ function verPresupuestoActual(){
   var el=function(id){return document.getElementById(id);};
   var cl=clientes.find(function(c){return c.nombre===ord.cliente;})||{};
   if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto #'+ord.id;
+  if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto #'+ord.id;
   if(el('pres-cliente'))el('pres-cliente').textContent=ord.cliente;
   if(el('pres-vehiculo'))el('pres-vehiculo').textContent=ord.vehiculo;
   if(el('pres-patente'))el('pres-patente').textContent=ord.patente||cl.patente||'--';
   if(el('pres-km'))el('pres-km').textContent=(ord.km||cl.km||'--')+' km';
-  if(el('pres-fecha'))el('pres-fecha').textContent=ord.fecha;
+  if(el('pres-fecha'))el('pres-fecha').textContent=fmtFecha(ord.fecha);
   var total=Number(ord.monto||0);
   var items=[];try{items=JSON.parse(ord.items||'[]');}catch(e){}
   var det=el('pres-detalle');
   if(det){
     var rows='<div class="card-title">Detalle de servicios y repuestos</div>';
     if(items.length){
-      items.forEach(function(it){rows+='<div class="det-row"><span>'+(it.desc||'Servicio')+'</span><span>Gs. '+Number(it.monto||0).toLocaleString('es-PY')+'</span></div>';});
+      items.forEach(function(it){rows+='<div class="det-row"><span>'+(it.desc||'Servicio')+'</span><span>Gs. '+fmtGs(it.monto)+'</span></div>';});
     } else {
-      rows+='<div class="det-row"><span>'+ord.servicio+'</span><span>Gs. '+total.toLocaleString('es-PY')+'</span></div>';
+      rows+='<div class="det-row"><span>'+ord.servicio+'</span><span>Gs. '+fmtGs(total)+'</span></div>';
     }
-    rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+total.toLocaleString('es-PY')+'</span></div>';
+    rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+fmtGs(total)+'</span></div>';
     det.innerHTML=rows;
   } else {
-    if(el('pres-total'))el('pres-total').textContent='Gs. '+total.toLocaleString('es-PY');
+    if(el('pres-total'))el('pres-total').textContent='Gs. '+fmtGs(total);
   }
   go('s-presupuesto');
 }
@@ -1460,6 +1470,24 @@ function toggleCobro(idx,cobrado){
   }
 }
 
+function fmtGs(n){return String(Math.round(Number(n)||0)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function fmtFecha(f){
+  if(!f)return '';
+  var d=new Date(f);
+  if(!isNaN(d.getTime())&&String(f).indexOf('T')>=0){
+    var dd=String(d.getDate()).padStart(2,'0');
+    var mm=String(d.getMonth()+1).padStart(2,'0');
+    var yyyy=d.getFullYear();
+    var hh=String(d.getHours()).padStart(2,'0');
+    var min=String(d.getMinutes()).padStart(2,'0');
+    return dd+'/'+mm+'/'+yyyy+(hh+min!=='0000'?' '+hh+':'+min:'');
+  }
+  return String(f);
+}
+function elegirEnvioPresupuesto(){
+  var panel=document.getElementById('panel-envio-pres');
+  if(panel)panel.style.display=panel.style.display==='none'?'block':'none';
+}
 function imprimirPresupuesto(){
   var contenido=document.getElementById('print-pres');
   if(!contenido)return;
@@ -1482,14 +1510,14 @@ function enviarWACliente(nombre, tel){
   var txt='';
   if(ord){
     txt='*Presupuesto '+ord.id+'*\n';
-    txt+='📅 '+ord.fecha+'\n\n';
+    txt+='Fecha: '+fmtFecha(ord.fecha)+'\n\n';
     txt+='*Cliente:* '+ord.cliente+'\n';
-    txt+='*Vehículo:* '+ord.vehiculo+'\n\n';
+    txt+='*Vehiculo:* '+ord.vehiculo+'\n\n';
     txt+='*Detalle:*\n';
-    if(ord.items){try{JSON.parse(ord.items).forEach(function(it){txt+='• '+it.desc+' — Gs. '+Number(it.monto).toLocaleString('es-PY')+'\n';});}catch(e){txt+='• '+ord.servicio+'\n';}}
-    else{txt+='• '+ord.servicio+'\n';}
-    txt+='\n*Total: Gs. '+Number(ord.monto).toLocaleString('es-PY')+'*\n\n';
-    txt+='📞 Consultas: IsabSoft GestFact';
+    if(ord.items){try{JSON.parse(ord.items).forEach(function(it){txt+='- '+it.desc+' Gs. '+fmtGs(it.monto)+'\n';});}catch(e){txt+='- '+ord.servicio+'\n';}}
+    else{txt+='- '+ord.servicio+'\n';}
+    txt+='\n*Total: Gs. '+fmtGs(ord.monto)+'*\n\n';
+    txt+='Consultas: +595 961 807675\n_PCM Taller Mecanico Automotriz_';
   }
   window.location.href='https://wa.me/'+num+(txt?'?text='+encodeURIComponent(txt):'');
 }
@@ -1499,12 +1527,15 @@ function notificarOrdenWA(){
   var cl=clientes.find(function(c){return c.nombre===ord.cliente;})||{};
   var tel=(cl.tel||'').replace(/[^0-9]/g,'');
   var txt='*Orden '+ord.id+'*\n';
+  txt+='Fecha: '+fmtFecha(ord.fecha)+'\n';
   txt+='Cliente: '+ord.cliente+'\n';
-  txt+='Vehículo: '+ord.vehiculo+'\n';
+  txt+='Vehiculo: '+ord.vehiculo+'\n';
+  if(ord.patente)txt+='Patente: '+ord.patente+'\n';
+  if(ord.anio)txt+='Anio: '+ord.anio+'\n';
   txt+='Servicio: '+ord.servicio+'\n';
-  txt+='*Total: Gs. '+Number(ord.monto).toLocaleString('es-PY')+'*\n';
+  txt+='*Total: Gs. '+fmtGs(ord.monto)+'*\n';
   txt+='Estado: '+ord.estado+'\n\n';
-  txt+='_IsabSoft GestFact_';
+  txt+='_PCM Taller Mecanico Automotriz_';
   var url='https://wa.me/'+(tel||'')+'?text='+encodeURIComponent(txt);
   window.location.href=url;
 }
@@ -1522,17 +1553,17 @@ function enviarPresupuestoWA(){
     var cols=r.querySelectorAll('span');
     if(cols.length>=2)items+='• '+cols[0].textContent+' — '+cols[1].textContent+'\n';
   });
+  var ord2=ordenes.find(function(o){return o.id===currentOrdenId;})||{};
   var txt='*'+( titulo?titulo.textContent:'Presupuesto')+'*\n';
-  txt+='📅 '+(fecha?fecha.textContent:'')+'\n\n';
+  txt+='Fecha: '+(fecha?fmtFecha(fecha.textContent):'')+'\n\n';
   txt+='*Cliente:* '+(cliente?cliente.textContent:'')+'\n';
-  txt+='*Vehículo:* '+(vehiculo?vehiculo.textContent:'')+'\n';
+  txt+='*Vehiculo:* '+(vehiculo?vehiculo.textContent:'')+'\n';
   txt+='*Patente:* '+(patente?patente.textContent:'')+'\n';
   txt+='*Km:* '+(km?km.textContent:'')+'\n\n';
   txt+='*Detalle:*\n'+items+'\n';
-  txt+='*'+(total?total.textContent:'')+'*\n\n';
-  txt+='📞 Consultas: +595 961 807675\n_IsabSoft GestFact_';
-  var ord=ordenes.find(function(o){return o.id===currentOrdenId;})||{};
-  var cl=clientes.find(function(c){return c.nombre===(ord.cliente||'');})||{};
+  txt+='*Total: Gs. '+fmtGs(ord2.monto||0)+'*\n\n';
+  txt+='Consultas: +595 961 807675\n_PCM Taller Mecanico Automotriz_';
+  var cl=clientes.find(function(c){return c.nombre===(ord2.cliente||'');})||{};
   var num=(cl.tel||'').replace(/[^0-9]/g,'');
   window.location.href='https://wa.me/'+num+'?text='+encodeURIComponent(txt);
 }
