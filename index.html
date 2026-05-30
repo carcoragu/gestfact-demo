@@ -1386,8 +1386,8 @@ function verPresupuestoActual(){
   if(!ord)return go('s-presupuesto');
   var el=function(id){return document.getElementById(id);};
   var cl=clientes.find(function(c){return c.nombre===ord.cliente;})||{};
-  if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto N°'+ord.id;
-  if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto N°'+ord.id;
+  if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto N° '+String(ord.id).replace(/^#/,'');
+  if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto N° '+String(ord.id).replace(/^#/,'');
   if(el('pres-cliente'))el('pres-cliente').textContent=ord.cliente;
   if(el('pres-vehiculo'))el('pres-vehiculo').textContent=ord.vehiculo;
   if(el('pres-patente'))el('pres-patente').textContent=ord.patente||cl.patente||'--';
@@ -1473,7 +1473,7 @@ function fmtFecha(f){
     var yyyy=d.getFullYear();
     var hh=String(d.getHours()).padStart(2,'0');
     var min=String(d.getMinutes()).padStart(2,'0');
-    return dd+'/'+mm+'/'+yyyy+(hh+min!=='0000'?' '+hh+':'+min:'');
+    return dd+'/'+mm+'/'+yyyy+' '+hh+':'+min;
   }
   return String(f);
 }
