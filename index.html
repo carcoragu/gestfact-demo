@@ -423,7 +423,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
       <div class="det-total"><span>Total (editable)</span><input type="number" id="total-val" min="0" style="background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:1rem;font-weight:700;width:130px;text-align:right;outline:none;" value="0"/></div>
     </div>
     <button class="btn btn-primary btn-block" id="btn-generar-pres" onclick="guardarOrden('s-presupuesto')">Generar Presupuesto</button>
-    <button class="btn btn-green btn-block" onclick="guardarOrden('s-orden-det')">Registrar Orden (sin presupuesto)</button>
+    <button class="btn btn-green btn-block" id="btn-registrar-ord" onclick="guardarOrden('s-orden-det')">Registrar Orden (sin presupuesto)</button>
   </div>
   <div class="botnav">
     <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
@@ -842,11 +842,14 @@ function guardarOrden(target){
   var total=tvEl&&Number(tvEl.value)>0?Number(tvEl.value):itemsTotal;
   var partes=(sel?sel.value:'').split('--');
   var clienteNombre=(partes[0]||'Cliente').trim();
-  var vehiculoNombre=(partes[1]||'Vehiculo').trim();
+  var vehEl=document.getElementById('ord-vehiculo');
+  var vehiculoNombre=vehEl&&vehEl.value.trim()?vehEl.value.trim():(partes[1]||'Vehiculo').trim();
   var patEl=document.getElementById('ord-patente');
   var kmEl=document.getElementById('ord-km');
+  var anioEl=document.getElementById('ord-anio');
   var patente=patEl?patEl.value:'';
   var km=kmEl?kmEl.value:'';
+  var anio=anioEl?anioEl.value:'';
   var fecha=new Date().toLocaleDateString('es-PY');
   var numPres='P-'+String(Date.now()).slice(-4);
   var servicioDesc=itemsData.map(function(it){return it.desc;}).filter(Boolean).join(' | ')||(desc?desc.value:'Servicio');
@@ -858,6 +861,7 @@ function guardarOrden(target){
       ordenes[idx].vehiculo=vehiculoNombre;
       ordenes[idx].patente=patente;
       ordenes[idx].km=km;
+      ordenes[idx].anio=anio;
       ordenes[idx].servicio=servicioDesc;
       ordenes[idx].items=JSON.stringify(itemsData);
       ordenes[idx].monto=total;
@@ -867,7 +871,7 @@ function guardarOrden(target){
     var tt=document.querySelector('#s-nuevo .title');
     if(tt)tt.textContent='Nueva Orden de Trabajo';
   } else {
-    var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,patente:patente,km:km,servicio:servicioDesc,items:JSON.stringify(itemsData),monto:total,estado:'presupuesto',estado_pres:'pendiente',fecha:fecha,cobrado:false};
+    var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,patente:patente,km:km,anio:anio,servicio:servicioDesc,items:JSON.stringify(itemsData),monto:total,estado:'presupuesto',estado_pres:'pendiente',fecha:fecha,cobrado:false};
     ordenes.unshift(newOrd);
     currentOrdenId=newOrd.id;
     editandoOrden=true;
@@ -910,6 +914,10 @@ function guardarOrden(target){
     var bg=document.getElementById('btn-generar-pres');
     if(bg){bg.disabled=true;bg.style.background='#25D366';bg.textContent='✓ Presupuesto generado';}
   }
+  if(target==='s-orden-det'){
+    var br=document.getElementById('btn-registrar-ord');
+    if(br){br.disabled=true;br.style.background='#25D366';br.textContent='✓ Orden registrada';}
+  }
 }
 
 function editarOrden(){
@@ -936,6 +944,7 @@ function editarOrden(){
   var veh=document.getElementById('ord-vehiculo');if(veh)veh.value=ord.vehiculo||'';
   var pat=document.getElementById('ord-patente');if(pat)pat.value=ord.patente||'';
   var km=document.getElementById('ord-km');if(km)km.value=ord.km||'';
+  var anioInp=document.getElementById('ord-anio');if(anioInp)anioInp.value=ord.anio||'';
   var lista=document.getElementById('items-list');
   if(lista){
     lista.innerHTML='';
@@ -1050,6 +1059,8 @@ function nuevaOrden(){
   if(tt)tt.textContent='Nueva Orden de Trabajo';
   var bg=document.getElementById('btn-generar-pres');
   if(bg){bg.disabled=false;bg.style.background='';bg.textContent='Generar Presupuesto';}
+  var br=document.getElementById('btn-registrar-ord');
+  if(br){br.disabled=false;br.style.background='';br.textContent='Registrar Orden (sin presupuesto)';}
   go('s-nuevo');
 }
 function limpiarOrden(){
