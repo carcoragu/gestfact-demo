@@ -210,6 +210,8 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   #print-pres .det-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;color:#000;}
   #print-pres .det-total{display:flex;justify-content:space-between;padding:8px 0;font-weight:700;font-size:14px;color:#000;}
   #print-pres .print-header{text-align:center;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #000;}
+  #print-pres .print-header img{height:70px;display:block;margin:0 auto 6px;}
+  #print-pres .print-header div{color:#000 !important;}
 }
 </style>
 </head>
@@ -432,6 +434,12 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   <div class="topbar"><button class="menu-btn" onclick="go('s-nuevo')">&#8249;</button><span class="title" id="pres-titulo">Presupuesto #P-0042</span></div>
   <div class="content">
     <div id="print-pres">
+      <div class="print-header" style="text-align:center;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid #1e88e5;">
+        <img src="https://carcoragu.github.io/gestfact-demo/pcm_logo.jpg" style="height:80px;border-radius:8px;display:block;margin:0 auto 6px;"/>
+        <div style="font-weight:700;font-size:.95rem;letter-spacing:1px;text-transform:uppercase;">PCM Taller Mecánico Automotriz</div>
+        <div style="font-size:.78rem;color:#8b949e;margin-top:2px;">Palacio de López casi Augusto Roa Bastos</div>
+        <div style="font-size:.78rem;color:#8b949e;">Tel: 0961 807 675</div>
+      </div>
       <div class="card">
         <div class="card-title">Datos del trabajo</div>
         <div class="det-row"><span style="color:#8b949e">Cliente</span><span id="pres-cliente">Carlos Sanchez</span></div>
@@ -920,10 +928,10 @@ function editarOrden(){
       sel.insertBefore(opt,sel.lastElementChild);
     }
   }
+  go('s-nuevo');
   var veh=document.getElementById('ord-vehiculo');if(veh)veh.value=ord.vehiculo||'';
   var pat=document.getElementById('ord-patente');if(pat)pat.value=ord.patente||'';
   var km=document.getElementById('ord-km');if(km)km.value=ord.km||'';
-  var desc=document.getElementById('ord-desc');if(desc)desc.value='';
   var lista=document.getElementById('items-list');
   if(lista){
     lista.innerHTML='';
@@ -931,15 +939,14 @@ function editarOrden(){
       try{
         var itemsArr=JSON.parse(ord.items);
         itemsArr.forEach(function(it){agregarItem(it.desc,it.monto?Number(it.monto).toLocaleString('es-PY'):'');});
-      }catch(e){agregarItem(ord.servicio||'',ord.monto?ord.monto.toLocaleString('es-PY'):'');}
+      }catch(e){agregarItem(ord.servicio||'',ord.monto?Number(ord.monto).toLocaleString('es-PY'):'');}
     } else {
-      agregarItem(ord.servicio||'',ord.monto?ord.monto.toLocaleString('es-PY'):'');
+      agregarItem(ord.servicio||'',ord.monto?Number(ord.monto).toLocaleString('es-PY'):'');
     }
   }
   calcTotal();
   var tv=document.getElementById('total-val');
   if(tv&&ord.monto)tv.value=ord.monto;
-  go('s-nuevo');
 }
 
 function renderNuevoSelect(preselect){
@@ -1092,40 +1099,75 @@ function renderClientes(){
   }).join('');
 }
 
+var _currentClienteIdx=-1;
+var _vehiculosCliente=[];
+
 function openCliente(i){
+  _currentClienteIdx=i;
   var cl=clientes[i];
   document.getElementById('cli-title').textContent=cl.nombre;
   var cod=cl.codigo||('CLI-'+String(cl.id||i+1).padStart(3,'0'));
+
+  // Agrupar vehículos por patente a partir de órdenes
+  var hist=ordenes.filter(function(o){return o.cliente===cl.nombre;});
+  var vmap={};
+  hist.forEach(function(ord){
+    var key=ord.patente||ord.vehiculo||'Sin patente';
+    if(!vmap[key]){vmap[key]={patente:ord.patente||'--',vehiculo:ord.vehiculo||'--',count:0};}
+    vmap[key].count++;
+  });
+  // Agregar vehículo registrado si no aparece en órdenes
+  var regKey=cl.patente||cl.vehiculo;
+  if(regKey&&!vmap[regKey]){vmap[regKey]={patente:cl.patente||'--',vehiculo:cl.vehiculo||'--',count:0};}
+  _vehiculosCliente=Object.values(vmap);
+
+  var vehsHTML=_vehiculosCliente.length===0
+    ?'<div style="color:#6e7681;font-size:.82rem;text-align:center;padding:8px 0;">Sin vehículos registrados</div>'
+    :_vehiculosCliente.map(function(v,vi){
+      return '<div class="list-item" onclick="abrirHistorialVehiculo('+vi+')" style="padding:10px 0;border-bottom:1px solid #1e3a5f30;">'+
+        '<div class="list-info">'+
+        '<div class="list-name">&#128663; '+v.vehiculo+'</div>'+
+        '<div class="list-sub">'+v.patente+' &mdash; '+v.count+' orden'+(v.count!==1?'es':'')+'</div>'+
+        '</div><div style="color:#6e7681">&#8250;</div></div>';
+    }).join('');
+
   document.getElementById('cli-content').innerHTML=
     '<div class="card"><div class="card-title">Datos del cliente</div>'+
     '<div class="det-row"><span style="color:#8b949e">Código</span><span style="color:#1e88e5;font-weight:700">'+cod+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Nombre</span><span>'+cl.nombre+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">RUC/CI</span><span>'+cl.ruc+'</span></div>'+
-    '<div class="det-row"><span style="color:#8b949e">Direccion</span><span>'+cl.dir+'</span></div>'+
-    '<div class="det-row"><span style="color:#8b949e">Telefono</span><span>'+cl.tel+'</span></div></div>'+
-    '<div class="card"><div class="card-title">Vehiculo registrado</div>'+
-    '<div class="det-row"><span style="color:#8b949e">Modelo</span><span>'+cl.vehiculo+'</span></div>'+
-    '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+cl.patente+'</span></div>'+
-    '<div class="det-row"><span style="color:#8b949e">Kilometros</span><span>'+cl.km+' km</span></div></div>'+
-    (function(){
-      var hist=ordenes.filter(function(o){return o.cliente===cl.nombre;});
-      if(!hist.length)return '<div class="card"><div class="card-title">Historial de órdenes</div><div style="color:#6e7681;font-size:.82rem;text-align:center;padding:8px 0;">Sin órdenes registradas</div></div>';
-      return '<div class="card"><div class="card-title">Historial de órdenes ('+hist.length+')</div>'+
-        hist.map(function(ord){
-          var idx=ordenes.indexOf(ord);
-          var st=ord.estado.charAt(0).toUpperCase()+ord.estado.slice(1);
-          return '<div class="list-item" onclick="openOrden('+idx+')" style="padding:10px 0;border-bottom:1px solid #1e3a5f30;">'+
-            '<div class="list-info">'+
-            '<div class="list-name">'+ord.id+' — '+ord.servicio.substring(0,40)+(ord.servicio.length>40?'...':'')+'</div>'+
-            '<div class="list-sub">'+ord.fecha+(ord.patente?' · '+ord.patente:'')+'</div>'+
-            '<span class="status '+ord.estado+'">'+st+'</span></div>'+
-            '<div style="text-align:right;font-size:.82rem;font-weight:700;color:#1e88e5;min-width:60px">Gs.'+Math.round(ord.monto/1000)+'k</div></div>';
-        }).join('')+'</div>';
-    })()+
+    '<div class="det-row"><span style="color:#8b949e">Dirección</span><span>'+cl.dir+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Teléfono</span><span>'+cl.tel+'</span></div></div>'+
+    '<div class="card"><div class="card-title">Vehículos ('+_vehiculosCliente.length+')</div>'+vehsHTML+'</div>'+
     '<button class="btn btn-primary btn-block" onclick="nuevaOrden()">Nueva Orden de Trabajo</button>'+
     '<button class="btn btn-outline btn-block" onclick="editarCliente('+i+')">&#9998; Editar Datos del Cliente</button>'+
     '<button class="btn btn-wa btn-block" onclick="enviarWACliente(\''+cl.nombre+'\',\''+cl.tel+'\')">&#128172; WhatsApp</button>';
   go('s-cliente');
+}
+
+function abrirHistorialVehiculo(vi){
+  var v=_vehiculosCliente[vi];
+  var i=_currentClienteIdx;
+  var cl=clientes[i];
+  var ords=ordenes.filter(function(o){
+    return o.cliente===cl.nombre&&(o.patente===v.patente||(v.patente==='--'&&!o.patente));
+  });
+  document.getElementById('cli-title').textContent=v.patente+' — '+v.vehiculo;
+  var ordsHTML=ords.length===0
+    ?'<div class="card"><div style="color:#6e7681;text-align:center;padding:12px;font-size:.85rem;">Sin órdenes para este vehículo</div></div>'
+    :'<div class="card"><div class="card-title">Historial '+v.patente+' ('+ords.length+')</div>'+
+      ords.map(function(ord){
+        var idx=ordenes.indexOf(ord);
+        var st=ord.estado.charAt(0).toUpperCase()+ord.estado.slice(1);
+        return '<div class="list-item" onclick="openOrden('+idx+')" style="padding:10px 0;border-bottom:1px solid #1e3a5f30;">'+
+          '<div class="list-info">'+
+          '<div class="list-name">'+ord.id+' — '+ord.servicio.substring(0,40)+(ord.servicio.length>40?'...':'')+'</div>'+
+          '<div class="list-sub">'+ord.fecha+' &nbsp;<span class="status '+ord.estado+'">'+st+'</span></div>'+
+          '</div><div style="text-align:right;font-size:.82rem;font-weight:700;color:#1e88e5;min-width:60px">Gs.'+Math.round(ord.monto/1000)+'k</div></div>';
+      }).join('')+'</div>';
+  document.getElementById('cli-content').innerHTML=
+    '<button class="btn btn-outline btn-block" style="margin-bottom:12px;" onclick="openCliente('+i+')">&#8249; Volver al cliente</button>'+
+    ordsHTML;
 }
 
 var filtroGestion='todos';
