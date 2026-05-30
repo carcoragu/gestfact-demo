@@ -774,7 +774,7 @@ function loadAllData(){
       // Clientes tab vacío o inexistente — inicializar via initData
       apiFire({action:'initData',clientes:clientes});
     }
-    if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
+    if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
   }).catch(function(){});
 }
