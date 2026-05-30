@@ -874,6 +874,7 @@ function guardarOrden(target){
       ordenes[idx].servicio=servicioDesc;
       ordenes[idx].items=JSON.stringify(itemsData);
       ordenes[idx].monto=total;
+      ordenes[idx].fecha=new Date().toISOString();
       apiFire({action:'saveOrden',data:ordenes[idx]});
     }
     editandoOrden=false;
