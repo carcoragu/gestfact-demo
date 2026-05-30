@@ -866,7 +866,7 @@ function guardarOrden(target){
   var patente=patEl?patEl.value:'';
   var km=kmEl?kmEl.value:'';
   var anio=anioEl?anioEl.value:'';
-  var fecha=new Date().toLocaleDateString('es-PY');
+  var fecha=new Date().toISOString();
   var numPres='P-'+String(Date.now()).slice(-4);
   var servicioDesc=itemsData.map(function(it){return it.desc;}).filter(Boolean).join(' | ')||(desc?desc.value:'Servicio');
   var esEdicion=editandoOrden&&currentOrdenId;
