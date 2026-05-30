@@ -435,7 +435,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 </div>
 <!-- PRESUPUESTO -->
 <div class="screen" id="s-presupuesto">
-  <div class="topbar"><button class="menu-btn" onclick="go('s-nuevo')">&#8249;</button><span class="title" id="pres-titulo">Presupuesto #P-0042</span></div>
+  <div class="topbar"><button class="menu-btn" onclick="go('s-nuevo')">&#8249;</button><span class="title" id="pres-titulo">Presupuesto N°P-0042</span></div>
   <div class="content">
     <div id="print-pres">
       <div class="print-header" style="text-align:center;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid #1e88e5;">
@@ -444,7 +444,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
         <div style="font-size:.78rem;color:#8b949e;margin-top:2px;">Palacio de López casi Augusto Roa Bastos</div>
         <div style="font-size:.78rem;color:#8b949e;">Tel: 0961 807 675</div>
       </div>
-      <div id="pres-num-print" style="text-align:center;font-size:1rem;font-weight:700;color:#1e88e5;margin:10px 0 14px;letter-spacing:.5px;">Presupuesto #P-0042</div>
+      <div id="pres-num-print" style="text-align:center;font-size:1rem;font-weight:700;color:#1e88e5;margin:10px 0 14px;letter-spacing:.5px;">Presupuesto N°P-0042</div>
       <div class="card">
         <div class="card-title">Datos del trabajo</div>
         <div class="det-row"><span style="color:#8b949e">Cliente</span><span id="pres-cliente">Carlos Sanchez</span></div>
@@ -906,8 +906,8 @@ function guardarOrden(target){
   // Poblar presupuesto con datos reales
   var cl=clientes.find(function(c){return c.nombre===clienteNombre;})||{patente:'',km:''};
   var el=function(id){return document.getElementById(id);};
-  if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto #'+numPres;
-  if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto #'+numPres;
+  if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto N°'+numPres;
+  if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto N°'+numPres;
   if(el('pres-cliente'))el('pres-cliente').textContent=clienteNombre;
   if(el('pres-vehiculo'))el('pres-vehiculo').textContent=vehiculoNombre;
   if(el('pres-patente'))el('pres-patente').textContent=cl.patente||'--';
@@ -1393,8 +1393,8 @@ function verPresupuestoActual(){
   if(!ord)return go('s-presupuesto');
   var el=function(id){return document.getElementById(id);};
   var cl=clientes.find(function(c){return c.nombre===ord.cliente;})||{};
-  if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto #'+ord.id;
-  if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto #'+ord.id;
+  if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto N°'+ord.id;
+  if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto N°'+ord.id;
   if(el('pres-cliente'))el('pres-cliente').textContent=ord.cliente;
   if(el('pres-vehiculo'))el('pres-vehiculo').textContent=ord.vehiculo;
   if(el('pres-patente'))el('pres-patente').textContent=ord.patente||cl.patente||'--';
