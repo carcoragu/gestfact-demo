@@ -918,7 +918,21 @@ function guardarOrden(target){
     var br=document.getElementById('btn-registrar-ord');
     if(br){br.disabled=true;br.style.background='#25D366';br.textContent='✓ Orden registrada';}
     var oidx=ordenes.findIndex(function(o){return o.id===currentOrdenId;});
-    if(oidx>=0)openOrden(oidx);
+    if(oidx>=0){
+      openOrden(oidx);
+      var oc=document.getElementById('ord-content');
+      if(oc){
+        var banner=document.createElement('div');
+        banner.style.cssText='background:#0d2137;border:1px solid #25D366;border-radius:10px;padding:14px;margin-bottom:12px;text-align:center;';
+        banner.innerHTML='<div style="font-size:.88rem;color:#25D366;margin-bottom:10px;">✓ Orden registrada correctamente</div>'+
+          '<div style="font-size:.83rem;color:#e6edf3;margin-bottom:12px;">¿Querés agregar otra orden?</div>'+
+          '<div style="display:flex;gap:8px;">'+
+          '<button class="btn btn-primary" style="flex:1;padding:10px;" onclick="nuevaOrden()">Sí, nueva orden</button>'+
+          '<button class="btn btn-outline" style="flex:1;padding:10px;" onclick="this.closest(\'[style]\').remove()">No, quedarme aquí</button>'+
+          '</div>';
+        oc.insertBefore(banner, oc.firstChild);
+      }
+    }
   }
 }
 
