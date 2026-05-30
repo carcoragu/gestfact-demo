@@ -1282,7 +1282,7 @@ function toggleEstadoPres(id,refresh){
   var ord=ordenes.find(function(o){return o.id===id;});
   if(!ord)return;
   ord.estado_pres=(ord.estado_pres||'pendiente')==='pendiente'?'cerrado':'pendiente';
-  apiFire({action:'saveOrden',data:ord});
+  apiFire({action:'updateOrden',id:ord.id,fields:{estado_pres:ord.estado_pres}});
   if(refresh)renderGestion();
   else openOrden(ordenes.indexOf(ord));
 }
