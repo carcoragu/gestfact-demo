@@ -400,27 +400,27 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
     <div class="card">
       <div class="card-title">Cliente y Vehiculo</div>
       <div class="form-group"><label class="form-label">Cliente</label>
-        <select class="form-select" id="orden-cliente-sel" onchange="selectCliente(this.value);">
+        <select class="form-select" id="orden-cliente-sel" onchange="selectCliente(this.value);_marcarCambioOrden();">
           <option value="__nuevo__">+ Nuevo cliente...</option>
         </select>
       </div>
       <div id="veh-picker" style="display:none;margin:8px 0 4px;"></div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Vehiculo</label><input class="form-input" id="ord-vehiculo" placeholder="Ej: Toyota Hilux 2020"/></div>
-        <div class="form-group"><label class="form-label">Patente</label><input class="form-input" id="ord-patente" placeholder="Ej: ABC-123"/></div>
+        <div class="form-group"><label class="form-label">Vehiculo</label><input class="form-input" id="ord-vehiculo" placeholder="Ej: Toyota Hilux 2020" oninput="_marcarCambioOrden()"/></div>
+        <div class="form-group"><label class="form-label">Patente</label><input class="form-input" id="ord-patente" placeholder="Ej: ABC-123" oninput="_marcarCambioOrden()"/></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Anio</label><input class="form-input" id="ord-anio" placeholder="Ej: 2021"/></div>
-        <div class="form-group"><label class="form-label">Km actuales</label><input class="form-input" id="ord-km" placeholder="Ej: 45.000"/></div>
+        <div class="form-group"><label class="form-label">Anio</label><input class="form-input" id="ord-anio" placeholder="Ej: 2021" oninput="_marcarCambioOrden()"/></div>
+        <div class="form-group"><label class="form-label">Km actuales</label><input class="form-input" id="ord-km" placeholder="Ej: 45.000" oninput="_marcarCambioOrden()"/></div>
       </div>
     </div>
     <div class="card">
       <div class="card-title">Detalle del Servicio</div>
-      <div class="form-group"><label class="form-label">Descripcion general</label><textarea class="form-input" id="ord-desc" rows="2" placeholder="Ej: Cambio de aceite y filtros"></textarea></div>
+      <div class="form-group"><label class="form-label">Descripcion general</label><textarea class="form-input" id="ord-desc" rows="2" placeholder="Ej: Cambio de aceite y filtros" oninput="_marcarCambioOrden()"></textarea></div>
       <div id="items-list"></div>
       <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="agregarItem()">+ Agregar ítem</button>
       <button class="btn btn-outline btn-block" style="margin-top:6px;font-size:.78rem;" onclick="agregarRepuesto()">&#128230; Desde inventario</button>
-      <div class="det-total"><span>Total (editable)</span><input type="number" id="total-val" min="0" style="background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:1rem;font-weight:700;width:130px;text-align:right;outline:none;" value="0"/></div>
+      <div class="det-total"><span>Total (editable)</span><input type="number" id="total-val" min="0" style="background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:1rem;font-weight:700;width:130px;text-align:right;outline:none;" value="0" oninput="_marcarCambioOrden()"/></div>
     </div>
     <button class="btn btn-primary btn-block" id="btn-generar-pres" onclick="guardarOrden('s-presupuesto')">Generar Presupuesto</button>
     <button class="btn btn-green btn-block" id="btn-registrar-ord" onclick="guardarOrden('s-orden-det')">Registrar Orden (sin presupuesto)</button>
@@ -824,6 +824,14 @@ function loginAndLoad(){
     if(!cur||cur.id!=='s-suspendido')go('s-dashboard');
   }).catch(function(){go('s-dashboard');});
 }
+function _marcarCambioOrden(){
+  if(!editandoOrden)return;
+  var bg=document.getElementById('btn-generar-pres');
+  var br=document.getElementById('btn-registrar-ord');
+  if(bg){bg.disabled=false;bg.style.background='';}
+  if(br){br.disabled=false;br.style.background='';br.textContent='Guardar cambios';}
+}
+
 function guardarOrden(target){
   if(_guardando)return;_guardando=true;setTimeout(function(){_guardando=false;},3000);
   var sel=document.querySelector('#s-nuevo .form-select');
@@ -973,6 +981,10 @@ function editarOrden(){
   calcTotal();
   var tv=document.getElementById('total-val');
   if(tv&&ord.monto)tv.value=ord.monto;
+  var bg=document.getElementById('btn-generar-pres');
+  if(bg)bg.disabled=true;
+  var br=document.getElementById('btn-registrar-ord');
+  if(br){br.disabled=true;br.style.background='';br.textContent='Guardar cambios';}
 }
 
 function renderNuevoSelect(preselect){
@@ -1063,6 +1075,7 @@ function selVehiculo(vi){
     b.classList.toggle('sel',i===vi);
   });
   if(vi===-1){if(v)v.focus();}
+  _marcarCambioOrden();
 }
 
 function nuevaOrden(){
@@ -1096,9 +1109,10 @@ function agregarItem(desc,monto){
   if(!lista)return;
   var div=document.createElement('div');
   div.className='det-row';
-  div.innerHTML='<input class="desc-input" placeholder="Descripción del servicio..." value="'+(desc||'')+'"/><input class="monto-input" placeholder="0" value="'+(monto||'')+'" oninput="calcTotal()"/><button class="del-item" onclick="this.parentNode.remove();calcTotal()">&#215;</button>';
+  div.innerHTML='<input class="desc-input" placeholder="Descripción del servicio..." value="'+(desc||'')+'" oninput="_marcarCambioOrden()"/><input class="monto-input" placeholder="0" value="'+(monto||'')+'" oninput="calcTotal();_marcarCambioOrden()"/><button class="del-item" onclick="this.parentNode.remove();calcTotal();_marcarCambioOrden()">&#215;</button>';
   lista.appendChild(div);
   calcTotal();
+  _marcarCambioOrden();
 }
 
 function guardarCliente(){
