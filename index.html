@@ -462,14 +462,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
         <div class="det-total"><span>Total</span><span id="pres-total">Gs. 395.000</span></div>
       </div>
     </div>
-    <button class="btn btn-wa btn-block" onclick="elegirEnvioPresupuesto()">&#128172; Enviar por WhatsApp</button>
-    <div id="panel-envio-pres" style="display:none;margin-top:8px;">
-      <div style="text-align:center;font-size:.8rem;color:#8b949e;margin-bottom:8px;">&#191;C&#243;mo quer&#233;s enviarlo?</div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-wa" style="flex:1;padding:12px;font-size:.85rem;" onclick="enviarPresupuestoWA()">&#128140; Por mensaje</button>
-        <button class="btn btn-outline" style="flex:1;padding:12px;font-size:.85rem;" onclick="imprimirPresupuesto()">&#128424; Guardar PDF</button>
-      </div>
-    </div>
+    <button class="btn btn-wa btn-block" onclick="enviarPresupuestoWA()">&#128172; Enviar por WhatsApp</button>
     <button class="btn btn-outline btn-block" onclick="imprimirPresupuesto()">&#128424; Imprimir / Guardar PDF</button>
     <button class="btn btn-outline btn-block" onclick="editarPresupuesto()" id="btn-editar-pres">&#9998; Editar Presupuesto</button>
     <button class="btn btn-green btn-block" onclick="go('s-factura')">Aprobado &rarr; Generar Factura SET DNIT</button>
