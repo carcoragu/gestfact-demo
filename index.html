@@ -176,6 +176,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 .pres-tag.pendiente{background:#f0a50022;color:#f0a500;border:1px solid #f0a500;}
 .pres-tag.cerrado{background:#25D36622;color:#25D366;border:1px solid #25D366;}
 .gest-total{background:#0d1b2e;border:1px solid #1e88e5;border-radius:12px;padding:20px;text-align:center;margin-top:16px;}
+.egreso-cat{font-size:.7rem;padding:2px 8px;border-radius:10px;background:#1e3a5f;color:#8b949e;display:inline-block;}
 .gest-total-lbl{font-size:.75rem;color:#8b949e;text-transform:uppercase;letter-spacing:1px;}
 .gest-total-val{font-size:1.8rem;font-weight:800;color:#1e88e5;margin-top:6px;}
 .lic-banner.vencido{background:#e5393522;color:#f85149;border-bottom:1px solid #e53935;}
@@ -240,6 +241,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   <div class="sidebar-item" onclick="go('s-clientes');closeSidebar()"><span class="si-icon">&#128101;</span>Clientes</div>
   <div class="sidebar-item" onclick="go('s-ordenes');closeSidebar()"><span class="si-icon">&#128295;</span>Ordenes de Trabajo</div>
   <div class="sidebar-item" onclick="go('s-gestion');closeSidebar()"><span class="si-icon">&#128203;</span>Gestión Presupuestos</div>
+  <div class="sidebar-item" onclick="go('s-egresos');closeSidebar()"><span class="si-icon">&#128181;</span>Egresos</div>
   <div class="sidebar-item" onclick="go('s-libro');closeSidebar()"><span class="si-icon">&#128218;</span>Libro de Ventas</div>
   <div class="sidebar-item" onclick="go('s-stock');closeSidebar()"><span class="si-icon">&#128230;</span>Stock / Inventario</div>
   <div class="sidebar-item" onclick="go('s-chat');closeSidebar()"><span class="si-icon">&#129302;</span>IA Asistente</div>
@@ -289,6 +291,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
       <div class="qa" onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></div>
       <div class="qa" onclick="go('s-libro')"><span>&#128218;</span><span>Libro</span></div>
       <div class="qa" onclick="go('s-gestion')"><span>&#128203;</span><span>Gestión</span></div>
+      <div class="qa" onclick="go('s-egresos')"><span>&#128181;</span><span>Egresos</span></div>
       <div class="qa" onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></div>
       <div class="qa" onclick="alert('Soporte: +595 981 153 477')"><span>&#128172;</span><span>Soporte</span></div>
     </div>
@@ -660,9 +663,21 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
       <div class="form-group"><label class="form-label">Hasta</label><input class="form-input" type="date" id="gf-hasta" onchange="renderGestion()"/></div>
     </div>
     <div id="gestionList"></div>
-    <div class="gest-total">
-      <div class="gest-total-lbl">Total ganancias — Cerrados en el período</div>
-      <div class="gest-total-val" id="gest-total-val">Gs. 0</div>
+    <div class="gest-total" style="padding:16px 20px;">
+      <div style="display:flex;justify-content:space-around;margin-bottom:12px;">
+        <div style="text-align:center;">
+          <div class="gest-total-lbl">Ingresos</div>
+          <div style="font-size:1.1rem;font-weight:800;color:#25D366;margin-top:4px;" id="gest-ing-val">Gs. 0</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="gest-total-lbl">Egresos</div>
+          <div style="font-size:1.1rem;font-weight:800;color:#f85149;margin-top:4px;" id="gest-eg-val">Gs. 0</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid #1e3a5f;padding-top:12px;">
+        <div class="gest-total-lbl">Balance del período</div>
+        <div class="gest-total-val" id="gest-total-val">Gs. 0</div>
+      </div>
     </div>
   </div>
   <div class="botnav">
@@ -671,6 +686,53 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
     <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
     <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
     <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- EGRESOS -->
+<div class="screen" id="s-egresos">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">&#128181; Egresos</span><button class="menu-btn" onclick="abrirNuevoEgreso()">+</button></div>
+  <div class="content">
+    <div class="form-row" style="margin-bottom:12px;">
+      <div class="form-group"><label class="form-label">Desde</label><input class="form-input" type="date" id="eg-desde" onchange="renderEgresos()"/></div>
+      <div class="form-group"><label class="form-label">Hasta</label><input class="form-input" type="date" id="eg-hasta" onchange="renderEgresos()"/></div>
+    </div>
+    <div id="egresoList"></div>
+    <div class="gest-total" style="margin-top:12px;">
+      <div class="gest-total-lbl">Total egresos en el período</div>
+      <div class="gest-total-val" id="egreso-total-val" style="color:#f85149;">Gs. 0</div>
+    </div>
+  </div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-gestion')"><span>&#128203;</span><span>Gestion</span></button>
+    <button onclick="abrirNuevoEgreso()"><span>+</span><span>Nuevo</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- NUEVO EGRESO -->
+<div class="screen" id="s-egreso-nuevo">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-egresos')">&#8249;</button><span class="title">Nuevo Egreso</span></div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Registrar gasto</div>
+      <div class="form-group"><label class="form-label">Descripci&#243;n</label><input class="form-input" id="eg-desc" placeholder="Ej: Compra aceite sint&#233;tico x 20L"/></div>
+      <div class="form-group"><label class="form-label">Categor&#237;a</label>
+        <select class="form-select" id="eg-cat">
+          <option>Repuestos</option>
+          <option>Combustible</option>
+          <option>Herramientas</option>
+          <option>Sueldos</option>
+          <option>Servicios</option>
+          <option>Alquiler</option>
+          <option>Otros</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Monto (Gs.)</label><input class="form-input" type="number" id="eg-monto" placeholder="0" min="0"/></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="guardarEgreso()">Guardar Egreso</button>
   </div>
 </div>
 
@@ -764,6 +826,7 @@ var stockItems=[
   {id:'LT-DISC',nombre:'Pastilla de freno',marca:'Brembo',qty:8,min:4,unit:'juegos',precio:95000},
   {id:'FI-COMB',nombre:'Filtro de combustible',marca:'Bosch',qty:1,min:3,unit:'unidades',precio:55000},
 ];
+var egresos=[];
 function loadAllData(){
   if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return Promise.resolve();
   return apiCall({action:'loadAll'}).then(function(r){
@@ -777,6 +840,7 @@ function loadAllData(){
     }
     if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
+    if(r.egresos&&r.egresos.length){egresos=r.egresos.map(function(e){return{id:String(e.id||''),descripcion:String(e.descripcion||''),categoria:String(e.categoria||'Otros'),monto:Number(e.monto)||0,fecha:String(e.fecha||'')};});}
   }).catch(function(){});
 }
 function checkLicense(){
@@ -1177,6 +1241,7 @@ function go(id){
   if(id==='s-stock')renderStock();
   if(id==='s-gestion')renderGestion();
   if(id==='s-nuevo'){if(!editandoOrden)renderNuevoSelect();limpiarOrden();}
+  if(id==='s-egresos')renderEgresos();
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
@@ -1305,8 +1370,22 @@ function renderGestion(){
       '<span class="pres-tag '+ep+'" onclick="toggleEstadoPres(\''+ord.id+'\',true)">'+
       (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></div></div>';
   }).join(''):'<div style="color:#6e7681;text-align:center;padding:24px;font-size:.85rem;">Sin presupuestos en este período</div>';
+  var desdeD=desdeVal?new Date(desdeVal):null;
+  var hastaD=hastaVal?new Date(hastaVal+'T23:59:59'):null;
+  var totalEgresos=0;
+  egresos.forEach(function(e){
+    var d=new Date(e.fecha);
+    if(desdeD&&d<desdeD)return;
+    if(hastaD&&d>hastaD)return;
+    totalEgresos+=Number(e.monto)||0;
+  });
+  var balance=totalCerrado-totalEgresos;
+  var ing=document.getElementById('gest-ing-val');
+  var eg=document.getElementById('gest-eg-val');
   var tv=document.getElementById('gest-total-val');
-  if(tv)tv.textContent='Gs. '+totalCerrado.toLocaleString('es-PY');
+  if(ing)ing.textContent='Gs. '+fmtGs(totalCerrado);
+  if(eg)eg.textContent='Gs. '+fmtGs(totalEgresos);
+  if(tv){tv.textContent='Gs. '+fmtGs(Math.abs(balance));tv.style.color=balance>=0?'#1e88e5':'#f85149';}
 }
 function toggleEstadoPres(id,refresh){
   var ord=ordenes.find(function(o){return o.id===id;});
@@ -1315,6 +1394,58 @@ function toggleEstadoPres(id,refresh){
   apiFire({action:'updateOrden',id:ord.id,fields:{estado_pres:ord.estado_pres}});
   if(refresh)renderGestion();
   else openOrden(ordenes.indexOf(ord));
+}
+function renderEgresos(){
+  var desde=document.getElementById('eg-desde');
+  var hasta=document.getElementById('eg-hasta');
+  var desdeVal=desde?desde.value:'';
+  var hastaVal=hasta?hasta.value:'';
+  var desdeD=desdeVal?new Date(desdeVal):null;
+  var hastaD=hastaVal?new Date(hastaVal+'T23:59:59'):null;
+  var lista=egresos.filter(function(e){
+    var d=new Date(e.fecha);
+    if(desdeD&&d<desdeD)return false;
+    if(hastaD&&d>hastaD)return false;
+    return true;
+  });
+  lista=lista.slice().sort(function(a,b){return a.fecha<b.fecha?1:-1;});
+  var total=0;
+  var el=document.getElementById('egresoList');
+  if(el)el.innerHTML=lista.length?lista.map(function(eg){
+    total+=Number(eg.monto)||0;
+    return '<div class="list-item">'+
+      '<div class="list-info" style="flex:1;">'+
+      '<div class="list-name">'+eg.descripcion+'</div>'+
+      '<div class="list-sub"><span class="egreso-cat">'+eg.categoria+'</span> &nbsp;'+fmtFecha(eg.fecha)+'</div></div>'+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'+
+      '<div style="font-size:.85rem;font-weight:700;color:#f85149;">Gs. '+fmtGs(eg.monto)+'</div>'+
+      '<button style="background:none;border:none;color:#f85149;cursor:pointer;font-size:.9rem;padding:0;" onclick="eliminarEgreso(\''+eg.id+'\')">&#128465;</button>'+
+      '</div></div>';
+  }).join(''):'<div style="color:#6e7681;text-align:center;padding:24px;font-size:.85rem;">Sin egresos en este per&#237;odo</div>';
+  var tv=document.getElementById('egreso-total-val');
+  if(tv)tv.textContent='Gs. '+fmtGs(total);
+}
+function abrirNuevoEgreso(){
+  var d=document.getElementById('eg-desc');if(d)d.value='';
+  var m=document.getElementById('eg-monto');if(m)m.value='';
+  go('s-egreso-nuevo');
+}
+function guardarEgreso(){
+  var desc=((document.getElementById('eg-desc')||{}).value||'').trim();
+  var cat=(document.getElementById('eg-cat')||{}).value||'Otros';
+  var monto=Number((document.getElementById('eg-monto')||{}).value||0);
+  if(!desc){alert('Ingresá una descripción');return;}
+  if(!monto){alert('Ingresá un monto');return;}
+  var eg={id:'EG-'+Date.now(),descripcion:desc,categoria:cat,monto:monto,fecha:new Date().toISOString()};
+  egresos.unshift(eg);
+  apiFire({action:'saveEgreso',data:eg});
+  go('s-egresos');
+}
+function eliminarEgreso(id){
+  if(!confirm('¿Eliminar este egreso?'))return;
+  egresos=egresos.filter(function(e){return e.id!==id;});
+  apiFire({action:'deleteEgreso',id:id});
+  renderEgresos();
 }
 function filtrarOrdenes(q){
   var term=(q||'').toLowerCase();
