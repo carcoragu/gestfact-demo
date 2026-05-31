@@ -1524,7 +1524,7 @@ function verPresupuestoActual(){
   if(el('pres-vehiculo'))el('pres-vehiculo').textContent=ord.vehiculo;
   if(el('pres-patente'))el('pres-patente').textContent=ord.patente||cl.patente||'--';
   if(el('pres-km'))el('pres-km').textContent=(ord.km||cl.km||'--')+' km';
-  if(el('pres-fecha'))el('pres-fecha').textContent=fmtFecha(ord.fecha);
+  if(el('pres-fecha'))el('pres-fecha').textContent=fmtFecha(new Date().toISOString());
   var total=Number(ord.monto||0);
   var items=[];try{items=JSON.parse(ord.items||'[]');}catch(e){}
   var det=el('pres-detalle');
