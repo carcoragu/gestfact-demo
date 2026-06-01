@@ -167,6 +167,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 .monto-edit{display:none;background:#0a1628;border:1px solid #1e88e5;border-radius:6px;padding:4px 8px;color:#1e88e5;font-size:.85rem;font-weight:700;width:110px;text-align:right;outline:none;}
 .lic-banner{width:100%;padding:10px 16px;font-size:.82rem;font-weight:700;text-align:center;display:none;flex-shrink:0;}
 .lic-banner.aviso{background:#f0a50022;color:#f0a500;border-bottom:1px solid #f0a500;}
+#offline-banner{display:none;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px 16px;font-size:.78rem;font-weight:700;background:#1a1a00;color:#f0a500;border-bottom:1px solid #f0a50066;flex-shrink:0;}
 .ep-bar{display:flex;gap:8px;margin-bottom:12px;}
 .ep-btn{flex:1;padding:9px 4px;border:1px solid #1e3a5f;border-radius:8px;background:none;color:#8b949e;font-size:.78rem;font-weight:700;cursor:pointer;}
 .ep-btn.todos.active{background:#1e88e522;border-color:#1e88e5;color:#1e88e5;}
@@ -268,6 +269,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
     <span class="title">IsabSoft GestFact</span>
     <span class="badge">3</span>
   </div>
+  <div id="offline-banner">⚡ Sin conexión — trabajando con datos locales. Los cambios se sincronizarán al reconectarse.</div>
   <div class="lic-banner" id="lic-banner"></div>
   <div class="content">
     <div class="kpi-grid">
@@ -777,6 +779,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 <script>
 var GESTFACT_URL='YOUR_APPS_SCRIPT_URL_HERE';
 var CLIENT_KEY='DEMO';
+var STORE_PREFIX='gf_DEMO_';
 var currentOrdenId=null;
 var editandoOrden=false;
 var _guardando=false;
@@ -788,6 +791,7 @@ var GF_PASS='1234';
   var k=sessionStorage.getItem('gf_client_key');
   if(k){
     CLIENT_KEY=k;
+    STORE_PREFIX='gf_'+k+'_';
     CLIENT_NOMBRE=sessionStorage.getItem('gf_client_nombre')||CLIENT_NOMBRE;
     var url=sessionStorage.getItem('gf_gestfact_url');
     if(url)GESTFACT_URL=url;
@@ -803,7 +807,33 @@ var GF_PASS='1234';
   }
 })();
 function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(body)))));sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];res({ok:true,timeout:true});},45000);});}
-function apiFire(body){if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return;apiCall(body).catch(function(){});}
+// ===== OFFLINE SUPPORT =====
+var _offlineQueue=[];
+function _save(k,v){try{localStorage.setItem(STORE_PREFIX+k,JSON.stringify(v));}catch(e){}}
+function _load(k){try{var d=localStorage.getItem(STORE_PREFIX+k);return d?JSON.parse(d):null;}catch(e){return null;}}
+function _persistAll(){_save('clientes',clientes);_save('ordenes',ordenes);_save('stock',stockItems);_save('egresos',egresos);}
+function _mostrarOffline(mostrar){var b=document.getElementById('offline-banner');if(b)b.style.display=mostrar?'flex':'none';}
+function _syncQueue(){
+  var q=_load('queue')||[];
+  if(!q.length)return;
+  _save('queue',[]);
+  q.forEach(function(body){apiCall(body).catch(function(){});});
+}
+window.addEventListener('online',function(){_mostrarOffline(false);loadAllData();});
+window.addEventListener('offline',function(){_mostrarOffline(true);});
+// ===========================
+function apiFire(body){
+  if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return;
+  _persistAll();
+  if(!navigator.onLine){
+    var q=_load('queue')||[];q.push(body);_save('queue',q);
+    _mostrarOffline(true);
+    return;
+  }
+  apiCall(body).catch(function(){
+    var q=_load('queue')||[];q.push(body);_save('queue',q);
+  });
+}
 var clientes=[
   {id:1,nombre:'Carlos Sanchez',tel:'+595981234001',ruc:'3.456.789',dir:'San Lorenzo, Central',vehiculo:'Honda CR-V 2019',patente:'AKM-782',km:'78.400'},
   {id:2,nombre:'Gaston Perez',tel:'+595981234002',ruc:'1.234.567',dir:'Luque, Central',vehiculo:'Toyota Hilux 2021',patente:'BCJ-331',km:'45.200'},
@@ -841,7 +871,18 @@ function loadAllData(){
     if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
     if(r.egresos&&r.egresos.length){egresos=r.egresos.map(function(e){return{id:String(e.id||''),descripcion:String(e.descripcion||''),categoria:String(e.categoria||'Otros'),monto:Number(e.monto)||0,fecha:String(e.fecha||'')};});}
-  }).catch(function(){});
+    _persistAll();
+    _save('last_sync',new Date().toISOString());
+    _syncQueue();
+    _mostrarOffline(false);
+  }).catch(function(){
+    var sc=_load('clientes'),so=_load('ordenes'),ss=_load('stock'),se=_load('egresos');
+    if(sc&&sc.length)clientes=sc;
+    if(so&&so.length)ordenes=so;
+    if(ss&&ss.length)stockItems=ss;
+    if(se&&se.length)egresos=se;
+    if(sc||so){_mostrarOffline(true);}
+  });
 }
 function checkLicense(){
   if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return Promise.resolve({ok:true,estado:'activo',dias_restantes:999});

@@ -1,4 +1,4 @@
-﻿const CACHE = 'gestfact-v3';
+﻿const CACHE = 'gestfact-v4';
 const FILES = [
   '/gestfact-demo/',
   '/gestfact-demo/index.html',
