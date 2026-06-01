@@ -1145,9 +1145,12 @@ function selVehiculo(vi){
   _marcarCambioOrden();
 }
 
-function nuevaOrden(){
+function nuevaOrden(fromClienteIdx){
   editandoOrden=false;
   currentOrdenId=null;
+  _preselClienteOrden=(fromClienteIdx>=0&&clientes[fromClienteIdx])
+    ?clientes[fromClienteIdx].nombre+' -- '+clientes[fromClienteIdx].vehiculo
+    :null;
   var tt=document.querySelector('#s-nuevo .title');
   if(tt)tt.textContent='Nueva Orden de Trabajo';
   var bg=document.getElementById('btn-generar-pres');
@@ -1240,7 +1243,7 @@ function go(id){
   if(id==='s-ordenes')renderOrdenes();
   if(id==='s-stock')renderStock();
   if(id==='s-gestion')renderGestion();
-  if(id==='s-nuevo'){if(!editandoOrden)renderNuevoSelect();limpiarOrden();}
+  if(id==='s-nuevo'){limpiarOrden();if(!editandoOrden){renderNuevoSelect(_preselClienteOrden);_preselClienteOrden=null;}}
   if(id==='s-egresos')renderEgresos();
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
@@ -1260,6 +1263,7 @@ function renderClientes(){
 
 var _currentClienteIdx=-1;
 var _vehiculosCliente=[];
+var _preselClienteOrden=null;
 
 function openCliente(i){
   _currentClienteIdx=i;
@@ -1298,7 +1302,7 @@ function openCliente(i){
     '<div class="det-row"><span style="color:#8b949e">Dirección</span><span>'+cl.dir+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Teléfono</span><span>'+cl.tel+'</span></div></div>'+
     '<div class="card"><div class="card-title">Vehículos ('+_vehiculosCliente.length+')</div>'+vehsHTML+'</div>'+
-    '<button class="btn btn-primary btn-block" onclick="nuevaOrden()">Nueva Orden de Trabajo</button>'+
+    '<button class="btn btn-primary btn-block" onclick="nuevaOrden('+i+')">Nueva Orden de Trabajo</button>'+
     '<button class="btn btn-outline btn-block" onclick="editarCliente('+i+')">&#9998; Editar Datos del Cliente</button>'+
     '<button class="btn btn-wa btn-block" onclick="enviarWACliente(\''+cl.nombre+'\',\''+cl.tel+'\')">&#128172; WhatsApp</button>';
   go('s-cliente');
