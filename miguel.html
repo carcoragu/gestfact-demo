@@ -23,6 +23,7 @@ body{background:#0a1628;display:flex;flex-direction:column;align-items:center;ju
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 .btn{width:100%;padding:15px;background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;}
 .hint{font-size:.72rem;color:#6e7681;}
+.btn-inst{width:100%;padding:12px;background:rgba(30,136,229,.15);color:#1e88e5;border:1px solid #1e88e5;border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -34,6 +35,7 @@ body{background:#0a1628;display:flex;flex-direction:column;align-items:center;ju
   <div class="sub">Taller de Miguel Acuña</div>
   <input class="inp" id="clave" type="password" placeholder="Clave de acceso" maxlength="20" onkeydown="if(event.key==='Enter')ingresar()"/>
   <button class="btn" onclick="ingresar()">Ingresar</button>
+  <button id="btn-instalar" class="btn-inst" onclick="instalarApp()" style="display:none">📲 Instalar en mi celular</button>
   <div class="hint">IsabSoft — Soluciones Oportunas</div>
 </div>
 <script>
@@ -54,6 +56,17 @@ function ingresar(){
 }
 document.getElementById('clave').focus();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/gestfact-demo/sw.js').catch(function(){});}
+var _installPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  _installPrompt=e;
+  document.getElementById('btn-instalar').style.display='block';
+});
+function instalarApp(){
+  if(!_installPrompt)return;
+  _installPrompt.prompt();
+  _installPrompt.userChoice.then(function(){_installPrompt=null;document.getElementById('btn-instalar').style.display='none';});
+}
 </script>
 </body>
 </html>
