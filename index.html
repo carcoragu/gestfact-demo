@@ -255,11 +255,10 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
     <img src="logo.png" class="login-logo" alt="IsabSoft"/>
     <div class="login-title">IsabSoft <span>GestFact</span></div>
     <div class="login-sub">Sistema de Gestion &amp; Facturacion</div>
-    <input type="hidden" id="login-user" value=""/>
-    <input class="form-input" id="login-pass" type="text" placeholder="Clave de acceso" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="letter-spacing:3px;text-align:center;" onkeydown="if(event.key==='Enter')loginAndLoad()"/>
+    <input type="hidden" id="login-user" value="admin"/>
+    <input class="form-input" id="login-pass" type="password" placeholder="Clave de acceso" autocomplete="off" autocorrect="off" autocapitalize="none" style="text-align:center;" onkeydown="if(event.key==='Enter')loginAndLoad()"/>
     <button class="login-btn" onclick="loginAndLoad()">Ingresar</button>
-    <div id="login-debug" style="font-size:.75rem;color:#f0a500;min-height:1.2em;text-align:center;"></div>
-    <div style="font-size:.72rem;color:#6e7681;">IsabSoft — Soluciones Oportunas · <span style="color:#1e88e5;">v6</span></div>
+    <div style="font-size:.72rem;color:#6e7681;">IsabSoft · <span style="color:#1e88e5;">v8</span></div>
   </div>
 </div>
 
@@ -973,29 +972,30 @@ function applyLicense(lic){
   return true;
 }
 function loginAndLoad(){
-  var dbg=document.getElementById('login-debug');
-  try{
-    var p=((document.getElementById('login-pass')||{}).value||'').trim();
-    if(dbg)dbg.textContent='Clave: '+p.length+' caracteres';
-    var cfg=CLIENTES_MAP[p];
-    if(cfg){
-      if(dbg)dbg.textContent='✓ Reconocida — ingresando...';
-      CLIENT_KEY=cfg.key;STORE_PREFIX='gf_'+cfg.key+'_';
-      CLIENT_NOMBRE=cfg.nombre;GESTFACT_URL=cfg.url;
-      GF_USER=cfg.user;GF_PASS=cfg.pass;
-      try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}
-      go('s-dashboard');loadAllData();return;
-    }
-    if(p===GF_PASS){
-      if(dbg)dbg.textContent='✓ Auto-login — ingresando...';
-      go('s-dashboard');loadAllData();return;
-    }
-    if(dbg)dbg.textContent='✗ Clave no reconocida ('+p.length+' chars)';
-    var inp=document.getElementById('login-pass');
-    if(inp){inp.value='';inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';inp.focus();},400);}
-  }catch(e){
-    if(dbg)dbg.textContent='Error: '+e.message;
+  var p=(document.getElementById('login-pass')||{}).value||'';
+  var cfg=CLIENTES_MAP[p];
+  if(cfg){
+    CLIENT_KEY=cfg.key;STORE_PREFIX='gf_'+cfg.key+'_';
+    CLIENT_NOMBRE=cfg.nombre;GESTFACT_URL=cfg.url;
+    GF_USER=cfg.user;GF_PASS=cfg.pass;
+    try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}
+    go('s-dashboard');loadAllData();return;
   }
+  var u=(document.getElementById('login-user')||{}).value||'';
+  if(u!==GF_USER||p!==GF_PASS){
+    var inp=document.getElementById('login-pass');
+    if(inp){inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';},1500);}
+    return;
+  }
+  var btn=document.querySelector('.login-btn');
+  if(btn){btn.textContent='Conectando...';btn.disabled=true;}
+  checkLicense().then(function(lic){
+    if(!applyLicense(lic))return;
+    return loadAllData();
+  }).then(function(){
+    var cur=document.querySelector('.screen.active');
+    if(!cur||cur.id!=='s-suspendido')go('s-dashboard');
+  }).catch(function(){go('s-dashboard');});
 }
 function _marcarCambioOrden(){
   if(!editandoOrden)return;
