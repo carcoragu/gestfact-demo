@@ -789,6 +789,7 @@ var GF_PASS='1234';
 // Cargar config del cliente si viene de una pagina de acceso personalizada
 (function(){
   var k=sessionStorage.getItem('gf_client_key');
+  if(!k){try{var _boot=localStorage.getItem('gf_boot');if(_boot){var _b=JSON.parse(_boot);localStorage.removeItem('gf_boot');sessionStorage.setItem('gf_client_key',_b.key);sessionStorage.setItem('gf_client_nombre',_b.nombre);sessionStorage.setItem('gf_gestfact_url',_b.url);sessionStorage.setItem('gf_user',_b.user);sessionStorage.setItem('gf_pass',_b.pass);k=_b.key;}}catch(e){}}
   if(k){
     CLIENT_KEY=k;
     STORE_PREFIX='gf_'+k+'_';
