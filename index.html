@@ -258,7 +258,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
     <input type="hidden" id="login-user" value="admin"/>
     <input class="form-input" id="login-pass" type="password" placeholder="Clave de acceso" autocomplete="off" autocorrect="off" autocapitalize="none" style="text-align:center;" onkeydown="if(event.key==='Enter')loginAndLoad()"/>
     <button class="login-btn" onclick="loginAndLoad()">Ingresar</button>
-    <div style="font-size:.72rem;color:#6e7681;">IsabSoft · <span style="color:#1e88e5;">v8</span></div>
+    <div style="font-size:.72rem;color:#6e7681;">IsabSoft · <span style="color:#1e88e5;">v9</span></div>
   </div>
 </div>
 
@@ -786,7 +786,7 @@ var _guardando=false;
 var CLIENT_NOMBRE='Demo';
 var GF_USER='admin';
 var GF_PASS='1234';
-// Tabla de clientes: clave → configuracion. Agregar aqui cada cliente nuevo.
+// Tabla de clientes: clave -> configuracion. Agregar aqui cada cliente nuevo.
 var CLIENTES_MAP={
   'taller2026':{key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'taller2026'}
 };
@@ -2077,6 +2077,24 @@ function simVoz(){
   document.getElementById('chatIn').value=frases[Math.floor(Math.random()*frases.length)];
 }
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/gestfact-demo/sw.js').catch(function(){});}
+</script>
+<script>
+(function(){
+  var sub=document.querySelector('.login-sub');
+  if(!sub)return;
+  try{
+    if(typeof loginAndLoad==='function'&&typeof CLIENTES_MAP==='object'&&CLIENTES_MAP!==null){
+      sub.textContent='JS OK v9 ✓';
+      sub.style.color='#2e7d32';
+    }else{
+      sub.textContent='ERROR: loginAndLoad='+typeof loginAndLoad+' / MAP='+typeof CLIENTES_MAP;
+      sub.style.color='#e53935';
+    }
+  }catch(err){
+    sub.textContent='EXCEPCION: '+err.message;
+    sub.style.color='#e53935';
+  }
+})();
 </script>
 </body>
 </html>
