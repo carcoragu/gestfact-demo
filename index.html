@@ -267,22 +267,22 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   <div class="topbar">
     <button class="menu-btn" onclick="openSidebar()">&#9776;</button>
     <span class="title">IsabSoft GestFact</span>
-    <span class="badge">3</span>
+    <span class="badge" id="kpi-badge">0</span>
   </div>
   <div id="offline-banner">⚡ Sin conexión — trabajando con datos locales. Los cambios se sincronizarán al reconectarse.</div>
   <div class="lic-banner" id="lic-banner"></div>
   <div class="content">
     <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-val">4</div><div class="kpi-lbl">Ordenes hoy</div></div>
-      <div class="kpi"><div class="kpi-val" style="font-size:1.1rem;">Gs.8.4M</div><div class="kpi-lbl">Facturado mayo</div></div>
-      <div class="kpi"><div class="kpi-val">3</div><div class="kpi-lbl">Pres. pendientes</div></div>
-      <div class="kpi"><div class="kpi-val" style="color:#e53935;">2</div><div class="kpi-lbl">Stock bajo minimo</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpi-hoy">0</div><div class="kpi-lbl">Ordenes hoy</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpi-facturado" style="font-size:1.1rem;">Gs.0</div><div class="kpi-lbl" id="kpi-facturado-lbl">Facturado mes</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpi-pres">0</div><div class="kpi-lbl">Pres. pendientes</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpi-stock" style="color:#e53935;">0</div><div class="kpi-lbl">Stock bajo minimo</div></div>
     </div>
     <div class="section-title">Modulos</div>
     <div class="mod-grid">
-      <div class="mod blue" onclick="go('s-ordenes')"><div class="mod-icon">&#128295;</div><div class="mod-name">Ordenes de Trabajo</div><div class="mod-sub">4 activas hoy</div></div>
+      <div class="mod blue" onclick="go('s-ordenes')"><div class="mod-icon">&#128295;</div><div class="mod-name">Ordenes de Trabajo</div><div class="mod-sub" id="kpi-mod-ordenes">0 activas hoy</div></div>
       <div class="mod green" onclick="go('s-factura')"><div class="mod-icon">&#129534;</div><div class="mod-name">Facturacion SET DNIT</div><div class="mod-sub">Autoimpresor activo</div></div>
-      <div class="mod purple" onclick="go('s-stock')"><div class="mod-icon">&#128230;</div><div class="mod-name">Stock &amp; Inventario</div><div class="mod-sub">2 bajo minimo</div></div>
+      <div class="mod purple" onclick="go('s-stock')"><div class="mod-icon">&#128230;</div><div class="mod-name">Stock &amp; Inventario</div><div class="mod-sub" id="kpi-mod-stock">0 bajo minimo</div></div>
       <div class="mod orange" onclick="go('s-libro')"><div class="mod-icon">&#128218;</div><div class="mod-name">Libro de Ventas</div><div class="mod-sub">IVA del mes</div></div>
     </div>
     <div class="section-title">Acciones rapidas</div>
@@ -813,6 +813,33 @@ var _offlineQueue=[];
 function _save(k,v){try{localStorage.setItem(STORE_PREFIX+k,JSON.stringify(v));}catch(e){}}
 function _load(k){try{var d=localStorage.getItem(STORE_PREFIX+k);return d?JSON.parse(d):null;}catch(e){return null;}}
 function _persistAll(){_save('clientes',clientes);_save('ordenes',ordenes);_save('stock',stockItems);_save('egresos',egresos);}
+function renderKPIs(){
+  var hoy=new Date();
+  var dd=String(hoy.getDate()).padStart(2,'0');
+  var mm=String(hoy.getMonth()+1).padStart(2,'0');
+  var yyyy=hoy.getFullYear();
+  var fechaHoy=dd+'/'+mm+'/'+yyyy;
+  var mesActual=mm+'/'+yyyy;
+  var meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var nomMes=meses[hoy.getMonth()];
+
+  var ordHoy=ordenes.filter(function(o){return o.fecha===fechaHoy;}).length;
+  var facturado=ordenes.filter(function(o){return(o.cobrado===true||o.cobrado==='true')&&o.fecha&&o.fecha.slice(3)===mesActual;}).reduce(function(s,o){return s+Number(o.monto||0);},0);
+  var presPend=ordenes.filter(function(o){return o.estado==='presupuesto';}).length;
+  var stockBajo=stockItems.filter(function(s){return Number(s.qty||0)<Number(s.min||0);}).length;
+
+  function fmtGs(n){if(n>=1000000)return'Gs.'++(n/1000000).toFixed(1)+'M';if(n>=1000)return'Gs.'+(n/1000).toFixed(0)+'k';return'Gs.'+n;}
+
+  var el=function(id){return document.getElementById(id);};
+  if(el('kpi-hoy'))el('kpi-hoy').textContent=ordHoy;
+  if(el('kpi-facturado'))el('kpi-facturado').textContent=fmtGs(facturado);
+  if(el('kpi-facturado-lbl'))el('kpi-facturado-lbl').textContent='Facturado '+nomMes;
+  if(el('kpi-pres'))el('kpi-pres').textContent=presPend;
+  if(el('kpi-stock')){el('kpi-stock').textContent=stockBajo;el('kpi-stock').style.color=stockBajo>0?'#e53935':'#25D366';}
+  if(el('kpi-badge')){el('kpi-badge').textContent=presPend;el('kpi-badge').style.display=presPend>0?'':'none';}
+  if(el('kpi-mod-ordenes'))el('kpi-mod-ordenes').textContent=ordHoy+' activa'+(ordHoy===1?'':'s')+' hoy';
+  if(el('kpi-mod-stock'))el('kpi-mod-stock').textContent=stockBajo+' bajo m\xednimo';
+}
 function _mostrarOffline(mostrar){var b=document.getElementById('offline-banner');if(b)b.style.display=mostrar?'flex':'none';}
 function _syncQueue(){
   var q=_load('queue')||[];
@@ -880,6 +907,7 @@ function loadAllData(){
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
     if(r.egresos&&r.egresos.length){egresos=r.egresos.map(function(e){return{id:String(e.id||''),descripcion:String(e.descripcion||''),categoria:String(e.categoria||'Otros'),monto:Number(e.monto)||0,fecha:String(e.fecha||'')};});}
     _persistAll();
+    renderKPIs();
     _save('last_sync',new Date().toISOString());
     _syncQueue();
     _mostrarOffline(false);
@@ -1030,6 +1058,7 @@ function guardarOrden(target){
     rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+fmtGs(total)+'</span></div>';
     det.innerHTML=rows;
   }
+  renderKPIs();
   go(target);
   if(target==='s-presupuesto'){
     var bg=document.getElementById('btn-generar-pres');
@@ -1279,6 +1308,7 @@ function eliminarOrden(){
   apiFire({action:'deleteOrden',id:currentOrdenId});
   ordenes=ordenes.filter(function(o){return o.id!==currentOrdenId;});
   currentOrdenId=null;
+  renderKPIs();
   go('s-ordenes');
 }
 
@@ -1364,6 +1394,7 @@ function eliminarCliente(i){
   apiFire({action:'deleteCliente',id:cl.id});
   clientes.splice(i,1);
   _persistAll();
+  renderKPIs();
   renderClientes();
   go('s-clientes');
 }
@@ -1640,6 +1671,7 @@ function agregarRepuesto(){
 function toggleCobro(idx,cobrado){
   ordenes[idx].cobrado=cobrado;
   apiFire({action:'updateOrden',id:ordenes[idx].id,fields:{cobrado:cobrado}});
+  renderKPIs();
   var bc=document.getElementById('btn-cobrado');
   var bp=document.getElementById('btn-pendiente');
   if(bc&&bp){
