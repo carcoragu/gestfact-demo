@@ -258,7 +258,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
     <input type="hidden" id="login-user" value=""/>
     <input class="form-input" id="login-pass" type="password" placeholder="Clave de acceso" style="letter-spacing:3px;text-align:center;" onkeydown="if(event.key==='Enter')loginAndLoad()"/>
     <button class="login-btn" onclick="loginAndLoad()">Ingresar</button>
-    <div style="font-size:.72rem;color:#6e7681;">IsabSoft — Soluciones Oportunas</div>
+    <div style="font-size:.72rem;color:#6e7681;">IsabSoft — Soluciones Oportunas · <span style="color:#1e88e5;">v5</span></div>
   </div>
 </div>
 
@@ -973,38 +973,19 @@ function applyLicense(lic){
 }
 function loginAndLoad(){
   var p=(document.getElementById('login-pass')||{}).value||'';
-  // Si la clave ya coincide con GF_PASS (auto-login desde IIFE) → pasar directo
-  if(p!==GF_PASS){
-    // Buscar en tabla de clientes por clave
-    if(CLIENTES_MAP[p]){
-      var cfg=CLIENTES_MAP[p];
-      CLIENT_KEY=cfg.key;
-      STORE_PREFIX='gf_'+cfg.key+'_';
-      CLIENT_NOMBRE=cfg.nombre;
-      GESTFACT_URL=cfg.url;
-      GF_USER=cfg.user;
-      GF_PASS=cfg.pass;
-      try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}
-    } else {
-      var inp=document.getElementById('login-pass');
-      if(inp){inp.value='';inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';inp.focus();},400);}
-      return;
-    }
-    // Cliente encontrado en CLIENTES_MAP: entrar al dashboard de inmediato
-    go('s-dashboard');
-    loadAllData();
-    return;
+  var cfg=CLIENTES_MAP[p];
+  if(cfg){
+    CLIENT_KEY=cfg.key;STORE_PREFIX='gf_'+cfg.key+'_';
+    CLIENT_NOMBRE=cfg.nombre;GESTFACT_URL=cfg.url;
+    GF_USER=cfg.user;GF_PASS=cfg.pass;
+    try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}
+    go('s-dashboard');loadAllData();return;
   }
-  // Auto-login desde gf_boot: flujo con checkLicense
-  var btn=document.querySelector('.login-btn');
-  if(btn){btn.textContent='Conectando...';btn.disabled=true;}
-  checkLicense().then(function(lic){
-    if(!applyLicense(lic))return;
-    return loadAllData();
-  }).then(function(){
-    var cur=document.querySelector('.screen.active');
-    if(!cur||cur.id!=='s-suspendido')go('s-dashboard');
-  }).catch(function(){go('s-dashboard');});
+  if(p===GF_PASS){
+    go('s-dashboard');loadAllData();return;
+  }
+  var inp=document.getElementById('login-pass');
+  if(inp){inp.value='';inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';inp.focus();},400);}
 }
 function _marcarCambioOrden(){
   if(!editandoOrden)return;
