@@ -24,6 +24,10 @@ body{background:#0a1628;display:flex;flex-direction:column;align-items:center;ju
 .btn{width:100%;padding:15px;background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;}
 .hint{font-size:.72rem;color:#6e7681;}
 .btn-inst{width:100%;padding:12px;background:rgba(30,136,229,.15);color:#1e88e5;border:1px solid #1e88e5;border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;}
+.ios-tip{width:100%;background:rgba(30,136,229,.08);border:1px solid #1e88e5;border-radius:12px;padding:14px 16px;font-size:.8rem;color:#8b949e;line-height:1.9;display:none;text-align:left;}
+.ios-tip strong{color:#1e88e5;}
+.ios-inapp{width:100%;background:rgba(240,165,0,.1);border:1px solid #f0a500;border-radius:12px;padding:14px 16px;font-size:.82rem;color:#f0a500;line-height:1.9;display:none;text-align:left;}
+.ios-inapp strong{color:#fff;}
 </style>
 </head>
 <body>
@@ -36,6 +40,8 @@ body{background:#0a1628;display:flex;flex-direction:column;align-items:center;ju
   <input class="inp" id="clave" type="password" placeholder="Clave de acceso" maxlength="20" onkeydown="if(event.key==='Enter')ingresar()"/>
   <button class="btn" onclick="ingresar()">Ingresar</button>
   <button id="btn-instalar" class="btn-inst" onclick="instalarApp()" style="display:none">📲 Instalar en mi celular</button>
+  <div class="ios-inapp" id="ios-inapp">⚠️ <strong>Para instalar en su pantalla de inicio:</strong><br/>Toque los <strong>tres puntitos ···</strong> arriba a la derecha<br/>→ elija <strong>"Abrir en Safari"</strong><br/>→ luego toque <strong>Compartir (□↑) → Agregar a pantalla de inicio</strong></div>
+  <div class="ios-tip" id="ios-tip">📲 <strong>Instalar en iPhone:</strong><br/>1. Toque <strong>Compartir</strong> (□↑) abajo en Safari<br/>2. Toque <strong>"Agregar a pantalla de inicio"</strong><br/>3. Toque <strong>Agregar</strong> ✅</div>
   <div class="hint">IsabSoft — Soluciones Oportunas</div>
 </div>
 <script>
@@ -61,6 +67,16 @@ if('serviceWorker' in navigator){
   }).then(function(){
     navigator.serviceWorker.register('/gestfact-demo/sw.js',{updateViaCache:'none'}).catch(function(){});
   });
+}
+var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+var isStandalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
+var isSafari=isIOS&&/Safari/.test(navigator.userAgent)&&!/CriOS|FxiOS|OPiOS|mercury|EdgiOS/.test(navigator.userAgent)&&!window.navigator.userAgent.match(/FBAN|FBAV|Instagram|WhatsApp/i);
+if(isIOS&&!isStandalone){
+  if(isSafari){
+    document.getElementById('ios-tip').style.display='block';
+  } else {
+    document.getElementById('ios-inapp').style.display='block';
+  }
 }
 var _installPrompt=null;
 window.addEventListener('beforeinstallprompt',function(e){
