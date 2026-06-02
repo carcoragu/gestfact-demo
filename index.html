@@ -807,7 +807,7 @@ var GF_PASS='1234';
     });
   }
 })();
-function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(body)))));sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];res({ok:true,timeout:true});},45000);});}
+function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(body)))));sc.crossOrigin='anonymous';sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];res({ok:true,timeout:true});},45000);});}
 // ===== OFFLINE SUPPORT =====
 var _offlineQueue=[];
 function _save(k,v){try{localStorage.setItem(STORE_PREFIX+k,JSON.stringify(v));}catch(e){}}
