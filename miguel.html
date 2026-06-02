@@ -55,7 +55,13 @@ function ingresar(){
   }
 }
 document.getElementById('clave').focus();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/gestfact-demo/sw.js').catch(function(){});}
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    return Promise.all(regs.map(function(r){return r.unregister();}));
+  }).then(function(){
+    navigator.serviceWorker.register('/gestfact-demo/sw.js',{updateViaCache:'none'}).catch(function(){});
+  });
+}
 var _installPrompt=null;
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
