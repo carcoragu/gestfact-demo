@@ -889,21 +889,31 @@ function loadAllData(){
   if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return Promise.resolve();
   return apiCall({action:'loadAll'}).then(function(r){
     if(!r.ok)return;
+    if(r.timeout){
+      var sc=_load('clientes'),so=_load('ordenes'),ss=_load('stock'),se=_load('egresos');
+      if(sc&&sc.length)clientes=sc;else clientes=[];
+      if(so&&so.length)ordenes=so;else ordenes=[];
+      if(ss&&ss.length)stockItems=ss;
+      if(se&&se.length)egresos=se;
+      _mostrarOffline(true);
+      renderKPIs();
+      return;
+    }
     var _initKey='gf_init_'+CLIENT_KEY;
     if(r.empty){
       if(!localStorage.getItem(_initKey)){
         try{localStorage.setItem(_initKey,'1');}catch(e){}
         return apiCall({action:'initData',clientes:clientes,ordenes:ordenes,stock:stockItems});
       }
-      clientes=[];ordenes=[];_persistAll();return;
+      clientes=[];ordenes=[];_persistAll();renderKPIs();return;
     }
     try{localStorage.setItem(_initKey,'1');}catch(e){}
     if(r.clientes&&r.clientes.length){
       clientes=r.clientes.map(function(c){return{id:c.id,nombre:String(c.nombre||''),tel:String(c.tel||''),ruc:String(c.ruc||''),dir:String(c.dir||''),vehiculo:String(c.vehiculo||''),patente:String(c.patente||''),km:String(c.km||'')};});
-    } else if(!r.timeout){
-      apiFire({action:'initData',clientes:clientes});
+    } else {
+      clientes=[];
     }
-    if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}
+    if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}else{ordenes=[];}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
     if(r.egresos&&r.egresos.length){egresos=r.egresos.map(function(e){return{id:String(e.id||''),descripcion:String(e.descripcion||''),categoria:String(e.categoria||'Otros'),monto:Number(e.monto)||0,fecha:String(e.fecha||'')};});}
     _persistAll();
@@ -913,11 +923,12 @@ function loadAllData(){
     _mostrarOffline(false);
   }).catch(function(){
     var sc=_load('clientes'),so=_load('ordenes'),ss=_load('stock'),se=_load('egresos');
-    if(sc&&sc.length)clientes=sc;
-    if(so&&so.length)ordenes=so;
+    if(sc&&sc.length)clientes=sc;else clientes=[];
+    if(so&&so.length)ordenes=so;else ordenes=[];
     if(ss&&ss.length)stockItems=ss;
     if(se&&se.length)egresos=se;
-    if(sc||so){_mostrarOffline(true);}
+    _mostrarOffline(true);
+    renderKPIs();
   });
 }
 function checkLicense(){
