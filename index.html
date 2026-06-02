@@ -862,7 +862,15 @@ function loadAllData(){
   if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return Promise.resolve();
   return apiCall({action:'loadAll'}).then(function(r){
     if(!r.ok)return;
-    if(r.empty){return apiCall({action:'initData',clientes:clientes,ordenes:ordenes,stock:stockItems});}
+    var _initKey='gf_init_'+CLIENT_KEY;
+    if(r.empty){
+      if(!localStorage.getItem(_initKey)){
+        try{localStorage.setItem(_initKey,'1');}catch(e){}
+        return apiCall({action:'initData',clientes:clientes,ordenes:ordenes,stock:stockItems});
+      }
+      clientes=[];ordenes=[];_persistAll();return;
+    }
+    try{localStorage.setItem(_initKey,'1');}catch(e){}
     if(r.clientes&&r.clientes.length){
       clientes=r.clientes.map(function(c){return{id:c.id,nombre:String(c.nombre||''),tel:String(c.tel||''),ruc:String(c.ruc||''),dir:String(c.dir||''),vehiculo:String(c.vehiculo||''),patente:String(c.patente||''),km:String(c.km||'')};});
     } else if(!r.timeout){
