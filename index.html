@@ -1345,8 +1345,19 @@ function openCliente(i){
     '<div class="card"><div class="card-title">Vehículos ('+_vehiculosCliente.length+')</div>'+vehsHTML+'</div>'+
     '<button class="btn btn-primary btn-block" onclick="nuevaOrden('+i+')">Nueva Orden de Trabajo</button>'+
     '<button class="btn btn-outline btn-block" onclick="editarCliente('+i+')">&#9998; Editar Datos del Cliente</button>'+
-    '<button class="btn btn-wa btn-block" onclick="enviarWACliente(\''+cl.nombre+'\',\''+cl.tel+'\')">&#128172; WhatsApp</button>';
+    '<button class="btn btn-wa btn-block" onclick="enviarWACliente(\''+cl.nombre+'\',\''+cl.tel+'\')">&#128172; WhatsApp</button>'+
+    '<button class="btn btn-block" style="background:#1a0a0a;color:#f85149;border:1px solid #f85149;margin-top:8px;" onclick="eliminarCliente('+i+')">&#128465; Eliminar cliente</button>';
   go('s-cliente');
+}
+
+function eliminarCliente(i){
+  var cl=clientes[i];
+  if(!confirm('¿Eliminar a '+cl.nombre+'?\nEsta acción no se puede deshacer.'))return;
+  apiFire({action:'deleteCliente',id:cl.id});
+  clientes.splice(i,1);
+  _persistAll();
+  renderClientes();
+  go('s-clientes');
 }
 
 function abrirHistorialVehiculo(vi){
