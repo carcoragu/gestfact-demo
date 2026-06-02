@@ -51,7 +51,8 @@ function ingresar(){
     var cfg={key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'taller2026'};
     try{sessionStorage.setItem('gf_client_key',cfg.key);sessionStorage.setItem('gf_client_nombre',cfg.nombre);sessionStorage.setItem('gf_gestfact_url',cfg.url);sessionStorage.setItem('gf_user',cfg.user);sessionStorage.setItem('gf_pass',cfg.pass);}catch(e){}
     try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}
-    window.location.replace('./index.html?v='+Date.now());
+    var _b64=btoa(unescape(encodeURIComponent(JSON.stringify(cfg))));
+    window.location.replace('./index.html?v='+Date.now()+'#gfboot='+_b64);
   } else {
     inp.value='';
     inp.classList.add('error');

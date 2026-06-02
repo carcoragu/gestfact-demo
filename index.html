@@ -789,11 +789,15 @@ var GF_PASS='1234';
 // Cargar config del cliente si viene de una pagina de acceso personalizada
 (function(){
   var k=sessionStorage.getItem('gf_client_key');
-  if(!k){try{var _boot=localStorage.getItem('gf_boot');if(_boot){var _b=JSON.parse(_boot);localStorage.removeItem('gf_boot');sessionStorage.setItem('gf_client_key',_b.key);sessionStorage.setItem('gf_client_nombre',_b.nombre);sessionStorage.setItem('gf_gestfact_url',_b.url);sessionStorage.setItem('gf_user',_b.user);sessionStorage.setItem('gf_pass',_b.pass);k=_b.key;}}catch(e){}}
+  var _fresh=false;
+  // 1. Hash de URL — método más confiable en iOS Safari (no depende de storage)
+  if(!k){try{var hm=location.hash.match(/#gfboot=([A-Za-z0-9+\/=]+)/);if(hm){var _b=JSON.parse(decodeURIComponent(escape(atob(hm[1]))));history.replaceState(null,'',location.pathname+location.search);sessionStorage.setItem('gf_client_key',_b.key);sessionStorage.setItem('gf_client_nombre',_b.nombre);sessionStorage.setItem('gf_gestfact_url',_b.url);sessionStorage.setItem('gf_user',_b.user);sessionStorage.setItem('gf_pass',_b.pass);k=_b.key;_fresh=true;}}catch(e){}}
+  // 2. localStorage persistente — para reaperturas de PWA sin pasar por miguel.html
+  if(!k){try{var _boot=localStorage.getItem('gf_boot');if(_boot){var _b=JSON.parse(_boot);sessionStorage.setItem('gf_client_key',_b.key);sessionStorage.setItem('gf_client_nombre',_b.nombre);sessionStorage.setItem('gf_gestfact_url',_b.url);sessionStorage.setItem('gf_user',_b.user);sessionStorage.setItem('gf_pass',_b.pass);k=_b.key;}}catch(e){}}
   if(k){
     CLIENT_KEY=k;
     STORE_PREFIX='gf_'+k+'_';
-    try{Object.keys(localStorage).filter(function(key){return key.indexOf(STORE_PREFIX)===0;}).forEach(function(key){localStorage.removeItem(key);});}catch(e){}
+    if(_fresh){try{Object.keys(localStorage).filter(function(key){return key.indexOf(STORE_PREFIX)===0;}).forEach(function(key){localStorage.removeItem(key);});}catch(e){}}
     CLIENT_NOMBRE=sessionStorage.getItem('gf_client_nombre')||CLIENT_NOMBRE;
     var url=sessionStorage.getItem('gf_gestfact_url');
     if(url)GESTFACT_URL=url;
