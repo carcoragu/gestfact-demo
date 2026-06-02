@@ -258,7 +258,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
     <input type="hidden" id="login-user" value="admin"/>
     <input class="form-input" id="login-pass" type="password" placeholder="Clave de acceso" autocomplete="off" autocorrect="off" autocapitalize="none" style="text-align:center;" onkeydown="if(event.key==='Enter')loginAndLoad()"/>
     <button class="login-btn" onclick="loginAndLoad()">Ingresar</button>
-    <div style="font-size:.72rem;color:#6e7681;">IsabSoft · <span style="color:#1e88e5;">v9</span></div>
+    <div style="font-size:.72rem;color:#6e7681;">IsabSoft · <span style="color:#1e88e5;">v10</span></div>
   </div>
 </div>
 
@@ -840,7 +840,7 @@ function renderKPIs(){
   var presPend=ordenes.filter(function(o){return o.estado==='presupuesto';}).length;
   var stockBajo=stockItems.filter(function(s){return Number(s.qty||0)<Number(s.min||0);}).length;
 
-  function fmtGs(n){if(n>=1000000)return'Gs.'++(n/1000000).toFixed(1)+'M';if(n>=1000)return'Gs.'+(n/1000).toFixed(0)+'k';return'Gs.'+n;}
+  function fmtGs(n){if(n>=1000000)return'Gs.'+(n/1000000).toFixed(1)+'M';if(n>=1000)return'Gs.'+(n/1000).toFixed(0)+'k';return'Gs.'+n;}
 
   var el=function(id){return document.getElementById(id);};
   if(el('kpi-hoy'))el('kpi-hoy').textContent=ordHoy;
@@ -2084,7 +2084,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('/gestfact-dem
   if(!sub)return;
   try{
     if(typeof loginAndLoad==='function'&&typeof CLIENTES_MAP==='object'&&CLIENTES_MAP!==null){
-      sub.textContent='JS OK v9 ✓';
+      sub.textContent='JS OK v10 ✓';
       sub.style.color='#2e7d32';
     }else{
       sub.textContent='ERROR: loginAndLoad='+typeof loginAndLoad+' / MAP='+typeof CLIENTES_MAP;
