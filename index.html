@@ -254,11 +254,11 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   <div class="login-box">
     <img src="logo.png" class="login-logo" alt="IsabSoft"/>
     <div class="login-title">IsabSoft <span>GestFact</span></div>
-    <div class="login-sub">Sistema de Taller &amp; Facturacion SET DNIT</div>
-    <input class="form-input" id="login-user" placeholder="Usuario" value="admin"/>
-    <input class="form-input" id="login-pass" type="password" placeholder="Contrasena" value="1234"/>
-    <button class="login-btn" onclick="loginAndLoad()">Ingresar al sistema</button>
-    <div style="font-size:.72rem;color:#6e7681;">Demo -- IsabSoft Soluciones Oportunas</div>
+    <div class="login-sub">Sistema de Gestion &amp; Facturacion</div>
+    <input type="hidden" id="login-user" value=""/>
+    <input class="form-input" id="login-pass" type="password" placeholder="Clave de acceso" style="letter-spacing:3px;text-align:center;" onkeydown="if(event.key==='Enter')loginAndLoad()"/>
+    <button class="login-btn" onclick="loginAndLoad()">Ingresar</button>
+    <div style="font-size:.72rem;color:#6e7681;">IsabSoft — Soluciones Oportunas</div>
   </div>
 </div>
 
@@ -786,6 +786,10 @@ var _guardando=false;
 var CLIENT_NOMBRE='Demo';
 var GF_USER='admin';
 var GF_PASS='1234';
+// Tabla de clientes: clave → configuracion. Agregar aqui cada cliente nuevo.
+var CLIENTES_MAP={
+  'taller2026':{key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'taller2026'}
+};
 // Cargar config del cliente si viene de una pagina de acceso personalizada
 (function(){
   var k=sessionStorage.getItem('gf_client_key');
@@ -804,9 +808,7 @@ var GF_PASS='1234';
     GF_USER=sessionStorage.getItem('gf_user')||GF_USER;
     GF_PASS=sessionStorage.getItem('gf_pass')||GF_PASS;
     function _autoLogin(){
-      var u=document.getElementById('login-user');
       var p=document.getElementById('login-pass');
-      if(u)u.value=GF_USER;
       if(p)p.value=GF_PASS;
       loginAndLoad();
     }
@@ -970,12 +972,24 @@ function applyLicense(lic){
   return true;
 }
 function loginAndLoad(){
-  var u=(document.getElementById('login-user')||{}).value||'';
   var p=(document.getElementById('login-pass')||{}).value||'';
-  if(u!==GF_USER||p!==GF_PASS){
-    var inp=document.getElementById('login-pass');
-    if(inp){inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';},1500);}
-    return;
+  // Si la clave ya coincide con GF_PASS (auto-login desde IIFE) → pasar directo
+  if(p!==GF_PASS){
+    // Buscar en tabla de clientes por clave
+    if(CLIENTES_MAP[p]){
+      var cfg=CLIENTES_MAP[p];
+      CLIENT_KEY=cfg.key;
+      STORE_PREFIX='gf_'+cfg.key+'_';
+      CLIENT_NOMBRE=cfg.nombre;
+      GESTFACT_URL=cfg.url;
+      GF_USER=cfg.user;
+      GF_PASS=cfg.pass;
+      try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}
+    } else {
+      var inp=document.getElementById('login-pass');
+      if(inp){inp.value='';inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';inp.focus();},400);}
+      return;
+    }
   }
   var btn=document.querySelector('.login-btn');
   if(btn){btn.textContent='Conectando...';btn.disabled=true;}
