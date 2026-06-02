@@ -864,8 +864,7 @@ function loadAllData(){
     if(r.empty){return apiCall({action:'initData',clientes:clientes,ordenes:ordenes,stock:stockItems});}
     if(r.clientes&&r.clientes.length){
       clientes=r.clientes.map(function(c){return{id:c.id,nombre:String(c.nombre||''),tel:String(c.tel||''),ruc:String(c.ruc||''),dir:String(c.dir||''),vehiculo:String(c.vehiculo||''),patente:String(c.patente||''),km:String(c.km||'')};});
-    } else {
-      // Clientes tab vacío o inexistente — inicializar via initData
+    } else if(!r.timeout){
       apiFire({action:'initData',clientes:clientes});
     }
     if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}

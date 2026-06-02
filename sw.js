@@ -1,4 +1,4 @@
-﻿const CACHE = 'gestfact-v5';
+﻿const CACHE = 'gestfact-v6';
 const FILES = [
   '/gestfact-demo/',
   '/gestfact-demo/index.html',
@@ -16,6 +16,7 @@ self.addEventListener('activate', e => {
   ).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', e => {
-  if(!e.request.url.startsWith(self.location.origin)) return;
+  var path = new URL(e.request.url).pathname;
+  if(!FILES.includes(path)) return;
   e.respondWith(caches.match(e.request).then(cached => cached || fetch(e.request).catch(() => caches.match('/gestfact-demo/index.html'))));
 });
