@@ -990,7 +990,12 @@ function loginAndLoad(){
       if(inp){inp.value='';inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';inp.focus();},400);}
       return;
     }
+    // Cliente encontrado en CLIENTES_MAP: entrar al dashboard de inmediato
+    go('s-dashboard');
+    loadAllData();
+    return;
   }
+  // Auto-login desde gf_boot: flujo con checkLicense
   var btn=document.querySelector('.login-btn');
   if(btn){btn.textContent='Conectando...';btn.disabled=true;}
   checkLicense().then(function(lic){
