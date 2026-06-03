@@ -781,7 +781,8 @@ var GF_USER='admin';
 var GF_PASS='1234';
 // Tabla de clientes: clave -> configuracion. Agregar aqui cada cliente nuevo.
 var CLIENTES_MAP={
-  'taller2026':{key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'taller2026'}
+  'taller2026':{key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'taller2026'},
+  'demo2026':{key:'DEMO_001',nombre:'Demo IsabSoft',url:'YOUR_DEMO',demo:true,user:'admin',pass:'demo2026'}
 };
 // Cargar config del cliente si viene de una pagina de acceso personalizada
 (function(){
@@ -989,7 +990,18 @@ function loginAndLoad(){
     CLIENT_KEY=cfg.key;STORE_PREFIX='gf_'+cfg.key+'_';
     CLIENT_NOMBRE=cfg.nombre;GESTFACT_URL=cfg.url;
     GF_USER=cfg.user;GF_PASS=cfg.pass;
-    try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}
+    if(!cfg.demo){try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}}
+    if(cfg.demo&&(!_load('clientes')||!_load('clientes').length)){
+      clientes=[
+        {id:'d1',nombre:'Taller San José',tel:'+595981100200',ruc:'80012345-1',dir:'Av. Mcal. López 1234',vehiculo:'Toyota Hilux',patente:'ABC 123',km:'45000',codigo:''},
+        {id:'d2',nombre:'Carlos Ramírez',tel:'+595991300400',ruc:'',dir:'',vehiculo:'Honda Civic',patente:'XYZ 789',km:'32000',codigo:''}
+      ];
+      ordenes=[
+        {id:'o1',cliente:'Taller San José',vehiculo:'Toyota Hilux',patente:'ABC 123',km:'45000',anio:'2019',servicio:'Cambio de aceite y filtros',items:'[{"desc":"Aceite 5W30 4L","monto":120000},{"desc":"Filtro de aceite","monto":45000},{"desc":"Mano de obra","monto":80000}]',monto:245000,estado:'orden',estado_pres:'pendiente',fecha:'2026-06-01',cobrado:false},
+        {id:'o2',cliente:'Carlos Ramírez',vehiculo:'Honda Civic',patente:'XYZ 789',km:'32000',anio:'2020',servicio:'Revisión de frenos',items:'[{"desc":"Pastillas delantera","monto":180000},{"desc":"Mano de obra","monto":60000}]',monto:240000,estado:'orden',estado_pres:'pendiente',fecha:'2026-06-02',cobrado:true}
+      ];
+      _persistAll();
+    }
     go('s-dashboard');loadAllData();return;
   }
   var u=(document.getElementById('login-user')||{}).value||'';
