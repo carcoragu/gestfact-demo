@@ -1,4 +1,4 @@
-﻿const CACHE = 'gestfact-v11';
+﻿const CACHE = 'gestfact-v12';
 self.addEventListener('install', e => { e.waitUntil(self.skipWaiting()); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys =>

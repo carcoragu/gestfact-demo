@@ -1312,9 +1312,13 @@ function guardarCliente(){
   if(!nombre){alert('Ingrese el nombre del cliente');_guardando=false;return;}
   if(editandoCliente&&editandoClienteIdx>=0){
     var cl=clientes[editandoClienteIdx];
+    var nombreViejo=cl.nombre;
     cl.nombre=nombre;cl.tel=g('nc-tel');cl.ruc=g('nc-ruc');cl.dir=g('nc-dir');
     cl.vehiculo=g('nc-vehiculo');cl.patente=g('nc-patente');cl.km=g('nc-km');
     var cm=g('nc-codigo').trim();if(cm)cl.codigo=cm;
+    if(nombreViejo!==nombre){
+      ordenes.forEach(function(o){if(o.cliente===nombreViejo){o.cliente=nombre;apiFire({action:'saveOrden',data:o});}});
+    }
     apiFire({action:'saveCliente',data:cl});
     editandoCliente=false;editandoClienteIdx=-1;
     var tt=document.querySelector('#s-nuevo-cliente .topbar .title');if(tt)tt.textContent='Nuevo Cliente';
