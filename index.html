@@ -2103,7 +2103,24 @@ function simVoz(){
   var frases=['Registrar orden Honda CR-V cambio aceite Carlos','Presupuesto Ford Ranger frenos Luis Gs. 650.000','Cobro factura F-0089 Carlos Gs. 395.000','Ingreso stock aceite 5W-30 12 litros','Reporte de facturacion de mayo'];
   document.getElementById('chatIn').value=frases[Math.floor(Math.random()*frases.length)];
 }
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/gestfact-demo/sw.js').catch(function(){});}
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/gestfact-demo/sw.js',{updateViaCache:'none'})
+  .then(function(reg){
+    reg.addEventListener('updatefound',function(){
+      var sw=reg.installing;
+      sw.addEventListener('statechange',function(){
+        if(sw.state==='activated'&&navigator.serviceWorker.controller){
+          // Nueva versión activa — recargar automáticamente
+          window.location.reload();
+        }
+      });
+    });
+  }).catch(function(){});
+  // Si el controlador cambia (skipWaiting activó), recargar
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    window.location.reload();
+  });
+}
 </script>
 <script>
 (function(){
