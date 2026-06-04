@@ -1325,11 +1325,23 @@ function guardarCliente(){
   if(editandoCliente&&editandoClienteIdx>=0){
     var cl=clientes[editandoClienteIdx];
     var nombreViejo=cl.nombre;
+    var vehiculoViejo=cl.vehiculo;
+    var patenteVieja=cl.patente;
     cl.nombre=nombre;cl.tel=g('nc-tel');cl.ruc=g('nc-ruc');cl.dir=g('nc-dir');
     cl.vehiculo=g('nc-vehiculo');cl.patente=g('nc-patente');cl.km=g('nc-km');
     var cm=g('nc-codigo').trim();if(cm)cl.codigo=cm;
-    if(nombreViejo!==nombre){
-      ordenes.forEach(function(o){if(o.cliente===nombreViejo){o.cliente=nombre;apiFire({action:'saveOrden',data:o});}});
+    var nombreCambio=nombreViejo!==nombre;
+    var vehiculoCambio=vehiculoViejo!==cl.vehiculo;
+    var patenteCambio=patenteVieja!==cl.patente;
+    if(nombreCambio||vehiculoCambio||patenteCambio){
+      ordenes.forEach(function(o){
+        if(o.cliente!==nombreViejo)return;
+        if(nombreCambio)o.cliente=nombre;
+        if(vehiculoCambio&&o.vehiculo===vehiculoViejo)o.vehiculo=cl.vehiculo;
+        if(patenteCambio&&o.patente===patenteVieja)o.patente=cl.patente;
+        apiFire({action:'saveOrden',data:o});
+      });
+      _persistAll();
     }
     apiFire({action:'saveCliente',data:cl});
     editandoCliente=false;editandoClienteIdx=-1;
