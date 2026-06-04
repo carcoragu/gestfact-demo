@@ -1,4 +1,4 @@
-const CACHE = 'gestfact-v12';
+const CACHE = 'gestfact-v13';
 
 self.addEventListener('install', e => {
   e.waitUntil(self.skipWaiting());
@@ -12,8 +12,6 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Network-first: siempre intenta red primero → garantiza versión actualizada
-// Solo cachea como fallback offline para HTML, JS y CSS
 self.addEventListener('fetch', e => {
   if(e.request.method !== 'GET') return;
   var url = new URL(e.request.url);
