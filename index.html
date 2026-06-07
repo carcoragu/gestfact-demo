@@ -1657,6 +1657,7 @@ function openOrden(i){
     '<div class="det-row"><span style="color:#8b949e">Vehiculo</span><span>'+ord.vehiculo+'</span></div>'+
     (ord.anio?'<div class="det-row"><span style="color:#8b949e">Año</span><span>'+ord.anio+'</span></div>':'')+
     '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+(ord.patente||'--')+'</span></div>'+
+    (ord.km?'<div class="det-row"><span style="color:#8b949e">Km</span><span>'+ord.km+' km</span></div>':'')+
     '<div class="det-row"><span style="color:#8b949e">Servicio</span><span>'+ord.servicio+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Fecha</span><span>'+fmtFecha(ord.fecha)+'</span></div>'+
     '<div class="det-row"><span style="color:#8b949e">Monto</span><span style="font-weight:700;color:#1e88e5">Gs. '+fmtGs(ord.monto)+'</span></div></div>'+
