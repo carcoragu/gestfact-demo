@@ -869,7 +869,8 @@ function _syncQueue(){
   var q=_load('queue')||[];
   if(!q.length)return;
   _save('queue',[]);
-  q.forEach(function(body){apiCall(body).catch(function(){});});
+  Promise.all(q.map(function(body){return apiCall(body).catch(function(){});}))
+    .then(function(){loadAllData();});
 }
 window.addEventListener('online',function(){_mostrarOffline(false);loadAllData();});
 window.addEventListener('offline',function(){_mostrarOffline(true);});
