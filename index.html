@@ -1108,7 +1108,9 @@ function guardarOrden(target){
   if(det){
     var rows='<div class="card-title">Detalle de servicios y repuestos</div>';
     itemsData.forEach(function(it){
-      rows+='<div class="det-row"><span>'+(it.desc||'Servicio')+'</span><span>Gs. '+fmtGs(it.monto)+'</span></div>';
+    rows+='<div class="det-row"><span>'+
+        (it.cantidad || 1)+' x '+(it.desc||'Servicio')+
+        '</span><span>Gs. '+fmtGs(it.monto)+'</span></div>';
     });
     rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+fmtGs(total)+'</span></div>';
     det.innerHTML=rows;
