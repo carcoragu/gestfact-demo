@@ -1309,12 +1309,19 @@ function limpiarOrden(){
   calcTotal();
 }
 
-function agregarItem(desc,monto){
-  var lista=document.getElementById('items-list');
-  if(!lista)return;
-  var div=document.createElement('div');
-  div.className='det-row';
-  div.innerHTML='<input class="desc-input" placeholder="Descripción del servicio..." value="'+(desc||'')+'" oninput="_marcarCambioOrden()"/><input class="monto-input" placeholder="0" value="'+(monto||'')+'" oninput="calcTotal();_marcarCambioOrden()"/><button class="del-item" onclick="this.parentNode.remove();calcTotal();_marcarCambioOrden()">&#215;</button>';
+function agregarItem(desc, monto, qty){
+  var lista = document.getElementById('items-list');
+  if(!lista) return;
+
+  var div = document.createElement('div');
+  div.className = 'det-row';
+
+  div.innerHTML =
+    '<input class="desc-input" placeholder="Descripción del servicio..." value="'+(desc||'')+'" oninput="_marcarCambioOrden()"/>' +
+    '<input class="qty-input" type="number" min="1" value="'+(qty||1)+'" placeholder="Cant." oninput="calcTotal();_marcarCambioOrden()"/>' +
+    '<input class="monto-input" placeholder="0" value="'+(monto||'')+'" oninput="calcTotal();_marcarCambioOrden()"/>' +
+    '<button class="del-item" onclick="this.parentNode.remove();calcTotal();_marcarCambioOrden()">×</button>';
+
   lista.appendChild(div);
   calcTotal();
   _marcarCambioOrden();
