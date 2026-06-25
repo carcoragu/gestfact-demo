@@ -1,4 +1,4 @@
-﻿
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1030,155 +1030,119 @@ function _marcarCambioOrden(){
 }
 
 function guardarOrden(target){
-  if(_guardando) return;
-  _guardando = true;
-  setTimeout(function(){ _guardando = false; }, 3000);
-
-  var sel = document.querySelector('#s-nuevo .form-select');
-  var desc = document.querySelector('#s-nuevo textarea');
-
-  var itemsData = [];
-  var itemsTotal = 0;
-
+  if(_guardando)return;_guardando=true;setTimeout(function(){_guardando=false;},3000);
+  var sel=document.querySelector('#s-nuevo .form-select');
+  var desc=document.querySelector('#s-nuevo textarea');
+  var itemsData=[];
+  var itemsTotal=0;
   document.querySelectorAll('#items-list .det-row').forEach(function(row){
-
-    var di = row.querySelector('.desc-input');
-    var mi = row.querySelector('.monto-input');
-    var qi = row.querySelector('.qty-input');
-
-    var d = di ? di.value.trim() : '';
-
-    var qty = Number(qi ? qi.value : 1) || 1;
-
-    var m = Number(
-      (mi ? mi.value : '0')
-        .toString()
-        .replace(/\./g,'')
-        .replace(',','.')
-    ) || 0;
-
-    // 🔥 NORMALIZACIÓN PERFECTA (CLAVE SHEETS)
-    itemsData.push({
-      desc: d,
-      qty: qty,              // UI
-      cantidad: qty,         // SHEETS (IMPORTANTE)
-      precio: m,
-      monto: m
-    });
-
-    itemsTotal += m * qty;
+    var di=row.querySelector('.desc-input');
+    var mi=row.querySelector('.monto-input');
+    var d=di?di.value.trim():'';
+    var m=Number((mi?mi.value||'0':'0').replace(/\./g,'').replace(',',''));
+    itemsData.push({desc:d,monto:m});
+    itemsTotal+=m;
   });
-
-  var tvEl = document.getElementById('total-val');
-  var total = tvEl && Number(tvEl.value) > 0 ? Number(tvEl.value) : itemsTotal;
-
-  var partes = (sel ? sel.value : '').split('--');
-  var clienteNombre = (partes[0] || 'Cliente').trim();
-
-  var vehEl = document.getElementById('ord-vehiculo');
-  var vehiculoNombre = vehEl && vehEl.value.trim()
-    ? vehEl.value.trim()
-    : (partes[1] || 'Vehiculo').trim();
-
-  var patEl = document.getElementById('ord-patente');
-  var kmEl = document.getElementById('ord-km');
-  var anioEl = document.getElementById('ord-anio');
-
-  var patente = patEl ? patEl.value : '';
-  var km = kmEl ? kmEl.value : '';
-  var anio = anioEl ? anioEl.value : '';
-
-  var fecha = new Date().toISOString();
-  var numPres = 'P-' + String(Date.now()).slice(-4);
-
-  var servicioDesc = itemsData
-    .map(it => it.desc)
-    .filter(Boolean)
-    .join(' | ') || (desc ? desc.value : 'Servicio');
-
-  var esEdicion = editandoOrden && currentOrdenId;
-
+  var tvEl=document.getElementById('total-val');
+  var total=tvEl&&Number(tvEl.value)>0?Number(tvEl.value):itemsTotal;
+  var partes=(sel?sel.value:'').split('--');
+  var clienteNombre=(partes[0]||'Cliente').trim();
+  var vehEl=document.getElementById('ord-vehiculo');
+  var vehiculoNombre=vehEl&&vehEl.value.trim()?vehEl.value.trim():(partes[1]||'Vehiculo').trim();
+  var patEl=document.getElementById('ord-patente');
+  var kmEl=document.getElementById('ord-km');
+  var anioEl=document.getElementById('ord-anio');
+  var patente=patEl?patEl.value:'';
+  var km=kmEl?kmEl.value:'';
+  var anio=anioEl?anioEl.value:'';
+  var fecha=new Date().toISOString();
+  var numPres='P-'+String(Date.now()).slice(-4);
+  var servicioDesc=itemsData.map(function(it){return it.desc;}).filter(Boolean).join(' | ')||(desc?desc.value:'Servicio');
+  var esEdicion=editandoOrden&&currentOrdenId;
   if(esEdicion){
-    var idx = ordenes.findIndex(o => o.id === currentOrdenId);
-    if(idx >= 0){
-      ordenes[idx].cliente = clienteNombre;
-      ordenes[idx].vehiculo = vehiculoNombre;
-      ordenes[idx].patente = patente;
-      ordenes[idx].km = km;
-      ordenes[idx].anio = anio;
-      ordenes[idx].servicio = servicioDesc;
-      ordenes[idx].items = JSON.stringify(itemsData);
-      ordenes[idx].monto = total;
-      ordenes[idx].fecha = fecha;
-
-      apiFire({ action:'saveOrden', data: ordenes[idx] });
+    var idx=ordenes.findIndex(function(o){return o.id===currentOrdenId;});
+    if(idx>=0){
+      ordenes[idx].cliente=clienteNombre;
+      ordenes[idx].vehiculo=vehiculoNombre;
+      ordenes[idx].patente=patente;
+      ordenes[idx].km=km;
+      ordenes[idx].anio=anio;
+      ordenes[idx].servicio=servicioDesc;
+      ordenes[idx].items=JSON.stringify(itemsData);
+      ordenes[idx].monto=total;
+      ordenes[idx].fecha=new Date().toISOString();
+      apiFire({action:'saveOrden',data:ordenes[idx]});
     }
-
-    editandoOrden = false;
+    editandoOrden=false;
+    var tt=document.querySelector('#s-nuevo .title');
+    if(tt)tt.textContent='Nueva Orden de Trabajo';
   } else {
-    var newOrd = {
-      id: '#' + String(Date.now()).slice(-4),
-      cliente: clienteNombre,
-      vehiculo: vehiculoNombre,
-      patente: patente,
-      km: km,
-      anio: anio,
-      servicio: servicioDesc,
-      items: JSON.stringify(itemsData),
-      monto: total,
-      estado: 'presupuesto',
-      estado_pres: 'pendiente',
-      fecha: fecha,
-      cobrado: false
-    };
-
+    var newOrd={id:'#'+String(Date.now()).slice(-4),cliente:clienteNombre,vehiculo:vehiculoNombre,patente:patente,km:km,anio:anio,servicio:servicioDesc,items:JSON.stringify(itemsData),monto:total,estado:'presupuesto',estado_pres:'pendiente',fecha:fecha,cobrado:false};
     ordenes.unshift(newOrd);
-    currentOrdenId = newOrd.id;
-    editandoOrden = true;
-
-    apiFire({ action:'saveOrden', data: newOrd });
+    currentOrdenId=newOrd.id;
+    editandoOrden=true;
+    apiFire({action:'saveOrden',data:newOrd});
   }
-
-  // 🔥 DESCUENTO DE STOCK (SIN ERROR DE CANTIDAD)
+  // Descontar stock de los repuestos usados
   document.querySelectorAll('#items-list .det-row').forEach(function(row){
-    var sid = row.dataset.stockId;
-    if(!sid) return;
-
-    var idx = stockItems.findIndex(s => s.id === sid);
-    if(idx >= 0){
-      var qty = Number(row.querySelector('.qty-input')?.value || 1);
-
-      stockItems[idx].qty = Math.max(0, stockItems[idx].qty - qty);
-
-      apiFire({
-        action:'updateStock',
-        id: sid,
-        qty: stockItems[idx].qty
-      });
+    var sid=row.dataset.stockId;
+    if(!sid)return;
+    var idx=stockItems.findIndex(function(s){return s.id===sid;});
+    if(idx>=0&&stockItems[idx].qty>0){
+      stockItems[idx].qty=Math.max(0,stockItems[idx].qty-1);
+      apiFire({action:'updateStock',id:sid,qty:stockItems[idx].qty});
     }
   });
-
+  // Poblar presupuesto con datos reales
+  var cl=clientes.find(function(c){return c.nombre===clienteNombre;})||{patente:'',km:''};
+  var el=function(id){return document.getElementById(id);};
+  if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto N°'+numPres;
+  if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto N°'+numPres;
+  if(el('pres-cliente'))el('pres-cliente').textContent=clienteNombre;
+  if(el('pres-vehiculo'))el('pres-vehiculo').textContent=vehiculoNombre;
+  if(el('pres-patente'))el('pres-patente').textContent=cl.patente||'--';
+  if(el('pres-km'))el('pres-km').textContent=(cl.km||'--')+' km';
+  if(el('pres-fecha'))el('pres-fecha').textContent=fmtFecha(fecha);
+  if(el('pres-total'))el('pres-total').textContent='Gs. '+fmtGs(total);
+  var det=el('pres-detalle');
+  if(det){
+    var rows='<div class="card-title">Detalle de servicios y repuestos</div>';
+    itemsData.forEach(function(it){
+    rows+='<div class="det-row"><span>'+
+        (it.cantidad || 1)+' x '+(it.desc||'Servicio')+
+        '</span><span>Gs. '+fmtGs(it.monto)+'</span></div>';
+    });
+    rows+='<div class="det-total"><span>Total</span><span id="pres-total">Gs. '+fmtGs(total)+'</span></div>';
+    det.innerHTML=rows;
+  }
   renderKPIs();
   go(target);
-
-  if(target === 's-presupuesto'){
-    var bg = document.getElementById('btn-generar-pres');
-    if(bg){
-      bg.disabled = true;
-      bg.style.background = '#25D366';
-      bg.textContent = '✓ Presupuesto generado';
-    }
+  if(target==='s-presupuesto'){
+    var bg=document.getElementById('btn-generar-pres');
+    if(bg){bg.disabled=true;bg.style.background='#25D366';bg.textContent='✓ Presupuesto generado';}
   }
-
-  if(target === 's-orden-det'){
-    var br = document.getElementById('btn-registrar-ord');
-    if(br){
-      br.disabled = true;
-      br.style.background = '#25D366';
-      br.textContent = '✓ Orden registrada';
+  if(target==='s-orden-det'){
+    var br=document.getElementById('btn-registrar-ord');
+    if(br){br.disabled=true;br.style.background='#25D366';br.textContent='✓ Orden registrada';}
+    var oidx=ordenes.findIndex(function(o){return o.id===currentOrdenId;});
+    if(oidx>=0){
+      openOrden(oidx);
+      var oc=document.getElementById('ord-content');
+      if(oc){
+        var banner=document.createElement('div');
+        banner.style.cssText='background:#0d2137;border:1px solid #25D366;border-radius:10px;padding:14px;margin-bottom:12px;text-align:center;';
+        banner.innerHTML='<div style="font-size:.88rem;color:#25D366;margin-bottom:10px;">✓ Orden registrada correctamente</div>'+
+          '<div style="font-size:.83rem;color:#e6edf3;margin-bottom:12px;">¿Querés agregar otra orden?</div>'+
+          '<div style="display:flex;gap:8px;">'+
+          '<button class="btn btn-primary" style="flex:1;padding:10px;" onclick="nuevaOrden()">Sí, nueva orden</button>'+
+          '<button class="btn btn-outline" style="flex:1;padding:10px;" onclick="this.closest(\'[style]\').remove()">No, quedarme aquí</button>'+
+          '</div>';
+        oc.insertBefore(banner, oc.firstChild);
+      }
     }
   }
 }
+
 function editarOrden(){
   var ord=ordenes.find(function(o){return o.id===currentOrdenId;});
   if(!ord)return;
@@ -1691,134 +1655,40 @@ function renderOrdenes(){
 }
 
 function openOrden(i){
-  var ord = ordenes[i];
-  currentOrdenId = ord.id;
-
-  var items = [];
-  try {
-    items = JSON.parse(ord.items || '[]');
-  } catch(e) {
-    items = [];
-  }
-
-  var st = ord.estado.charAt(0).toUpperCase() + ord.estado.slice(1);
-  var epOrd = ord.estado_pres || 'pendiente';
-
-  var total = 0;
-
-  var rows = '';
-
-  if(items.length){
-    rows += `
-    <div class="card">
-      <div class="card-title">Detalle de servicios</div>
-
-      <div style="
-        display:grid;
-        grid-template-columns: 50px 1fr 90px 110px;
-        font-size:.78rem;
-        font-weight:700;
-        color:#8b949e;
-        padding:6px 0;
-        border-bottom:1px solid #1f2937;
-      ">
-        <div>Cant</div>
-        <div>Servicio</div>
-        <div>Unit</div>
-        <div>Total</div>
-      </div>
-    `;
-
-items.forEach(function(it){
-  var qty = Number(it.cantidad || it.qty || 1);
-  var desc = it.desc || 'Servicio';
-  var monto = Number(it.monto || it.precio || 0);
-
-  total += monto * qty;
-
-  rows +=
-    '<div class="det-row" style="display:flex;justify-content:space-between;gap:10px;">'+
-
-      '<span style="display:flex;gap:8px;align-items:center;flex:1;">'+
-        '<span style="min-width:35px;text-align:center;font-weight:700;color:#1e88e5">'+qty+'x</span>'+
-        '<span style="flex:1;word-break:break-word;">'+desc+'</span>'+
-      '</span>'+
-
-      '<span style="min-width:120px;text-align:right;font-weight:700;">'+
-        'Gs. '+fmtGs(monto * qty)+
-      '</span>'+
-
-    '</div>';
-});
-
-rows += '</div>'; // cerrar card
-    
-    <div style="
-        display:flex;
-        justify-content:space-between;
-        padding:12px 0;
-        font-size:1rem;
-        font-weight:800;
-        border-top:2px solid #25D366;
-        margin-top:10px;
-      ">
-        <span>Total</span>
-        <span>Gs. ${fmtGs(total)}</span>
-      </div>
-    </div>`;
-  } else {
-    var single = Number(ord.monto || 0);
-    total = single;
-
-    rows += `
-      <div class="card">
-        <div class="card-title">Servicio</div>
-        <div class="det-row">
-          <span>${ord.servicio || 'Servicio'}</span>
-          <span style="font-weight:700">Gs. ${fmtGs(single)}</span>
-        </div>
-      </div>
-    `;
-  }
-
-  document.getElementById('ord-title').textContent = 'Orden ' + ord.id;
-
-  document.getElementById('ord-content').innerHTML =
-    '<div class="card"><div class="card-title">Orden de Trabajo ' + ord.id + '</div>' +
-
-    '<div class="det-row"><span style="color:#8b949e">Estado</span><span class="status ' + ord.estado + '">' + st + '</span></div>' +
-    '<div class="det-row"><span style="color:#8b949e">Cliente</span><span>' + ord.cliente + '</span></div>' +
-    '<div class="det-row"><span style="color:#8b949e">Vehículo</span><span>' + ord.vehiculo + '</span></div>' +
-    (ord.anio ? '<div class="det-row"><span style="color:#8b949e">Año</span><span>' + ord.anio + '</span></div>' : '') +
-    '<div class="det-row"><span style="color:#8b949e">Patente</span><span>' + (ord.patente || '--') + '</span></div>' +
-    (ord.km ? '<div class="det-row"><span style="color:#8b949e">Km</span><span>' + ord.km + ' km</span></div>' : '') +
-
-    rows +
-
-    '<div class="det-row"><span style="color:#8b949e">Fecha</span><span>' + fmtFecha(ord.fecha) + '</span></div>' +
-    '<div class="det-row"><span style="color:#8b949e">Monto registrado</span><span style="font-weight:700;color:#1e88e5">Gs. ' + fmtGs(total) + '</span></div>' +
-    '</div>' +
-
-    '<div class="card" style="margin-top:0"><div class="card-title">Estado del presupuesto</div>' +
-    '<div class="ep-bar ep-det-bar">' +
-    '<button class="ep-btn pendiente ' + (epOrd === 'pendiente' ? 'active' : '') + '" onclick="toggleEstadoPres(\'' + ord.id + '\')">⏳ Pendiente</button>' +
-    '<button class="ep-btn cerrado ' + (epOrd === 'cerrado' ? 'active' : '') + '" onclick="toggleEstadoPres(\'' + ord.id + '\')">✓ Cerrado</button>' +
-    '</div></div>' +
-
-    '<div class="card" style="margin-top:0"><div class="card-title">Estado de cobro</div>' +
-    '<div class="cobro-bar">' +
-    '<button class="cobro-btn cobrado ' + (ord.cobrado ? 'active' : '') + '" onclick="toggleCobro(' + i + ',true)">✓ Cobrado</button>' +
-    '<button class="cobro-btn pendiente ' + (ord.cobrado ? '' : 'active') + '" onclick="toggleCobro(' + i + ',false)">⏳ Pendiente</button>' +
-    '</div></div>' +
-
-    '<div style="position:sticky;bottom:0;background:#0d1117;padding:10px;border-top:1px solid #1f2937">' +
-    '<button class="btn btn-primary btn-block" onclick="verPresupuestoActual()">Ver / Imprimir PDF</button>' +
-    '<button class="btn btn-outline btn-block" onclick="editarOrden()">✎ Editar Orden</button>' +
-    '</div>';
-
+  var ord=ordenes[i];
+  currentOrdenId=ord.id;
+  var st=ord.estado.charAt(0).toUpperCase()+ord.estado.slice(1);
+  var epOrd=ord.estado_pres||'pendiente';
+  document.getElementById('ord-title').textContent='Orden '+ord.id;
+  document.getElementById('ord-content').innerHTML=
+    '<div class="card"><div class="card-title">Orden de Trabajo '+ord.id+'</div>'+
+    '<div class="det-row"><span style="color:#8b949e">Estado</span><span class="status '+ord.estado+'">'+st+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Cliente</span><span>'+ord.cliente+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Vehiculo</span><span>'+ord.vehiculo+'</span></div>'+
+    (ord.anio?'<div class="det-row"><span style="color:#8b949e">Año</span><span>'+ord.anio+'</span></div>':'')+
+    '<div class="det-row"><span style="color:#8b949e">Patente</span><span>'+(ord.patente||'--')+'</span></div>'+
+    (ord.km?'<div class="det-row"><span style="color:#8b949e">Km</span><span>'+ord.km+' km</span></div>':'')+
+    '<div class="det-row"><span style="color:#8b949e">Servicio</span><span>'+ord.servicio+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Fecha</span><span>'+fmtFecha(ord.fecha)+'</span></div>'+
+    '<div class="det-row"><span style="color:#8b949e">Monto</span><span style="font-weight:700;color:#1e88e5">Gs. '+fmtGs(ord.monto)+'</span></div></div>'+
+    '<div class="card" style="margin-top:0"><div class="card-title">Estado del presupuesto</div>'+
+    '<div class="ep-bar ep-det-bar">'+
+    '<button class="ep-btn pendiente '+(epOrd==='pendiente'?'active':'')+'" onclick="toggleEstadoPres(\''+ord.id+'\')">⏳ Pendiente</button>'+
+    '<button class="ep-btn cerrado '+(epOrd==='cerrado'?'active':'')+'" onclick="toggleEstadoPres(\''+ord.id+'\')">✓ Cerrado</button>'+
+    '</div></div>'+
+    '<div class="card" style="margin-top:0"><div class="card-title">Estado de cobro</div>'+
+    '<div class="cobro-bar">'+
+    '<button class="cobro-btn cobrado '+(ord.cobrado?'active':'')+'" id="btn-cobrado" onclick="toggleCobro('+i+',true)">&#10003; Cobrado</button>'+
+    '<button class="cobro-btn pendiente '+(ord.cobrado?'':'active')+'" id="btn-pendiente" onclick="toggleCobro('+i+',false)">&#9201; Pendiente</button>'+
+    '</div></div>'+
+    '<button class="btn btn-primary btn-block" onclick="verPresupuestoActual()">Ver / Imprimir Presupuesto</button>'+
+    '<button class="btn btn-outline btn-block" onclick="editarOrden()">&#9998; Editar Orden</button>'+
+    '<button class="btn btn-green btn-block" onclick="go(\'s-factura\')">Generar Factura SET DNIT</button>'+
+    '<button class="btn btn-wa btn-block" onclick="notificarOrdenWA()">&#128172; Notificar por WhatsApp</button>'+
+    '<button class="btn btn-block" style="background:#c62828;color:#fff;margin-top:6px;" onclick="eliminarOrden()">&#128465; Eliminar Orden</button>';
   go('s-orden-det');
 }
-  
+
 function verPresupuestoActual(){
   var ord=ordenes.find(function(o){return o.id===currentOrdenId;});
   if(!ord)return go('s-presupuesto');
@@ -1865,18 +1735,11 @@ function renderStock(){
 }
 
 function calcTotal(){
-  var inputs = document.querySelectorAll('#items-list .det-row');
-  var total = 0;
-
-  inputs.forEach(function(row){
-    var qty = parseFloat(row.querySelector('.qty-input')?.value) || 1;
-    var monto = parseFloat((row.querySelector('.monto-input')?.value || '0').replace(/\./g,'').replace(',','.')) || 0;
-
-    total += qty * monto;
-  });
-
-  var tv = document.getElementById('total-val');
-  if(tv) tv.value = total;
+  var inputs=document.querySelectorAll('#items-list .monto-input');
+  var total=0;
+  inputs.forEach(function(inp){total+=parseFloat(inp.value.replace(/\./g,'').replace(',','.'))||0;});
+  var tv=document.getElementById('total-val');
+  if(tv)tv.value=total;
 }
 
 function agregarRepuesto(){
@@ -2151,11 +2014,7 @@ function seleccionarRepuesto(codigo){
   var list=document.getElementById('items-list');if(!list){go('s-nuevo');return;}
   var div=document.createElement('div');div.className='det-row';
   div.dataset.stockId=item.id;
-  div.innerHTML=
-'<input class="desc-input" value="'+item.nombre+'" />'+
-'<input class="qty-input" value="1" min="1" type="number" />'+
-'<input class="monto-input" value="'+item.precio+'" oninput="calcTotal()"/>'+
-'<button class="del-item" onclick="this.parentNode.remove();calcTotal()">×</button>';
+  div.innerHTML='<input class="desc-input" value="'+item.nombre+'" /><input class="monto-input" value="'+item.precio+'" oninput="calcTotal()"/><button class="del-item" onclick="this.parentNode.remove();calcTotal()">&#215;</button>';
   list.appendChild(div);
   calcTotal();
   go('s-nuevo');
