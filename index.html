@@ -440,7 +440,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   <div class="content">
     <div id="print-pres">
       <div class="print-header" style="text-align:center;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid #1e88e5;">
-        <img src="https://carcoragu.github.io/gestfact-demo/pcm_logo.jpg" style="height:80px;border-radius:8px;display:block;margin:0 auto 6px;"/>
+        <img src="https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png" style="height:70px;display:block;margin:0 auto 6px;"/>
         <div style="font-weight:700;font-size:.95rem;letter-spacing:1px;text-transform:uppercase;">PCM Taller Mecánico Automotriz</div>
         <div style="font-size:.78rem;color:#8b949e;margin-top:2px;">Palacio de López casi Augusto Roa Bastos</div>
         <div style="font-size:.78rem;color:#8b949e;">Tel: 0961 807 675</div>
@@ -1778,6 +1778,12 @@ function toggleCobro(idx,cobrado){
 }
 
 function fmtGs(n){return String(Math.round(Number(n)||0)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function fmtFechaLarga(f){
+  var d=f?new Date(f):new Date();
+  if(isNaN(d.getTime()))d=new Date();
+  var meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return 'Asunción, '+d.getDate()+' de '+meses[d.getMonth()]+' de '+d.getFullYear();
+}
 function fmtFecha(f){
   if(!f)return '';
   var d=new Date(f);
@@ -1796,11 +1802,90 @@ function elegirEnvioPresupuesto(){
   if(panel)panel.style.display=panel.style.display==='none'?'block':'none';
 }
 function imprimirPresupuesto(){
-  var contenido=document.getElementById('print-pres');
-  if(!contenido)return;
+  var ord=ordenes.find(function(o){return o.id===currentOrdenId;});
+  if(!ord){var contenido=document.getElementById('print-pres');if(!contenido)return;var v=window.open('','_blank');if(!v){window.print();return;}v.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body>'+contenido.innerHTML+'</body></html>');v.document.close();v.focus();setTimeout(function(){v.print();},500);return;}
+  var cl=clientes.find(function(c){return c.nombre===ord.cliente;})||{};
+  var items=[];try{items=JSON.parse(ord.items||'[]');}catch(e){}
+  if(!items.length)items=[{desc:ord.servicio||'Servicio',monto:ord.monto||0,cantidad:1}];
+  var filas=items.map(function(it){
+    return '<tr><td class="c-desc">'+(it.desc||'Servicio')+'</td><td class="c-cant">'+(it.cantidad||1)+'</td><td class="c-costo">'+fmtGs(it.monto)+'</td></tr>';
+  }).join('');
+  var ahora=new Date();
+  var stamp=String(ahora.getDate()).padStart(2,'0')+'/'+String(ahora.getMonth()+1).padStart(2,'0')+'/'+ahora.getFullYear()+' '+String(ahora.getHours()).padStart(2,'0')+':'+String(ahora.getMinutes()).padStart(2,'0')+':'+String(ahora.getSeconds()).padStart(2,'0');
+  var html=''+
+  '<div class="doc">'+
+    '<div class="doc-header">'+
+      '<img class="doc-logo" src="https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png"/>'+
+      '<div class="doc-contacto">'+
+        '<div><strong>CONTACTO:</strong> 0961 80 76 75</div>'+
+        '<div><strong>DIRECCION:</strong> Palacio de López casi Augusto Roa Bastos</div>'+
+      '</div>'+
+    '</div>'+
+    '<hr class="doc-rule"/>'+
+    '<div class="doc-fecha">'+fmtFechaLarga(ord.fecha)+'</div>'+
+    '<div class="doc-dest">'+
+      '<div>Señores</div>'+
+      '<div class="doc-cliente">'+(ord.cliente||'').toUpperCase()+'</div>'+
+      '<div>Atn.</div>'+
+    '</div>'+
+    '<div class="doc-refline">'+
+      '<span class="doc-presente">PRESENTE</span>'+
+      '<span class="doc-ref">REF.: Presupuesto.</span>'+
+    '</div>'+
+    '<p class="doc-p">De nuestra consideración:</p>'+
+    '<p class="doc-p doc-indent">Tenemos el agrado de dirigirnos a Usted/es con el fin de poner a vuestra/su consideración el</p>'+
+    '<div class="doc-vehline">'+
+      '<span><strong>VEHICULO:</strong> '+(ord.vehiculo||'--').toUpperCase()+'</span>'+
+      '<span><strong>CHAPA:</strong> '+(ord.patente||cl.patente||'--').toUpperCase()+'</span>'+
+    '</div>'+
+    '<table class="doc-tabla">'+
+      '<thead><tr><th class="c-desc">DESCRIPCION</th><th class="c-cant">CANTIDAD</th><th class="c-costo">COSTO</th></tr></thead>'+
+      '<tbody>'+filas+'</tbody>'+
+      '<tfoot><tr><td colspan="2" class="doc-total-label">TOTAL IVA INCLUIDO</td><td class="c-costo doc-total-val">'+fmtGs(ord.monto)+'</td></tr></tfoot>'+
+    '</table>'+
+    '<p class="doc-p">Adjuntamos el/los presupuesto/s, con validez de 15 días para su apreciación y aprobación correspondiente.</p>'+
+    '<p class="doc-p">Sin otro motivo, quedamos a sus órdenes para todas las consultas, atentamente.</p>'+
+    '<div class="doc-firma">'+
+      '<div class="doc-firma-linea"></div>'+
+      '<div class="doc-firma-txt">Aprobado: Firma del Cliente</div>'+
+      '<div class="doc-firma-campo">Aclaración&nbsp;&nbsp;: ..................................................</div>'+
+      '<div class="doc-firma-campo">N&deg; C.I.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ..................................................</div>'+
+    '</div>'+
+    '<div class="doc-footer">'+
+      '<span>'+stamp+'</span>'+
+      '<span>N&deg; ORDEN '+(ord.id||'').replace(/^#/,'')+'</span>'+
+    '</div>'+
+  '</div>';
   var ventana=window.open('','_blank');
   if(!ventana){window.print();return;}
-  ventana.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Presupuesto</title><style>body{font-family:Arial,sans-serif;background:#fff;color:#000;padding:20px;font-size:13px;}.card{border:1px solid #ccc;border-radius:6px;padding:14px;margin-bottom:12px;}.card-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#555;margin-bottom:8px;font-weight:700;}.det-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee;}.det-total{display:flex;justify-content:space-between;padding:8px 0;font-weight:700;font-size:15px;border-top:2px solid #000;margin-top:4px;}.print-header{text-align:center;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #000;}</style></head><body>'+contenido.innerHTML+'</body></html>');
+  ventana.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Presupuesto '+(ord.id||'')+'</title><style>'+
+    'body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#000;padding:24px;font-size:13px;}'+
+    '.doc-header{display:flex;justify-content:space-between;align-items:flex-start;}'+
+    '.doc-logo{height:70px;}'+
+    '.doc-contacto{text-align:right;font-size:12px;line-height:1.5;}'+
+    '.doc-rule{border:none;border-top:2px solid #000;margin:10px 0 16px;}'+
+    '.doc-fecha{text-align:right;margin-bottom:18px;}'+
+    '.doc-dest{margin-bottom:10px;}'+
+    '.doc-cliente{font-weight:700;}'+
+    '.doc-refline{display:flex;justify-content:space-between;margin:10px 0 14px;font-weight:700;}'+
+    '.doc-presente,.doc-ref{text-decoration:underline;}'+
+    '.doc-p{margin:8px 0;line-height:1.5;}'+
+    '.doc-indent{text-indent:28px;}'+
+    '.doc-vehline{display:flex;justify-content:space-between;font-weight:700;margin:14px 0 6px;}'+
+    '.doc-tabla{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:12.5px;}'+
+    '.doc-tabla th{background:#d9d9d9;border:1px solid #999;padding:6px 8px;text-align:left;}'+
+    '.doc-tabla td{border:1px solid #999;padding:5px 8px;}'+
+    '.c-cant{text-align:center;width:90px;}'+
+    '.c-costo{text-align:right;width:120px;}'+
+    '.doc-total-label{text-align:right;font-weight:700;border:1px solid #999;}'+
+    '.doc-total-val{font-weight:700;}'+
+    '.doc-firma{margin-top:70px;text-align:center;}'+
+    '.doc-firma-linea{border-top:1px solid #000;width:280px;margin:0 auto 6px;}'+
+    '.doc-firma-txt{font-weight:700;margin-bottom:10px;}'+
+    '.doc-firma-campo{text-align:left;max-width:340px;margin:0 auto;font-size:12px;}'+
+    '.doc-footer{display:flex;justify-content:space-between;margin-top:50px;padding-top:8px;border-top:1px solid #ccc;font-size:10px;color:#555;}'+
+    '@media print{body{padding:0;}}'+
+  '</style></head><body>'+html+'</body></html>');
   ventana.document.close();
   ventana.focus();
   setTimeout(function(){ventana.print();},500);
