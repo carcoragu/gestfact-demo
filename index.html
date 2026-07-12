@@ -1628,7 +1628,13 @@ function renderGestion(){
 function toggleEstadoPres(id,refresh){
   var ord=ordenes.find(function(o){return o.id===id;});
   if(!ord)return;
-  ord.estado_pres=(ord.estado_pres||'pendiente')==='pendiente'?'cerrado':'pendiente';
+  var actual=ord.estado_pres||'pendiente';
+  var nuevo=actual==='pendiente'?'cerrado':'pendiente';
+  var etiqA=actual==='pendiente'?'Pendiente':'Cerrado';
+  var etiqN=nuevo==='pendiente'?'Pendiente':'Cerrado';
+  var info=ord.cliente+(ord.vehiculo?' — '+ord.vehiculo:'')+(ord.patente?' ['+ord.patente+']':'');
+  if(!confirm('Cambiar estado:\n'+etiqA+' → '+etiqN+'\n\n'+info+'\n\n¿Confirmar?'))return;
+  ord.estado_pres=nuevo;
   apiFire({action:'updateOrden',id:ord.id,fields:{estado_pres:ord.estado_pres}});
   if(refresh)renderGestion();
   else openOrden(ordenes.indexOf(ord));
@@ -1813,6 +1819,10 @@ function agregarRepuesto(){
 }
 
 function toggleCobro(idx,cobrado){
+  var ord0=ordenes[idx];
+  var etiqN=cobrado?'Cobrado':'No Cobrado';
+  var info=(ord0.cliente||'')+(ord0.vehiculo?' — '+ord0.vehiculo:'')+(ord0.patente?' ['+ord0.patente+']':'');
+  if(!confirm('Marcar como: '+etiqN+'\n\n'+info+'\n\n¿Confirmar?'))return;
   ordenes[idx].cobrado=cobrado;
   apiFire({action:'updateOrden',id:ordenes[idx].id,fields:{cobrado:cobrado}});
   renderKPIs();
