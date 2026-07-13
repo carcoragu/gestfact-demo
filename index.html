@@ -2011,7 +2011,7 @@ function notificarOrdenWA(){
   txt+='Servicio: '+ord.servicio+'\n';
   txt+='*Total: Gs. '+fmtGs(ord.monto)+'*\n';
   txt+='Estado: '+ord.estado+'\n\n';
-  txt+='_PCM Taller Mecanico Automotriz_';
+  txt+='_'+EMPRESA_NOMBRE+'_';
   var url='https://wa.me/'+(tel||'')+'?text='+encodeURIComponent(txt);
   window.location.href=url;
 }
