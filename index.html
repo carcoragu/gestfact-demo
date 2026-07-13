@@ -1993,7 +1993,7 @@ function enviarWACliente(nombre, tel){
     if(ord.items){try{JSON.parse(ord.items).forEach(function(it){txt+='- '+(it.cantidad||1)+' x '+it.desc+' Gs. '+fmtGs(it.monto)+'\n';});}catch(e){txt+='- '+ord.servicio+'\n';}}
     else{txt+='- '+ord.servicio+'\n';}
     txt+='\n*Total: Gs. '+fmtGs(ord.monto)+'*\n\n';
-    txt+='Consultas: +595 961 807675\n_PCM Taller Mecanico Automotriz_';
+    txt+='Consultas: '+EMPRESA_TEL+'\n_'+EMPRESA_NOMBRE+'_';
   }
   window.location.href='https://wa.me/'+num+(txt?'?text='+encodeURIComponent(txt):'');
 }
@@ -2038,7 +2038,7 @@ function enviarPresupuestoWA(){
   txt+='*Km:* '+(km?km.textContent:'')+'\n\n';
   txt+='*Detalle:*\n'+items+'\n';
   txt+='*Total: Gs. '+fmtGs(ord2.monto||0)+'*\n\n';
-  txt+='Consultas: +595 961 807675\n_PCM Taller Mecanico Automotriz_';
+  txt+='Consultas: '+EMPRESA_TEL+'\n_'+EMPRESA_NOMBRE+'_';
   var cl=clientes.find(function(c){return c.nombre===(ord2.cliente||'');})||{};
   var num=(cl.tel||'').replace(/[^0-9]/g,'');
   window.location.href='https://wa.me/'+num+'?text='+encodeURIComponent(txt);
