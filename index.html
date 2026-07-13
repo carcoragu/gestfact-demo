@@ -1560,7 +1560,7 @@ function abrirHistorialVehiculo(vi){
           '<div class="list-info">'+
           '<div class="list-name">'+ord.id+' — '+ord.servicio.substring(0,40)+(ord.servicio.length>40?'...':'')+'</div>'+
           '<div class="list-sub">'+ord.fecha+' &nbsp;<span class="status '+ord.estado+'">'+st+'</span></div>'+
-          '</div><div style="text-align:right;font-size:.82rem;font-weight:700;color:#1e88e5;min-width:60px">Gs.'+Math.round(ord.monto/1000)+'k</div></div>';
+          '</div><div style="text-align:right;font-size:.82rem;font-weight:700;color:#1e88e5;min-width:60px">Gs. '+fmtGs(ord.monto)+'</div></div>';
       }).join('')+'</div>';
   document.getElementById('cli-content').innerHTML=
     '<button class="btn btn-outline btn-block" style="margin-bottom:12px;" onclick="openCliente('+i+')">&#8249; Volver al cliente</button>'+
@@ -1604,7 +1604,7 @@ function renderGestion(){
       '<div class="list-name">'+ord.cliente+' — '+ord.vehiculo+(ord.patente?' ['+ord.patente+']':'')+'</div>'+
       '<div class="list-sub">'+ord.servicio.substring(0,38)+(ord.servicio.length>38?'...':'')+' · '+ord.fecha+'</div></div>'+
       '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:85px;">'+
-      '<div style="font-size:.82rem;font-weight:700;">Gs.'+Math.round((ord.monto||0)/1000)+'k</div>'+
+      '<div style="font-size:.82rem;font-weight:700;">Gs. '+fmtGs(ord.monto)+'</div>'+
       '<span class="pres-tag '+ep+'" onclick="toggleEstadoPres(\''+ord.id+'\',true)">'+
       (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></div></div>';
   }).join(''):'<div style="color:#6e7681;text-align:center;padding:24px;font-size:.85rem;">Sin presupuestos en este período</div>';
@@ -1704,7 +1704,7 @@ function filtrarOrdenes(q){
     '<div class="list-sub">'+ord.servicio+'</div>'+
     '<div style="margin-top:4px"><span class="status '+ord.estado+'">'+st+'</span></div></div>'+
     '<div style="text-align:right">'+
-    '<div style="font-size:.8rem;font-weight:700">Gs.'+Math.round(ord.monto/1000)+'k</div>'+
+    '<div style="font-size:.8rem;font-weight:700">Gs. '+fmtGs(ord.monto)+'</div>'+
     '<div style="font-size:.65rem;color:#6e7681">'+ord.fecha+'</div></div></div>');
   }).join('');
 }
@@ -1718,7 +1718,7 @@ function renderOrdenes(){
     '<div class="list-sub">'+ord.servicio+'</div>'+
     '<div style="margin-top:4px"><span class="status '+ord.estado+'">'+st+'</span></div></div>'+
     '<div style="text-align:right">'+
-    '<div style="font-size:.8rem;font-weight:700">Gs.'+Math.round(ord.monto/1000)+'k</div>'+
+    '<div style="font-size:.8rem;font-weight:700">Gs. '+fmtGs(ord.monto)+'</div>'+
     '<div style="font-size:.65rem;color:#6e7681">'+ord.fecha+'</div></div></div>');
   }).join('');
 }
