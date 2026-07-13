@@ -446,10 +446,10 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   <div class="content">
     <div id="print-pres">
       <div class="print-header" style="text-align:center;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid #1e88e5;">
-        <img src="https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png" style="height:70px;display:block;margin:0 auto 6px;"/>
-        <div style="font-weight:700;font-size:.95rem;letter-spacing:1px;text-transform:uppercase;">PCM Taller Mecánico Automotriz</div>
-        <div style="font-size:.78rem;color:#8b949e;margin-top:2px;">Palacio de López casi Augusto Roa Bastos</div>
-        <div style="font-size:.78rem;color:#8b949e;">Tel: 0961 807 675</div>
+        <img id="pres-logo" src="https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png" style="height:70px;display:block;margin:0 auto 6px;"/>
+        <div id="pres-empresa" style="font-weight:700;font-size:.95rem;letter-spacing:1px;text-transform:uppercase;">PCM Taller Mecánico Automotriz</div>
+        <div id="pres-dir" style="font-size:.78rem;color:#8b949e;margin-top:2px;">Palacio de López casi Augusto Roa Bastos</div>
+        <div id="pres-tel" style="font-size:.78rem;color:#8b949e;">Tel: 0961 807 675</div>
       </div>
       <div id="pres-num-print" style="text-align:center;font-size:1rem;font-weight:700;color:#1e88e5;margin:10px 0 14px;letter-spacing:.5px;">Presupuesto N°P-0042</div>
       <div class="card">
@@ -832,6 +832,10 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 var GESTFACT_URL='YOUR_APPS_SCRIPT_URL_HERE';
 var CLIENT_KEY='DEMO';
 var STORE_PREFIX='gf_DEMO_';
+var EMPRESA_LOGO='https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png';
+var EMPRESA_NOMBRE='GestFact Taller';
+var EMPRESA_DIR='';
+var EMPRESA_TEL='';
 var currentOrdenId=null;
 var editandoOrden=false;
 var _guardando=false;
@@ -840,9 +844,9 @@ var GF_USER='admin';
 var GF_PASS='1234';
 // Tabla de clientes: clave -> configuracion. Agregar aqui cada cliente nuevo.
 var CLIENTES_MAP={
-  'taller2026':{key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'taller2026'},
-  'demo2026':{key:'DEMO_001',nombre:'Demo IsabSoft',url:'YOUR_DEMO',demo:true,user:'admin',pass:'demo2026'},
-  'climar2026':{key:'CLIMAR_003',nombre:'Climar Taller',url:'https://script.google.com/macros/s/AKfycbwctTKX5TMgh_isA3uOmbijGXchzgQ685GhIUg0-zqUrxNYboOIUyD4PhyjysGYcmn8CA/exec',user:'climar',pass:'climar2026'}
+  'taller2026':{key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'taller2026',logo:'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png',empresa:'PCM Taller Mecánico Automotriz',dir_empresa:'Palacio de López casi Augusto Roa Bastos',tel_empresa:'0961 807 675'},
+  'demo2026':{key:'DEMO_001',nombre:'Demo IsabSoft',url:'YOUR_DEMO',demo:true,user:'admin',pass:'demo2026',logo:'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png',empresa:'GestFact Demo',dir_empresa:'',tel_empresa:''},
+  'climar2026':{key:'CLIMAR_003',nombre:'Climar Taller',url:'https://script.google.com/macros/s/AKfycbwctTKX5TMgh_isA3uOmbijGXchzgQ685GhIUg0-zqUrxNYboOIUyD4PhyjysGYcmn8CA/exec',user:'climar',pass:'climar2026',logo:'https://carcoragu.github.io/gestfact-demo/logo_climar.jpg',empresa:'Electro-Mecánica Climar Profesional',dir_empresa:'Las Huertas, Luque, Paraguay',tel_empresa:'+595 984 821707'}
 };
 // Cargar config del cliente si viene de una pagina de acceso personalizada
 (function(){
@@ -1051,6 +1055,10 @@ function loginAndLoad(){
     CLIENT_KEY=cfg.key;STORE_PREFIX='gf_'+cfg.key+'_';
     CLIENT_NOMBRE=cfg.nombre;GESTFACT_URL=cfg.url;
     GF_USER=cfg.user;GF_PASS=cfg.pass;
+    EMPRESA_LOGO=cfg.logo||'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png';
+    EMPRESA_NOMBRE=cfg.empresa||cfg.nombre||'GestFact';
+    EMPRESA_DIR=cfg.dir_empresa||'';
+    EMPRESA_TEL=cfg.tel_empresa||'';
     if(!cfg.demo){try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}}
     if(cfg.demo&&(!_load('clientes')||!_load('clientes').length)){
       clientes=[
@@ -1160,6 +1168,10 @@ function guardarOrden(target){
   var el=function(id){return document.getElementById(id);};
   if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto N°'+numPres;
   if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto N°'+numPres;
+  if(el('pres-logo'))el('pres-logo').src=EMPRESA_LOGO;
+  if(el('pres-empresa'))el('pres-empresa').textContent=EMPRESA_NOMBRE;
+  if(el('pres-dir'))el('pres-dir').textContent=EMPRESA_DIR;
+  if(el('pres-tel'))el('pres-tel').textContent=EMPRESA_TEL?'Tel: '+EMPRESA_TEL:'';
   if(el('pres-cliente'))el('pres-cliente').textContent=clienteNombre;
   if(el('pres-vehiculo'))el('pres-vehiculo').textContent=vehiculoNombre;
   if(el('pres-patente'))el('pres-patente').textContent=cl.patente||'--';
@@ -1765,6 +1777,10 @@ function verPresupuestoActual(){
   var cl=clientes.find(function(c){return c.nombre===ord.cliente;})||{};
   if(el('pres-titulo'))el('pres-titulo').textContent='Presupuesto N° '+String(ord.id).replace(/^#/,'');
   if(el('pres-num-print'))el('pres-num-print').textContent='Presupuesto N° '+String(ord.id).replace(/^#/,'');
+  if(el('pres-logo'))el('pres-logo').src=EMPRESA_LOGO;
+  if(el('pres-empresa'))el('pres-empresa').textContent=EMPRESA_NOMBRE;
+  if(el('pres-dir'))el('pres-dir').textContent=EMPRESA_DIR;
+  if(el('pres-tel'))el('pres-tel').textContent=EMPRESA_TEL?'Tel: '+EMPRESA_TEL:'';
   if(el('pres-cliente'))el('pres-cliente').textContent=ord.cliente;
   if(el('pres-vehiculo'))el('pres-vehiculo').textContent=ord.vehiculo;
   if(el('pres-patente'))el('pres-patente').textContent=ord.patente||cl.patente||'--';
@@ -1883,10 +1899,10 @@ function imprimirPresupuesto(){
   var html=''+
   '<div class="doc">'+
     '<div class="doc-header">'+
-      '<img class="doc-logo" src="https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png"/>'+
+      '<img class="doc-logo" src="'+EMPRESA_LOGO+'"/>'+
       '<div class="doc-contacto">'+
-        '<div><strong>CONTACTO:</strong> 0961 80 76 75</div>'+
-        '<div><strong>DIRECCION:</strong> Palacio de López casi Augusto Roa Bastos</div>'+
+        (EMPRESA_TEL?'<div><strong>CONTACTO:</strong> '+EMPRESA_TEL+'</div>':'')+
+        (EMPRESA_DIR?'<div><strong>DIRECCION:</strong> '+EMPRESA_DIR+'</div>':'')+
       '</div>'+
     '</div>'+
     '<hr class="doc-rule"/>'+
