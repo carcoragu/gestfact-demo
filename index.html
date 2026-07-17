@@ -842,42 +842,43 @@ var _guardando=false;
 var CLIENT_NOMBRE='Demo';
 var GF_USER='admin';
 var GF_PASS='1234';
-// Tabla de clientes: clave -> configuracion. Agregar aqui cada cliente nuevo.
-var CLIENTES_MAP={
-  'taller2026':{key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'taller2026',logo:'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png',empresa:'PCM Taller Mecánico Automotriz',dir_empresa:'Palacio de López casi Augusto Roa Bastos',tel_empresa:'0961 807 675'},
-  'demo2026':{key:'DEMO_001',nombre:'Demo IsabSoft',url:'YOUR_DEMO',demo:true,user:'admin',pass:'demo2026',logo:'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png',empresa:'GestFact Demo',dir_empresa:'',tel_empresa:''},
-  'climar2026':{key:'CLIMAR_003',nombre:'Climar Taller',url:'https://script.google.com/macros/s/AKfycbwctTKX5TMgh_isA3uOmbijGXchzgQ685GhIUg0-zqUrxNYboOIUyD4PhyjysGYcmn8CA/exec',user:'climar',pass:'climar2026',logo:'https://carcoragu.github.io/gestfact-demo/logo_climar.jpg',empresa:'Electro-Mecánica Climar Profesional',dir_empresa:'Las Huertas, Luque, Paraguay',tel_empresa:'+595 984 821707'}
+// Auth server-side — contraseñas en Script Properties, nunca en HTML
+var AUTH_URL='https://script.google.com/macros/s/AKfycbxY3UkupUb8t1qSuCKv7_D-wnH-ipsQPQ9CwKsMIi12XnXKSfg4fHbyiws1Ls_LN72dJA/exec';
+var GF_TOKEN='';
+// Info visual por cliente (sin contraseñas). Agregar aqui cada cliente nuevo.
+var CLIENTES_INFO={
+  'MIGUEL_001':{logo:'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png',empresa:'PCM Taller Mecánico Automotriz',dir_empresa:'Palacio de López casi Augusto Roa Bastos',tel_empresa:'0961 807 675'},
+  'CLIMAR_003':{logo:'https://carcoragu.github.io/gestfact-demo/logo_climar.jpg',empresa:'Electro-Mecánica Climar Profesional',dir_empresa:'Las Huertas, Luque, Paraguay',tel_empresa:'+595 984 821707'},
+  'DEMO_001':  {logo:'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png',empresa:'GestFact Demo',dir_empresa:'',tel_empresa:''}
 };
-// Cargar config del cliente si viene de una pagina de acceso personalizada
+// Auto-login: valida token guardado en localStorage
 (function(){
-  var k=sessionStorage.getItem('gf_client_key');
-  var _fresh=false;
-  // 1. Hash de URL — método más confiable en iOS Safari (no depende de storage)
-  if(!k){try{var hm=location.hash.match(/#gfboot=([A-Za-z0-9+\/=]+)/);if(hm){var _b=JSON.parse(decodeURIComponent(escape(atob(hm[1]))));history.replaceState(null,'',location.pathname+location.search);sessionStorage.setItem('gf_client_key',_b.key);sessionStorage.setItem('gf_client_nombre',_b.nombre);sessionStorage.setItem('gf_gestfact_url',_b.url);sessionStorage.setItem('gf_user',_b.user);sessionStorage.setItem('gf_pass',_b.pass);k=_b.key;_fresh=true;}}catch(e){}}
-  // 2. localStorage persistente — para reaperturas de PWA sin pasar por miguel.html
-  if(!k){try{var _boot=localStorage.getItem('gf_boot');if(_boot){var _b=JSON.parse(_boot);sessionStorage.setItem('gf_client_key',_b.key);sessionStorage.setItem('gf_client_nombre',_b.nombre);sessionStorage.setItem('gf_gestfact_url',_b.url);sessionStorage.setItem('gf_user',_b.user);sessionStorage.setItem('gf_pass',_b.pass);k=_b.key;}}catch(e){}}
-  if(k){
-    CLIENT_KEY=k;
-    STORE_PREFIX='gf_'+k+'_';
-    if(_fresh){try{Object.keys(localStorage).filter(function(key){return key.indexOf(STORE_PREFIX)===0;}).forEach(function(key){localStorage.removeItem(key);});}catch(e){}}
-    CLIENT_NOMBRE=sessionStorage.getItem('gf_client_nombre')||CLIENT_NOMBRE;
-    var url=sessionStorage.getItem('gf_gestfact_url');
-    if(url)GESTFACT_URL=url;
-    GF_USER=sessionStorage.getItem('gf_user')||GF_USER;
-    GF_PASS=sessionStorage.getItem('gf_pass')||GF_PASS;
-    function _autoLogin(){
-      var p=document.getElementById('login-pass');
-      if(p)p.value=GF_PASS;
-      loginAndLoad();
+  try{
+    var raw=localStorage.getItem('gf_boot');
+    if(!raw)return;
+    var _b=JSON.parse(raw);
+    // Formato viejo (tenia pass) o sin token: limpiar y pedir login
+    if(!_b.token){localStorage.removeItem('gf_boot');return;}
+    // Verificar expiracion del token (base64: clientKey:expiry:sig)
+    try{
+      var dec=atob(_b.token);
+      var exp=parseInt(dec.split(':')[1]);
+      if(Date.now()>exp){localStorage.removeItem('gf_boot');return;}
+    }catch(e){localStorage.removeItem('gf_boot');return;}
+    // Token valido — arrancar app sin pasar por login
+    CLIENT_KEY=_b.key;STORE_PREFIX='gf_'+_b.key+'_';
+    GESTFACT_URL=_b.url;GF_TOKEN=_b.token;
+    CLIENT_NOMBRE=_b.nombre||CLIENT_NOMBRE;
+    EMPRESA_LOGO=_b.logo||EMPRESA_LOGO;
+    EMPRESA_NOMBRE=_b.empresa||_b.nombre||'GestFact';
+    EMPRESA_DIR=_b.dir_empresa||'';EMPRESA_TEL=_b.tel_empresa||'';
+    function _autoStart(){
+      checkLicense().then(function(lic){if(!applyLicense(lic))return;go('s-dashboard');loadAllData();}).catch(function(){go('s-dashboard');loadAllData();});
     }
-    if(document.readyState==='loading'){
-      window.addEventListener('DOMContentLoaded',_autoLogin);
-    }else{
-      _autoLogin();
-    }
-  }
+    if(document.readyState==='loading'){window.addEventListener('DOMContentLoaded',_autoStart);}else{_autoStart();}
+  }catch(e){}
 })();
-function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(body)))));sc.crossOrigin='anonymous';sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64;document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];res({ok:true,timeout:true});},45000);});}
+function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(body)))));sc.crossOrigin='anonymous';sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64+(GF_TOKEN?'&token='+encodeURIComponent(GF_TOKEN):'');document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];res({ok:true,timeout:true});},45000);});}
 // ===== OFFLINE SUPPORT =====
 var _offlineQueue=[];
 function _save(k,v){try{localStorage.setItem(STORE_PREFIX+k,JSON.stringify(v));}catch(e){}}
@@ -1049,45 +1050,50 @@ function applyLicense(lic){
   return true;
 }
 function loginAndLoad(){
-  var p=(document.getElementById('login-pass')||{}).value||'';
-  var cfg=CLIENTES_MAP[p];
-  if(cfg){
-    CLIENT_KEY=cfg.key;STORE_PREFIX='gf_'+cfg.key+'_';
-    CLIENT_NOMBRE=cfg.nombre;GESTFACT_URL=cfg.url;
-    GF_USER=cfg.user;GF_PASS=cfg.pass;
-    EMPRESA_LOGO=cfg.logo||'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png';
-    EMPRESA_NOMBRE=cfg.empresa||cfg.nombre||'GestFact';
-    EMPRESA_DIR=cfg.dir_empresa||'';
-    EMPRESA_TEL=cfg.tel_empresa||'';
-    if(!cfg.demo){try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}}
-    if(cfg.demo&&(!_load('clientes')||!_load('clientes').length)){
-      clientes=[
-        {id:'d1',nombre:'Taller San José',tel:'+595981100200',ruc:'80012345-1',dir:'Av. Mcal. López 1234',vehiculo:'Toyota Hilux',patente:'ABC 123',km:'45000',codigo:''},
-        {id:'d2',nombre:'Carlos Ramírez',tel:'+595991300400',ruc:'',dir:'',vehiculo:'Honda Civic',patente:'XYZ 789',km:'32000',codigo:''}
-      ];
-      ordenes=[
-        {id:'o1',cliente:'Taller San José',vehiculo:'Toyota Hilux',patente:'ABC 123',km:'45000',anio:'2019',servicio:'Cambio de aceite y filtros',items:'[{"desc":"Aceite 5W30 4L","monto":120000},{"desc":"Filtro de aceite","monto":45000},{"desc":"Mano de obra","monto":80000}]',monto:245000,estado:'orden',estado_pres:'pendiente',fecha:'2026-06-01',cobrado:false},
-        {id:'o2',cliente:'Carlos Ramírez',vehiculo:'Honda Civic',patente:'XYZ 789',km:'32000',anio:'2020',servicio:'Revisión de frenos',items:'[{"desc":"Pastillas delantera","monto":180000},{"desc":"Mano de obra","monto":60000}]',monto:240000,estado:'orden',estado_pres:'pendiente',fecha:'2026-06-02',cobrado:true}
-      ];
-      _persistAll();
-    }
-    go('s-dashboard');loadAllData();return;
-  }
-  var u=(document.getElementById('login-user')||{}).value||'';
-  if(u!==GF_USER||p!==GF_PASS){
-    var inp=document.getElementById('login-pass');
-    if(inp){inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';},1500);}
-    return;
-  }
+  var pass=(document.getElementById('login-pass')||{}).value||'';
+  if(!pass)return;
   var btn=document.querySelector('.login-btn');
-  if(btn){btn.textContent='Conectando...';btn.disabled=true;}
-  checkLicense().then(function(lic){
-    if(!applyLicense(lic))return;
-    return loadAllData();
-  }).then(function(){
-    var cur=document.querySelector('.screen.active');
-    if(!cur||cur.id!=='s-suspendido')go('s-dashboard');
-  }).catch(function(){go('s-dashboard');});
+  if(btn){btn.textContent='Verificando...';btn.disabled=true;}
+  fetch(AUTH_URL+'?action=login&pass='+encodeURIComponent(pass))
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(btn){btn.textContent='Ingresar';btn.disabled=false;}
+      if(!data.ok){
+        var inp=document.getElementById('login-pass');
+        if(inp){inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';},1500);}
+        return;
+      }
+      CLIENT_KEY=data.clientKey;STORE_PREFIX='gf_'+data.clientKey+'_';
+      GESTFACT_URL=data.scriptUrl;GF_TOKEN=data.token;
+      CLIENT_NOMBRE=data.nombre;
+      var info=CLIENTES_INFO[data.clientKey]||{};
+      EMPRESA_LOGO=info.logo||EMPRESA_LOGO;
+      EMPRESA_NOMBRE=info.empresa||data.nombre||'GestFact';
+      EMPRESA_DIR=info.dir_empresa||'';EMPRESA_TEL=info.tel_empresa||'';
+      if(!data.demo){
+        try{localStorage.setItem('gf_boot',JSON.stringify({key:data.clientKey,token:data.token,url:data.scriptUrl,nombre:data.nombre,demo:false,logo:info.logo||'',empresa:info.empresa||'',dir_empresa:info.dir_empresa||'',tel_empresa:info.tel_empresa||''}));}catch(e){}
+      }
+      if(data.demo&&(!_load('clientes')||!_load('clientes').length)){
+        clientes=[
+          {id:'d1',nombre:'Taller San José',tel:'+595981100200',ruc:'80012345-1',dir:'Av. Mcal. López 1234',vehiculo:'Toyota Hilux',patente:'ABC 123',km:'45000',codigo:''},
+          {id:'d2',nombre:'Carlos Ramírez',tel:'+595991300400',ruc:'',dir:'',vehiculo:'Honda Civic',patente:'XYZ 789',km:'32000',codigo:''}
+        ];
+        ordenes=[
+          {id:'o1',cliente:'Taller San José',vehiculo:'Toyota Hilux',patente:'ABC 123',km:'45000',anio:'2019',servicio:'Cambio de aceite y filtros',items:'[{"desc":"Aceite 5W30 4L","monto":120000},{"desc":"Filtro de aceite","monto":45000},{"desc":"Mano de obra","monto":80000}]',monto:245000,estado:'orden',estado_pres:'pendiente',fecha:'2026-06-01',cobrado:false},
+          {id:'o2',cliente:'Carlos Ramírez',vehiculo:'Honda Civic',patente:'XYZ 789',km:'32000',anio:'2020',servicio:'Revisión de frenos',items:'[{"desc":"Pastillas delantera","monto":180000},{"desc":"Mano de obra","monto":60000}]',monto:240000,estado:'orden',estado_pres:'pendiente',fecha:'2026-06-02',cobrado:true}
+        ];
+        _persistAll();
+      }
+      checkLicense().then(function(lic){
+        if(!applyLicense(lic))return;
+        go('s-dashboard');loadAllData();
+      }).catch(function(){go('s-dashboard');loadAllData();});
+    })
+    .catch(function(){
+      if(btn){btn.textContent='Ingresar';btn.disabled=false;}
+      var inp=document.getElementById('login-pass');
+      if(inp){inp.style.borderColor='#e53935';setTimeout(function(){inp.style.borderColor='';},1500);}
+    });
 }
 function _marcarCambioOrden(){
   if(!editandoOrden)return;
@@ -2491,11 +2497,11 @@ function enviarReporteWA(){
   var sub=document.querySelector('.login-sub');
   if(!sub)return;
   try{
-    if(typeof loginAndLoad==='function'&&typeof CLIENTES_MAP==='object'&&CLIENTES_MAP!==null){
-      sub.textContent='JS OK v13 ✓';
+    if(typeof loginAndLoad==='function'&&typeof AUTH_URL==='string'){
+      sub.textContent='JS OK v14 ✓';
       sub.style.color='#2e7d32';
     }else{
-      sub.textContent='ERROR: loginAndLoad='+typeof loginAndLoad+' / MAP='+typeof CLIENTES_MAP;
+      sub.textContent='ERROR: loginAndLoad='+typeof loginAndLoad+' / AUTH='+typeof AUTH_URL;
       sub.style.color='#e53935';
     }
   }catch(err){
