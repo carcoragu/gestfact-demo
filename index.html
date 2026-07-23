@@ -254,6 +254,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   <div class="sidebar-item" onclick="go('s-egresos');closeSidebar()"><span class="si-icon">&#128181;</span>Egresos</div>
   <div class="sidebar-item" onclick="go('s-libro');closeSidebar()"><span class="si-icon">&#128218;</span>Libro de Ventas</div>
   <div class="sidebar-item" onclick="go('s-stock');closeSidebar()"><span class="si-icon">&#128230;</span>Stock / Inventario</div>
+  <div class="sidebar-item" onclick="go('s-fotos');closeSidebar()"><span class="si-icon">&#128247;</span>Fotos Kilometraje</div>
   <div class="sidebar-item" onclick="go('s-chat');closeSidebar()"><span class="si-icon">&#129302;</span>IA Asistente</div>
   <div class="sidebar-item" style="color:#6e7681;font-size:.78rem;" onclick="closeSidebar()"><span class="si-icon">&#128222;</span>+595 981 153 477</div>
 </nav>
@@ -581,7 +582,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 <!-- STOCK -->
 <div class="screen" id="s-stock">
   <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">Stock &amp; Inventario</span><button class="menu-btn" onclick="abrirNuevoStock()">+</button></div>
-  <div class="content"><input class="form-input" style="margin-bottom:12px;" placeholder="Buscar repuesto o codigo..."/><div id="stockList"></div></div>
+  <div class="content"><input class="form-input" id="stock-search" style="margin-bottom:12px;" placeholder="Buscar repuesto o codigo..." oninput="filtrarStock(this.value)"/><div id="stockList"></div></div>
   <div class="botnav">
     <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
     <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
@@ -650,6 +651,44 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
     <input class="form-input" id="picker-search" style="margin-bottom:12px;" placeholder="Buscar repuesto o codigo..." oninput="filtrarPicker(this.value)"/>
     <div id="pickerList"></div>
     <button class="btn btn-outline btn-block" style="margin-top:12px;" onclick="go('s-nuevo')">Cancelar</button>
+  </div>
+</div>
+
+<!-- FOTOS KILOMETRAJE -->
+<div class="screen" id="s-fotos">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">&#128247; Fotos Kilometraje</span><button class="menu-btn" onclick="go('s-fotos-nueva')">+</button></div>
+  <div class="content"><div id="fotosList"></div></div>
+  <div class="botnav">
+    <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
+    <button onclick="go('s-ordenes')"><span>&#128295;</span><span>Ordenes</span></button>
+    <button onclick="go('s-chat')"><span>&#129302;</span><span>IA Chat</span></button>
+    <button onclick="go('s-factura')"><span>&#129534;</span><span>Factura</span></button>
+    <button onclick="go('s-stock')"><span>&#128230;</span><span>Stock</span></button>
+  </div>
+</div>
+
+<!-- FOTO NUEVA -->
+<div class="screen" id="s-fotos-nueva">
+  <div class="topbar"><button class="menu-btn" onclick="go('s-fotos')">&#8249;</button><span class="title">Registrar Foto KM</span></div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Datos del vehículo</div>
+      <div class="form-group"><label class="form-label">Nro. Presupuesto (opcional)</label><input class="form-input" id="fk-nropre" placeholder="Ej: 3720"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Patente</label><input class="form-input" id="fk-patente" placeholder="ABC-123"/></div>
+        <div class="form-group"><label class="form-label">Kilómetros</label><input class="form-input" id="fk-km" type="number" placeholder="45000"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Tipo</label>
+        <select class="form-select" id="fk-tipo"><option value="entrada">Entrada</option><option value="salida">Salida</option></select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Foto del odómetro</div>
+      <img id="fk-preview" src="" style="display:none;max-width:100%;border-radius:8px;margin-bottom:8px;"/>
+      <button class="btn btn-outline btn-block" onclick="document.getElementById('fk-file').click()">&#128247; Tomar / Cargar foto</button>
+      <input type="file" id="fk-file" accept="image/*" capture="environment" style="display:none;" onchange="previewFoto(this)"/>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="guardarFoto()">Guardar Foto</button>
   </div>
 </div>
 
@@ -883,7 +922,7 @@ function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.n
 var _offlineQueue=[];
 function _save(k,v){try{localStorage.setItem(STORE_PREFIX+k,JSON.stringify(v));}catch(e){}}
 function _load(k){try{var d=localStorage.getItem(STORE_PREFIX+k);return d?JSON.parse(d):null;}catch(e){return null;}}
-function _persistAll(){_save('clientes',clientes);_save('ordenes',ordenes);_save('stock',stockItems);_save('egresos',egresos);}
+function _persistAll(){_save('clientes',clientes);_save('ordenes',ordenes);_save('stock',stockItems);_save('egresos',egresos);_save('fotos',fotosKm);}
 function renderKPIs(){
   var hoy=new Date();
   var dd=String(hoy.getDate()).padStart(2,'0');
@@ -975,16 +1014,19 @@ var stockItems=[
   {id:'FI-COMB',nombre:'Filtro de combustible',marca:'Bosch',qty:1,min:3,unit:'unidades',precio:55000},
 ];
 var egresos=[];
+var fotosKm=[];
+var stockEditId=null;
 function loadAllData(){
   if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return Promise.resolve();
   return apiCall({action:'loadAll'}).then(function(r){
     if(!r.ok)return;
     if(r.timeout){
-      var sc=_load('clientes'),so=_load('ordenes'),ss=_load('stock'),se=_load('egresos');
+      var sc=_load('clientes'),so=_load('ordenes'),ss=_load('stock'),se=_load('egresos'),sf=_load('fotos');
       if(sc&&sc.length)clientes=sc;else clientes=[];
       if(so&&so.length)ordenes=so;else ordenes=[];
       if(ss&&ss.length)stockItems=ss;
       if(se&&se.length)egresos=se;
+      if(sf&&sf.length)fotosKm=sf;
       _mostrarOffline(true);
       renderKPIs();
       return;
@@ -1006,17 +1048,19 @@ function loadAllData(){
     if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}else{ordenes=[];}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
     if(r.egresos&&r.egresos.length){egresos=r.egresos.map(function(e){return{id:String(e.id||''),descripcion:String(e.descripcion||''),categoria:String(e.categoria||'Otros'),monto:Number(e.monto)||0,fecha:String(e.fecha||'')};});}
+    if(r.fotos&&r.fotos.length){fotosKm=r.fotos.map(function(f){return{id:String(f.id||''),nropre:String(f.nropre||''),patente:String(f.patente||''),km:String(f.km||''),tipo:String(f.tipo||'entrada'),foto_data:String(f.foto_data||''),fecha:String(f.fecha||'')};});}
     _persistAll();
     renderKPIs();
     _save('last_sync',new Date().toISOString());
     _syncQueue();
     _mostrarOffline(false);
   }).catch(function(){
-    var sc=_load('clientes'),so=_load('ordenes'),ss=_load('stock'),se=_load('egresos');
+    var sc=_load('clientes'),so=_load('ordenes'),ss=_load('stock'),se=_load('egresos'),sf=_load('fotos');
     if(sc&&sc.length)clientes=sc;else clientes=[];
     if(so&&so.length)ordenes=so;else ordenes=[];
     if(ss&&ss.length)stockItems=ss;
     if(se&&se.length)egresos=se;
+    if(sf&&sf.length)fotosKm=sf;
     _mostrarOffline(true);
     renderKPIs();
   });
@@ -1480,7 +1524,8 @@ function go(id){
   if(t)t.classList.add('active');
   if(id==='s-clientes'){renderClientes();ncReturnScreen='s-clientes';}
   if(id==='s-ordenes')renderOrdenes();
-  if(id==='s-stock')renderStock();
+  if(id==='s-stock'){var si=document.getElementById('stock-search');if(si)si.value='';renderStock();}
+  if(id==='s-fotos')renderFotos();
   if(id==='s-gestion')renderGestion();
   if(id==='s-reportes')initReportes();
   if(id==='s-nuevo'){limpiarOrden();if(!editandoOrden){renderNuevoSelect(_preselClienteOrden);_preselClienteOrden=null;}}
@@ -1810,20 +1855,29 @@ function verPresupuestoActual(){
   go('s-presupuesto');
 }
 
-function renderStock(){
-  document.getElementById('stockList').innerHTML=stockItems.map(function(item){
-    var bajo=item.qty<item.min;
+function renderStock(filtro){
+  var items=filtro?stockItems.filter(function(s){
+    return s.nombre.toLowerCase().indexOf(filtro.toLowerCase())>=0||(s.id||'').toLowerCase().indexOf(filtro.toLowerCase())>=0;
+  }):stockItems;
+  var sl=document.getElementById('stockList');if(!sl)return;
+  sl.innerHTML=items.length?items.map(function(item){
+    var bajo=Number(item.qty)<Number(item.min);
     return('<div class="stock-item">'+
     '<div style="font-size:1.4rem">&#128230;</div>'+
-    '<div class="stock-info">'+
+    '<div class="stock-info" style="flex:1">'+
     '<div class="stock-name">'+item.nombre+'</div>'+
-    '<div class="stock-code">'+item.id+' -- '+item.marca+' -- Gs.'+item.precio.toLocaleString()+'</div></div>'+
-    '<div style="text-align:right">'+
+    '<div class="stock-code">'+item.id+' &mdash; '+item.marca+' &mdash; Gs.'+Number(item.precio||0).toLocaleString('es-PY')+'</div></div>'+
+    '<div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'+
     '<div class="stock-qty '+(bajo?'bajo':'')+'">'+item.qty+'</div>'+
     '<div style="font-size:.65rem;color:#8b949e">'+item.unit+'</div>'+
-    '<span class="tag '+(bajo?'bajo':'ok')+'">'+(bajo?'Bajo min.':'OK')+'</span></div></div>');
-  }).join('');
+    '<span class="tag '+(bajo?'bajo':'ok')+'">'+(bajo?'Bajo min.':'OK')+'</span>'+
+    '<div style="display:flex;gap:4px;margin-top:4px;">'+
+    '<button onclick="editarStock(\''+item.id+'\')" style="font-size:.7rem;padding:2px 7px;border:1px solid #1e88e5;color:#1e88e5;background:transparent;border-radius:4px;cursor:pointer;">&#9998; Editar</button>'+
+    '<button onclick="eliminarStock(\''+item.id+'\')" style="font-size:.7rem;padding:2px 7px;border:1px solid #c62828;color:#c62828;background:transparent;border-radius:4px;cursor:pointer;">&#128465;</button>'+
+    '</div></div></div>');
+  }).join(''):'<div style="color:#6e7681;text-align:center;padding:24px;">Sin repuestos en stock</div>';
 }
+function filtrarStock(val){renderStock(val);}
 
 function calcTotal(){
   var inputs=document.querySelectorAll('#items-list .monto-input');
@@ -2057,9 +2111,34 @@ function editarPresupuesto(){
 // ── STOCK MODULE ────────────────────────────────────────
 var scanStream=null;var scanInterval=null;
 
+function editarStock(id){
+  var item=stockItems.find(function(s){return s.id===id;});
+  if(!item)return;
+  stockEditId=id;
+  setModo('manual');
+  var set=function(fid,val){var el=document.getElementById(fid);if(el)el.value=val||'';};
+  set('sn-codigo',item.id);set('sn-nombre',item.nombre);set('sn-marca',item.marca);
+  set('sn-qty',item.qty);set('sn-min',item.min);set('sn-costo',item.costo||0);set('sn-venta',item.precio);
+  var u=document.getElementById('sn-unit');
+  if(u){for(var i=0;i<u.options.length;i++){if(u.options[i].value===item.unit){u.selectedIndex=i;break;}}}
+  var cod=document.getElementById('sn-codigo');if(cod)cod.readOnly=true;
+  var mi=document.getElementById('sn-margen-info');if(mi)mi.innerHTML='';
+  calcMargen();
+  go('s-stock-nuevo');
+}
+function eliminarStock(id){
+  var item=stockItems.find(function(s){return s.id===id;});
+  if(!item)return;
+  if(!confirm('Eliminar "'+item.nombre+'" ('+id+') del stock?\n\nEsta acción no se puede deshacer.'))return;
+  stockItems=stockItems.filter(function(s){return s.id!==id;});
+  apiFire({action:'deleteStock',id:id});
+  renderStock();
+}
 function abrirNuevoStock(){
+  stockEditId=null;
   setModo('manual');
   ['sn-codigo','sn-nombre','sn-marca','sn-qty','sn-min','sn-costo','sn-venta'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var cod=document.getElementById('sn-codigo');if(cod)cod.readOnly=false;
   var u=document.getElementById('sn-unit');if(u)u.selectedIndex=0;
   var mi=document.getElementById('sn-margen-info');if(mi)mi.innerHTML='';
   go('s-stock-nuevo');
@@ -2153,6 +2232,20 @@ function guardarStockIngreso(){
   var venta=parseFloat(g('sn-venta'))||0;
   var marca=(g('sn-marca')||'').trim();
   var unit=g('sn-unit')||'unidades';
+  if(stockEditId){
+    // Modo edición: reemplazar todos los campos excepto id
+    var idx=stockItems.findIndex(function(s){return s.id===stockEditId;});
+    if(idx>=0){
+      stockItems[idx].nombre=nombre;stockItems[idx].marca=marca;
+      stockItems[idx].qty=qty;stockItems[idx].min=min;
+      stockItems[idx].unit=unit;stockItems[idx].precio=venta;stockItems[idx].costo=costo;
+      apiFire({action:'saveStock',data:stockItems[idx]});
+      alert('Repuesto actualizado!');
+    }
+    stockEditId=null;
+    var cod2=document.getElementById('sn-codigo');if(cod2)cod2.readOnly=false;
+    stopScan();go('s-stock');return;
+  }
   var existing=stockItems.findIndex(function(s){return s.id===codigo;});
   if(existing>=0){
     stockItems[existing].qty+=qty;
@@ -2198,6 +2291,57 @@ function seleccionarRepuesto(codigo){
   list.appendChild(div);
   calcTotal();
   go('s-nuevo');
+}
+// ── FOTOS KILOMETRAJE ────────────────────────────────────
+function renderFotos(){
+  var fl=document.getElementById('fotosList');if(!fl)return;
+  var lista=fotosKm.slice().sort(function(a,b){return(b.fecha||'')>(a.fecha||'')?1:-1;});
+  fl.innerHTML=lista.length?lista.map(function(f){
+    var thumb=f.foto_data?'<img src="'+f.foto_data+'" style="width:56px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0;" />':'<div style="width:56px;height:56px;background:#1e3a5f;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">&#128247;</div>';
+    return('<div class="list-item" style="gap:12px;">'+thumb+
+    '<div class="list-info"><div class="list-name">'+(f.patente||'Sin patente')+' &mdash; '+(f.tipo==='salida'?'Salida':'Entrada')+'</div>'+
+    '<div class="list-sub">'+(f.km?f.km+' km':'')+(f.nropre?' &mdash; Pres. '+f.nropre:'')+'</div>'+
+    '<div style="font-size:.7rem;color:#8b949e;">'+(f.fecha||'')+'</div></div></div>');
+  }).join(''):'<div style="color:#6e7681;text-align:center;padding:32px;">Sin fotos registradas</div>';
+}
+function previewFoto(input){
+  var file=input.files[0];if(!file)return;
+  var pr=document.getElementById('fk-preview');
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var MAX=640;
+      var w=img.width,h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+      if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+      var canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      var data=canvas.toDataURL('image/jpeg',0.7);
+      if(pr){pr.src=data;pr.style.display='block';}
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function guardarFoto(){
+  var g=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var patente=g('fk-patente');
+  if(!patente){alert('La patente es obligatoria');return;}
+  var pr=document.getElementById('fk-preview');
+  var foto_data=pr&&pr.style.display!=='none'?pr.src:'';
+  var now=new Date();
+  var dd=String(now.getDate()).padStart(2,'0');
+  var mm=String(now.getMonth()+1).padStart(2,'0');
+  var yyyy=now.getFullYear();
+  var hh=String(now.getHours()).padStart(2,'0');
+  var min=String(now.getMinutes()).padStart(2,'0');
+  var reg={id:String(Date.now()),nropre:g('fk-nropre'),patente:patente.toUpperCase(),km:g('fk-km'),tipo:g('fk-tipo')||'entrada',foto_data:foto_data,fecha:dd+'/'+mm+'/'+yyyy+' '+hh+':'+min};
+  fotosKm.push(reg);
+  _persistAll();
+  apiFire({action:'saveFoto',data:{id:reg.id,nropre:reg.nropre,patente:reg.patente,km:reg.km,tipo:reg.tipo,foto_data:reg.foto_data,fecha:reg.fecha}});
+  alert('Foto registrada!');
+  go('s-fotos');
 }
 // ── FIN STOCK MODULE ─────────────────────────────────────
 
