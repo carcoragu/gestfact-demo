@@ -1046,7 +1046,7 @@ function loadAllData(){
       clientes=[];
     }
     if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}else{ordenes=[];}
-    if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0};});}
+    if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0,costo:Number(s.costo)||0};});}
     if(r.egresos&&r.egresos.length){egresos=r.egresos.map(function(e){return{id:String(e.id||''),descripcion:String(e.descripcion||''),categoria:String(e.categoria||'Otros'),monto:Number(e.monto)||0,fecha:String(e.fecha||'')};});}
     if(r.fotos&&r.fotos.length){fotosKm=r.fotos.map(function(f){return{id:String(f.id||''),nropre:String(f.nropre||''),patente:String(f.patente||''),km:String(f.km||''),tipo:String(f.tipo||'entrada'),foto_data:String(f.foto_data||''),fecha:String(f.fecha||'')};});}
     _persistAll();
@@ -1866,7 +1866,8 @@ function renderStock(filtro){
     '<div style="font-size:1.4rem">&#128230;</div>'+
     '<div class="stock-info" style="flex:1">'+
     '<div class="stock-name">'+item.nombre+'</div>'+
-    '<div class="stock-code">'+item.id+' &mdash; '+item.marca+' &mdash; Gs.'+Number(item.precio||0).toLocaleString('es-PY')+'</div></div>'+
+    '<div class="stock-code">'+item.id+' &mdash; '+item.marca+'</div>'+
+    '<div class="stock-code">Venta: Gs.'+Number(item.precio||0).toLocaleString('es-PY')+' &nbsp;|&nbsp; <span style="color:#e53935;">Costo: Gs.'+Number(item.costo||0).toLocaleString('es-PY')+'</span></div></div>'+
     '<div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'+
     '<div class="stock-qty '+(bajo?'bajo':'')+'">'+item.qty+'</div>'+
     '<div style="font-size:.65rem;color:#8b949e">'+item.unit+'</div>'+
