@@ -2353,7 +2353,7 @@ function guardarFoto(){
   var reg={id:String(Date.now()),nropre:g('fk-nropre'),patente:patente.toUpperCase(),km:g('fk-km'),tipo:g('fk-tipo')||'entrada',foto_data:foto_data,fecha:dd+'/'+mm+'/'+yyyy+' '+hh+':'+min};
   fotosKm.push(reg);
   _persistAll();
-  apiFire({action:'saveFoto',data:{id:reg.id,nropre:reg.nropre,patente:reg.patente,km:reg.km,tipo:reg.tipo,foto_data:reg.foto_data,fecha:reg.fecha}});
+  apiFire({action:'saveFoto',data:{id:reg.id,nropre:reg.nropre,patente:reg.patente,km:reg.km,tipo:reg.tipo,foto_data:'',fecha:reg.fecha}});
   ['fk-nropre','fk-patente','fk-km'].forEach(function(fid){var el=document.getElementById(fid);if(el)el.value='';});
   var ftp=document.getElementById('fk-tipo');if(ftp)ftp.selectedIndex=0;
   var fpr=document.getElementById('fk-preview');if(fpr){fpr.src='';fpr.style.display='none';}
