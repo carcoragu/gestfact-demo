@@ -1212,9 +1212,11 @@ function guardarOrden(target){
     var sid=row.dataset.stockId;
     if(!sid)return;
     var idx=stockItems.findIndex(function(s){return s.id===sid;});
+    var qi=row.querySelector('.qty-input');
+    var usada=qi&&Number(qi.value)>0?Number(qi.value):1;
     if(idx>=0&&stockItems[idx].qty>0){
-      stockItems[idx].qty=Math.max(0,stockItems[idx].qty-1);
-      apiFire({action:'updateStock',id:sid,qty:stockItems[idx].qty});
+      stockItems[idx].qty=Math.max(0,stockItems[idx].qty-usada);
+      apiFire({action:'updateStock',id:sid,fields:{qty:stockItems[idx].qty}});
     }
   });
   // Poblar presupuesto con datos reales
