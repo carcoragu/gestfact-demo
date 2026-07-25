@@ -2304,12 +2304,20 @@ function renderFotos(){
   var fl=document.getElementById('fotosList');if(!fl)return;
   var lista=fotosKm.slice().sort(function(a,b){return(b.fecha||'')>(a.fecha||'')?1:-1;});
   fl.innerHTML=lista.length?lista.map(function(f){
-    var thumb=f.foto_data?'<img src="'+f.foto_data+'" style="width:56px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0;" />':'<div style="width:56px;height:56px;background:#1e3a5f;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">&#128247;</div>';
+    var thumb=f.foto_data?'<a href="'+f.foto_data+'" target="_blank" style="flex-shrink:0;"><img src="'+f.foto_data+'" style="width:56px;height:56px;object-fit:cover;border-radius:6px;" /></a>':'<div style="width:56px;height:56px;background:#1e3a5f;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">&#128247;</div>';
     return('<div class="list-item" style="gap:12px;">'+thumb+
-    '<div class="list-info"><div class="list-name">'+(f.patente||'Sin patente')+' &mdash; '+(f.tipo==='salida'?'Salida':'Entrada')+'</div>'+
+    '<div class="list-info" style="flex:1;min-width:0;"><div class="list-name">'+(f.patente||'Sin patente')+' &mdash; '+(f.tipo==='salida'?'Salida':'Entrada')+'</div>'+
     '<div class="list-sub">'+(f.km?f.km+' km':'')+(f.nropre?' &mdash; Pres. '+f.nropre:'')+'</div>'+
-    '<div style="font-size:.7rem;color:#8b949e;">'+(f.fecha||'')+'</div></div></div>');
+    '<div style="font-size:.7rem;color:#8b949e;">'+(f.fecha||'')+'</div></div>'+
+    '<button onclick="borrarFoto(\''+f.id+'\')" style="background:none;border:none;color:#f85149;font-size:1.2rem;cursor:pointer;padding:4px;flex-shrink:0;">&#128465;</button></div>');
   }).join(''):'<div style="color:#6e7681;text-align:center;padding:32px;">Sin fotos registradas</div>';
+}
+function borrarFoto(id){
+  if(!confirm('¿Borrar esta foto?'))return;
+  fotosKm=fotosKm.filter(function(f){return f.id!==id;});
+  _persistAll();
+  apiFire({action:'deleteFoto',id:id});
+  renderFotos();
 }
 function previewFoto(input){
   var file=input.files[0];if(!file)return;
