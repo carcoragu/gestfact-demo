@@ -1825,7 +1825,7 @@ function openOrden(i){
     '<button class="btn btn-green btn-block" onclick="go(\'s-factura\')">Generar Factura SET DNIT</button>'+
     '<button class="btn btn-wa btn-block" onclick="notificarOrdenWA()">&#128172; Notificar por WhatsApp</button>'+
     '<button class="btn btn-block" style="background:#c62828;color:#fff;margin-top:6px;" onclick="eliminarOrden()">&#128465; Eliminar Orden</button>'+
-    (function(){var fs=fotosKm.filter(function(f){return f.nropre===String(ord.id)||f.patente===(ord.patente||'').toUpperCase();});if(!fs.length)return'';return'<div class="card" style="margin-top:8px"><div class="card-title">Fotos KM ('+fs.length+')</div>'+fs.map(function(f){var thumb=f.foto_data?'<div onclick="verFotoFull(\''+f.foto_data+'\')" style="flex-shrink:0;cursor:pointer;"><img src="'+f.foto_data+'" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" /></div>':'<div style="width:48px;height:48px;background:#1e3a5f;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">&#128247;</div>';var fec=f.fecha||'';if(fec.indexOf('T')>0){try{var d=new Date(fec);fec=String(d.getDate()).padStart(2,'0')+'/'+(String(d.getMonth()+1).padStart(2,'0'))+'/'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}catch(e){}}return'<div class="list-item" style="gap:10px;padding:8px 0;">'+thumb+'<div class="list-info"><div style="font-size:.82rem;font-weight:700;">'+(f.tipo==='salida'?'Salida':'Entrada')+' &mdash; '+(f.km?f.km+' km':'Sin km')+'</div><div style="font-size:.7rem;color:#8b949e;">'+fec+'</div></div></div>';}).join('')+'</div>';})();
+    (function(){var fs=fotosKm.filter(function(f){return f.nropre===String(ord.id)||f.patente===(ord.patente||'').toUpperCase();});if(!fs.length)return'';return'<div class="card" style="margin-top:8px"><div class="card-title">Fotos KM ('+fs.length+')</div>'+fs.map(function(f){var thumb=f.foto_data?'<div onclick="verFotoFull(\''+f.foto_data+'\')" style="flex-shrink:0;cursor:pointer;"><img src="'+_lh3(f.foto_data)+'" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" /></div>':'<div style="width:48px;height:48px;background:#1e3a5f;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">&#128247;</div>';var fec=f.fecha||'';if(fec.indexOf('T')>0){try{var d=new Date(fec);fec=String(d.getDate()).padStart(2,'0')+'/'+(String(d.getMonth()+1).padStart(2,'0'))+'/'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}catch(e){}}return'<div class="list-item" style="gap:10px;padding:8px 0;">'+thumb+'<div class="list-info"><div style="font-size:.82rem;font-weight:700;">'+(f.tipo==='salida'?'Salida':'Entrada')+' &mdash; '+(f.km?f.km+' km':'Sin km')+'</div><div style="font-size:.7rem;color:#8b949e;">'+fec+'</div></div></div>';}).join('')+'</div>';})();
   go('s-orden-det');
 }
 
@@ -2310,16 +2310,31 @@ function seleccionarRepuesto(codigo){
   go('s-nuevo');
 }
 // ── FOTOS KILOMETRAJE ────────────────────────────────────
-function verFotoFull(u){var m=u&&u.match(/[?&]id=([^&]+)/);var full=m?'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w1024':u;var ov=document.createElement('div');ov.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.93);z-index:9999;display:flex;align-items:center;justify-content:center;';ov.onclick=function(){document.body.removeChild(ov);};ov.innerHTML='<img src="'+full+'" style="max-width:95%;max-height:90vh;border-radius:8px;object-fit:contain;" /><div style="position:absolute;top:16px;right:20px;color:#fff;font-size:2rem;cursor:pointer;">&#10005;</div>';document.body.appendChild(ov);}
+function _driveId(u){var m=u&&u.match(/[?&]id=([^&]+)/);return m?m[1]:null;}
+function _lh3(u){var id=_driveId(u);return id?'https://lh3.googleusercontent.com/d/'+id:u;}
+function verFotoFull(u){var full=_lh3(u);var ov=document.createElement('div');ov.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.93);z-index:9999;display:flex;align-items:center;justify-content:center;';ov.onclick=function(){document.body.removeChild(ov);};ov.innerHTML='<img src="'+full+'" style="max-width:95%;max-height:90vh;border-radius:8px;object-fit:contain;" /><div style="position:absolute;top:16px;right:20px;color:#fff;font-size:2rem;cursor:pointer;">&#10005;</div>';document.body.appendChild(ov);}
+function enviarFotoWA(f){
+  var id=_driveId(f.foto_data);if(!id)return alert('La foto aún no está en Drive.');
+  var url='https://lh3.googleusercontent.com/d/'+id;
+  var tipo=f.tipo==='salida'?'Salida':'Entrada';
+  var msg='📸 Foto '+tipo+' — Vehículo '+( f.patente||'')+'\n'+(f.km?'KM: '+f.km+'\n':'')+'Fecha: '+(f.fecha||'')+'\n\n'+url;
+  var ord=ordenes.find(function(o){return o.id===f.nropre;});
+  var cli=ord?clientes.find(function(c){return c.nombre===ord.cliente;}):null;
+  var tel=cli&&cli.tel?cli.tel.replace(/\D/g,''):'';
+  window.open('https://wa.me/'+(tel||'')+('?text='+encodeURIComponent(msg)),'_blank');
+}
 function renderFotos(){
   var fl=document.getElementById('fotosList');if(!fl)return;
   var lista=fotosKm.slice().sort(function(a,b){return(b.fecha||'')>(a.fecha||'')?1:-1;});
   fl.innerHTML=lista.length?lista.map(function(f){
-    var thumb=f.foto_data?'<div onclick="verFotoFull(\''+f.foto_data+'\')" style="flex-shrink:0;cursor:pointer;"><img src="'+f.foto_data+'" style="width:56px;height:56px;object-fit:cover;border-radius:6px;" /></div>':'<div style="width:56px;height:56px;background:#1e3a5f;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">&#128247;</div>';
+    var fsrc=f.foto_data?_lh3(f.foto_data):'';
+    var thumb=fsrc?'<div onclick="verFotoFull(\''+f.foto_data+'\')" style="flex-shrink:0;cursor:pointer;"><img src="'+fsrc+'" style="width:56px;height:56px;object-fit:cover;border-radius:6px;" /></div>':'<div style="width:56px;height:56px;background:#1e3a5f;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">&#128247;</div>';
+    var fenc=JSON.stringify(f).replace(/'/g,"\\'");
     return('<div class="list-item" style="gap:12px;">'+thumb+
     '<div class="list-info" style="flex:1;min-width:0;"><div class="list-name">'+(f.patente||'Sin patente')+' &mdash; '+(f.tipo==='salida'?'Salida':'Entrada')+'</div>'+
     '<div class="list-sub">'+(f.km?f.km+' km':'')+(f.nropre?' &mdash; Pres. '+f.nropre:'')+'</div>'+
     '<div style="font-size:.7rem;color:#8b949e;">'+(f.fecha||'')+'</div></div>'+
+    (f.foto_data?'<button onclick="enviarFotoWA(fotosKm.find(function(x){return x.id===\''+f.id+'\'}))" style="background:none;border:none;color:#25D366;font-size:1.2rem;cursor:pointer;padding:4px;flex-shrink:0;">&#128172;</button>':'')+
     '<button onclick="borrarFoto(\''+f.id+'\')" style="background:none;border:none;color:#f85149;font-size:1.2rem;cursor:pointer;padding:4px;flex-shrink:0;">&#128465;</button></div>');
   }).join(''):'<div style="color:#6e7681;text-align:center;padding:32px;">Sin fotos registradas</div>';
 }
