@@ -918,6 +918,7 @@ var CLIENTES_INFO={
   }catch(e){}
 })();
 function apiCall(body){return new Promise(function(res,rej){var cb='gcb_'+Date.now();var sc=document.createElement('script');var done=false;window[cb]=function(d){done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);res(d);};sc.onerror=function(){if(done)return;done=true;delete window[cb];if(sc.parentNode)sc.parentNode.removeChild(sc);rej(new Error('Red'));};var b64=encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(body)))));sc.crossOrigin='anonymous';sc.src=GESTFACT_URL+'?callback='+cb+'&body='+b64+(GF_TOKEN?'&token='+encodeURIComponent(GF_TOKEN):'');document.head.appendChild(sc);setTimeout(function(){if(done)return;done=true;delete window[cb];res({ok:true,timeout:true});},45000);});}
+function apiPost(body){if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return Promise.resolve({ok:false});body.token=GF_TOKEN;return fetch(GESTFACT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)}).then(function(r){return r.json();}).catch(function(){return{ok:false};});}
 // ===== OFFLINE SUPPORT =====
 var _offlineQueue=[];
 function _save(k,v){try{localStorage.setItem(STORE_PREFIX+k,JSON.stringify(v));}catch(e){}}
@@ -2354,6 +2355,8 @@ function guardarFoto(){
   fotosKm.push(reg);
   _persistAll();
   apiFire({action:'saveFoto',data:{id:reg.id,nropre:reg.nropre,patente:reg.patente,km:reg.km,tipo:reg.tipo,foto_data:'',fecha:reg.fecha}});
+  var _rid=reg.id;var _rfd=reg.foto_data;
+  apiPost({action:'saveFoto',data:{id:_rid,nropre:reg.nropre,patente:reg.patente,km:reg.km,tipo:reg.tipo,foto_data:_rfd,fecha:reg.fecha}}).then(function(r){if(r&&r.url){for(var i=0;i<fotosKm.length;i++){if(fotosKm[i].id===_rid){fotosKm[i].foto_data=r.url;break;}}}_persistAll();});
   ['fk-nropre','fk-patente','fk-km'].forEach(function(fid){var el=document.getElementById(fid);if(el)el.value='';});
   var ftp=document.getElementById('fk-tipo');if(ftp)ftp.selectedIndex=0;
   var fpr=document.getElementById('fk-preview');if(fpr){fpr.src='';fpr.style.display='none';}
