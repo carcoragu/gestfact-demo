@@ -1050,7 +1050,7 @@ function loadAllData(){
     if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}else{ordenes=[];}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0,costo:Number(s.costo)||0};});}
     if(r.egresos&&r.egresos.length){egresos=r.egresos.map(function(e){return{id:String(e.id||''),descripcion:String(e.descripcion||''),categoria:String(e.categoria||'Otros'),monto:Number(e.monto)||0,fecha:String(e.fecha||'')};});}
-    if(r.fotos&&r.fotos.length){fotosKm=r.fotos.map(function(f){var prev=fotosKm.find(function(p){return p.id===String(f.id);});return{id:String(f.id||''),nropre:String(f.nropre||''),patente:String(f.patente||''),km:String(f.km||''),tipo:String(f.tipo||'entrada'),foto_data:prev?String(prev.foto_data||''):'',fecha:String(f.fecha||'')};});}
+    if(r.fotos&&r.fotos.length){fotosKm=r.fotos.map(function(f){var prev=fotosKm.find(function(p){return p.id===String(f.id);});return{id:String(f.id||''),nropre:String(f.nropre||''),patente:String(f.patente||''),km:String(f.km||''),tipo:String(f.tipo||'entrada'),foto_data:String(f.foto_data||'')||(prev?String(prev.foto_data||''):''),fecha:String(f.fecha||'')};});}
     _persistAll();
     renderKPIs();
     _save('last_sync',new Date().toISOString());
@@ -2317,13 +2317,13 @@ function previewFoto(input){
   reader.onload=function(e){
     var img=new Image();
     img.onload=function(){
-      var MAX=640;
+      var MAX=480;
       var w=img.width,h=img.height;
       if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
       if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
       var canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
-      var data=canvas.toDataURL('image/jpeg',0.5);
+      var data=canvas.toDataURL('image/jpeg',0.45);
       if(pr){pr.src=data;pr.style.display='block';}
     };
     img.src=e.target.result;
