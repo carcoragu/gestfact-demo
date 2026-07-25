@@ -1019,6 +1019,7 @@ var stockItems=[
 var egresos=[];
 var fotosKm=[];
 var stockEditId=null;
+var _fromPicker=false;
 function loadAllData(){
   if(!GESTFACT_URL||GESTFACT_URL.indexOf('YOUR_')===0)return Promise.resolve();
   return apiCall({action:'loadAll'}).then(function(r){
@@ -1531,7 +1532,7 @@ function go(id){
   if(id==='s-fotos')renderFotos();
   if(id==='s-gestion')renderGestion();
   if(id==='s-reportes')initReportes();
-  if(id==='s-nuevo'){limpiarOrden();if(!editandoOrden){renderNuevoSelect(_preselClienteOrden);_preselClienteOrden=null;}}
+  if(id==='s-nuevo'){if(!_fromPicker)limpiarOrden();_fromPicker=false;if(!editandoOrden){renderNuevoSelect(_preselClienteOrden);_preselClienteOrden=null;}}
   if(id==='s-egresos')renderEgresos();
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
@@ -2303,6 +2304,7 @@ function seleccionarRepuesto(codigo){
   div.innerHTML='<input class="desc-input" value="'+item.nombre+'" oninput="calcTotal()"/><input class="qty-input" type="number" min="1" value="1" oninput="calcTotal()"/><input class="monto-input" value="'+item.precio+'" oninput="calcTotal()"/><button class="del-item" onclick="this.parentNode.remove();calcTotal()">&#215;</button>';
   list.appendChild(div);
   calcTotal();
+  _fromPicker=true;
   go('s-nuevo');
 }
 // ── FOTOS KILOMETRAJE ────────────────────────────────────
