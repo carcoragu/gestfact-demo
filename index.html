@@ -987,7 +987,9 @@ function apiFire(body){
     _mostrarOffline(true);
     return;
   }
-  apiCall(body).catch(function(){
+  apiCall(body).then(function(r){
+    if(r&&r.timeout){var q=_load('queue')||[];q.push(body);_save('queue',q);}
+  }).catch(function(){
     var q=_load('queue')||[];q.push(body);_save('queue',q);
   });
 }
@@ -2257,6 +2259,7 @@ function guardarStockIngreso(){
   } else {
     var nuevo={id:codigo,nombre:nombre,marca:marca,qty:qty,min:min,unit:unit,precio:venta,costo:costo};
     stockItems.push(nuevo);
+    _persistAll();
     apiFire({action:'saveStock',data:nuevo});
     alert('Repuesto '+nombre+' registrado!');
   }
