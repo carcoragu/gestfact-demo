@@ -1208,23 +1208,17 @@ function guardarOrden(target){
     apiFire({action:'saveOrden',data:newOrd});
   }
   // Descontar stock para items del picker (nuevos o agregados en edicion)
-  var _dbgStock=[];
   document.querySelectorAll('#items-list .det-row').forEach(function(row){
     var sid=row.dataset.stockId;
-    if(!sid){_dbgStock.push('sin-stockId');return;}
+    if(!sid)return;
     var idx=stockItems.findIndex(function(s){return s.id===sid;});
     var qi=row.querySelector('.qty-input');
     var usada=qi&&Number(qi.value)>0?Number(qi.value):1;
     if(idx>=0){
-      var antes=stockItems[idx].qty;
       stockItems[idx].qty=Math.max(0,stockItems[idx].qty-usada);
       apiFire({action:'updateStock',id:sid,fields:{qty:stockItems[idx].qty}});
-      _dbgStock.push(sid+': '+antes+'→'+stockItems[idx].qty+'(usada:'+usada+')');
-    } else {
-      _dbgStock.push(sid+': no encontrado en stockItems');
     }
   });
-  alert('DEBUG stock: ['+_dbgStock.join(' | ')+'] esEdicion='+esEdicion);
   _persistAll();
   // Poblar presupuesto con datos reales
   var cl=clientes.find(function(c){return c.nombre===clienteNombre;})||{patente:'',km:''};
