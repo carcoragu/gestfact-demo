@@ -988,7 +988,7 @@ function apiFire(body){
     return;
   }
   apiCall(body).then(function(r){
-    if(r&&r.timeout){var q=_load('queue')||[];q.push(body);_save('queue',q);}
+    if(!r||r.timeout||r.ok===false){var q=_load('queue')||[];q.push(body);_save('queue',q);}
   }).catch(function(){
     var q=_load('queue')||[];q.push(body);_save('queue',q);
   });
