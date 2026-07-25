@@ -2293,7 +2293,7 @@ function seleccionarRepuesto(codigo){
   var list=document.getElementById('items-list');if(!list){go('s-nuevo');return;}
   var div=document.createElement('div');div.className='det-row';
   div.dataset.stockId=item.id;
-  div.innerHTML='<input class="desc-input" value="'+item.nombre+'" /><input class="monto-input" value="'+item.precio+'" oninput="calcTotal()"/><button class="del-item" onclick="this.parentNode.remove();calcTotal()">&#215;</button>';
+  div.innerHTML='<input class="desc-input" value="'+item.nombre+'" oninput="calcTotal()"/><input class="qty-input" type="number" min="1" value="1" oninput="calcTotal()"/><input class="monto-input" value="'+item.precio+'" oninput="calcTotal()"/><button class="del-item" onclick="this.parentNode.remove();calcTotal()">&#215;</button>';
   list.appendChild(div);
   calcTotal();
   go('s-nuevo');
