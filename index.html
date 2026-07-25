@@ -656,7 +656,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 
 <!-- FOTOS KILOMETRAJE -->
 <div class="screen" id="s-fotos">
-  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">&#128247; Fotos Kilometraje</span><button class="menu-btn" onclick="go('s-fotos-nueva')">+</button></div>
+  <div class="topbar"><button class="menu-btn" onclick="go('s-dashboard')">&#8249;</button><span class="title">&#128247; Fotos Kilometraje</span><button class="menu-btn" onclick="abrirFotoKM()">+</button></div>
   <div class="content"><div id="fotosList"></div></div>
   <div class="botnav">
     <button onclick="go('s-dashboard')"><span>&#127968;</span><span>Inicio</span></button>
@@ -1050,7 +1050,7 @@ function loadAllData(){
     if(r.ordenes&&r.ordenes.length){ordenes=r.ordenes.map(function(o){return{id:String(o.id||''),cliente:String(o.cliente||''),vehiculo:String(o.vehiculo||''),patente:String(o.patente||''),km:String(o.km||''),anio:String(o.anio||''),servicio:String(o.servicio||''),items:String(o.items||'[]'),monto:Number(o.monto)||0,estado:String(o.estado||'presupuesto'),estado_pres:String(o.estado_pres||'pendiente'),fecha:String(o.fecha||''),cobrado:(o.cobrado==='true'||o.cobrado===true)};});}else{ordenes=[];}
     if(r.stock&&r.stock.length){stockItems=r.stock.map(function(s){return{id:String(s.id||''),nombre:String(s.nombre||''),marca:String(s.marca||''),qty:Number(s.qty)||0,min:Number(s.min)||0,unit:String(s.unit||'unidades'),precio:Number(s.precio)||0,costo:Number(s.costo)||0};});}
     if(r.egresos&&r.egresos.length){egresos=r.egresos.map(function(e){return{id:String(e.id||''),descripcion:String(e.descripcion||''),categoria:String(e.categoria||'Otros'),monto:Number(e.monto)||0,fecha:String(e.fecha||'')};});}
-    if(r.fotos&&r.fotos.length){fotosKm=r.fotos.map(function(f){return{id:String(f.id||''),nropre:String(f.nropre||''),patente:String(f.patente||''),km:String(f.km||''),tipo:String(f.tipo||'entrada'),foto_data:String(f.foto_data||''),fecha:String(f.fecha||'')};});}
+    if(r.fotos&&r.fotos.length){fotosKm=r.fotos.map(function(f){var prev=fotosKm.find(function(p){return p.id===String(f.id);});return{id:String(f.id||''),nropre:String(f.nropre||''),patente:String(f.patente||''),km:String(f.km||''),tipo:String(f.tipo||'entrada'),foto_data:prev?String(prev.foto_data||''):'',fecha:String(f.fecha||'')};});}
     _persistAll();
     renderKPIs();
     _save('last_sync',new Date().toISOString());
@@ -1816,10 +1816,12 @@ function openOrden(i){
     '<button class="cobro-btn pendiente '+(ord.cobrado?'':'active')+'" id="btn-pendiente" onclick="toggleCobro('+i+',false)">&#9201; Pendiente</button>'+
     '</div></div>'+
     '<button class="btn btn-primary btn-block" onclick="verPresupuestoActual()">Ver / Imprimir Presupuesto</button>'+
+    '<button class="btn btn-outline btn-block" onclick="abrirFotoKM(\''+ord.id+'\',\''+(ord.patente||'')+'\',\''+(ord.km||'')+'\')">&#128247; Foto KM</button>'+
     '<button class="btn btn-outline btn-block" onclick="editarOrden()">&#9998; Editar Orden</button>'+
     '<button class="btn btn-green btn-block" onclick="go(\'s-factura\')">Generar Factura SET DNIT</button>'+
     '<button class="btn btn-wa btn-block" onclick="notificarOrdenWA()">&#128172; Notificar por WhatsApp</button>'+
-    '<button class="btn btn-block" style="background:#c62828;color:#fff;margin-top:6px;" onclick="eliminarOrden()">&#128465; Eliminar Orden</button>';
+    '<button class="btn btn-block" style="background:#c62828;color:#fff;margin-top:6px;" onclick="eliminarOrden()">&#128465; Eliminar Orden</button>'+
+    (function(){var fs=fotosKm.filter(function(f){return f.nropre===String(ord.id)||f.patente===(ord.patente||'').toUpperCase();});if(!fs.length)return'';return'<div class="card" style="margin-top:8px"><div class="card-title">Fotos KM ('+fs.length+')</div>'+fs.map(function(f){var thumb=f.foto_data?'<img src="'+f.foto_data+'" style="width:48px;height:48px;object-fit:cover;border-radius:6px;flex-shrink:0;"/>':'<div style="width:48px;height:48px;background:#1e3a5f;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">&#128247;</div>';return'<div class="list-item" style="gap:10px;padding:8px 0;">'+thumb+'<div class="list-info"><div style="font-size:.82rem;font-weight:700;">'+(f.tipo==='salida'?'Salida':'Entrada')+' &mdash; '+(f.km?f.km+' km':'Sin km')+'</div><div style="font-size:.7rem;color:#8b949e;">'+(f.fecha||'')+'</div></div></div>';}).join('')+'</div>';})();
   go('s-orden-det');
 }
 
@@ -2328,6 +2330,14 @@ function previewFoto(input){
   };
   reader.readAsDataURL(file);
 }
+function abrirFotoKM(nropre,patente,km){
+  var set=function(fid,val){var el=document.getElementById(fid);if(el)el.value=val||'';};
+  set('fk-nropre',nropre||'');set('fk-patente',patente||'');set('fk-km',km||'');
+  var ftp=document.getElementById('fk-tipo');if(ftp)ftp.selectedIndex=0;
+  var fpr=document.getElementById('fk-preview');if(fpr){fpr.src='';fpr.style.display='none';}
+  var ffi=document.getElementById('fk-file');if(ffi)ffi.value='';
+  go('s-fotos-nueva');
+}
 function guardarFoto(){
   var g=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
   var patente=g('fk-patente');
@@ -2344,6 +2354,10 @@ function guardarFoto(){
   fotosKm.push(reg);
   _persistAll();
   apiFire({action:'saveFoto',data:{id:reg.id,nropre:reg.nropre,patente:reg.patente,km:reg.km,tipo:reg.tipo,foto_data:reg.foto_data,fecha:reg.fecha}});
+  ['fk-nropre','fk-patente','fk-km'].forEach(function(fid){var el=document.getElementById(fid);if(el)el.value='';});
+  var ftp=document.getElementById('fk-tipo');if(ftp)ftp.selectedIndex=0;
+  var fpr=document.getElementById('fk-preview');if(fpr){fpr.src='';fpr.style.display='none';}
+  var ffi=document.getElementById('fk-file');if(ffi)ffi.value='';
   alert('Foto registrada!');
   go('s-fotos');
 }
