@@ -1207,18 +1207,21 @@ function guardarOrden(target){
     editandoOrden=true;
     apiFire({action:'saveOrden',data:newOrd});
   }
-  // Descontar stock de los repuestos usados
-  document.querySelectorAll('#items-list .det-row').forEach(function(row){
-    var sid=row.dataset.stockId;
-    if(!sid)return;
-    var idx=stockItems.findIndex(function(s){return s.id===sid;});
-    var qi=row.querySelector('.qty-input');
-    var usada=qi&&Number(qi.value)>0?Number(qi.value):1;
-    if(idx>=0&&stockItems[idx].qty>0){
-      stockItems[idx].qty=Math.max(0,stockItems[idx].qty-usada);
-      apiFire({action:'updateStock',id:sid,fields:{qty:stockItems[idx].qty}});
-    }
-  });
+  // Descontar stock solo en órdenes nuevas
+  if(!esEdicion){
+    document.querySelectorAll('#items-list .det-row').forEach(function(row){
+      var sid=row.dataset.stockId;
+      if(!sid)return;
+      var idx=stockItems.findIndex(function(s){return s.id===sid;});
+      var qi=row.querySelector('.qty-input');
+      var usada=qi&&Number(qi.value)>0?Number(qi.value):1;
+      if(idx>=0){
+        stockItems[idx].qty=Math.max(0,stockItems[idx].qty-usada);
+        apiFire({action:'updateStock',id:sid,fields:{qty:stockItems[idx].qty}});
+      }
+    });
+    _persistAll();
+  }
   // Poblar presupuesto con datos reales
   var cl=clientes.find(function(c){return c.nombre===clienteNombre;})||{patente:'',km:''};
   var el=function(id){return document.getElementById(id);};
