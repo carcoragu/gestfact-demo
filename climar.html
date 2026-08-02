@@ -218,6 +218,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 .voz-btn.escuchando{color:#e53935;animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @media print{
+  .no-print{display:none !important;}
   body *{visibility:hidden;}
   #print-pres,#print-pres *{visibility:visible;}
   #print-pres{position:fixed;top:0;left:0;width:100%;background:#fff;color:#000;padding:20px;font-family:Arial,sans-serif;font-size:12px;}
@@ -1460,12 +1461,18 @@ function _acFiltrar(inp){
   if(!drop)return;
   if(!q||!stockItems||!stockItems.length){drop.style.display='none';return;}
   var hits=stockItems.filter(function(it){
-    return(it.descripcion||'').toLowerCase().indexOf(q)>=0;
+    return(it.nombre||it.descripcion||'').toLowerCase().indexOf(q)>=0;
   }).slice(0,8);
   if(!hits.length){drop.style.display='none';return;}
   drop.innerHTML=hits.map(function(it){
-    return '<div class="ac-item" onmousedown="event.preventDefault()" onclick="_acSel(this,\''+
-      (it.descripcion||'').replace(/'/g,"\\'")+'\')">'+(it.descripcion||'')+'</div>';
+    var nom=(it.nombre||it.descripcion||'').replace(/'/g,"\\'");
+    var pv=Number(it.precio||0);
+    var pc=Number(it.costo||0);
+    return '<div class="ac-item" onmousedown="event.preventDefault()" onclick="_acSel(this,\''+nom+'\','+pv+','+pc+')">'
+      +(it.nombre||it.descripcion||'')
+      +'<div class="ac-precio">Venta: Gs. '+pv.toLocaleString('es-PY')
+      +(pc>0?' &nbsp;|&nbsp; <span style="color:#e53935;">Costo: Gs. '+pc.toLocaleString('es-PY')+'</span>':'')
+      +'</div></div>';
   }).join('');
   drop.style.display='block';
 }
@@ -1475,11 +1482,23 @@ function _acOcultar(inp){
   if(drop)drop.style.display='none';
 }
 
-function _acSel(item,val){
+function _acSel(item,val,precio,costo){
   var wrap=item.closest('.ac-wrap');
   if(!wrap)return;
   var inp=wrap.querySelector('.desc-input');
   if(inp){inp.value=val;inp.dispatchEvent(new Event('input'));}
+  var row=wrap.closest('.det-row');
+  if(row){
+    if(precio){
+      var mi=row.querySelector('.monto-input');
+      if(mi){mi.value=Number(precio).toLocaleString('es-PY');calcTotal();}
+    }
+    var costoEl=row.querySelector('.det-costo-interno');
+    if(costoEl){
+      if(costo>0){costoEl.textContent='Costo interno: Gs. '+Number(costo).toLocaleString('es-PY');costoEl.style.display='block';}
+      else{costoEl.style.display='none';}
+    }
+  }
   var drop=wrap.querySelector('.ac-drop');
   if(drop)drop.style.display='none';
 }
@@ -1499,6 +1518,7 @@ function agregarItem(desc, monto, qty){
         ' onkeydown="if(event.key===\'Escape\')_acOcultar(this)"/>' +
       '<div class="ac-drop"></div>' +
     '</div>' +
+    '<div class="det-costo-interno no-print" style="display:none;font-size:.7rem;color:#e53935;padding:1px 4px;grid-column:1/-1;"></div>' +
     '<input class="qty-input" type="number" min="1" value="'+(qty||1)+'" placeholder="Cant." oninput="calcTotal();_marcarCambioOrden()"/>' +
     '<input class="monto-input" placeholder="0" value="'+(monto||'')+'" oninput="calcTotal();_marcarCambioOrden()"/>' +
     '<button class="del-item" onclick="this.parentNode.remove();calcTotal();_marcarCambioOrden()">×</button>';
