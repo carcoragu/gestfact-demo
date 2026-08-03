@@ -2067,6 +2067,7 @@ function imprimirPresupuesto(){
     '<div class="doc-vehline">'+
       '<span><strong>VEHICULO:</strong> '+(ord.vehiculo||'--').toUpperCase()+'</span>'+
       '<span><strong>CHAPA:</strong> '+(ord.patente||cl.patente||'--').toUpperCase()+'</span>'+
+      ((ord.km||cl.km)?'<span><strong>KM:</strong> '+(ord.km||cl.km)+' km</span>':'') +
     '</div>'+
     '<table class="doc-tabla">'+
       '<thead><tr><th class="c-desc">DESCRIPCION</th><th class="c-cant">CANTIDAD</th><th class="c-costo">COSTO</th></tr></thead>'+
