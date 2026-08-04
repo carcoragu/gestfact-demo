@@ -886,7 +886,7 @@ var AUTH_URL='https://script.google.com/macros/s/AKfycbxY3UkupUb8t1qSuCKv7_D-wnH
 var GF_TOKEN='';
 // Info visual por cliente (sin contraseñas). Agregar aqui cada cliente nuevo.
 var CLIENTES_INFO={
-  'MIGUEL_001':{logo:'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png',empresa:'PCM Taller Mecánico Automotriz',dir_empresa:'Palacio de López casi Augusto Roa Bastos',tel_empresa:'0961 807 675'},
+  'MIGUEL_001':{logo:'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png',empresa:'PCM Taller Mecánico Automotriz',dir_empresa:'Palacio de López casi Augusto Roa Bastos',tel_empresa:'0961 807 675',gestion_tabla:true},
   'CLIMAR_003':{logo:'https://carcoragu.github.io/gestfact-demo/logo_climar.jpg',empresa:'Electro-Mecánica Climar Profesional',dir_empresa:'Las Huertas, Luque, Paraguay',tel_empresa:'+595 984 821707'},
   'DEMO_001':  {logo:'https://carcoragu.github.io/gestfact-demo/logo_pcm_taller.png',empresa:'GestFact Demo',dir_empresa:'',tel_empresa:''}
 };
@@ -1665,21 +1665,62 @@ function renderGestion(){
     return true;
   });
   var totalCerrado=0;
-  document.getElementById('gestionList').innerHTML=lista.length?lista.map(function(ord){
-    var idx=ordenes.indexOf(ord);
-    var ep=ord.estado_pres||'pendiente';
-    totalCerrado+=Number(ord.monto)||0;
-    return '<div class="list-item" style="flex-direction:column;gap:6px;">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;">'+
-      '<span style="font-size:.75rem;color:#8b949e;font-weight:600;">N° '+ord.id+' · '+ord.fecha+'</span>'+
-      '<span class="pres-tag '+ep+'" onclick="event.stopPropagation();toggleEstadoPres(\''+ord.id+'\',true)">'+
-      (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></div>'+
-      '<div class="list-name" onclick="openOrden('+idx+')" style="cursor:pointer;">'+ord.cliente+' — '+ord.vehiculo+(ord.patente?' ['+ord.patente+']':'')+'</div>'+
-      '<div style="display:flex;justify-content:space-between;align-items:flex-end;">'+
-      '<div class="list-sub" style="flex:1;">'+ord.servicio+'</div>'+
-      '<div style="font-size:.88rem;font-weight:800;color:#e6edf3;margin-left:8px;white-space:nowrap;">Gs. '+fmtGs(ord.monto)+'</div>'+
-      '</div></div>';
-  }).join(''):'<div style="color:#6e7681;text-align:center;padding:24px;font-size:.85rem;">Sin presupuestos en este período</div>';
+  var info=CLIENTES_INFO[CLIENT_KEY]||{};
+  var usaTabla=!!info.gestion_tabla;
+  lista.forEach(function(o){totalCerrado+=Number(o.monto)||0;});
+  var cuerpo='';
+  if(!lista.length){
+    cuerpo='<div style="color:#6e7681;text-align:center;padding:24px;font-size:.85rem;">Sin presupuestos en este período</div>';
+  } else if(usaTabla){
+    var desdeLabel=desdeVal||'—';
+    var hastaLabel=hastaVal||'—';
+    var filas=lista.map(function(ord){
+      var idx=ordenes.indexOf(ord);
+      var ep=ord.estado_pres||'pendiente';
+      return '<tr style="border-bottom:1px solid #30363d;">'+
+        '<td style="padding:6px 8px;white-space:nowrap;font-size:.75rem;color:#8b949e;">'+ord.id+'</td>'+
+        '<td style="padding:6px 8px;white-space:nowrap;font-size:.78rem;">'+ord.fecha+'</td>'+
+        '<td style="padding:6px 8px;font-size:.78rem;">'+ord.vehiculo+(ord.patente?' <span style="color:#8b949e;">['+ord.patente+']</span>':'')+'</td>'+
+        '<td style="padding:6px 8px;font-size:.78rem;cursor:pointer;" onclick="openOrden('+idx+')">'+ord.servicio+'</td>'+
+        '<td style="padding:6px 8px;text-align:right;white-space:nowrap;font-weight:700;font-size:.78rem;">Gs. '+fmtGs(ord.monto)+'</td>'+
+        '<td style="padding:6px 8px;text-align:center;"><span class="pres-tag '+ep+'" onclick="toggleEstadoPres(\''+ord.id+'\',true)">'+
+        (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></td>'+
+        '</tr>';
+    }).join('');
+    cuerpo='<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid #1e88e5;display:flex;align-items:center;gap:12px;">'+
+      '<img src="'+(info.logo||'logo.png')+'" style="height:48px;border-radius:8px;"/>'+
+      '<div><div style="font-weight:800;font-size:.95rem;">Reporte de Presupuestos — GestFact</div>'+
+      '<div style="font-size:.78rem;color:#8b949e;">'+(info.empresa||'')+'</div></div></div>'+
+      '<div style="font-size:.75rem;color:#8b949e;margin-bottom:10px;">'+
+      'Período: '+desdeLabel+' — '+hastaLabel+' &nbsp;|&nbsp; Registros: '+lista.length+' &nbsp;|&nbsp; Total: Gs. '+fmtGs(totalCerrado)+'</div>'+
+      '<div style="overflow-x:auto;">'+
+      '<table style="width:100%;border-collapse:collapse;font-size:.78rem;">'+
+      '<thead><tr style="background:#1e88e5;color:#fff;font-size:.75rem;">'+
+      '<th style="padding:7px 8px;text-align:left;">#</th>'+
+      '<th style="padding:7px 8px;text-align:left;">Fecha</th>'+
+      '<th style="padding:7px 8px;text-align:left;">Vehículo</th>'+
+      '<th style="padding:7px 8px;text-align:left;">Servicio</th>'+
+      '<th style="padding:7px 8px;text-align:right;">Total</th>'+
+      '<th style="padding:7px 8px;text-align:center;">Estado</th>'+
+      '</tr></thead>'+
+      '<tbody>'+filas+'</tbody></table></div>';
+  } else {
+    cuerpo=lista.map(function(ord){
+      var idx=ordenes.indexOf(ord);
+      var ep=ord.estado_pres||'pendiente';
+      return '<div class="list-item" style="flex-direction:column;gap:6px;">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;">'+
+        '<span style="font-size:.75rem;color:#8b949e;font-weight:600;">N° '+ord.id+' · '+ord.fecha+'</span>'+
+        '<span class="pres-tag '+ep+'" onclick="event.stopPropagation();toggleEstadoPres(\''+ord.id+'\',true)">'+
+        (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></div>'+
+        '<div class="list-name" onclick="openOrden('+idx+')" style="cursor:pointer;">'+ord.cliente+' — '+ord.vehiculo+(ord.patente?' ['+ord.patente+']':'')+'</div>'+
+        '<div style="display:flex;justify-content:space-between;align-items:flex-end;">'+
+        '<div class="list-sub" style="flex:1;">'+ord.servicio+'</div>'+
+        '<div style="font-size:.88rem;font-weight:800;color:#e6edf3;margin-left:8px;white-space:nowrap;">Gs. '+fmtGs(ord.monto)+'</div>'+
+        '</div></div>';
+    }).join('');
+  }
+  document.getElementById('gestionList').innerHTML=cuerpo;
   var desdeD=desdeVal?new Date(desdeVal):null;
   var hastaD=hastaVal?new Date(hastaVal+'T23:59:59'):null;
   var totalEgresos=0;
