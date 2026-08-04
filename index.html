@@ -1679,10 +1679,11 @@ function renderGestion(){
       var ep=ord.estado_pres||'pendiente';
       return '<tr style="border-bottom:1px solid #30363d;">'+
         '<td style="padding:6px 8px;white-space:nowrap;font-size:.75rem;color:#8b949e;">'+ord.id+'</td>'+
-        '<td style="padding:6px 8px;white-space:nowrap;font-size:.78rem;">'+ord.fecha+'</td>'+
+        '<td style="padding:6px 8px;white-space:nowrap;font-size:.78rem;">'+fmtFecha(ord.fecha)+'</td>'+
         '<td style="padding:6px 8px;font-size:.78rem;">'+ord.vehiculo+(ord.patente?' <span style="color:#8b949e;">['+ord.patente+']</span>':'')+'</td>'+
         '<td style="padding:6px 8px;font-size:.78rem;cursor:pointer;" onclick="openOrden('+idx+')">'+ord.servicio+'</td>'+
         '<td style="padding:6px 8px;text-align:right;white-space:nowrap;font-weight:700;font-size:.78rem;">Gs. '+fmtGs(ord.monto)+'</td>'+
+        '<td style="padding:6px 8px;text-align:center;white-space:nowrap;color:'+(ord.cobrado===true||ord.cobrado==="true"?'#3fb950':'#f85149')+';font-size:.75rem;font-weight:600;">'+(ord.cobrado===true||ord.cobrado==="true"?'Cobrado':'No Cobrado')+'</td>'+
         '<td style="padding:6px 8px;text-align:center;"><span class="pres-tag '+ep+'" onclick="toggleEstadoPres(\''+ord.id+'\',true)">'+
         (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></td>'+
         '</tr>';
@@ -1699,6 +1700,7 @@ function renderGestion(){
       '<th style="padding:7px 8px;text-align:left;">Vehículo</th>'+
       '<th style="padding:7px 8px;text-align:left;">Servicio</th>'+
       '<th style="padding:7px 8px;text-align:right;">Total</th>'+
+      '<th style="padding:7px 8px;text-align:center;">Cobro</th>'+
       '<th style="padding:7px 8px;text-align:center;">Estado</th>'+
       '</tr></thead>'+
       '<tbody>'+filas+'</tbody></table></div>';
