@@ -1688,8 +1688,11 @@ function renderGestion(){
         (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></td>'+
         '</tr>';
     }).join('');
-    cuerpo='<div style="margin-bottom:4px;font-size:1.05rem;font-weight:800;">Reporte de Presupuestos — GestFact</div>'+
-      '<div style="font-size:.88rem;color:#1e88e5;font-weight:600;margin-bottom:10px;">'+CLIENT_NOMBRE+'</div>'+
+    cuerpo='<div style="text-align:center;margin-bottom:8px;">'+
+      '<img src="'+(info.logo||'logo.png')+'" style="height:64px;"/>'+
+      '</div>'+
+      '<div style="margin-bottom:4px;font-size:1.05rem;font-weight:800;text-align:center;">Reporte de Presupuestos — GestFact</div>'+
+      '<div style="font-size:.88rem;color:#1e88e5;font-weight:600;margin-bottom:10px;text-align:center;">'+CLIENT_NOMBRE+'</div>'+
       '<div style="font-size:.78rem;color:#8b949e;margin-bottom:12px;padding:7px 10px;border-left:3px solid #1e88e5;background:rgba(30,136,229,.08);">'+
       '<strong>Período:</strong> '+desdeLabel+' — '+hastaLabel+' &nbsp;|&nbsp; <strong>Registros:</strong> '+lista.length+' &nbsp;|&nbsp; <strong>Total:</strong> Gs. '+fmtGs(totalCerrado)+'</div>'+
       '<div style="overflow-x:auto;">'+
