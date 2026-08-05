@@ -2639,52 +2639,73 @@ function generarReporte(){
   function isoD(s){if(!s)return'';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
   function fmtD(f){if(!f)return'';if(String(f).indexOf('T')>=0){var d=new Date(f);if(!isNaN(d.getTime()))return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();}if(String(f).indexOf('/')>=0)return String(f).split(' ')[0];if(String(f).indexOf('-')>=0){var p=String(f).split('-');return(p[2]||'').substring(0,2)+'/'+p[1]+'/'+p[0];}return String(f);}
   var periodo=(desdeVal||hastaVal)?(desdeVal?isoD(desdeVal):'inicio')+' al '+(hastaVal?isoD(hastaVal):'hoy'):'Todo el período';
-  var total=lista.reduce(function(s,o){return s+Number(o.monto||0);},0);
-  var totalCob=lista.filter(function(o){return o.cobrado===true||o.cobrado==='true';}).reduce(function(s,o){return s+Number(o.monto||0);},0);
-  var totalNC=total-totalCob;
-  var nCob=lista.filter(function(o){return o.cobrado===true||o.cobrado==='true';}).length;
-  var nNC=lista.length-nCob;
-  var ahora=new Date();
-  var stamp=String(ahora.getDate()).padStart(2,'0')+'/'+String(ahora.getMonth()+1).padStart(2,'0')+'/'+ahora.getFullYear()+' '+String(ahora.getHours()).padStart(2,'0')+':'+String(ahora.getMinutes()).padStart(2,'0');
   var info=CLIENTES_INFO[CLIENT_KEY]||{};
   var logo=info.logo||'';
   var tel=info.tel_empresa||'';
   var dir=info.dir_empresa||'';
-  var filas=lista.map(function(ord){
-    var ep=ord.estado_pres||'pendiente';var cob=ord.cobrado===true||ord.cobrado==='true';
-    return'<tr><td>'+ord.id+'</td><td>'+fmtD(ord.fecha)+'</td><td><strong>'+(ord.vehiculo||'—')+'</strong>'+(ord.patente?'<br><small>['+ord.patente+']</small>':'')+'</td><td>'+(ord.servicio||'').substring(0,50)+'</td><td class="num">Gs. '+fmtGs(ord.monto)+'</td><td class="cen '+(cob?'st-cob':'st-nc')+'">'+(cob?'Cobrado':'No Cobrado')+'</td><td class="cen '+(ep==='cerrado'?'st-cerr':'st-pend')+'">'+(ep==='cerrado'?'Cerrado':'Pendiente')+'</td></tr>';
+  var ahora=new Date();
+  var stamp=String(ahora.getDate()).padStart(2,'0')+'/'+String(ahora.getMonth()+1).padStart(2,'0')+'/'+ahora.getFullYear()+' '+String(ahora.getHours()).padStart(2,'0')+':'+String(ahora.getMinutes()).padStart(2,'0');
+  var totalGeneral=0;var totalCob=0;var nCob=0;
+  var bloques=lista.map(function(ord){
+    var monto=Number(ord.monto||0);
+    var cob=ord.cobrado===true||ord.cobrado==='true';
+    var ep=ord.estado_pres||'pendiente';
+    totalGeneral+=monto;if(cob){totalCob+=monto;nCob++;}
+    var items=[];
+    try{if(ord.items)items=JSON.parse(ord.items);}catch(e){}
+    if(!items.length)items=[{desc:ord.servicio||'Servicio',cantidad:1,monto:monto}];
+    var itemRows=items.map(function(it){
+      return'<tr class="irow"><td>'+it.desc+'</td><td class="num">'+it.cantidad+'</td><td class="num">'+fmtGs(Number(it.monto||0))+'</td></tr>';
+    }).join('');
+    var cobTag=cob?'<span style="color:#2e7d32;">&#10003; Cobrado</span>':'<span style="color:#c62828;">&#9940; No Cobrado</span>';
+    var epTag=ep==='cerrado'?'<span style="color:#1565c0;">Cerrado</span>':'<span style="color:#e65100;">Pendiente</span>';
+    return'<table class="ptable">'+
+      '<tr class="phdr">'+
+        '<td><span class="lbl">N°PRESUPUESTO</span> '+ord.id+'</td>'+
+        '<td><span class="lbl">FECHA</span> '+fmtD(ord.fecha)+'</td>'+
+        '<td><span class="lbl">CHAPA</span> '+(ord.patente||'—')+'</td>'+
+        '<td><span class="lbl">VEHÍCULO</span> '+(ord.vehiculo||'—')+(ord.anio?' AÑO '+ord.anio:'')+'</td>'+
+        '<td style="text-align:right;white-space:nowrap;">'+cobTag+' &nbsp; '+epTag+'</td>'+
+      '</tr>'+
+      '<tr class="svc-hdr"><td colspan="5">SERVICIO</td></tr>'+
+      itemRows+
+      '<tr class="tot-row"><td colspan="2"></td><td class="lbl" style="text-align:right;padding-right:4px;">TOTAL</td><td class="num" colspan="2">'+fmtGs(monto)+'</td></tr>'+
+    '</table>';
   }).join('');
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Reporte GestFact</title><style>'+
+  var totalNC=totalGeneral-totalCob;var nNC=lista.length-nCob;
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Informe GestFact</title><style>'+
     'body{font-family:Arial,sans-serif;font-size:11px;color:#000;margin:20px;}'+
-    '.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:10px;}'+
+    '.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:8px;}'+
     '.hdr img{height:80px;}'+
-    '.hdr-contact{text-align:right;font-size:10px;line-height:1.7;}'+
-    '.titulo{text-align:center;font-size:22px;font-weight:bold;letter-spacing:3px;margin:10px 0 4px;}'+
-    '.fil{background:#f5f7fa;border-left:4px solid #333;padding:8px 12px;margin-bottom:14px;line-height:1.8;font-size:10.5px;}'+
-    'table{width:100%;border-collapse:collapse;font-size:10px;}'+
-    'th{background:#333;color:#fff;padding:5px 7px;text-align:left;}'+
-    'td{border-bottom:1px solid #ccc;padding:5px 7px;vertical-align:top;}'+
-    'tr:nth-child(even) td{background:#f5f5f5;}'+
-    '.total-row td{font-weight:bold;border-top:2px solid #000;background:#fff;}'+
-    '.num{text-align:right;font-weight:600;}.cen{text-align:center;}'+
-    '.st-cob{color:#2e7d32;font-weight:700;}.st-nc{color:#c62828;font-weight:700;}'+
-    '.st-cerr{color:#1565c0;font-weight:700;}.st-pend{color:#e65100;font-weight:700;}'+
-    '.res{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;}'+
-    '.res-box{padding:8px 14px;border-radius:4px;font-size:10.5px;line-height:1.6;}'+
-    '.stamp{font-size:9px;color:#999;text-align:right;margin-top:14px;border-top:1px solid #eee;padding-top:6px;}'+
-    '@media print{body{margin:6px;}@page{margin:10mm;size:landscape;}}'+
+    '.hdr-r{text-align:right;font-size:10px;line-height:1.8;}'+
+    '.titulo{text-align:center;font-size:22px;font-weight:bold;letter-spacing:3px;margin:8px 0 3px;}'+
+    '.subtit{text-align:center;font-size:10px;color:#333;margin-bottom:10px;}'+
+    '.cli-line{font-size:11px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #ccc;}'+
+    '.ptable{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:10.5px;}'+
+    '.phdr td{background:#d9d9d9;font-size:10px;padding:5px 8px;border:1px solid #aaa;}'+
+    '.lbl{font-weight:bold;text-transform:uppercase;font-size:9px;margin-right:2px;}'+
+    '.svc-hdr td{font-weight:bold;text-decoration:underline;padding:4px 8px;border-left:1px solid #aaa;border-right:1px solid #aaa;font-size:10px;}'+
+    '.irow td{padding:3px 8px;border-left:1px solid #aaa;border-right:1px solid #aaa;}'+
+    '.tot-row td{padding:4px 8px;border:1px solid #aaa;font-weight:bold;background:#f5f5f5;}'+
+    '.num{text-align:right;}'+
+    '.grand{text-align:right;font-size:13px;font-weight:bold;border-top:2px solid #000;padding-top:8px;margin-top:4px;}'+
+    '.res{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}'+
+    '.res-box{padding:7px 14px;border-radius:4px;font-size:10px;line-height:1.6;}'+
+    '.stamp{font-size:9px;color:#999;text-align:right;margin-top:12px;border-top:1px solid #eee;padding-top:5px;}'+
+    '@media print{body{margin:6px;}@page{margin:10mm;}}'+
   '</style></head><body>'+
   '<div class="hdr">'+
-  (logo?'<img src="'+logo+'"/>':'<div></div>')+
-  '<div class="hdr-contact">'+
-  (tel?'<div><strong>CONTACTO:</strong> '+tel+'</div>':'')+
-  (dir?'<div><strong>DIRECCIÓN:</strong> '+dir+'</div>':'')+
-  '</div></div>'+
+    (logo?'<img src="'+logo+'"/>':'<div></div>')+
+    '<div class="hdr-r">'+
+      (tel?'<div><strong>CONTACTO:</strong> '+tel+'</div>':'')+
+      (dir?'<div><strong>DIRECCIÓN:</strong> '+dir+'</div>':'')+
+    '</div>'+
+  '</div>'+
   '<div class="titulo">INFORME</div>'+
-  '<div class="fil"><strong>Cliente:</strong> '+clienteFiltro+' &nbsp;|&nbsp; <strong>Período:</strong> '+periodo+' &nbsp;|&nbsp; <strong>Registros:</strong> '+lista.length+' &nbsp;|&nbsp; <strong>Total:</strong> Gs. '+fmtGs(total)+'</div>'+
-  '<table><thead><tr><th>N°</th><th>Fecha</th><th>Vehículo</th><th>Servicio</th><th class="num">Total</th><th class="cen">Cobro</th><th class="cen">Estado</th></tr></thead>'+
-  '<tbody>'+filas+'</tbody>'+
-  '<tfoot><tr class="total-row"><td colspan="4" style="text-align:right;">TOTAL GENERAL</td><td class="num">Gs. '+fmtGs(total)+'</td><td colspan="2"></td></tr></tfoot></table>'+
+  '<div class="subtit">Período: '+periodo+'</div>'+
+  '<div class="cli-line"><strong>CLIENTE:</strong> '+clienteFiltro+'</div>'+
+  bloques+
+  '<div class="grand">TOTAL &nbsp;&nbsp; Gs. '+fmtGs(totalGeneral)+'</div>'+
   '<div class="res">'+
     '<div class="res-box" style="background:#e8f5e9;border:1px solid #c8e6c9;"><strong>Cobrados:</strong> '+nCob+' | Gs. '+fmtGs(totalCob)+'</div>'+
     '<div class="res-box" style="background:#fce4ec;border:1px solid #f8bbd0;"><strong>No Cobrados:</strong> '+nNC+' | Gs. '+fmtGs(totalNC)+'</div>'+
