@@ -705,6 +705,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
       <div class="form-group"><label class="form-label">Desde</label><input class="form-input" type="date" id="gf-desde" onchange="renderGestion()"/></div>
       <div class="form-group"><label class="form-label">Hasta</label><input class="form-input" type="date" id="gf-hasta" onchange="renderGestion()"/></div>
     </div>
+    <button class="btn btn-outline btn-block" style="margin-bottom:12px;" onclick="verPdfGestion()">&#128424; Ver / PDF</button>
     <div id="gestionList"></div>
     <div class="gest-total" style="padding:16px 20px;">
       <div style="display:flex;justify-content:space-around;margin-bottom:12px;">
@@ -1665,65 +1666,21 @@ function renderGestion(){
     return true;
   });
   var totalCerrado=0;
-  var info=CLIENTES_INFO[CLIENT_KEY]||{};
-  var usaTabla=!!info.gestion_tabla;
-  lista.forEach(function(o){totalCerrado+=Number(o.monto)||0;});
-  var cuerpo='';
-  if(!lista.length){
-    cuerpo='<div style="color:#6e7681;text-align:center;padding:24px;font-size:.85rem;">Sin presupuestos en este período</div>';
-  } else if(usaTabla){
-    var desdeLabel=desdeVal||'—';
-    var hastaLabel=hastaVal||'—';
-    var filas=lista.map(function(ord){
-      var idx=ordenes.indexOf(ord);
-      var ep=ord.estado_pres||'pendiente';
-      return '<tr style="border-bottom:1px solid #30363d;">'+
-        '<td style="padding:6px 8px;white-space:nowrap;font-size:.75rem;color:#8b949e;">'+ord.id+'</td>'+
-        '<td style="padding:6px 8px;white-space:nowrap;font-size:.78rem;">'+fmtFecha(ord.fecha)+'</td>'+
-        '<td style="padding:6px 8px;font-size:.78rem;">'+ord.vehiculo+(ord.patente?' <span style="color:#8b949e;">['+ord.patente+']</span>':'')+'</td>'+
-        '<td style="padding:6px 8px;font-size:.78rem;cursor:pointer;" onclick="openOrden('+idx+')">'+ord.servicio+'</td>'+
-        '<td style="padding:6px 8px;text-align:right;white-space:nowrap;font-weight:700;font-size:.78rem;">Gs. '+fmtGs(ord.monto)+'</td>'+
-        '<td style="padding:6px 8px;text-align:center;white-space:nowrap;color:'+(ord.cobrado===true||ord.cobrado==="true"?'#3fb950':'#f85149')+';font-size:.75rem;font-weight:600;">'+(ord.cobrado===true||ord.cobrado==="true"?'Cobrado':'No Cobrado')+'</td>'+
-        '<td style="padding:6px 8px;text-align:center;"><span class="pres-tag '+ep+'" onclick="toggleEstadoPres(\''+ord.id+'\',true)">'+
-        (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></td>'+
-        '</tr>';
-    }).join('');
-    cuerpo='<div style="text-align:center;margin-bottom:8px;">'+
-      '<img src="'+(info.logo||'logo.png')+'" style="height:64px;"/>'+
-      '</div>'+
-      '<div style="margin-bottom:4px;font-size:1.05rem;font-weight:800;text-align:center;">Reporte de Presupuestos — GestFact</div>'+
-      '<div style="font-size:.88rem;color:#1e88e5;font-weight:600;margin-bottom:10px;text-align:center;">'+CLIENT_NOMBRE+'</div>'+
-      '<div style="font-size:.78rem;color:#8b949e;margin-bottom:12px;padding:7px 10px;border-left:3px solid #1e88e5;background:rgba(30,136,229,.08);">'+
-      '<strong>Período:</strong> '+desdeLabel+' — '+hastaLabel+' &nbsp;|&nbsp; <strong>Registros:</strong> '+lista.length+' &nbsp;|&nbsp; <strong>Total:</strong> Gs. '+fmtGs(totalCerrado)+'</div>'+
-      '<div style="overflow-x:auto;">'+
-      '<table style="width:100%;border-collapse:collapse;font-size:.78rem;">'+
-      '<thead><tr style="background:#1e88e5;color:#fff;font-size:.75rem;">'+
-      '<th style="padding:7px 8px;text-align:left;">#</th>'+
-      '<th style="padding:7px 8px;text-align:left;">Fecha</th>'+
-      '<th style="padding:7px 8px;text-align:left;">Vehículo</th>'+
-      '<th style="padding:7px 8px;text-align:left;">Servicio</th>'+
-      '<th style="padding:7px 8px;text-align:right;">Total</th>'+
-      '<th style="padding:7px 8px;text-align:center;">Cobro</th>'+
-      '<th style="padding:7px 8px;text-align:center;">Estado</th>'+
-      '</tr></thead>'+
-      '<tbody>'+filas+'</tbody></table></div>';
-  } else {
-    cuerpo=lista.map(function(ord){
-      var idx=ordenes.indexOf(ord);
-      var ep=ord.estado_pres||'pendiente';
-      return '<div class="list-item" style="flex-direction:column;gap:6px;">'+
-        '<div style="display:flex;justify-content:space-between;align-items:center;">'+
-        '<span style="font-size:.75rem;color:#8b949e;font-weight:600;">N° '+ord.id+' · '+ord.fecha+'</span>'+
-        '<span class="pres-tag '+ep+'" onclick="event.stopPropagation();toggleEstadoPres(\''+ord.id+'\',true)">'+
-        (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></div>'+
-        '<div class="list-name" onclick="openOrden('+idx+')" style="cursor:pointer;">'+ord.cliente+' — '+ord.vehiculo+(ord.patente?' ['+ord.patente+']':'')+'</div>'+
-        '<div style="display:flex;justify-content:space-between;align-items:flex-end;">'+
-        '<div class="list-sub" style="flex:1;">'+ord.servicio+'</div>'+
-        '<div style="font-size:.88rem;font-weight:800;color:#e6edf3;margin-left:8px;white-space:nowrap;">Gs. '+fmtGs(ord.monto)+'</div>'+
-        '</div></div>';
-    }).join('');
-  }
-  document.getElementById('gestionList').innerHTML=cuerpo;
+  document.getElementById('gestionList').innerHTML=lista.length?lista.map(function(ord){
+    var idx=ordenes.indexOf(ord);
+    var ep=ord.estado_pres||'pendiente';
+    totalCerrado+=Number(ord.monto)||0;
+    return '<div class="list-item" style="flex-direction:column;gap:6px;">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;">'+
+      '<span style="font-size:.75rem;color:#8b949e;font-weight:600;">N° '+ord.id+' · '+ord.fecha+'</span>'+
+      '<span class="pres-tag '+ep+'" onclick="event.stopPropagation();toggleEstadoPres(\''+ord.id+'\',true)">'+
+      (ep==='cerrado'?'✓ Cerrado':'⏳ Pendiente')+'</span></div>'+
+      '<div class="list-name" onclick="openOrden('+idx+')" style="cursor:pointer;">'+ord.cliente+' — '+ord.vehiculo+(ord.patente?' ['+ord.patente+']':'')+'</div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-end;">'+
+      '<div class="list-sub" style="flex:1;">'+ord.servicio+'</div>'+
+      '<div style="font-size:.88rem;font-weight:800;color:#e6edf3;margin-left:8px;white-space:nowrap;">Gs. '+fmtGs(ord.monto)+'</div>'+
+      '</div></div>';
+  }).join(''):'<div style="color:#6e7681;text-align:center;padding:24px;font-size:.85rem;">Sin presupuestos en este período</div>';
   var desdeD=desdeVal?new Date(desdeVal):null;
   var hastaD=hastaVal?new Date(hastaVal+'T23:59:59'):null;
   var totalEgresos=0;
@@ -1740,6 +1697,83 @@ function renderGestion(){
   if(ing)ing.textContent='Gs. '+fmtGs(totalCerrado);
   if(eg)eg.textContent='Gs. '+fmtGs(totalEgresos);
   if(tv){tv.textContent='Gs. '+fmtGs(Math.abs(balance));tv.style.color=balance>=0?'#1e88e5':'#f85149';}
+}
+function verPdfGestion(){
+  var desde=document.getElementById('gf-desde');
+  var hasta=document.getElementById('gf-hasta');
+  var desdeVal=desde?desde.value:'';
+  var hastaVal=hasta?hasta.value:'';
+  var lista=ordenes.filter(function(o){
+    var ep=o.estado_pres||'pendiente';
+    if(filtroGestion!=='todos'&&ep!==filtroGestion)return false;
+    if(desdeVal||hastaVal){
+      var p=o.fecha.split('/');
+      if(p.length===3){
+        var iso=p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');
+        if(desdeVal&&iso<desdeVal)return false;
+        if(hastaVal&&iso>hastaVal)return false;
+      }
+    }
+    return true;
+  });
+  var info=CLIENTES_INFO[CLIENT_KEY]||{};
+  var logo=info.logo||'';
+  var tel=info.tel_empresa||'';
+  var dir=info.dir_empresa||'';
+  var desdeLabel=desdeVal?desdeVal.split('-').reverse().join('/'):'—';
+  var hastaLabel=hastaVal?hastaVal.split('-').reverse().join('/'):'—';
+  var estadoLabel=filtroGestion==='todos'?'Todos':filtroGestion.charAt(0).toUpperCase()+filtroGestion.slice(1);
+  var totalGral=0;
+  var filas=lista.map(function(ord){
+    var monto=Number(ord.monto)||0;
+    totalGral+=monto;
+    var ep=ord.estado_pres||'pendiente';
+    return '<tr>'+
+      '<td>'+ord.id+'</td>'+
+      '<td>'+fmtFecha(ord.fecha)+'</td>'+
+      '<td>'+ord.cliente+'</td>'+
+      '<td>'+ord.vehiculo+(ord.patente?' ['+ord.patente+']':'')+'</td>'+
+      '<td>'+ord.servicio+'</td>'+
+      '<td style="text-align:right;">Gs. '+fmtGs(monto)+'</td>'+
+      '<td style="text-align:center;">'+(ep==='cerrado'?'Cerrado':'Pendiente')+'</td>'+
+      '</tr>';
+  }).join('');
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/>'+
+    '<title>Informe de Movimientos</title>'+
+    '<style>'+
+    'body{font-family:Arial,sans-serif;font-size:11px;color:#000;margin:20px;}'+
+    '.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:10px;}'+
+    '.hdr img{height:80px;}'+
+    '.hdr-contact{text-align:right;font-size:10px;line-height:1.7;}'+
+    '.titulo{text-align:center;font-size:22px;font-weight:bold;letter-spacing:3px;margin:10px 0 4px;}'+
+    '.subtitulo{text-align:center;font-size:10px;color:#333;margin-bottom:14px;}'+
+    'table{width:100%;border-collapse:collapse;font-size:10px;margin-top:8px;}'+
+    'th{background:#333;color:#fff;padding:5px 7px;text-align:left;}'+
+    'td{padding:5px 7px;border-bottom:1px solid #ccc;}'+
+    'tr:nth-child(even) td{background:#f5f5f5;}'+
+    '.total-row td{font-weight:bold;border-top:2px solid #000;background:#fff;}'+
+    '</style></head><body>'+
+    '<div class="hdr">'+
+    (logo?'<img src="'+logo+'"/>':'<div></div>')+
+    '<div class="hdr-contact">'+
+    (tel?'<div><strong>CONTACTO:</strong> '+tel+'</div>':'')+
+    (dir?'<div><strong>DIRECCIÓN:</strong> '+dir+'</div>':'')+
+    '</div></div>'+
+    '<div class="titulo">INFORME</div>'+
+    '<div class="subtitulo">Período: '+desdeLabel+' al '+hastaLabel+' &nbsp;&nbsp;&nbsp; Estado: '+estadoLabel+'</div>'+
+    '<table>'+
+    '<thead><tr><th>N°</th><th>Fecha</th><th>Cliente</th><th>Vehículo</th><th>Servicio</th><th>Total</th><th>Estado</th></tr></thead>'+
+    '<tbody>'+filas+'</tbody>'+
+    '<tfoot><tr class="total-row"><td colspan="5" style="text-align:right;font-weight:bold;">TOTAL GENERAL</td>'+
+    '<td style="text-align:right;">Gs. '+fmtGs(totalGral)+'</td><td></td></tr></tfoot>'+
+    '</table>'+
+    '</body></html>';
+  var v=window.open('','_blank');
+  if(!v){alert('Permitir ventanas emergentes para imprimir.');return;}
+  v.document.write(html);
+  v.document.close();
+  v.focus();
+  setTimeout(function(){v.print();},500);
 }
 function toggleEstadoPres(id,refresh){
   var ord=ordenes.find(function(o){return o.id===id;});
