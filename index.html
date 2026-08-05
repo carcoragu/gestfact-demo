@@ -2704,6 +2704,13 @@ function _getSelectedOrdenes(){
 function generarReporte(){
   var lista=_getSelectedOrdenes();
   if(!lista.length){alert('Seleccioná al menos un registro.');return;}
+  lista.sort(function(a,b){
+    var pa=(a.fecha||'').split('/'),pb=(b.fecha||'').split('/');
+    var ia=pa.length===3?pa[2]+pa[1]+pa[0]:'';
+    var ib=pb.length===3?pb[2]+pb[1]+pb[0]:'';
+    if(ia!==ib)return ia<ib?-1:1;
+    return(a.patente||'').localeCompare(b.patente||'');
+  });
   var clienteFiltro=(document.getElementById('rep-cliente')||{}).value||'Todos';
   var desdeVal=(document.getElementById('rep-desde')||{}).value||'';
   var hastaVal=(document.getElementById('rep-hasta')||{}).value||'';
