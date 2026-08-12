@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miguel Acuña — Bono Especial IsabSoft GestFact</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --blue: #1d4ed8;
+    --blue-dark: #1e40af;
+    --green: #25D366;
+    --green2: #16a34a;
+    --gray-bg: #f1f5f9;
+    --gray-100: #f0f0f0;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #64748b;
+    --gray-800: #1e293b;
+    --navy: #0f172a;
+    --navy-mid: #1e3a5f;
+    --navy-light: #1d4ed8;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.12);
+  }
+  body { font-family: system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background: var(--gray-bg); color: var(--gray-800); }
+
+  /* NAVBAR */
+  .navbar {
+    background: var(--blue);
+    padding: 0 20px;
+    display: flex; align-items: center; gap: 12px;
+    height: 56px;
+    box-shadow: var(--shadow-md);
+  }
+  .navbar .logo-box {
+    width:34px; height:34px; background:white; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; color:var(--blue); font-size:13px; flex-shrink:0;
+  }
+  .navbar .logo-text { color:white; font-size:1.1rem; font-weight:700; letter-spacing:.3px; }
+  .navbar .logo-sub { color:rgba(255,255,255,.7); font-size:.78rem; }
+  .navbar .nav-tag {
+    margin-left:auto;
+    background:rgba(255,255,255,.18); color:white;
+    font-size:.72rem; font-weight:600;
+    padding:4px 10px; border-radius:20px;
+    border: 1px solid rgba(255,255,255,.3);
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 55%, #0f172a 100%);
+    color: white; padding: 40px 20px 36px; text-align: center;
+  }
+  .hero .badge {
+    display:inline-block; background:#16a34a; color:white;
+    font-size:.72rem; font-weight:700; padding:4px 14px;
+    border-radius:20px; margin-bottom:14px; letter-spacing:.5px; text-transform:uppercase;
+  }
+  .hero h1 { font-size:1.6rem; font-weight:800; line-height:1.2; margin-bottom:8px; }
+  .hero h1 span { color:#f9c74f; }
+  .hero p { color:rgba(255,255,255,.75); font-size:.92rem; margin-bottom:6px; line-height:1.5; }
+  .hero-note { margin-top:10px; font-size:.78rem; color:rgba(255,255,255,.45); }
+
+  /* SECTION */
+  .section { padding: 28px 20px; }
+  .section-title {
+    font-size:1.05rem; font-weight:700; color:var(--gray-800);
+    margin-bottom:16px; display:flex; align-items:center; gap:8px;
+  }
+  .section-title::after { content:''; flex:1; height:1.5px; background:var(--gray-200); }
+
+  /* PLAN CARD */
+  .plan-card {
+    background:white; border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-md); overflow:hidden; margin-bottom:16px;
+  }
+  .plan-header {
+    background:linear-gradient(135deg,#064e3b,#065f46);
+    color:white; padding:18px 20px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .plan-header .plan-name { font-size:1.05rem; font-weight:700; }
+  .plan-header .plan-tag {
+    background:#34d399; color:#064e3b;
+    font-size:.7rem; font-weight:800; padding:3px 10px; border-radius:20px;
+  }
+  .plan-body { padding:18px 20px; }
+  .activacion-pill {
+    display:inline-block; background:#dcfce7; color:#166534;
+    border:1.5px solid #86efac; border-radius:20px;
+    font-size:.78rem; font-weight:700; padding:5px 14px; margin-bottom:14px;
+  }
+  .benefits { display:flex; flex-direction:column; gap:10px; }
+  .benefit-item { display:flex; align-items:flex-start; gap:10px; font-size:.9rem; }
+  .benefit-item .icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+  .benefit-item .text { color:var(--gray-800); line-height:1.4; }
+  .benefit-item .text strong { color:var(--navy-light); display:block; margin-bottom:1px; }
+  .benefit-item .text span { font-size:.82rem; color:var(--gray-600); }
+
+  /* ESCALERA */
+  .escalera { display:flex; flex-direction:column; gap:8px; margin-top:20px; }
+  .paso {
+    display:flex; align-items:center; gap:14px;
+    padding:14px 16px; border-radius:var(--radius-md);
+  }
+  .paso-1 { background:#f8fafc; border:1.5px solid var(--gray-200); }
+  .paso-2 { background:#f0fdf4; border:1.5px solid #86efac; }
+  .paso-3 { background:#f5f3ff; border:1.5px solid #c4b5fd; }
+  .paso-num {
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:800; flex-shrink:0;
+  }
+  .num-1 { background:var(--gray-200); color:var(--gray-600); }
+  .num-2 { background:#16a34a; color:white; }
+  .num-3 { background:#7c3aed; color:white; }
+  .paso-info { flex:1; }
+  .paso-fecha { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--gray-400); margin-bottom:2px; }
+  .paso-monto { font-size:1.3rem; font-weight:800; color:var(--gray-800); line-height:1; }
+  .paso-monto small { font-size:.8rem; font-weight:500; color:var(--gray-600); }
+  .paso-desc { font-size:.8rem; color:var(--gray-600); margin-top:3px; line-height:1.4; }
+  .paso-tag { font-size:.68rem; font-weight:800; letter-spacing:.4px; text-transform:uppercase; padding:2px 8px; border-radius:10px; margin-top:4px; display:inline-block; }
+  .tag-igual { background:var(--gray-200); color:var(--gray-600); }
+  .tag-new { background:#dcfce7; color:#166534; }
+  .tag-ia { background:#ede9fe; color:#6d28d9; }
+
+  /* CONTINGENCIA */
+  .contingencia-card {
+    background:white; border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-md); overflow:hidden; margin-bottom:16px;
+  }
+  .contingencia-header {
+    background:linear-gradient(135deg,#1a2a1a,#0d3b0d);
+    color:white; padding:16px 20px; display:flex; align-items:center; gap:10px;
+  }
+  .c-icon { font-size:1.5rem; }
+  .c-title { font-size:1rem; font-weight:700; }
+  .c-sub { font-size:.8rem; color:rgba(255,255,255,.7); margin-top:2px; }
+  .contingencia-body { padding:18px 20px; }
+  .explain-text { font-size:.88rem; color:var(--gray-600); line-height:1.6; margin-bottom:16px; }
+  .explain-text strong { color:var(--gray-800); }
+  .send-options {
+    display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;
+  }
+  .send-opt {
+    flex:1; min-width:80px; background:var(--gray-100);
+    border:1.5px solid var(--gray-200); border-radius:var(--radius-md);
+    padding:10px 8px; text-align:center; font-size:.82rem; font-weight:600; color:var(--gray-800);
+  }
+  .send-opt .so-icon { font-size:1.3rem; display:block; margin-bottom:4px; }
+  .send-opt.primary { background:#dcfce7; border-color:#86efac; color:#166534; }
+  .bono-box {
+    background:linear-gradient(135deg,#fff8e1,#fff3cd);
+    border:1.5px solid #ffc107; border-radius:var(--radius-md);
+    padding:14px 16px; display:flex; gap:12px; align-items:flex-start; margin-top:14px;
+  }
+  .bono-box .bono-icon { font-size:1.6rem; flex-shrink:0; }
+  .bono-title { font-size:.9rem; font-weight:700; color:#856404; margin-bottom:4px; }
+  .bono-desc { font-size:.82rem; color:#6d5009; line-height:1.5; }
+
+  /* IA */
+  .ia-card {
+    background:white; border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-md); overflow:hidden; margin-bottom:16px;
+  }
+  .ia-header {
+    background:linear-gradient(135deg,#0d0d2e,#1a0d3d,#2d0a5a);
+    color:white; padding:16px 20px; display:flex; align-items:center; gap:10px;
+  }
+  .ia-icon { font-size:1.5rem; }
+  .ia-title { font-size:1rem; font-weight:700; }
+  .ia-sub { font-size:.8rem; color:rgba(255,255,255,.7); margin-top:2px; }
+  .ia-price-pill {
+    margin-left:auto; background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.25); color:white;
+    font-size:.7rem; font-weight:700; padding:4px 10px;
+    border-radius:20px; text-align:center; white-space:nowrap;
+  }
+  .ia-body { padding:18px 20px; }
+  .ia-explain { font-size:.88rem; color:var(--gray-600); line-height:1.6; margin-bottom:16px; }
+  .chat-demo { background:#f0f0f0; border-radius:var(--radius-md); padding:14px; display:flex; flex-direction:column; gap:8px; }
+  .chat-msg { display:flex; flex-direction:column; gap:2px; max-width:90%; }
+  .chat-msg.user { align-self:flex-end; align-items:flex-end; }
+  .chat-msg.system { align-self:flex-start; align-items:flex-start; }
+  .chat-bubble { padding:8px 12px; border-radius:12px; font-size:.82rem; line-height:1.5; }
+  .chat-msg.user .chat-bubble { background:#dcf8c6; color:#111; border-bottom-right-radius:3px; }
+  .chat-msg.system .chat-bubble { background:white; color:#111; border-bottom-left-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.1); }
+  .chat-label { font-size:.68rem; color:var(--gray-400); padding:0 4px; }
+  .ia-features { margin-top:14px; display:flex; flex-direction:column; gap:7px; }
+  .ia-feature { display:flex; gap:8px; align-items:flex-start; font-size:.85rem; }
+  .ia-feature .if-icon { font-size:.95rem; flex-shrink:0; margin-top:1px; }
+  .ia-feature .if-text { color:var(--gray-800); line-height:1.4; }
+  .ia-note {
+    margin-top:14px; background:#f5f3ff; border-left:3px solid #7c3aed;
+    padding:10px 12px; border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+    font-size:.82rem; color:#4c1d95; line-height:1.5;
+  }
+
+  /* CONDICIONES */
+  .cond-card {
+    background:white; border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-md); overflow:hidden; margin-bottom:16px;
+  }
+  .cond-header {
+    background:linear-gradient(135deg,var(--navy),var(--navy-mid));
+    color:white; padding:14px 20px; font-size:1rem; font-weight:700;
+    display:flex; align-items:center; gap:8px;
+  }
+  .cond-body { padding:14px 20px; display:flex; flex-direction:column; gap:10px; }
+  .cond-item { display:flex; gap:10px; align-items:flex-start; }
+  .cond-item .ci-icon { font-size:1.2rem; flex-shrink:0; margin-top:1px; }
+  .cond-item .ci-text { font-size:.85rem; color:var(--gray-800); line-height:1.5; }
+  .cond-item .ci-text strong { color:var(--navy-light); }
+
+  /* CTA FINAL */
+  .cta-section {
+    background:linear-gradient(135deg,#0f172a,#1e3a5f);
+    color:white; padding:28px 20px; text-align:center;
+  }
+  .cta-section h2 { font-size:1.2rem; font-weight:700; margin-bottom:6px; }
+  .cta-section p { font-size:.88rem; color:rgba(255,255,255,.7); margin-bottom:20px; }
+  .cta-escalera {
+    display:flex; justify-content:center; gap:8px; flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+  .cta-price-box {
+    background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+    border-radius:var(--radius-md); padding:12px 16px; text-align:center; min-width:100px;
+  }
+  .cta-price-box.destacado { background:rgba(22,163,74,.25); border-color:#4ade80; }
+  .cta-price-box.futuro { background:rgba(124,58,237,.2); border-color:#a78bfa; }
+  .cp-label { font-size:.68rem; color:rgba(255,255,255,.6); margin-bottom:4px; text-transform:uppercase; letter-spacing:.4px; }
+  .cp-value { font-size:1.15rem; font-weight:800; color:white; }
+  .cp-sub { font-size:.68rem; color:rgba(255,255,255,.5); margin-top:2px; }
+  .vence-banner {
+    background:rgba(220,38,38,.2); border:1px solid rgba(220,38,38,.4);
+    border-radius:var(--radius-md); padding:8px 14px; margin-bottom:18px;
+    font-size:.8rem; color:#fca5a5; font-weight:600;
+  }
+  .btn-whatsapp {
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--green); color:white;
+    font-size:.95rem; font-weight:700; padding:13px 28px;
+    border-radius:var(--radius-md); text-decoration:none;
+    box-shadow:0 4px 14px rgba(37,211,102,.35); margin-bottom:10px;
+  }
+  .btn-consultar {
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(255,255,255,.1); color:white;
+    font-size:.85rem; font-weight:600; padding:10px 20px;
+    border-radius:var(--radius-md); text-decoration:none;
+    border:1.5px solid rgba(255,255,255,.25); margin-left:8px;
+  }
+  .cta-note { margin-top:12px; font-size:.75rem; color:rgba(255,255,255,.4); }
+
+  /* MOCKUP GENERAL */
+  .mockup-wrap { margin-top:14px; }
+  .mockup-label { font-size:.72rem; font-weight:700; color:var(--gray-400); text-align:center; margin-top:8px; font-style:italic; }
+
+  /* MOCKUP — REPORTE */
+  .rep-mockup { background:white; border:1px solid #ccc; border-radius:6px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,.15); font-family:'Segoe UI',Arial,sans-serif; font-size:10px; }
+  .rep-hdr { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 14px 8px; border-bottom:2px solid #000; }
+  .rep-logo { width:44px; height:44px; background:#1d4ed8; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:13px; }
+  .rep-hdr-r { text-align:right; font-size:9px; line-height:1.8; }
+  .rep-titulo { text-align:center; font-size:18px; font-weight:900; letter-spacing:3px; padding:6px 0 2px; }
+  .rep-subtit { text-align:center; font-size:9px; color:#555; margin-bottom:6px; }
+  .rep-cli { font-size:9px; padding:4px 14px 6px; border-bottom:1px solid #ccc; }
+  .rep-table { width:100%; border-collapse:collapse; font-size:9px; }
+  .rep-table .rth { font-weight:700; border-top:1px solid #000; border-bottom:1px solid #000; padding:4px 8px; background:#f5f5f5; }
+  .rep-table .rtd { padding:3px 8px; }
+  .rep-table .rtd-tot { padding:4px 8px; font-weight:700; border-top:1px solid #000; text-align:right; }
+  .rep-svc { font-weight:700; text-decoration:underline; padding:3px 8px; font-size:9px; }
+  .rep-badge { display:inline-block; padding:1px 6px; border-radius:8px; font-size:8px; font-weight:700; }
+  .badge-pend { background:#fef3c7; color:#92400e; }
+  .badge-cerr { background:#dcfce7; color:#166534; }
+  .rep-grand { text-align:right; font-size:12px; font-weight:900; padding:6px 14px 8px; border-top:2px solid #000; }
+
+  /* MOCKUP — PHONE */
+  .phone-wrap { display:flex; justify-content:center; margin-top:10px; }
+  .phone { width:220px; background:#1a1a2e; border-radius:28px; padding:10px; box-shadow:0 8px 32px rgba(0,0,0,.35); }
+  .phone-screen { background:white; border-radius:20px; overflow:hidden; }
+  .phone-topbar { background:#1d4ed8; padding:8px 12px; display:flex; align-items:center; gap:6px; }
+  .phone-topbar .pb-back { color:white; font-size:14px; }
+  .phone-topbar .pb-title { color:white; font-size:11px; font-weight:700; flex:1; }
+  .phone-topbar .pb-icon { color:rgba(255,255,255,.7); font-size:14px; }
+
+  /* MOCKUP — FOTOS */
+  .fotos-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:10px; }
+  .foto-card { border-radius:8px; overflow:hidden; border:1.5px solid #e2e8f0; }
+  .foto-header { padding:4px 8px; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+  .foto-header.entrada { background:#fef3c7; color:#92400e; }
+  .foto-header.salida { background:#dcfce7; color:#166534; }
+  .foto-img { background:#f1f5f9; height:60px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .foto-meta { padding:4px 8px; font-size:7.5px; color:#64748b; line-height:1.5; }
+  .foto-patente { background:#1a1a2e; color:white; text-align:center; padding:3px; font-size:9px; font-weight:700; letter-spacing:1px; }
+
+  /* MOCKUP — STOCK */
+  .stock-search { margin:8px 10px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:20px; padding:5px 10px; font-size:9px; color:#94a3b8; display:flex; align-items:center; gap:5px; }
+  .stock-list { padding:0 10px 10px; display:flex; flex-direction:column; gap:4px; }
+  .stock-item { display:flex; align-items:center; justify-content:space-between; padding:6px 8px; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0; }
+  .stock-item .si-name { font-size:9px; font-weight:600; color:#1e293b; }
+  .stock-item .si-code { font-size:7.5px; color:#94a3b8; }
+  .stock-item .si-qty { font-size:11px; font-weight:800; color:#1d4ed8; }
+  .stock-item .si-price { font-size:8px; color:#64748b; }
+  .stock-low { background:#fef2f2; border-color:#fecaca; }
+  .stock-low .si-qty { color:#dc2626; }
+  .stock-actions { display:flex; gap:4px; padding:0 10px 10px; }
+  .stock-btn { flex:1; padding:5px; border-radius:6px; font-size:8px; font-weight:700; text-align:center; border:none; cursor:pointer; }
+  .stock-btn.edit { background:#eff6ff; color:#1d4ed8; }
+  .stock-btn.add { background:#1d4ed8; color:white; }
+
+  /* MOCKUP — SHARE SHEET */
+  .share-overlay { background:#f1f5f9; border-radius:0 0 20px 20px; }
+  .share-handle { width:36px; height:4px; background:#cbd5e1; border-radius:2px; margin:8px auto; }
+  .share-title { text-align:center; font-size:10px; font-weight:700; color:#1e293b; margin-bottom:8px; }
+  .share-apps { display:flex; justify-content:space-around; padding:4px 8px 12px; }
+  .share-app { display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .share-app .sa-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .share-app .sa-label { font-size:7.5px; color:#64748b; font-weight:600; }
+  .share-app.active .sa-icon { box-shadow:0 2px 8px rgba(0,0,0,.2); }
+  .share-wa { background:#25D366; }
+  .share-sms { background:#3b82f6; }
+  .share-tg { background:#0088cc; }
+  .share-mail { background:#ea4335; }
+  .share-msg { margin:0 10px 10px; background:white; border-radius:8px; padding:8px 10px; font-size:8px; color:#475569; line-height:1.5; border:1px solid #e2e8f0; }
+
+  /* FOOTER */
+  .footer {
+    background:var(--blue); color:rgba(255,255,255,.8);
+    text-align:center; padding:14px 20px; font-size:.78rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo-box">IS</div>
+  <div style="margin-left:4px;">
+    <div class="logo-text">IsabSoft GestFact</div>
+    <div class="logo-sub">Sistema de Gestión para Talleres</div>
+  </div>
+  <div class="nav-tag">🎁 Bono Especial</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">🎁 Bono Cliente Activo — Agosto 2026</div>
+  <h1>Miguel Acuña<br><span>PCM Taller Mecánico</span></h1>
+  <p>Nuevas funciones + IA incluida<br>Solo responda <strong style="color:#f9c74f;">"Aprobado"</strong> antes del 26/08</p>
+  <div class="hero-note">⏳ Bono vence el 26/08/2026 — activación sin costo</div>
+</div>
+
+<!-- BONO + ESCALERA -->
+<div class="section">
+  <div class="section-title">🎁 Su bono</div>
+
+  <div class="plan-card">
+    <div class="plan-header">
+      <div>
+        <div class="plan-name">Paquete de activación especial</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.75);margin-top:2px;">Para clientes activos — solo agosto 2026</div>
+      </div>
+      <div class="plan-tag">SIN COSTO</div>
+    </div>
+    <div class="plan-body">
+
+      <div class="activacion-pill">✅ Activación gratis — valor real Gs. 500.000</div>
+
+      <div class="benefits">
+        <div class="benefit-item">
+          <div class="icon">📋</div>
+          <div class="text">
+            <strong>Reporte de estados por cliente y vehículo</strong>
+            <span>Filtrá por cliente, vehículo, estado (Pendiente/Cerrado) y fecha — imprime igual que el reporte de Access. Ya activo ✅</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="icon">📸</div>
+          <div class="text">
+            <strong>Fotos antes/después de la reparación</strong>
+            <span>Sacá foto al recibir y al entregar el vehículo, vinculada al presupuesto. Ante cualquier reclamo del cliente, tenés la prueba desde el celular y la PC.</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="icon">📸</div>
+          <div class="text">
+            <strong>Fotos de kilometraje</strong>
+            <span>Odómetro entrada/salida con patente registrada — consultable desde Access en la PC</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="icon">📦</div>
+          <div class="text">
+            <strong>Control de stock completo</strong>
+            <span>Editar precios, eliminar, buscar repuestos desde el celular y la PC. Descuento automático al presupuestar.</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="icon">📤</div>
+          <div class="text">
+            <strong>Envío de contingencia</strong>
+            <span>Si WhatsApp cae, un toque elige SMS, Telegram o Email — sin salir del sistema</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="icon">🤖</div>
+          <div class="text">
+            <strong>IA Asistente — desde marzo 2027</strong>
+            <span>Registrá servicios con texto libre, sin tocar pantallas. Incluido en su plan.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="escalera">
+
+        <div class="paso paso-1">
+          <div class="paso-num num-1">1</div>
+          <div class="paso-info">
+            <div class="paso-fecha">26 de agosto 2026</div>
+            <div class="paso-monto">Gs. 350.000<small>/mes</small></div>
+            <div class="paso-desc">Paga igual que siempre — sin ningún cambio</div>
+            <span class="paso-tag tag-igual">Sin cambio</span>
+          </div>
+        </div>
+
+        <div class="paso paso-2">
+          <div class="paso-num num-2">2</div>
+          <div class="paso-info">
+            <div class="paso-fecha">Setiembre 2026 — Febrero 2027 (6 meses)</div>
+            <div class="paso-monto">Gs. 400.000<small>/mes</small></div>
+            <div class="paso-desc">Fotos, Stock completo y Contingencia de envío activos</div>
+            <span class="paso-tag tag-new">Nuevas funciones</span>
+          </div>
+        </div>
+
+        <div class="paso paso-3">
+          <div class="paso-num num-3">3</div>
+          <div class="paso-info">
+            <div class="paso-fecha">Desde marzo 2027 en adelante</div>
+            <div class="paso-monto">Gs. 500.000<small>/mes</small></div>
+            <div class="paso-desc">Todo lo anterior más IA Asistente — registrá con texto libre</div>
+            <span class="paso-tag tag-ia">🤖 IA incluida</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOCKUPS -->
+<div class="section" style="padding-top:0;">
+  <div class="section-title">👀 ¿Cómo funciona cada función?</div>
+
+  <!-- REPORTE -->
+  <div class="plan-card">
+    <div class="plan-header" style="background:linear-gradient(135deg,#1e3a5f,#1d4ed8);">
+      <div>
+        <div class="plan-name">📋 Reporte de estados</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.75);margin-top:2px;">Por cliente, vehículo y estado — imprime igual que Access</div>
+      </div>
+    </div>
+    <div class="plan-body">
+      <p style="font-size:.85rem;color:var(--gray-600);line-height:1.5;margin-bottom:12px;">
+        Filtrá por cliente, vehículo, estado (Pendiente / Cerrado) y rango de fechas. Al tocar <strong>"Ver / PDF"</strong> abre una hoja lista para imprimir — mismo formato que el reporte de Access.
+      </p>
+      <div class="mockup-wrap">
+        <div class="rep-mockup">
+          <div class="rep-hdr">
+            <div class="rep-logo">PCM</div>
+            <div class="rep-hdr-r">
+              <div><strong>CONTACTO:</strong> 0961 807 675</div>
+              <div><strong>DIRECCIÓN:</strong> Palacio de López casi Augusto Roa Bastos</div>
+            </div>
+          </div>
+          <div class="rep-titulo">INFORME</div>
+          <div class="rep-subtit">Período: 01/08/2026 al 12/08/2026 &nbsp;|&nbsp; Estado: Todos</div>
+          <div class="rep-cli"><strong>CLIENTE:</strong> Juan Rodríguez</div>
+          <table class="rep-table">
+            <tr>
+              <td class="rth">N°</td>
+              <td class="rth">Fecha</td>
+              <td class="rth">Vehículo</td>
+              <td class="rth">Estado</td>
+              <td class="rth" style="text-align:right;">Total</td>
+            </tr>
+            <tr><td colspan="5" class="rep-svc">SERVICIO</td></tr>
+            <tr>
+              <td class="rtd">0041</td>
+              <td class="rtd">03/08</td>
+              <td class="rtd">Corolla [ABC123]</td>
+              <td class="rtd"><span class="rep-badge badge-cerr">Cerrado</span></td>
+              <td class="rtd" style="text-align:right;">350.000</td>
+            </tr>
+            <tr>
+              <td class="rtd">0044</td>
+              <td class="rtd">10/08</td>
+              <td class="rtd">Corolla [ABC123]</td>
+              <td class="rtd"><span class="rep-badge badge-pend">Pendiente</span></td>
+              <td class="rtd" style="text-align:right;">180.000</td>
+            </tr>
+            <tr>
+              <td class="rtd-tot" colspan="4">TOTAL</td>
+              <td class="rtd-tot">530.000</td>
+            </tr>
+          </table>
+          <div class="rep-cli" style="border-top:1px solid #ccc;border-bottom:none;"><strong>CLIENTE:</strong> María González</div>
+          <table class="rep-table">
+            <tr><td colspan="5" class="rep-svc">SERVICIO</td></tr>
+            <tr>
+              <td class="rtd">0043</td>
+              <td class="rtd">08/08</td>
+              <td class="rtd">Hilux [XYZ789]</td>
+              <td class="rtd"><span class="rep-badge badge-pend">Pendiente</span></td>
+              <td class="rtd" style="text-align:right;">420.000</td>
+            </tr>
+            <tr>
+              <td class="rtd-tot" colspan="4">TOTAL</td>
+              <td class="rtd-tot">420.000</td>
+            </tr>
+          </table>
+          <div class="rep-grand">TOTAL GENERAL &nbsp;&nbsp; Gs. 950.000</div>
+        </div>
+        <div class="mockup-label">Vista previa del reporte imprimible — mismo formato que Access</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOTOS ANTES/DESPUÉS -->
+  <div class="plan-card">
+    <div class="plan-header" style="background:linear-gradient(135deg,#7c2d12,#c2410c);">
+      <div>
+        <div class="plan-name">📸 Fotos antes/después de la reparación</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.75);margin-top:2px;">Prueba ante cualquier reclamo del cliente</div>
+      </div>
+    </div>
+    <div class="plan-body">
+      <p style="font-size:.85rem;color:var(--gray-600);line-height:1.5;margin-bottom:12px;">
+        Al recibir el vehículo sacás foto con el celular — queda vinculada al presupuesto con fecha, hora y patente. Al entregarlo, otra foto. Si el cliente reclama algo, mostrás la imagen del momento exacto.
+      </p>
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-topbar">
+              <span class="pb-back">‹</span>
+              <span class="pb-title">📸 Fotos — Presupuesto N°0044</span>
+            </div>
+            <div style="padding:8px 10px 4px;">
+              <div style="font-size:8px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Vehículo: Corolla — ABC 123</div>
+            </div>
+            <div class="fotos-grid">
+              <div class="foto-card">
+                <div class="foto-header entrada">📥 Entrada</div>
+                <div class="foto-img">🚗</div>
+                <div class="foto-meta">10/08/2026 08:42<br>KM: 87.450</div>
+              </div>
+              <div class="foto-card">
+                <div class="foto-header salida">📤 Salida</div>
+                <div class="foto-img">✅</div>
+                <div class="foto-meta">10/08/2026 16:15<br>KM: 87.452</div>
+              </div>
+            </div>
+            <div class="foto-patente">ABC · 123</div>
+            <div style="display:flex;gap:6px;padding:8px 10px;">
+              <div style="flex:1;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:6px;text-align:center;font-size:8px;font-weight:700;color:#1d4ed8;">📷 Nueva foto</div>
+              <div style="flex:1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:6px;text-align:center;font-size:8px;font-weight:700;color:#166534;">🖥️ Ver en PC</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">Fotos vinculadas al presupuesto — consultables desde celular y PC</div>
+    </div>
+  </div>
+
+  <!-- STOCK -->
+  <div class="plan-card">
+    <div class="plan-header" style="background:linear-gradient(135deg,#1e3a5f,#0f766e);">
+      <div>
+        <div class="plan-name">📦 Control de stock desde el celular</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.75);margin-top:2px;">Editar, buscar y descontar automático al presupuestar</div>
+      </div>
+    </div>
+    <div class="plan-body">
+      <p style="font-size:.85rem;color:var(--gray-600);line-height:1.5;margin-bottom:12px;">
+        Buscá un repuesto por nombre, editá el precio, eliminá un ítem. Al cargar el repuesto en un presupuesto, el stock se descuenta automáticamente. Todo desde el celular o la PC.
+      </p>
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-topbar">
+              <span class="pb-back">‹</span>
+              <span class="pb-title">📦 Stock de Repuestos</span>
+              <span class="pb-icon">＋</span>
+            </div>
+            <div class="stock-search">🔍 Buscar repuesto...</div>
+            <div class="stock-list">
+              <div class="stock-item">
+                <div>
+                  <div class="si-name">Filtro de aceite Toyota</div>
+                  <div class="si-code">COD-1042 · Gs. 45.000 c/u</div>
+                </div>
+                <div style="text-align:right;">
+                  <div class="si-qty">12</div>
+                  <div class="si-price">en stock</div>
+                </div>
+              </div>
+              <div class="stock-item stock-low">
+                <div>
+                  <div class="si-name">Pastillas de freno Corolla</div>
+                  <div class="si-code">COD-0871 · Gs. 120.000 c/u</div>
+                </div>
+                <div style="text-align:right;">
+                  <div class="si-qty">2</div>
+                  <div class="si-price">⚠️ bajo</div>
+                </div>
+              </div>
+              <div class="stock-item">
+                <div>
+                  <div class="si-name">Aceite 10W40 (litro)</div>
+                  <div class="si-code">COD-0220 · Gs. 28.000 c/u</div>
+                </div>
+                <div style="text-align:right;">
+                  <div class="si-qty">8</div>
+                  <div class="si-price">en stock</div>
+                </div>
+              </div>
+            </div>
+            <div class="stock-actions">
+              <div class="stock-btn edit">✏️ Editar precio</div>
+              <div class="stock-btn add">＋ Agregar repuesto</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">Stock en tiempo real — descuento automático al presupuestar</div>
+    </div>
+  </div>
+
+  <!-- CONTINGENCIA ENVÍO MOCKUP -->
+  <div class="plan-card">
+    <div class="plan-header" style="background:linear-gradient(135deg,#1a2a1a,#0d3b0d);">
+      <div>
+        <div class="plan-name">📤 Contingencia de envío</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.75);margin-top:2px;">Si WhatsApp cae, un toque y elige por dónde enviar</div>
+      </div>
+    </div>
+    <div class="plan-body">
+      <p style="font-size:.85rem;color:var(--gray-600);line-height:1.5;margin-bottom:12px;">
+        Toca "Enviar" en el presupuesto — el celular abre la hoja de compartir nativa con todas las apps disponibles. Si WhatsApp no responde, elegís SMS, Telegram o Email sin salir del sistema.
+      </p>
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-topbar">
+              <span class="pb-back">‹</span>
+              <span class="pb-title">Presupuesto N°0044 — Corolla</span>
+            </div>
+            <div style="padding:10px;background:#f8fafc;">
+              <div style="background:white;border-radius:8px;padding:10px;font-size:9px;color:#475569;line-height:1.7;border:1px solid #e2e8f0;margin-bottom:8px;">
+                <strong style="color:#1e293b;">PCM Taller Mecánico</strong><br>
+                Presupuesto N° 0044<br>
+                Cliente: Juan Rodríguez<br>
+                Vehículo: Corolla ABC·123<br>
+                Servicios: Cambio aceite + filtro<br>
+                <strong>Total: Gs. 180.000</strong>
+              </div>
+              <div style="background:#1d4ed8;color:white;text-align:center;border-radius:8px;padding:7px;font-size:10px;font-weight:700;">📤 Enviar presupuesto</div>
+            </div>
+            <div class="share-overlay">
+              <div class="share-handle"></div>
+              <div class="share-title">Compartir presupuesto</div>
+              <div class="share-apps">
+                <div class="share-app active">
+                  <div class="sa-icon share-wa">💬</div>
+                  <div class="sa-label">WhatsApp</div>
+                </div>
+                <div class="share-app">
+                  <div class="sa-icon share-sms">💬</div>
+                  <div class="sa-label">SMS</div>
+                </div>
+                <div class="share-app">
+                  <div class="sa-icon share-tg">✈️</div>
+                  <div class="sa-label">Telegram</div>
+                </div>
+                <div class="share-app">
+                  <div class="sa-icon share-mail">📧</div>
+                  <div class="sa-label">Email</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">Si WhatsApp cae — elegís SMS, Telegram o Email en el mismo toque</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- IA ASISTENTE -->
+<div class="section" style="padding-top:0;">
+  <div class="section-title">🤖 IA Asistente</div>
+
+  <div class="ia-card">
+    <div class="ia-header">
+      <div class="ia-icon">🤖</div>
+      <div>
+        <div class="ia-title">IA Asistente para su taller</div>
+        <div class="ia-sub">Disponible desde marzo 2027 — incluido en su plan</div>
+      </div>
+      <div class="ia-price-pill">✅ Incluido<br>Gs. 500k/mes</div>
+    </div>
+    <div class="ia-body">
+      <p class="ia-explain">
+        En lugar de abrir formularios y completar campos, usted <strong>escribe o dicta como si le hablara a un empleado</strong> — el sistema entiende y registra solo.
+      </p>
+
+      <div class="chat-demo">
+
+        <div class="chat-msg user">
+          <div class="chat-label">Usted escribe o dicta</div>
+          <div class="chat-bubble">cambié aceite y filtro al Corolla de Juan, cobré 350.000</div>
+        </div>
+        <div class="chat-msg system">
+          <div class="chat-label">Sistema registra</div>
+          <div class="chat-bubble">✅ <strong>Orden registrada</strong><br>👤 Cliente: Juan<br>🚗 Vehículo: Corolla<br>🔧 Servicios: Cambio aceite + Filtro<br>💰 Monto: Gs. 350.000<br><br>¿La marco como cobrada?</div>
+        </div>
+
+        <div class="chat-msg user">
+          <div class="chat-bubble">¿cuánto gané esta semana?</div>
+        </div>
+        <div class="chat-msg system">
+          <div class="chat-bubble">📊 <strong>Esta semana (07/08 – 12/08)</strong><br>Ingresos: Gs. 2.150.000<br>Órdenes cerradas: 8<br>Cobradas: 6 · No cobradas: 2<br>⚠️ Pendiente cobrar: Gs. 350.000</div>
+        </div>
+
+        <div class="chat-msg user">
+          <div class="chat-bubble">avisale a Juan que el Corolla está listo para retirar</div>
+        </div>
+        <div class="chat-msg system">
+          <div class="chat-bubble">✅ Mensaje generado:<br><em>"Hola Juan! Tu Corolla ya está listo para retirar. Quedo a disposición. PCM Taller Mecánico 🔧"</em><br><br>¿Lo enviás así?</div>
+        </div>
+
+      </div>
+
+      <div class="ia-features" style="margin-top:16px;">
+        <div class="ia-feature">
+          <div class="if-icon">🗣️</div>
+          <div class="if-text"><strong>Carga de órdenes por texto</strong> — dictás el trabajo como si le hablaras a un ayudante, sin tocar formularios</div>
+        </div>
+        <div class="ia-feature">
+          <div class="if-icon">📊</div>
+          <div class="if-text"><strong>Consultas en lenguaje natural</strong> — "¿cuánto gané esta semana?", "¿qué presupuestos me deben?" — responde al instante</div>
+        </div>
+        <div class="ia-feature">
+          <div class="if-icon">💬</div>
+          <div class="if-text"><strong>Genera mensajes para sus clientes</strong> — el auto está listo, el presupuesto está pendiente, aviso de mantenimiento</div>
+        </div>
+      </div>
+
+      <div class="ia-note">
+        🔒 <strong>Incluido en su plan desde marzo 2027.</strong> No es un costo adicional — viene con el Gs. 500.000/mes que ya conoce desde el inicio. Una vez que llegue la fecha, lo activamos y listo.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONDICIONES -->
+<div class="section" style="padding-top:0;">
+  <div class="section-title">📋 Condiciones del servicio</div>
+
+  <div class="cond-card">
+    <div class="cond-header">🤝 Lo que acordamos desde el día uno</div>
+    <div class="cond-body">
+      <div class="cond-item">
+        <div class="ci-icon">🔒</div>
+        <div class="ci-text"><strong>Sus datos son 100% suyos.</strong> IsabSoft accede al sistema únicamente con su autorización. Puede exportar su información en cualquier momento.</div>
+      </div>
+      <div class="cond-item">
+        <div class="ci-icon">💾</div>
+        <div class="ci-text"><strong>Código fuente — propiedad de IsabSoft.</strong> Usted recibe el sistema funcionando y sus datos completos. El código no se transfiere a terceros.</div>
+      </div>
+      <div class="cond-item">
+        <div class="ci-icon">📅</div>
+        <div class="ci-text"><strong>El abono sube recién cuando todo esté instalado.</strong> El 26/08 paga Gs. 350.000 como siempre. El 400.000 empieza desde setiembre, una vez que todas las funciones estén activas en su sistema.</div>
+      </div>
+      <div class="cond-item">
+        <div class="ci-icon">⏱️</div>
+        <div class="ci-text"><strong>Instalación completa en máximo 1 semana.</strong> Desde que confirma "Aprobado", instalamos todo el paquete en 7 días hábiles como máximo.</div>
+      </div>
+      <div class="cond-item">
+        <div class="ci-icon">📋</div>
+        <div class="ci-text"><strong>Cancelación con 15 días de aviso.</strong> Sin permanencia mínima. Si decide pausar, sus datos quedan intactos y puede reactivar cuando quiera.</div>
+      </div>
+      <div class="cond-item">
+        <div class="ci-icon">🛡️</div>
+        <div class="ci-text"><strong>Garantía de funcionamiento.</strong> Si algo del paquete instalado no funciona según lo acordado, lo corregimos sin costo adicional.</div>
+      </div>
+      <div class="cond-item">
+        <div class="ci-icon">🤖</div>
+        <div class="ci-text"><strong>IA Asistente garantizada desde marzo 2027.</strong> Ya está incluida en el plan — se activa en esa fecha sin trámite adicional ni costo extra.</div>
+      </div>
+      <div class="cond-item">
+        <div class="ci-icon">📦</div>
+        <div class="ci-text"><strong>Use solo lo que necesite.</strong> Las funciones del paquete (stock, fotos, contingencia) quedan disponibles en su sistema. Puede activarlas de a poco según su ritmo — sin obligación de usarlas desde el día 1.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA FINAL -->
+<div class="cta-section">
+  <h2>¿Arrancamos esta semana?</h2>
+  <p>Solo responda "Aprobado" y coordinamos la instalación.</p>
+
+  <div class="cta-escalera">
+    <div class="cta-price-box">
+      <div class="cp-label">26/08</div>
+      <div class="cp-value">Gs. 350.000</div>
+      <div class="cp-sub">igual que siempre</div>
+    </div>
+    <div class="cta-price-box destacado">
+      <div class="cp-label">Sep–Feb</div>
+      <div class="cp-value">Gs. 400.000</div>
+      <div class="cp-sub">6 meses</div>
+    </div>
+    <div class="cta-price-box futuro">
+      <div class="cp-label">Mar 2027+</div>
+      <div class="cp-value">Gs. 500.000</div>
+      <div class="cp-sub">con IA incluida</div>
+    </div>
+  </div>
+
+  <div class="vence-banner">⏳ Bono vence el 26/08/2026 — activación sin costo solo hasta esa fecha</div>
+
+  <div>
+    <a class="btn-whatsapp"
+      href="https://wa.me/595981153477?text=Aprobado%20Carlos%2C%20quiero%20activar%20el%20bono."
+      target="_blank">
+      <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L0 24l6.324-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.003-1.37l-.36-.214-3.732.979.996-3.65-.234-.374A9.818 9.818 0 112 12c0-5.42 4.398-9.818 9.818-9.818 5.42 0 9.818 4.398 9.818 9.818 0 5.42-4.398 9.818-9.818 9.818z"/></svg>
+      ✅ Responder APROBADO
+    </a>
+    <a class="btn-consultar"
+      href="https://wa.me/595981153477?text=Carlos%2C%20tengo%20una%20consulta%20sobre%20el%20bono."
+      target="_blank">💬 Consulta</a>
+  </div>
+
+  <div class="cta-note">IsabSoft — Soluciones Oportunas · +595 981 153 477 · isabsofthard@gmail.com</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  IsabSoft &nbsp;|&nbsp; Soluciones Oportunas &nbsp;|&nbsp; 0981 153 477 &nbsp;|&nbsp; isabsofthard@gmail.com
+</div>
+
+</body>
+</html>
