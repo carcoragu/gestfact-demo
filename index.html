@@ -2682,11 +2682,11 @@ function generarReporte(){
     '.subtit{text-align:center;font-size:10px;color:#333;margin-bottom:10px;}'+
     '.cli-line{font-size:11px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #ccc;}'+
     '.ptable{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:10.5px;}'+
-    '.phdr td{background:#d9d9d9;font-size:10px;padding:5px 8px;border:1px solid #aaa;}'+
+    '.phdr td{font-size:10px;padding:5px 8px;border-top:1px solid #000;border-bottom:1px solid #000;}'+
     '.lbl{font-weight:bold;text-transform:uppercase;font-size:9px;margin-right:2px;}'+
-    '.svc-hdr td{font-weight:bold;text-decoration:underline;padding:4px 8px;border-left:1px solid #aaa;border-right:1px solid #aaa;font-size:10px;}'+
-    '.irow td{padding:3px 8px;border-left:1px solid #aaa;border-right:1px solid #aaa;}'+
-    '.tot-row td{padding:4px 8px;border:1px solid #aaa;font-weight:bold;background:#f5f5f5;}'+
+    '.svc-hdr td{font-weight:bold;text-decoration:underline;padding:4px 8px;font-size:10px;}'+
+    '.irow td{padding:3px 8px;}'+
+    '.tot-row td{padding:4px 8px;font-weight:bold;border-top:1px solid #000;}'+
     '.num{text-align:right;}'+
     '.grand{text-align:right;font-size:13px;font-weight:bold;border-top:2px solid #000;padding-top:8px;margin-top:4px;}'+
     '.res{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}'+
@@ -2707,8 +2707,8 @@ function generarReporte(){
   bloques+
   '<div class="grand">TOTAL &nbsp;&nbsp; Gs. '+fmtGs(totalGeneral)+'</div>'+
   '<div class="res">'+
-    '<div class="res-box" style="background:#e8f5e9;border:1px solid #c8e6c9;"><strong>Cobrados:</strong> '+nCob+' | Gs. '+fmtGs(totalCob)+'</div>'+
-    '<div class="res-box" style="background:#fce4ec;border:1px solid #f8bbd0;"><strong>No Cobrados:</strong> '+nNC+' | Gs. '+fmtGs(totalNC)+'</div>'+
+    '<div class="res-box"><strong>Cobrados:</strong> '+nCob+' | Gs. '+fmtGs(totalCob)+'</div>'+
+    '<div class="res-box"><strong>No Cobrados:</strong> '+nNC+' | Gs. '+fmtGs(totalNC)+'</div>'+
   '</div>'+
   '<div class="stamp">Generado: '+stamp+' — IsabSoft GestFact</div>'+
   '</body></html>';
