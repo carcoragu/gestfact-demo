@@ -421,6 +421,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
         <div class="form-group"><label class="form-label">Anio</label><input class="form-input" id="ord-anio" placeholder="Ej: 2021" oninput="_marcarCambioOrden()"/></div>
         <div class="form-group"><label class="form-label">Km actuales</label><input class="form-input" id="ord-km" placeholder="Ej: 45.000" oninput="_marcarCambioOrden()"/></div>
       </div>
+      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" type="date" id="ord-fecha" oninput="_marcarCambioOrden()"/></div>
     </div>
     <div class="card">
       <div class="card-title">Detalle del Servicio</div>
@@ -1179,7 +1180,8 @@ function guardarOrden(target){
   var patente=patEl?patEl.value:'';
   var km=kmEl?kmEl.value:'';
   var anio=anioEl?anioEl.value:'';
-  var fecha=new Date().toISOString();
+  var fechaInput=document.getElementById('ord-fecha');
+  var fecha=fechaInput&&fechaInput.value?fechaInput.value+'T12:00:00.000Z':new Date().toISOString();
   var numPres='P-'+String(Date.now()).slice(-4);
   var servicioDesc=itemsData.map(function(it){return it.desc;}).filter(Boolean).join(' | ')||(desc?desc.value:'Servicio');
   var esEdicion=editandoOrden&&currentOrdenId;
@@ -1194,7 +1196,8 @@ function guardarOrden(target){
       ordenes[idx].servicio=servicioDesc;
       ordenes[idx].items=JSON.stringify(itemsData);
       ordenes[idx].monto=total;
-      ordenes[idx].fecha=new Date().toISOString();
+      var fechaInputEdit=document.getElementById('ord-fecha');
+      ordenes[idx].fecha=fechaInputEdit&&fechaInputEdit.value?fechaInputEdit.value+'T12:00:00.000Z':ordenes[idx].fecha;
       apiFire({action:'saveOrden',data:ordenes[idx]});
     }
     editandoOrden=false;
@@ -1299,6 +1302,8 @@ function editarOrden(){
   var pat=document.getElementById('ord-patente');if(pat)pat.value=ord.patente||'';
   var km=document.getElementById('ord-km');if(km)km.value=ord.km||'';
   var anioInp=document.getElementById('ord-anio');if(anioInp)anioInp.value=ord.anio||'';
+  var fechaInp=document.getElementById('ord-fecha');
+  if(fechaInp&&ord.fecha){var fv=ord.fecha;if(fv.indexOf('T')>=0)fv=fv.substring(0,10);else if(fv.indexOf('/')>=0){var fp=fv.split('/');fv=fp[2]+'-'+fp[1]+'-'+fp[0];}fechaInp.value=fv;}
   var lista=document.getElementById('items-list');
   if(lista){
     lista.innerHTML='';
@@ -1424,13 +1429,15 @@ function nuevaOrden(fromClienteIdx){
   var br=document.getElementById('btn-registrar-ord');
   if(br){br.disabled=false;br.style.background='';br.textContent='Registrar Orden (sin presupuesto)';}
   go('s-nuevo');
+  var hoy=new Date();var fEl=document.getElementById('ord-fecha');
+  if(fEl)fEl.value=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
 }
 function limpiarOrden(){
   if(editandoOrden)return;
   currentOrdenId=null;
   var desc=document.getElementById('ord-desc');
   if(desc)desc.value='';
-  ['ord-vehiculo','ord-patente','ord-anio','ord-km'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['ord-vehiculo','ord-patente','ord-anio','ord-km','ord-fecha'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   var picker=document.getElementById('veh-picker');
   if(picker){picker.style.display='none';picker.innerHTML='';}
   _vehsCliente=[];
