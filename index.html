@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1662,12 +1662,11 @@ function renderGestion(){
     var ep=o.estado_pres||'pendiente';
     if(filtroGestion!=='todos'&&ep!==filtroGestion)return false;
     if(desdeVal||hastaVal){
-      var p=o.fecha.split('/');
-      if(p.length===3){
-        var iso=p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');
-        if(desdeVal&&iso<desdeVal)return false;
-        if(hastaVal&&iso>hastaVal)return false;
-      }
+      var d=new Date(o.fecha);
+      var dDesde=desdeVal?new Date(desdeVal):null;
+      var dHasta=hastaVal?new Date(hastaVal+'T23:59:59'):null;
+      if(dDesde&&d<dDesde)return false;
+      if(dHasta&&d>dHasta)return false;
     }
     return true;
   });
@@ -2557,8 +2556,11 @@ function _repFiltrarOrdenes(){
   return ordenes.filter(function(o){
     if(clienteFiltro&&o.cliente!==clienteFiltro)return false;
     if(desdeVal||hastaVal){
-      var p=(o.fecha||'').split('/');
-      if(p.length===3){var iso=p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');if(desdeVal&&iso<desdeVal)return false;if(hastaVal&&iso>hastaVal)return false;}
+      var d=new Date(o.fecha||'');
+      var dDesde=desdeVal?new Date(desdeVal):null;
+      var dHasta=hastaVal?new Date(hastaVal+'T23:59:59'):null;
+      if(dDesde&&d<dDesde)return false;
+      if(dHasta&&d>dHasta)return false;
     }
     if(!ninguno){
       var ep=o.estado_pres||'pendiente';
@@ -2762,3 +2764,4 @@ function enviarReporteWA(){
 </script>
 </body>
 </html>
+
