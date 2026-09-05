@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registro de Trabajo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 0.25s ease;
+        }
+        .screen.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progreso */
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 4px;
+            margin-bottom: 36px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #4ade80;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        /* Pregunta */
+        .question {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+        .hint {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.45);
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        /* Input único */
+        .big-input {
+            width: 100%;
+            padding: 16px 18px;
+            font-size: 1.2rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.07);
+            color: #fff;
+            text-align: center;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+        .big-input::placeholder { color: rgba(255,255,255,0.25); }
+        .big-input:focus {
+            outline: none;
+            border-color: #4ade80;
+        }
+        .big-input.error { border-color: #f87171; animation: shake 0.28s; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            30%      { transform: translateX(-8px); }
+            70%      { transform: translateX(8px); }
+        }
+
+        /* Cards de opción (cliente) */
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+        .opt-btn {
+            padding: 20px 12px;
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .opt-btn .sub { font-size: 0.72rem; font-weight: 400; color: rgba(255,255,255,0.45); }
+        .opt-btn:active, .opt-btn.selected {
+            background: rgba(74,222,128,0.18);
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+        .opt-btn.selected .sub { color: rgba(74,222,128,0.6); }
+
+        /* Botón siguiente */
+        .btn-next {
+            margin-top: 22px;
+            width: 100%;
+            padding: 16px;
+            background: #4ade80;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.12s;
+        }
+        .btn-next:active { transform: scale(0.97); background: #22c55e; }
+
+        /* Botón atrás */
+        .btn-back {
+            margin-top: 14px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 8px;
+        }
+        .btn-back:hover { color: rgba(255,255,255,0.65); }
+
+        /* Pantalla final */
+        .resumen {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            padding: 18px 20px;
+            color: #fff;
+            font-size: 0.92rem;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            font-family: monospace;
+            margin-bottom: 20px;
+        }
+        .btn-wa-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+        .btn-wa {
+            padding: 16px 10px;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.12s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-wa:active { transform: scale(0.96); }
+        .btn-copy-wa { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-green-wa { background: #25D366; color: #fff; }
+
+        .btn-reiniciar {
+            margin-top: 14px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.82rem;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* Micrófono */
+        .mic-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .mic-wrap .big-input { padding-right: 56px; }
+        .btn-mic {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        .btn-mic:active { background: rgba(255,255,255,0.2); }
+        .btn-mic.grabando {
+            background: rgba(248,113,113,0.3);
+            animation: pulse 0.8s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(248,113,113,0.5); }
+            50%      { box-shadow: 0 0 0 8px rgba(248,113,113,0); }
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #fff;
+            color: #1a1a2e;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: transform 0.28s cubic-bezier(.34,1.56,.64,1);
+            z-index: 999;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- PASO 1: Cliente -->
+<div class="screen active" id="s1">
+    <div class="progress"><div class="progress-bar" style="width:16%"></div></div>
+    <div class="question">¿De quién es el trabajo?</div>
+    <div class="hint">Tocá el cliente</div>
+    <div class="options">
+        <button class="opt-btn" id="btnWilian" onclick="selCliente('WILIAN RENTACAR','btnWilian')">
+            Wilian <span class="sub">Rentacar</span>
+        </button>
+        <button class="opt-btn" id="btnAnibal" onclick="selCliente('ANIBAL SG','btnAnibal')">
+            Anibal <span class="sub">SG</span>
+        </button>
+    </div>
+    <button class="btn-next" onclick="ir(2)">Siguiente →</button>
+</div>
+
+<!-- PASO 2: Chapa -->
+<div class="screen" id="s2">
+    <div class="progress"><div class="progress-bar" style="width:33%"></div></div>
+    <div class="question">¿Cuál es la chapa?</div>
+    <div class="hint">Número de matrícula del vehículo</div>
+    <input class="big-input" id="chapa" type="text" placeholder="AAZJ233" maxlength="10"
+           autocorrect="off" autocapitalize="characters" spellcheck="false">
+    <button class="btn-next" onclick="ir(3)">Siguiente →</button>
+    <button class="btn-back" onclick="ir(1)">← Atrás</button>
+</div>
+
+<!-- PASO 3: Fecha -->
+<div class="screen" id="s3">
+    <div class="progress"><div class="progress-bar" style="width:50%"></div></div>
+    <div class="question">¿Cuándo fue el trabajo?</div>
+    <div class="hint">Ya viene con la fecha de hoy</div>
+    <input class="big-input" id="fecha" type="date">
+    <button class="btn-next" onclick="ir(4)">Siguiente →</button>
+    <button class="btn-back" onclick="ir(2)">← Atrás</button>
+</div>
+
+<!-- PASO 4: Servicio -->
+<div class="screen" id="s4">
+    <div class="progress"><div class="progress-bar" style="width:66%"></div></div>
+    <div class="question">¿Qué trabajo se hizo?</div>
+    <div class="hint">Escribí o tocá el micrófono para hablar</div>
+    <div class="mic-wrap">
+        <input class="big-input" id="servicio" type="text" placeholder="Mantenimiento motor">
+        <button class="btn-mic" id="mic4" onclick="activarMic('servicio','mic4')" title="Hablar">🎤</button>
+    </div>
+    <button class="btn-next" onclick="ir(5)">Siguiente →</button>
+    <button class="btn-back" onclick="ir(3)">← Atrás</button>
+</div>
+
+<!-- PASO 5: Monto -->
+<div class="screen" id="s5">
+    <div class="progress"><div class="progress-bar" style="width:83%"></div></div>
+    <div class="question">¿Cuánto cobró?</div>
+    <div class="hint">Escribí o decí el número en voz alta</div>
+    <div class="mic-wrap">
+        <input class="big-input" id="monto" type="text" placeholder="50000" inputmode="numeric">
+        <button class="btn-mic" id="mic5" onclick="activarMic('monto','mic5','numero')" title="Hablar">🎤</button>
+    </div>
+    <button class="btn-next" onclick="ir(6)">Siguiente →</button>
+    <button class="btn-back" onclick="ir(4)">← Atrás</button>
+</div>
+
+<!-- PASO 6: Mi número -->
+<div class="screen" id="s6">
+    <div class="progress"><div class="progress-bar" style="width:95%"></div></div>
+    <div class="question">¿Tu número de WhatsApp?</div>
+    <div class="hint">Solo la primera vez — queda guardado</div>
+    <input class="big-input" id="miNumero" type="text" placeholder="595961807675" maxlength="20" inputmode="numeric">
+    <button class="btn-next" onclick="ir(7)">Ver resumen →</button>
+    <button class="btn-back" onclick="ir(5)">← Atrás</button>
+</div>
+
+<!-- PASO 7: Resumen + envío -->
+<div class="screen" id="s7">
+    <div class="progress"><div class="progress-bar" style="width:100%"></div></div>
+    <div class="question" style="font-size:1.2rem;margin-bottom:16px;">✅ Listo para enviar</div>
+    <div class="resumen" id="resumen"></div>
+    <div class="btn-wa-group">
+        <button class="btn-wa btn-copy-wa" onclick="enviarMiCopia()">💬 Mi copia</button>
+        <button class="btn-wa btn-green-wa" onclick="enviarIsabSoft()">💬 IsabSoft</button>
+    </div>
+    <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo registro</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const WA_ISASOFT = "595981153477";
+
+// ─── Estado ───
+const datos = { cliente: '', chapa: '', fecha: '', servicio: '', monto: '' };
+
+// ─── Fecha de hoy (Paraguay) ───
+(function() {
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Asuncion" }));
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    document.getElementById('fecha').value = `${y}-${m}-${d}`;
+})();
+
+// ─── Mi número: cargar guardado ───
+(function() {
+    const n = localStorage.getItem('mi_numero_wa');
+    if (n) document.getElementById('miNumero').value = n;
+})();
+
+// ─── Chapa uppercase ───
+document.getElementById('chapa').addEventListener('input', function() {
+    const p = this.selectionStart;
+    this.value = this.value.toUpperCase().replace(/\s/g, '');
+    try { this.setSelectionRange(p, p); } catch(e) {}
+});
+
+// ─── Monto / número: solo dígitos ───
+document.getElementById('miNumero').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+    localStorage.setItem('mi_numero_wa', this.value);
+});
+
+// ─── Monto: solo dígitos en input texto ───
+document.getElementById('monto').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+});
+
+// ─── Speech Recognition ───
+let micActivo = null;
+
+function activarMic(inputId, btnId, modo) {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) { toast('⚠️ Tu navegador no soporta micrófono'); return; }
+
+    const btn = document.getElementById(btnId);
+
+    // Si hay uno activo, detenerlo
+    if (micActivo) {
+        micActivo.stop();
+        btn.classList.remove('grabando');
+        btn.textContent = '🎤';
+        micActivo = null;
+        return;
+    }
+
+    // Verificar HTTPS
+    if (location.protocol === 'file:') {
+        toast('⚠️ El micrófono requiere HTTPS — subí el archivo a GitHub Pages');
+        return;
+    }
+
+    const rec = new SpeechRec();
+    rec.lang = 'es';
+    rec.continuous = false;
+    rec.interimResults = false;
+
+    btn.classList.add('grabando');
+    btn.textContent = '⏹';
+    micActivo = rec;
+
+    // Timeout de seguridad: 10 segundos
+    const timeout = setTimeout(() => {
+        if (micActivo) { micActivo.stop(); toast('⏱ Tiempo agotado — intentá de nuevo'); }
+    }, 10000);
+
+    rec.onresult = function(e) {
+        clearTimeout(timeout);
+        let texto = e.results[0][0].transcript;
+        if (modo === 'numero') {
+            texto = texto.replace(/\./g, '').replace(/,/g, '').replace(/\D/g, '');
+        }
+        document.getElementById(inputId).value = texto;
+        document.getElementById(inputId).classList.remove('error');
+    };
+
+    rec.onerror = function(e) {
+        clearTimeout(timeout);
+        const msgs = {
+            'not-allowed'  : '⚠️ Permiso de micrófono denegado',
+            'no-speech'    : '⚠️ No se escuchó nada — intentá de nuevo',
+            'network'      : '⚠️ Error de red — necesita conexión',
+            'aborted'      : ''
+        };
+        const m = msgs[e.error] || '⚠️ Error de micrófono: ' + e.error;
+        if (m) toast(m);
+    };
+
+    rec.onend = function() {
+        clearTimeout(timeout);
+        btn.classList.remove('grabando');
+        btn.textContent = '🎤';
+        micActivo = null;
+    };
+
+    rec.start();
+}
+
+// ─── Selección cliente ───
+function selCliente(valor, id) {
+    datos.cliente = valor;
+    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById(id).classList.add('selected');
+}
+
+// ─── Navegación entre pantallas ───
+function ir(n) {
+    // Validar pantalla actual antes de avanzar
+    if (n > 1  && !datos.cliente)                          { toast('⚠️ Elegí un cliente'); return; }
+    if (n > 2  && !validarInput('chapa',    datos, 'chapa'))    return;
+    if (n > 3  && !validarInput('fecha',    datos, 'fecha'))    return;
+    if (n > 4  && !validarInput('servicio', datos, 'servicio')) return;
+    if (n > 5  && !validarMonto())                         return;
+    if (n > 6  && !validarNumero())                        return;
+
+    if (n === 7) armarResumen();
+
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('s' + n).classList.add('active');
+
+    // Focus automático al input del paso
+    const inputs = { 2:'chapa', 3:'fecha', 4:'servicio', 5:'monto', 6:'miNumero' };
+    if (inputs[n]) setTimeout(() => document.getElementById(inputs[n]).focus(), 80);
+}
+
+function validarInput(campo, obj, id) {
+    const el  = document.getElementById(id);
+    const val = el.value.trim();
+    if (!val) {
+        el.classList.add('error');
+        setTimeout(() => el.classList.remove('error'), 800);
+        toast('⚠️ Este campo es obligatorio');
+        return false;
+    }
+    obj[campo] = val;
+    return true;
+}
+
+function validarMonto() {
+    const el  = document.getElementById('monto');
+    const val = el.value.replace(/\D/g, '');
+    if (!val || Number(val) <= 0) {
+        el.classList.add('error');
+        setTimeout(() => el.classList.remove('error'), 800);
+        toast('⚠️ Ingresá el monto');
+        return false;
+    }
+    datos.monto = val;
+    return true;
+}
+
+function validarNumero() {
+    const el = document.getElementById('miNumero');
+    if (!el.value.trim()) {
+        el.classList.add('error');
+        setTimeout(() => el.classList.remove('error'), 800);
+        toast('⚠️ Ingresá tu número');
+        return false;
+    }
+    return true;
+}
+
+// ─── Armar texto ───
+function generarTexto() {
+    const [y, m, d] = datos.fecha.split('-');
+    const monto = Number(datos.monto).toLocaleString('es-PY');
+    return `*TRABAJO REGISTRADO*
+Cliente : ${datos.cliente}
+Chapa   : ${datos.chapa.toUpperCase()}
+Fecha   : ${d}/${m}/${y}
+Trabajo : ${datos.servicio}
+Monto   : Gs. ${monto}`;
+}
+
+function armarResumen() {
+    document.getElementById('resumen').textContent = generarTexto();
+}
+
+// ─── Envíos ───
+function enviarMiCopia() {
+    const numero = document.getElementById('miNumero').value.trim();
+    const url = `https://wa.me/${numero}?text=${encodeURIComponent(generarTexto())}`;
+    window.open(url, '_blank');
+}
+
+function enviarIsabSoft() {
+    const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(generarTexto())}`;
+    window.open(url, '_blank');
+}
+
+// ─── Reiniciar ───
+function reiniciar() {
+    datos.cliente = ''; datos.chapa = ''; datos.servicio = ''; datos.monto = '';
+    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('chapa').value    = '';
+    document.getElementById('servicio').value = '';
+    document.getElementById('monto').value    = '';
+
+    // Resetear fecha a hoy
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Asuncion" }));
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    document.getElementById('fecha').value = `${y}-${m}-${d}`;
+
+    ir(1);
+}
+
+// ─── Toast ───
+function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// Enter avanza al siguiente paso
+document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    const activa = document.querySelector('.screen.active');
+    if (!activa) return;
+    const paso = parseInt(activa.id.replace('s',''));
+    if (paso < 7) ir(paso + 1);
+});
+</script>
+</body>
+</html>
