@@ -88,35 +88,9 @@
             70%      { transform: translateX(8px); }
         }
 
-        /* Cards de opción (cliente) */
-        .options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            width: 100%;
-        }
-        .opt-btn {
-            padding: 20px 12px;
-            background: rgba(255,255,255,0.07);
-            border: 2px solid rgba(255,255,255,0.15);
-            border-radius: 14px;
-            color: #fff;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.18s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        .opt-btn .sub { font-size: 0.72rem; font-weight: 400; color: rgba(255,255,255,0.45); }
-        .opt-btn:active, .opt-btn.selected {
-            background: rgba(74,222,128,0.18);
-            border-color: #4ade80;
-            color: #4ade80;
-        }
-        .opt-btn.selected .sub { color: rgba(74,222,128,0.6); }
+        /* Input cliente con datalist */
+        input[list] { cursor: pointer; }
+        input[list]::-webkit-calendar-picker-indicator { opacity: 0.4; filter: invert(1); }
 
         /* Botón siguiente */
         .btn-next {
@@ -310,16 +284,11 @@
 <div class="screen" id="s1">
     <div class="progress"><div class="progress-bar" style="width:16%"></div></div>
     <div class="question">¿De quién es el trabajo?</div>
-    <div class="hint">Tocá el cliente</div>
-    <div class="options">
-        <button class="opt-btn" id="btnWilian" onclick="selCliente('WILIAN RENTACAR','btnWilian')">
-            Wilian <span class="sub">Rentacar</span>
-        </button>
-        <button class="opt-btn" id="btnAnibal" onclick="selCliente('ANIBAL SG','btnAnibal')">
-            Anibal <span class="sub">SG</span>
-        </button>
-    </div>
+    <div class="hint">Elegí de la lista o escribí uno nuevo</div>
+    <input class="big-input" id="clienteInput" list="clientes-list"
+           placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
     <button class="btn-next" onclick="ir(2)">Siguiente →</button>
+    <button class="btn-back" onclick="mostrarScreen('s0')">← Atrás</button>
 </div>
 
 <!-- PASO 2: Chapa -->
@@ -383,14 +352,8 @@
         <!-- Cliente -->
         <div style="width:100%">
             <div class="rev-label">Cliente</div>
-            <div class="options" style="gap:8px;">
-                <button class="opt-btn" id="rev-wilian" onclick="revCliente('WILIAN RENTACAR','rev-wilian')">
-                    Wilian <span class="sub">Rentacar</span>
-                </button>
-                <button class="opt-btn" id="rev-anibal" onclick="revCliente('ANIBAL SG','rev-anibal')">
-                    Anibal <span class="sub">SG</span>
-                </button>
-            </div>
+            <input class="big-input rev-input" id="rev-cliente" list="clientes-list"
+                   placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
         </div>
 
         <!-- Chapa -->
@@ -449,6 +412,7 @@
     </div>
 </div>
 
+<datalist id="clientes-list"></datalist>
 <div id="toast"></div>
 
 <script>
@@ -465,6 +429,36 @@ const datos = { cliente: '', chapa: '', fecha: '', servicio: '', monto: '' };
     const d = String(now.getDate()).padStart(2, '0');
     document.getElementById('fecha').value = `${y}-${m}-${d}`;
 })();
+
+// ─── Clientes: lista con localStorage ───
+const CLIENTES_DEFAULT = ['WILIAN RENTACAR', 'ANIBAL SG'];
+
+function loadClientes() {
+    const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
+    const todos = [...new Set([...CLIENTES_DEFAULT, ...guardados])];
+    document.getElementById('clientes-list').innerHTML =
+        todos.map(c => `<option value="${c}">`).join('');
+}
+
+function addClienteToList(c) {
+    if (!c) return;
+    const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
+    if (!CLIENTES_DEFAULT.includes(c) && !guardados.includes(c)) {
+        guardados.push(c);
+        localStorage.setItem('clientes_lista', JSON.stringify(guardados));
+        loadClientes();
+    }
+}
+
+loadClientes();
+
+// ─── Chapa uppercase del clienteInput también ───
+document.getElementById('clienteInput').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+});
+document.getElementById('rev-cliente').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+});
 
 // ─── Mi número: cargar guardado ───
 (function() {
@@ -560,16 +554,15 @@ function activarMic(inputId, btnId, modo) {
     rec.start();
 }
 
-// ─── Selección cliente ───
-function selCliente(valor, id) {
-    datos.cliente = valor;
-    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-    document.getElementById(id).classList.add('selected');
-}
-
 // ─── Navegación entre pantallas ───
 function ir(n) {
-    if (n > 1 && !datos.cliente)                               { toast('⚠️ Elegí un cliente'); return; }
+    if (n > 1) {
+        const el  = document.getElementById('clienteInput');
+        const val = el.value.trim().toUpperCase();
+        if (!val) { el.classList.add('error'); setTimeout(() => el.classList.remove('error'), 800); toast('⚠️ Ingresá el cliente'); return; }
+        datos.cliente = val;
+        addClienteToList(val);
+    }
     if (n > 2 && !validarInput('chapa',    datos, 'chapa'))    return;
     if (n > 3 && !validarInput('fecha',    datos, 'fecha'))    return;
     if (n > 4 && !validarInput('servicio', datos, 'servicio')) return;
@@ -630,22 +623,11 @@ Monto   : Gs. ${monto}`;
 }
 
 function armarResumen() {
-    // Poblar campos de revisión con los datos cargados
-    document.getElementById('rev-chapa').value   = datos.chapa.toUpperCase();
-    document.getElementById('rev-fecha').value   = datos.fecha;
+    document.getElementById('rev-cliente').value  = datos.cliente;
+    document.getElementById('rev-chapa').value    = datos.chapa.toUpperCase();
+    document.getElementById('rev-fecha').value    = datos.fecha;
     document.getElementById('rev-servicio').value = datos.servicio;
-    document.getElementById('rev-monto').value   = datos.monto === '0' ? '' : datos.monto;
-
-    // Marcar cliente seleccionado
-    ['rev-wilian','rev-anibal'].forEach(id => document.getElementById(id).classList.remove('selected'));
-    if (datos.cliente === 'WILIAN RENTACAR') document.getElementById('rev-wilian').classList.add('selected');
-    if (datos.cliente === 'ANIBAL SG')       document.getElementById('rev-anibal').classList.add('selected');
-}
-
-function revCliente(valor, id) {
-    datos.cliente = valor;
-    ['rev-wilian','rev-anibal'].forEach(b => document.getElementById(b).classList.remove('selected'));
-    document.getElementById(id).classList.add('selected');
+    document.getElementById('rev-monto').value    = datos.monto === '0' ? '' : datos.monto;
 }
 
 // ─── Envío — lee de los campos de revisión ───
@@ -658,7 +640,9 @@ function enviarIsabSoft() {
     const montoRaw = document.getElementById('rev-monto').value.replace(/\D/g, '');
     const monto    = montoRaw || '0';
 
-    if (!datos.cliente) { toast('⚠️ Elegí el cliente'); return; }
+    const clienteFinal = document.getElementById('rev-cliente').value.trim().toUpperCase();
+    if (!clienteFinal) { document.getElementById('rev-cliente').classList.add('error'); setTimeout(() => document.getElementById('rev-cliente').classList.remove('error'), 800); toast('⚠️ El cliente está vacío'); return; }
+    addClienteToList(clienteFinal);
     if (!chapa)         { toast('⚠️ La chapa está vacía'); return; }
     if (!fecha)         { toast('⚠️ La fecha está vacía'); return; }
     if (!servicio)      { toast('⚠️ El trabajo está vacío'); return; }
@@ -677,7 +661,7 @@ function enviarIsabSoft() {
     const montoFmt  = Number(monto).toLocaleString('es-PY');
 
     const texto = `*TRABAJO REGISTRADO*
-Cliente : ${datos.cliente}
+Cliente : ${clienteFinal}
 Chapa   : ${chapa}
 Fecha   : ${d}/${m}/${y}
 Trabajo : ${servicio}
@@ -811,51 +795,41 @@ function renderizarJobs() {
 
             <div class="job-f">
                 <div class="rev-label" style="color:rgba(255,255,255,0.4);">Cliente <span style="color:#f87171">*</span></div>
-                <div class="cli-mini">
-                    <button class="mini-btn" id="jw-${i}" onclick="setJobCliente(${i},'WILIAN RENTACAR')">Wilian</button>
-                    <button class="mini-btn" id="ja-${i}" onclick="setJobCliente(${i},'ANIBAL SG')">Anibal</button>
-                </div>
-                <div class="cli-req" id="jreq-${i}">⚠️ Obligatorio</div>
+                <input class="big-input rev-input" id="jcli-${i}" list="clientes-list"
+                       placeholder="Elegí o escribí el cliente" autocomplete="off" spellcheck="false"
+                       value="${j.cliente}"
+                       oninput="this.value=this.value.toUpperCase(); parsedJobs[${i}].cliente=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').classList.remove('sin-cliente');">
             </div>
         </div>
     `).join('');
 }
 
-function setJobCliente(i, cliente) {
-    parsedJobs[i].cliente = cliente;
-    document.getElementById(`jw-${i}`).classList.toggle('selected', cliente === 'WILIAN RENTACAR');
-    document.getElementById(`ja-${i}`).classList.toggle('selected', cliente === 'ANIBAL SG');
-    document.getElementById(`jw-${i}`).classList.remove('err-cli');
-    document.getElementById(`ja-${i}`).classList.remove('err-cli');
-    document.getElementById(`jreq-${i}`).classList.remove('show');
-    document.getElementById(`jcard-${i}`).classList.remove('sin-cliente');
-}
-
 // ─── Enviar bulk ───
 function enviarBulk() {
-    // Actualizar valores editados directamente en inputs (por si cambiaron sin onchange)
+    // Leer valores actuales de todos los inputs
     parsedJobs.forEach((j, i) => {
-        j.chapa    = (document.getElementById(`jchapa-${i}`)?.value || j.chapa).toUpperCase().replace(/\s/g,'');
-        j.fechaVal = document.getElementById(`jfecha-${i}`)?.value || j.fechaVal;
-        j.servicio = document.getElementById(`jserv-${i}`)?.value  || j.servicio;
+        j.chapa    = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
+        j.fechaVal = document.getElementById(`jfecha-${i}`)?.value  || j.fechaVal;
+        j.servicio = document.getElementById(`jserv-${i}`)?.value   || j.servicio;
         j.monto    = document.getElementById(`jmonto-${i}`)?.value  || j.monto;
+        j.cliente  = (document.getElementById(`jcli-${i}`)?.value   || '').trim().toUpperCase();
     });
 
-    // Validar clientes
+    // Validar clientes vacíos
     const sinCliente = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.cliente);
     if (sinCliente.length) {
         sinCliente.forEach(({i}) => {
-            document.getElementById(`jw-${i}`).classList.add('err-cli');
-            document.getElementById(`ja-${i}`).classList.add('err-cli');
-            document.getElementById(`jreq-${i}`).classList.add('show');
+            document.getElementById(`jcli-${i}`).classList.add('error');
             document.getElementById(`jcard-${i}`).classList.add('sin-cliente');
         });
         const chapas = sinCliente.map(({j}) => j.chapa).join(', ');
         toast(`⚠️ Sin cliente: ${chapas}`);
-        // Scroll al primero sin cliente
         document.getElementById(`jcard-${sinCliente[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
         return;
     }
+
+    // Guardar clientes nuevos
+    parsedJobs.forEach(j => addClienteToList(j.cliente));
 
     // Generar mensaje
     const lineas = parsedJobs.map((j, i) => {
@@ -873,7 +847,7 @@ function enviarBulk() {
 // ─── Reiniciar ───
 function reiniciar() {
     datos.cliente = ''; datos.chapa = ''; datos.servicio = ''; datos.monto = '';
-    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('clienteInput').value = '';
     document.getElementById('chapa').value    = '';
     document.getElementById('servicio').value = '';
     document.getElementById('monto').value    = '';
