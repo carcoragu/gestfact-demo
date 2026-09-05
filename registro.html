@@ -226,6 +226,17 @@
             50%      { box-shadow: 0 0 0 8px rgba(248,113,113,0); }
         }
 
+        /* Revisión editable */
+        .rev-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+        .rev-input { font-size: 1rem; padding: 12px 14px; }
+
         /* Toast */
         #toast {
             position: fixed;
@@ -313,12 +324,58 @@
     <button class="btn-back" onclick="ir(4)">← Atrás</button>
 </div>
 
-<!-- PASO 6: Resumen + envío -->
+<!-- PASO 6: Revisión editable + envío -->
 <div class="screen" id="s6">
     <div class="progress"><div class="progress-bar" style="width:100%"></div></div>
-    <div class="question" style="font-size:1.2rem;margin-bottom:16px;">Listo para enviar</div>
-    <div class="resumen" id="resumen"></div>
-    <button class="btn-wa btn-green-wa" style="width:100%;" onclick="enviarIsabSoft()">💬 Enviar a IsabSoft</button>
+    <div class="question" style="font-size:1.2rem;margin-bottom:6px;">Revisá antes de enviar</div>
+    <div class="hint" style="margin-bottom:20px;">Tocá cualquier campo para corregir</div>
+
+    <div style="width:100%;display:flex;flex-direction:column;gap:12px;">
+
+        <!-- Cliente -->
+        <div style="width:100%">
+            <div class="rev-label">Cliente</div>
+            <div class="options" style="gap:8px;">
+                <button class="opt-btn" id="rev-wilian" onclick="revCliente('WILIAN RENTACAR','rev-wilian')">
+                    Wilian <span class="sub">Rentacar</span>
+                </button>
+                <button class="opt-btn" id="rev-anibal" onclick="revCliente('ANIBAL SG','rev-anibal')">
+                    Anibal <span class="sub">SG</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chapa -->
+        <div style="width:100%">
+            <div class="rev-label">Chapa</div>
+            <input class="big-input rev-input" id="rev-chapa" type="text" maxlength="10"
+                   autocorrect="off" autocapitalize="characters" spellcheck="false">
+        </div>
+
+        <!-- Fecha -->
+        <div style="width:100%">
+            <div class="rev-label">Fecha</div>
+            <input class="big-input rev-input" id="rev-fecha" type="date">
+        </div>
+
+        <!-- Servicio -->
+        <div style="width:100%">
+            <div class="rev-label">Trabajo</div>
+            <div class="mic-wrap">
+                <input class="big-input rev-input" id="rev-servicio" type="text">
+                <button class="btn-mic" id="mic6" onclick="activarMic('rev-servicio','mic6')" title="Hablar">🎤</button>
+            </div>
+        </div>
+
+        <!-- Monto -->
+        <div style="width:100%">
+            <div class="rev-label">Monto <span style="font-weight:400;text-transform:none;font-size:0.75rem;">(opcional)</span></div>
+            <input class="big-input rev-input" id="rev-monto" type="text" inputmode="numeric" placeholder="0">
+        </div>
+
+    </div>
+
+    <button class="btn-next" style="margin-top:22px;" onclick="enviarIsabSoft()">💬 Enviar a IsabSoft</button>
     <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo registro</button>
 </div>
 
@@ -505,14 +562,68 @@ Monto   : Gs. ${monto}`;
 }
 
 function armarResumen() {
-    document.getElementById('resumen').textContent = generarTexto();
+    // Poblar campos de revisión con los datos cargados
+    document.getElementById('rev-chapa').value   = datos.chapa.toUpperCase();
+    document.getElementById('rev-fecha').value   = datos.fecha;
+    document.getElementById('rev-servicio').value = datos.servicio;
+    document.getElementById('rev-monto').value   = datos.monto === '0' ? '' : datos.monto;
+
+    // Marcar cliente seleccionado
+    ['rev-wilian','rev-anibal'].forEach(id => document.getElementById(id).classList.remove('selected'));
+    if (datos.cliente === 'WILIAN RENTACAR') document.getElementById('rev-wilian').classList.add('selected');
+    if (datos.cliente === 'ANIBAL SG')       document.getElementById('rev-anibal').classList.add('selected');
 }
 
-// ─── Envío ───
+function revCliente(valor, id) {
+    datos.cliente = valor;
+    ['rev-wilian','rev-anibal'].forEach(b => document.getElementById(b).classList.remove('selected'));
+    document.getElementById(id).classList.add('selected');
+}
+
+// ─── Envío — lee de los campos de revisión ───
+let montoConfirmado = false;
+
 function enviarIsabSoft() {
-    const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(generarTexto())}`;
+    const chapa    = document.getElementById('rev-chapa').value.trim().toUpperCase();
+    const fecha    = document.getElementById('rev-fecha').value;
+    const servicio = document.getElementById('rev-servicio').value.trim();
+    const montoRaw = document.getElementById('rev-monto').value.replace(/\D/g, '');
+    const monto    = montoRaw || '0';
+
+    if (!datos.cliente) { toast('⚠️ Elegí el cliente'); return; }
+    if (!chapa)         { toast('⚠️ La chapa está vacía'); return; }
+    if (!fecha)         { toast('⚠️ La fecha está vacía'); return; }
+    if (!servicio)      { toast('⚠️ El trabajo está vacío'); return; }
+
+    if (monto === '0' && !montoConfirmado) {
+        montoConfirmado = true;
+        document.getElementById('rev-monto').classList.add('error');
+        setTimeout(() => document.getElementById('rev-monto').classList.remove('error'), 1500);
+        toast('⚠️ El monto está vacío — completalo o tocá Enviar de nuevo para confirmar con 0');
+        return;
+    }
+
+    montoConfirmado = false;
+
+    const [y, m, d] = fecha.split('-');
+    const montoFmt  = Number(monto).toLocaleString('es-PY');
+
+    const texto = `*TRABAJO REGISTRADO*
+Cliente : ${datos.cliente}
+Chapa   : ${chapa}
+Fecha   : ${d}/${m}/${y}
+Trabajo : ${servicio}
+Monto   : Gs. ${montoFmt}`;
+
+    const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
+
+// Resetear confirmación de monto si empieza a escribir
+document.getElementById('rev-monto').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+    montoConfirmado = false;
+});
 
 // ─── Reiniciar ───
 function reiniciar() {
