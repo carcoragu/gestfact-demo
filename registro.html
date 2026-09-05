@@ -226,6 +226,36 @@
             50%      { box-shadow: 0 0 0 8px rgba(248,113,113,0); }
         }
 
+        /* Selector de modo */
+        .modo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+        .modo-btn  { padding: 24px 10px; background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.15); border-radius: 14px; color: #fff; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.18s; }
+        .modo-btn:active { background: rgba(74,222,128,0.18); border-color: #4ade80; }
+        .modo-icon { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+        .modo-sub  { font-size: 0.72rem; font-weight: 400; color: rgba(255,255,255,0.4); display: block; margin-top: 4px; }
+
+        /* Bulk textarea */
+        .bulk-ta { width: 100%; min-height: 220px; padding: 14px; background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.15); border-radius: 14px; color: #fff; font-size: 0.82rem; line-height: 1.6; resize: vertical; font-family: monospace; transition: border-color 0.2s; }
+        .bulk-ta:focus { outline: none; border-color: #4ade80; }
+        .bulk-ta::placeholder { color: rgba(255,255,255,0.2); }
+
+        /* Bulk review — pantalla scrollable */
+        #sb2 { position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; padding: 20px 16px 40px; background: #1a1a2e; flex-direction: column; align-items: center; }
+
+        /* Job cards */
+        .jobs-wrap { width: 100%; max-width: 440px; margin: 0 auto; }
+        .job-card  { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+        .job-card.sin-cliente { border-color: #f87171; }
+        .job-num  { font-size: 0.75rem; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+        .job-f    { margin-bottom: 10px; }
+
+        /* Mini cliente */
+        .cli-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .mini-btn { padding: 10px; background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; color: rgba(255,255,255,0.6); font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.18s; }
+        .mini-btn.selected { background: rgba(74,222,128,0.18); border-color: #4ade80; color: #4ade80; }
+        .mini-btn.err-cli  { border-color: #f87171; color: #f87171; }
+        .cli-req  { font-size: 0.72rem; color: #f87171; margin-top: 4px; display: none; }
+        .cli-req.show { display: block; }
+
         /* Revisión editable */
         .rev-label {
             font-size: 0.72rem;
@@ -258,8 +288,26 @@
 </head>
 <body>
 
+<!-- MODO: selector inicial -->
+<div class="screen active" id="s0">
+    <div class="question" style="margin-bottom:10px;">¿Cómo querés cargar?</div>
+    <div class="hint" style="margin-bottom:28px;">Elegí la forma más cómoda</div>
+    <div class="modo-grid">
+        <button class="modo-btn" onclick="irWizard()">
+            <span class="modo-icon">✏️</span>
+            Uno por uno
+            <span class="modo-sub">Paso a paso con micrófono</span>
+        </button>
+        <button class="modo-btn" onclick="irBulk()">
+            <span class="modo-icon">📋</span>
+            Pegar lista
+            <span class="modo-sub">Varios trabajos de una vez</span>
+        </button>
+    </div>
+</div>
+
 <!-- PASO 1: Cliente -->
-<div class="screen active" id="s1">
+<div class="screen" id="s1">
     <div class="progress"><div class="progress-bar" style="width:16%"></div></div>
     <div class="question">¿De quién es el trabajo?</div>
     <div class="hint">Tocá el cliente</div>
@@ -377,6 +425,28 @@
 
     <button class="btn-next" style="margin-top:22px;" onclick="enviarIsabSoft()">💬 Enviar a IsabSoft</button>
     <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo registro</button>
+</div>
+
+<!-- BULK 1: textarea -->
+<div class="screen" id="sb1">
+    <div class="question" style="font-size:1.2rem;margin-bottom:6px;">Pegá la lista</div>
+    <div class="hint" style="margin-bottom:18px;">Tal como te la manda Miguel por WhatsApp</div>
+    <textarea class="bulk-ta" id="bulkInput" placeholder="AASL204 toyota vitz 31/07/26&#10;Amortiguadores trasero 2&#10;Mano de obra 290.000&#10;&#10;AARO223 toyota vitz 07/08&#10;Torreta 1&#10;Mano de obra 170.000"></textarea>
+    <button class="btn-next" style="margin-top:18px;" onclick="procesarBulk()">Procesar →</button>
+    <button class="btn-back" onclick="mostrarScreen('s0')">← Atrás</button>
+</div>
+
+<!-- BULK 2: revisión por trabajo -->
+<div class="screen" id="sb2">
+    <div class="jobs-wrap">
+        <div style="text-align:center;margin-bottom:20px;">
+            <div class="question" style="font-size:1.15rem;">Revisá y asigná clientes</div>
+            <div class="hint" style="margin-top:6px;">El cliente es obligatorio en cada trabajo</div>
+        </div>
+        <div id="jobsContainer"></div>
+        <button class="btn-next" onclick="enviarBulk()">💬 Enviar a IsabSoft</button>
+        <button class="btn-back" style="margin-top:14px;width:100%;text-align:center;" onclick="mostrarScreen('sb1')">← Volver a editar lista</button>
+    </div>
 </div>
 
 <div id="toast"></div>
@@ -508,9 +578,7 @@ function ir(n) {
 
     if (n === 6) armarResumen();
 
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('s' + n).classList.add('active');
-
+    mostrarScreen('s' + n);
     const inputs = { 2:'chapa', 3:'fecha', 4:'servicio', 5:'miNumero' };
     if (inputs[n]) setTimeout(() => document.getElementById(inputs[n]).focus(), 80);
 }
@@ -625,6 +693,183 @@ document.getElementById('rev-monto').addEventListener('input', function() {
     montoConfirmado = false;
 });
 
+// ══════════════════════════════════════════
+//  MODO BULK — pegar lista
+// ══════════════════════════════════════════
+
+let parsedJobs = [];
+
+function irWizard() { mostrarScreen('s1'); }
+function irBulk()   { mostrarScreen('sb1'); }
+
+function mostrarScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+// ─── Parser ───
+function parsearBloques(texto) {
+    const jobs = [];
+    const lineas = texto.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    let bloque = [];
+
+    function procesarBloque(b) {
+        while (b.length && !b[0].trim()) b.shift();
+        while (b.length && !b[b.length-1].trim()) b.pop();
+        if (!b.length) return;
+
+        const primera = b[0];
+        const chapaM  = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
+        if (!chapaM) return;
+
+        const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
+
+        // Fecha
+        const fechaM = primera.match(/(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);
+        let fechaVal = '', fechaDis = '';
+        if (fechaM) {
+            const d = fechaM[1].padStart(2,'0');
+            const m = fechaM[2].padStart(2,'0');
+            let y   = fechaM[3] || '26';
+            if (y.length === 2) y = '20' + y;
+            fechaVal = `${y}-${m}-${d}`;
+            fechaDis = `${d}/${m}/${y}`;
+        }
+
+        // Monto: suma todos los patrones XXX.000 en el bloque
+        let montoTotal = 0;
+        b.forEach(l => {
+            const ms = [...l.matchAll(/\b(\d{1,3})\.(\d{3})\b/g)];
+            ms.forEach(mm => { montoTotal += parseInt(mm[1] + mm[2]); });
+        });
+
+        // Servicio: líneas 1+ sin notas de gestión
+        const notas = /falta cargar|hasta ac[aá] cargado|hasta aca|falta|cargado/i;
+        const serv = b.slice(1)
+            .map(l => l.trim())
+            .filter(l => l && !notas.test(l))
+            .join(' / ');
+
+        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', cliente: '' });
+    }
+
+    lineas.forEach(linea => {
+        const t = linea.trim();
+        if (/^[A-Z]{2,5}\s?[A-Z]?\s?\d{2,4}/i.test(t) && bloque.length) {
+            procesarBloque(bloque);
+            bloque = [t];
+        } else {
+            bloque.push(t);
+        }
+    });
+    if (bloque.length) procesarBloque(bloque);
+
+    return jobs;
+}
+
+// ─── Renderizar tarjetas ───
+function procesarBulk() {
+    const texto = document.getElementById('bulkInput').value.trim();
+    if (!texto) { toast('⚠️ Pegá el texto primero'); return; }
+    parsedJobs = parsearBloques(texto);
+    if (!parsedJobs.length) { toast('⚠️ No se encontraron trabajos — verificá el formato'); return; }
+    renderizarJobs();
+    mostrarScreen('sb2');
+}
+
+function renderizarJobs() {
+    const c = document.getElementById('jobsContainer');
+    c.innerHTML = parsedJobs.map((j, i) => `
+        <div class="job-card" id="jcard-${i}">
+            <div class="job-num">#${i+1} — ${j.chapa}</div>
+
+            <div class="job-f">
+                <div class="rev-label">Chapa</div>
+                <input class="big-input rev-input" id="jchapa-${i}" value="${j.chapa}"
+                       autocorrect="off" autocapitalize="characters" spellcheck="false"
+                       oninput="this.value=this.value.toUpperCase().replace(/\\s/g,''); parsedJobs[${i}].chapa=this.value">
+            </div>
+
+            <div class="job-f">
+                <div class="rev-label">Fecha</div>
+                <input class="big-input rev-input" id="jfecha-${i}" type="date" value="${j.fechaVal}"
+                       onchange="parsedJobs[${i}].fechaVal=this.value">
+            </div>
+
+            <div class="job-f">
+                <div class="rev-label">Trabajo</div>
+                <input class="big-input rev-input" id="jserv-${i}" value="${j.servicio.replace(/"/g,'&quot;')}"
+                       onchange="parsedJobs[${i}].servicio=this.value">
+            </div>
+
+            <div class="job-f">
+                <div class="rev-label">Monto <span style="font-weight:400;text-transform:none;">(opcional)</span></div>
+                <input class="big-input rev-input" id="jmonto-${i}" type="text" value="${j.monto}" placeholder="0"
+                       inputmode="numeric"
+                       oninput="this.value=this.value.replace(/\\D/g,''); parsedJobs[${i}].monto=this.value">
+            </div>
+
+            <div class="job-f">
+                <div class="rev-label" style="color:rgba(255,255,255,0.4);">Cliente <span style="color:#f87171">*</span></div>
+                <div class="cli-mini">
+                    <button class="mini-btn" id="jw-${i}" onclick="setJobCliente(${i},'WILIAN RENTACAR')">Wilian</button>
+                    <button class="mini-btn" id="ja-${i}" onclick="setJobCliente(${i},'ANIBAL SG')">Anibal</button>
+                </div>
+                <div class="cli-req" id="jreq-${i}">⚠️ Obligatorio</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function setJobCliente(i, cliente) {
+    parsedJobs[i].cliente = cliente;
+    document.getElementById(`jw-${i}`).classList.toggle('selected', cliente === 'WILIAN RENTACAR');
+    document.getElementById(`ja-${i}`).classList.toggle('selected', cliente === 'ANIBAL SG');
+    document.getElementById(`jw-${i}`).classList.remove('err-cli');
+    document.getElementById(`ja-${i}`).classList.remove('err-cli');
+    document.getElementById(`jreq-${i}`).classList.remove('show');
+    document.getElementById(`jcard-${i}`).classList.remove('sin-cliente');
+}
+
+// ─── Enviar bulk ───
+function enviarBulk() {
+    // Actualizar valores editados directamente en inputs (por si cambiaron sin onchange)
+    parsedJobs.forEach((j, i) => {
+        j.chapa    = (document.getElementById(`jchapa-${i}`)?.value || j.chapa).toUpperCase().replace(/\s/g,'');
+        j.fechaVal = document.getElementById(`jfecha-${i}`)?.value || j.fechaVal;
+        j.servicio = document.getElementById(`jserv-${i}`)?.value  || j.servicio;
+        j.monto    = document.getElementById(`jmonto-${i}`)?.value  || j.monto;
+    });
+
+    // Validar clientes
+    const sinCliente = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.cliente);
+    if (sinCliente.length) {
+        sinCliente.forEach(({i}) => {
+            document.getElementById(`jw-${i}`).classList.add('err-cli');
+            document.getElementById(`ja-${i}`).classList.add('err-cli');
+            document.getElementById(`jreq-${i}`).classList.add('show');
+            document.getElementById(`jcard-${i}`).classList.add('sin-cliente');
+        });
+        const chapas = sinCliente.map(({j}) => j.chapa).join(', ');
+        toast(`⚠️ Sin cliente: ${chapas}`);
+        // Scroll al primero sin cliente
+        document.getElementById(`jcard-${sinCliente[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    // Generar mensaje
+    const lineas = parsedJobs.map((j, i) => {
+        const [y, m, d] = j.fechaVal ? j.fechaVal.split('-') : ['','',''];
+        const fecha  = j.fechaVal ? `${d}/${m}/${y}` : 'sin fecha';
+        const monto  = j.monto ? Number(j.monto).toLocaleString('es-PY') : '0';
+        return `${i+1}. ${j.chapa} | ${j.cliente} | ${fecha} | Gs. ${monto}\n   ${j.servicio}`;
+    });
+
+    const texto = `*TRABAJOS REGISTRADOS* (${parsedJobs.length})\n\n${lineas.join('\n\n')}`;
+    const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank');
+}
+
 // ─── Reiniciar ───
 function reiniciar() {
     datos.cliente = ''; datos.chapa = ''; datos.servicio = ''; datos.monto = '';
@@ -641,7 +886,7 @@ function reiniciar() {
     const d = String(now.getDate()).padStart(2, '0');
     document.getElementById('fecha').value = `${y}-${m}-${d}`;
 
-    ir(1);
+    mostrarScreen('s0');
 }
 
 // ─── Toast ───
