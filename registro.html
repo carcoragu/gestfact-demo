@@ -403,11 +403,8 @@
 
     <div style="width:100%;margin-bottom:16px;">
         <div class="rev-label" style="margin-bottom:7px;">Cliente <span style="color:#f87171">*</span></div>
-        <div class="mic-wrap">
-            <input class="big-input" id="bulkCliente" list="clientes-list"
-                   placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
-            <button class="btn-mic" id="micBulkCliente" onclick="activarMic('bulkCliente','micBulkCliente')">🎤</button>
-        </div>
+        <input class="big-input" id="bulkCliente" list="clientes-list"
+               placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
     </div>
 
     <div style="width:100%;">
@@ -847,16 +844,11 @@ function renderizarJobs() {
 
             <div class="job-f">
                 <div class="rev-label">Trabajo</div>
-                <input class="big-input rev-input" id="jserv-${i}" value="${j.servicio.replace(/"/g,'&quot;')}"
-                       onchange="parsedJobs[${i}].servicio=this.value">
+                <textarea class="big-input rev-input" id="jserv-${i}"
+                          style="min-height:80px;resize:vertical;line-height:1.5;text-align:left;font-size:0.9rem;"
+                          oninput="parsedJobs[${i}].servicio=this.value">${j.servicio}</textarea>
             </div>
 
-            <div class="job-f">
-                <div class="rev-label">Monto <span style="font-weight:400;text-transform:none;">(opcional)</span></div>
-                <input class="big-input rev-input" id="jmonto-${i}" type="text" value="${j.monto}" placeholder="0"
-                       inputmode="numeric"
-                       oninput="this.value=this.value.replace(/\\D/g,''); parsedJobs[${i}].monto=this.value">
-            </div>
 
             <div class="job-f">
                 <div class="rev-label" style="color:rgba(255,255,255,0.4);">Cliente <span style="color:#f87171">*</span></div>
@@ -878,8 +870,7 @@ function enviarBulk() {
     parsedJobs.forEach((j, i) => {
         j.chapa    = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
         j.fechaVal = document.getElementById(`jfecha-${i}`)?.value  || j.fechaVal;
-        j.servicio = document.getElementById(`jserv-${i}`)?.value   || j.servicio;
-        j.monto    = document.getElementById(`jmonto-${i}`)?.value  || j.monto;
+        j.servicio = (document.getElementById(`jserv-${i}`)?.value || j.servicio).trim();
         j.cliente  = (document.getElementById(`jcli-${i}`)?.value   || '').trim().toUpperCase();
     });
 
@@ -904,7 +895,7 @@ function enviarBulk() {
         const [y, m, d] = j.fechaVal ? j.fechaVal.split('-') : ['','',''];
         const fecha  = j.fechaVal ? `${d}/${m}/${y}` : 'sin fecha';
         const monto  = j.monto ? Number(j.monto).toLocaleString('es-PY') : '0';
-        return `${i+1}. ${j.chapa} | ${j.cliente} | ${fecha} | Gs. ${monto}\n   ${j.servicio}`;
+        return `${i+1}. ${j.chapa} | ${j.cliente} | ${fecha}\n   ${j.servicio}`;
     });
 
     const texto = `*TRABAJOS REGISTRADOS* (${parsedJobs.length})\n\n${lineas.join('\n\n')}`;
