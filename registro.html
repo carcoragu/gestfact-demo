@@ -284,9 +284,12 @@
 <div class="screen" id="s1">
     <div class="progress"><div class="progress-bar" style="width:16%"></div></div>
     <div class="question">¿De quién es el trabajo?</div>
-    <div class="hint">Elegí de la lista o escribí uno nuevo</div>
-    <input class="big-input" id="clienteInput" list="clientes-list"
-           placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
+    <div class="hint">Elegí de la lista, escribí o usá el micrófono</div>
+    <div class="mic-wrap">
+        <input class="big-input" id="clienteInput" list="clientes-list"
+               placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
+        <button class="btn-mic" id="micCliente" onclick="activarMic('clienteInput','micCliente')">🎤</button>
+    </div>
     <button class="btn-next" onclick="ir(2)">Siguiente →</button>
     <button class="btn-back" onclick="mostrarScreen('s0')">← Atrás</button>
 </div>
@@ -352,8 +355,11 @@
         <!-- Cliente -->
         <div style="width:100%">
             <div class="rev-label">Cliente</div>
-            <input class="big-input rev-input" id="rev-cliente" list="clientes-list"
-                   placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
+            <div class="mic-wrap">
+                <input class="big-input rev-input" id="rev-cliente" list="clientes-list"
+                       placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
+                <button class="btn-mic" id="micRevCliente" onclick="activarMic('rev-cliente','micRevCliente')">🎤</button>
+            </div>
         </div>
 
         <!-- Chapa -->
@@ -390,11 +396,25 @@
     <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo registro</button>
 </div>
 
-<!-- BULK 1: textarea -->
+<!-- BULK 1: cliente + textarea -->
 <div class="screen" id="sb1">
-    <div class="question" style="font-size:1.2rem;margin-bottom:6px;">Pegá la lista</div>
-    <div class="hint" style="margin-bottom:18px;">Tal como te la manda Miguel por WhatsApp</div>
-    <textarea class="bulk-ta" id="bulkInput" placeholder="AASL204 toyota vitz 31/07/26&#10;Amortiguadores trasero 2&#10;Mano de obra 290.000&#10;&#10;AARO223 toyota vitz 07/08&#10;Torreta 1&#10;Mano de obra 170.000"></textarea>
+    <div class="question" style="font-size:1.2rem;margin-bottom:6px;">Cargar lista</div>
+    <div class="hint" style="margin-bottom:18px;">Primero el cliente, luego pegá los trabajos</div>
+
+    <div style="width:100%;margin-bottom:16px;">
+        <div class="rev-label" style="margin-bottom:7px;">Cliente <span style="color:#f87171">*</span></div>
+        <div class="mic-wrap">
+            <input class="big-input" id="bulkCliente" list="clientes-list"
+                   placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
+            <button class="btn-mic" id="micBulkCliente" onclick="activarMic('bulkCliente','micBulkCliente')">🎤</button>
+        </div>
+    </div>
+
+    <div style="width:100%;">
+        <div class="rev-label" style="margin-bottom:7px;">Lista de trabajos <span style="color:#f87171">*</span></div>
+        <textarea class="bulk-ta" id="bulkInput" placeholder="AASL204 toyota vitz 31/07/26&#10;Amortiguadores trasero 2&#10;Mano de obra 290.000&#10;&#10;AARO223 toyota vitz 07/08&#10;Torreta 1&#10;Mano de obra 170.000"></textarea>
+    </div>
+
     <button class="btn-next" style="margin-top:18px;" onclick="procesarBulk()">Procesar →</button>
     <button class="btn-back" onclick="mostrarScreen('s0')">← Atrás</button>
 </div>
@@ -417,6 +437,7 @@
 
 <script>
 const WA_ISASOFT = "595981153477";
+const GF_API     = "https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec";
 
 // ─── Estado ───
 const datos = { cliente: '', chapa: '', fecha: '', servicio: '', monto: '' };
@@ -430,14 +451,33 @@ const datos = { cliente: '', chapa: '', fecha: '', servicio: '', monto: '' };
     document.getElementById('fecha').value = `${y}-${m}-${d}`;
 })();
 
-// ─── Clientes: lista con localStorage ───
+// ─── Clientes: Sheet + localStorage ───
 const CLIENTES_DEFAULT = ['WILIAN RENTACAR', 'ANIBAL SG'];
 
-function loadClientes() {
+function loadClientes(extra = []) {
     const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
-    const todos = [...new Set([...CLIENTES_DEFAULT, ...guardados])];
+    const todos = [...new Set([...CLIENTES_DEFAULT, ...guardados, ...extra])].sort();
     document.getElementById('clientes-list').innerHTML =
         todos.map(c => `<option value="${c}">`).join('');
+}
+
+async function fetchClientesSheet() {
+    try {
+        const res = await fetch(GF_API + '?action=syncExportOrdenes');
+        const csv = await res.text();
+        const lineas = csv.split('\n').filter(l => l.trim());
+        const clientes = new Set();
+        lineas.slice(1).forEach(l => {
+            const cols = l.split(',');
+            if (cols.length >= 2) {
+                const c = cols[1].trim().toUpperCase();
+                if (c) clientes.add(c);
+            }
+        });
+        loadClientes([...clientes]);
+    } catch(e) {
+        loadClientes(); // fallback a localStorage
+    }
 }
 
 function addClienteToList(c) {
@@ -446,18 +486,18 @@ function addClienteToList(c) {
     if (!CLIENTES_DEFAULT.includes(c) && !guardados.includes(c)) {
         guardados.push(c);
         localStorage.setItem('clientes_lista', JSON.stringify(guardados));
-        loadClientes();
+        loadClientes(guardados);
     }
 }
 
 loadClientes();
+fetchClientesSheet(); // carga desde Sheet en background
 
-// ─── Chapa uppercase del clienteInput también ───
-document.getElementById('clienteInput').addEventListener('input', function() {
-    this.value = this.value.toUpperCase();
-});
-document.getElementById('rev-cliente').addEventListener('input', function() {
-    this.value = this.value.toUpperCase();
+// ─── Uppercase automático en inputs de cliente ───
+['clienteInput','rev-cliente','bulkCliente'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
 });
 
 // ─── Mi número: cargar guardado ───
@@ -487,7 +527,7 @@ document.getElementById('monto').addEventListener('input', function() {
 // ─── Speech Recognition ───
 let micActivo = null;
 
-function activarMic(inputId, btnId, modo) {
+function activarMic(inputId, btnId, modo, onResult) {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) { toast('⚠️ Tu navegador no soporta micrófono'); return; }
 
@@ -677,6 +717,16 @@ document.getElementById('rev-monto').addEventListener('input', function() {
     montoConfirmado = false;
 });
 
+function activarMicBulk(i) {
+    activarMic(`jcli-${i}`, `jmic-${i}`, null, function(texto) {
+        const el = document.getElementById(`jcli-${i}`);
+        el.value = texto.toUpperCase();
+        parsedJobs[i].cliente = el.value.trim();
+        el.classList.remove('error');
+        document.getElementById(`jcard-${i}`).classList.remove('sin-cliente');
+    });
+}
+
 // ══════════════════════════════════════════
 //  MODO BULK — pegar lista
 // ══════════════════════════════════════════
@@ -753,10 +803,25 @@ function parsearBloques(texto) {
 
 // ─── Renderizar tarjetas ───
 function procesarBulk() {
+    const clienteEl = document.getElementById('bulkCliente');
+    const cliente   = clienteEl.value.trim().toUpperCase();
+    if (!cliente) {
+        clienteEl.classList.add('error');
+        setTimeout(() => clienteEl.classList.remove('error'), 800);
+        toast('⚠️ Ingresá el cliente primero');
+        return;
+    }
+    addClienteToList(cliente);
+
     const texto = document.getElementById('bulkInput').value.trim();
-    if (!texto) { toast('⚠️ Pegá el texto primero'); return; }
+    if (!texto) { toast('⚠️ Pegá la lista de trabajos'); return; }
+
     parsedJobs = parsearBloques(texto);
     if (!parsedJobs.length) { toast('⚠️ No se encontraron trabajos — verificá el formato'); return; }
+
+    // Pre-llenar cliente en todos los trabajos
+    parsedJobs.forEach(j => j.cliente = cliente);
+
     renderizarJobs();
     mostrarScreen('sb2');
 }
@@ -795,10 +860,13 @@ function renderizarJobs() {
 
             <div class="job-f">
                 <div class="rev-label" style="color:rgba(255,255,255,0.4);">Cliente <span style="color:#f87171">*</span></div>
-                <input class="big-input rev-input" id="jcli-${i}" list="clientes-list"
-                       placeholder="Elegí o escribí el cliente" autocomplete="off" spellcheck="false"
-                       value="${j.cliente}"
-                       oninput="this.value=this.value.toUpperCase(); parsedJobs[${i}].cliente=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').classList.remove('sin-cliente');">
+                <div class="mic-wrap">
+                    <input class="big-input rev-input" id="jcli-${i}" list="clientes-list"
+                           placeholder="Elegí o escribí el cliente" autocomplete="off" spellcheck="false"
+                           value="${j.cliente}"
+                           oninput="this.value=this.value.toUpperCase(); parsedJobs[${i}].cliente=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').classList.remove('sin-cliente');">
+                    <button class="btn-mic" id="jmic-${i}" onclick="activarMicBulk(${i})">🎤</button>
+                </div>
             </div>
         </div>
     `).join('');
