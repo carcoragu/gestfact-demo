@@ -284,51 +284,41 @@
     <button class="btn-back" onclick="ir(2)">← Atrás</button>
 </div>
 
-<!-- PASO 4: Servicio -->
+<!-- PASO 4: Servicio + Monto opcional -->
 <div class="screen" id="s4">
-    <div class="progress"><div class="progress-bar" style="width:66%"></div></div>
+    <div class="progress"><div class="progress-bar" style="width:60%"></div></div>
     <div class="question">¿Qué trabajo se hizo?</div>
     <div class="hint">Escribí o tocá el micrófono para hablar</div>
     <div class="mic-wrap">
         <input class="big-input" id="servicio" type="text" placeholder="Mantenimiento motor">
         <button class="btn-mic" id="mic4" onclick="activarMic('servicio','mic4')" title="Hablar">🎤</button>
     </div>
+    <div style="margin-top:18px;width:100%">
+        <div style="font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:7px;">
+            Monto <span style="font-weight:400;text-transform:none;">(opcional)</span>
+        </div>
+        <input class="big-input" id="monto" type="text" placeholder="50000 — dejá vacío si no sabés" inputmode="numeric">
+    </div>
     <button class="btn-next" onclick="ir(5)">Siguiente →</button>
     <button class="btn-back" onclick="ir(3)">← Atrás</button>
 </div>
 
-<!-- PASO 5: Monto -->
+<!-- PASO 5: Mi número -->
 <div class="screen" id="s5">
-    <div class="progress"><div class="progress-bar" style="width:83%"></div></div>
-    <div class="question">¿Cuánto cobró?</div>
-    <div class="hint">Escribí o decí el número en voz alta</div>
-    <div class="mic-wrap">
-        <input class="big-input" id="monto" type="text" placeholder="50000" inputmode="numeric">
-        <button class="btn-mic" id="mic5" onclick="activarMic('monto','mic5','numero')" title="Hablar">🎤</button>
-    </div>
-    <button class="btn-next" onclick="ir(6)">Siguiente →</button>
-    <button class="btn-back" onclick="ir(4)">← Atrás</button>
-</div>
-
-<!-- PASO 6: Mi número -->
-<div class="screen" id="s6">
-    <div class="progress"><div class="progress-bar" style="width:95%"></div></div>
+    <div class="progress"><div class="progress-bar" style="width:85%"></div></div>
     <div class="question">¿Tu número de WhatsApp?</div>
     <div class="hint">Solo la primera vez — queda guardado</div>
     <input class="big-input" id="miNumero" type="text" placeholder="595961807675" maxlength="20" inputmode="numeric">
-    <button class="btn-next" onclick="ir(7)">Ver resumen →</button>
-    <button class="btn-back" onclick="ir(5)">← Atrás</button>
+    <button class="btn-next" onclick="ir(6)">Ver resumen →</button>
+    <button class="btn-back" onclick="ir(4)">← Atrás</button>
 </div>
 
-<!-- PASO 7: Resumen + envío -->
-<div class="screen" id="s7">
+<!-- PASO 6: Resumen + envío -->
+<div class="screen" id="s6">
     <div class="progress"><div class="progress-bar" style="width:100%"></div></div>
-    <div class="question" style="font-size:1.2rem;margin-bottom:16px;">✅ Listo para enviar</div>
+    <div class="question" style="font-size:1.2rem;margin-bottom:16px;">Listo para enviar</div>
     <div class="resumen" id="resumen"></div>
-    <div class="btn-wa-group">
-        <button class="btn-wa btn-copy-wa" onclick="enviarMiCopia()">💬 Mi copia</button>
-        <button class="btn-wa btn-green-wa" onclick="enviarIsabSoft()">💬 IsabSoft</button>
-    </div>
+    <button class="btn-wa btn-green-wa" style="width:100%;" onclick="enviarIsabSoft()">💬 Enviar a IsabSoft</button>
     <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo registro</button>
 </div>
 
@@ -452,21 +442,19 @@ function selCliente(valor, id) {
 
 // ─── Navegación entre pantallas ───
 function ir(n) {
-    // Validar pantalla actual antes de avanzar
-    if (n > 1  && !datos.cliente)                          { toast('⚠️ Elegí un cliente'); return; }
-    if (n > 2  && !validarInput('chapa',    datos, 'chapa'))    return;
-    if (n > 3  && !validarInput('fecha',    datos, 'fecha'))    return;
-    if (n > 4  && !validarInput('servicio', datos, 'servicio')) return;
-    if (n > 5  && !validarMonto())                         return;
-    if (n > 6  && !validarNumero())                        return;
+    if (n > 1 && !datos.cliente)                               { toast('⚠️ Elegí un cliente'); return; }
+    if (n > 2 && !validarInput('chapa',    datos, 'chapa'))    return;
+    if (n > 3 && !validarInput('fecha',    datos, 'fecha'))    return;
+    if (n > 4 && !validarInput('servicio', datos, 'servicio')) return;
+    if (n > 4) capturarMonto();   // monto opcional — sin bloqueo
+    if (n > 5 && !validarNumero())                             return;
 
-    if (n === 7) armarResumen();
+    if (n === 6) armarResumen();
 
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('s' + n).classList.add('active');
 
-    // Focus automático al input del paso
-    const inputs = { 2:'chapa', 3:'fecha', 4:'servicio', 5:'monto', 6:'miNumero' };
+    const inputs = { 2:'chapa', 3:'fecha', 4:'servicio', 5:'miNumero' };
     if (inputs[n]) setTimeout(() => document.getElementById(inputs[n]).focus(), 80);
 }
 
@@ -483,17 +471,14 @@ function validarInput(campo, obj, id) {
     return true;
 }
 
-function validarMonto() {
-    const el  = document.getElementById('monto');
-    const val = el.value.replace(/\D/g, '');
+function capturarMonto() {
+    const val = document.getElementById('monto').value.replace(/\D/g, '');
     if (!val || Number(val) <= 0) {
-        el.classList.add('error');
-        setTimeout(() => el.classList.remove('error'), 800);
-        toast('⚠️ Ingresá el monto');
-        return false;
+        datos.monto = '0';
+        toast('⚠️ Monto vacío — se enviará como 0');
+    } else {
+        datos.monto = val;
     }
-    datos.monto = val;
-    return true;
 }
 
 function validarNumero() {
@@ -523,13 +508,7 @@ function armarResumen() {
     document.getElementById('resumen').textContent = generarTexto();
 }
 
-// ─── Envíos ───
-function enviarMiCopia() {
-    const numero = document.getElementById('miNumero').value.trim();
-    const url = `https://wa.me/${numero}?text=${encodeURIComponent(generarTexto())}`;
-    window.open(url, '_blank');
-}
-
+// ─── Envío ───
 function enviarIsabSoft() {
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(generarTexto())}`;
     window.open(url, '_blank');
@@ -542,6 +521,7 @@ function reiniciar() {
     document.getElementById('chapa').value    = '';
     document.getElementById('servicio').value = '';
     document.getElementById('monto').value    = '';
+    datos.monto = '';
 
     // Resetear fecha a hoy
     const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Asuncion" }));
@@ -567,7 +547,7 @@ document.addEventListener('keydown', function(e) {
     const activa = document.querySelector('.screen.active');
     if (!activa) return;
     const paso = parseInt(activa.id.replace('s',''));
-    if (paso < 7) ir(paso + 1);
+    if (paso < 6) ir(paso + 1);
 });
 </script>
 </body>
