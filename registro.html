@@ -241,6 +241,58 @@
         }
         .rev-input { font-size: 1rem; padding: 12px 14px; }
 
+        /* Promo banner */
+        #promoBanner {
+            width: 100%;
+            background: rgba(74,222,128,0.1);
+            border: 1px solid rgba(74,222,128,0.35);
+            border-radius: 12px;
+            padding: 11px 16px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        #promoBanner.promo-warning { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.5); }
+        #promoBanner.promo-expired { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.5); }
+        .promo-label { font-size: 0.68rem; color: #4ade80; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+        .promo-warning .promo-label { color: #fbbf24; }
+        .promo-expired .promo-label { color: #f87171; }
+        .promo-dias  { font-size: 1.8rem; color: #fff; font-weight: 800; line-height: 1; }
+        .promo-sub   { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 3px; }
+
+        /* Pantalla planes */
+        #sp { position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; padding: 20px 16px 40px; background: #1a1a2e; flex-direction: column; align-items: center; }
+        .planes-wrap { width: 100%; max-width: 400px; margin: 0 auto; }
+        .plan-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 14px;
+            position: relative;
+        }
+        .plan-card.popular { border-color: #4ade80; background: rgba(74,222,128,0.06); }
+        .plan-badge {
+            position: absolute; top: -10px; right: 16px;
+            background: #4ade80; color: #1a1a2e;
+            font-size: 0.65rem; font-weight: 800;
+            padding: 3px 10px; border-radius: 50px;
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
+        .plan-nombre { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .plan-precio { font-size: 1.45rem; font-weight: 800; color: #4ade80; line-height: 1; }
+        .plan-tipo   { font-size: 0.75rem; color: rgba(255,255,255,0.45); }
+        .plan-desc   { font-size: 0.82rem; color: rgba(255,255,255,0.6); margin-top: 10px; line-height: 1.5; }
+        .plan-features { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .plan-feat { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin-bottom: 5px; }
+        .plan-feat::before { content: '✓  '; color: #4ade80; }
+        .btn-plan {
+            width: 100%; margin-top: 14px; padding: 13px;
+            background: #4ade80; border: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 700; color: #1a1a2e;
+            cursor: pointer; transition: background 0.15s, transform 0.12s;
+        }
+        .btn-plan:active { transform: scale(0.97); background: #22c55e; }
+
         /* Toast */
         #toast {
             position: fixed;
@@ -266,6 +318,12 @@
 <div class="screen active" id="s0">
     <div class="question" style="margin-bottom:10px;">¿Cómo querés cargar?</div>
     <div class="hint" style="margin-bottom:28px;">Elegí la forma más cómoda</div>
+    <div id="promoBanner" style="display:none">
+        <div class="promo-label" id="promoBannerLabel">Período de prueba</div>
+        <div class="promo-dias" id="promoDiasNum">90</div>
+        <div class="promo-sub" id="promoSubText">días restantes</div>
+    </div>
+
     <div class="modo-grid">
         <button class="modo-btn" onclick="irWizard()">
             <span class="modo-icon">✏️</span>
@@ -426,6 +484,20 @@
         <div id="jobsContainer"></div>
         <button class="btn-next" onclick="enviarBulk()">💬 Enviar a IsabSoft</button>
         <button class="btn-back" style="margin-top:14px;width:100%;text-align:center;" onclick="mostrarScreen('sb1')">← Volver a editar lista</button>
+    </div>
+</div>
+
+<!-- PLANES -->
+<div class="screen" id="sp">
+    <div class="planes-wrap">
+        <div style="text-align:center;margin-bottom:22px;">
+            <div class="question" style="font-size:1.15rem;">Elegí tu plan</div>
+            <div class="hint" style="margin-top:6px;" id="spHint">Continuá usando AnotDigi</div>
+        </div>
+        <div id="planCards"></div>
+        <div id="spVolver" style="display:none;margin-top:6px;">
+            <button class="btn-back" style="width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
+        </div>
     </div>
 </div>
 
@@ -730,8 +802,14 @@ function activarMicBulk(i) {
 
 let parsedJobs = [];
 
-function irWizard() { mostrarScreen('s1'); }
-function irBulk()   { mostrarScreen('sb1'); }
+function irWizard() {
+    if (!promoActivo()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    mostrarScreen('s1');
+}
+function irBulk() {
+    if (!promoActivo()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    mostrarScreen('sb1');
+}
 
 function mostrarScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -751,7 +829,8 @@ function parsearBloques(texto) {
 
         const primera = b[0];
         const chapaM  = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
-        if (!chapaM) return;
+        const NO_CHAPA = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+        if (!chapaM || NO_CHAPA.test(chapaM[1].trim())) return;
 
         const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
 
@@ -902,6 +981,172 @@ function enviarBulk() {
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
+
+// ═══════════════════════════════════════════════════════
+//  SISTEMA DE PLANES / PROMO
+// ═══════════════════════════════════════════════════════
+
+const PROMO_DIAS = 90;
+const PLANES_DATA = [
+    {
+        id: 'sesion', nombre: 'Sesión', precio: '80.000', tipo: 'pago único', popular: false,
+        desc: 'Carlos carga y organiza todo en GestFact una sola vez.',
+        features: ['1 sesión de carga completa', 'AnotDigi incluido', 'Sin mensualidad']
+    },
+    {
+        id: 'basico', nombre: 'Básico', precio: '50.000', tipo: '/mes', popular: false,
+        desc: 'Registrá con AnotDigi, Carlos carga todo en GestFact por vos.',
+        features: ['AnotDigi sin límite de registros', 'Carlos carga en GestFact', 'Reporte mensual']
+    },
+    {
+        id: 'completo', nombre: 'Completo', precio: '100.000', tipo: '/mes', popular: true,
+        desc: 'Básico más presupuestos ilimitados y control total.',
+        features: ['AnotDigi sin límite', 'Presupuestos ilimitados', 'Carlos controla todo', 'Soporte prioritario']
+    },
+    {
+        id: 'full', nombre: 'Full', precio: '150.000', tipo: '/mes', popular: false,
+        desc: 'AnotDigi conectado directo a GestFact. Carlos monitorea todo.',
+        features: ['AnotDigi → GestFact directo', 'Sin límite de nada', 'Carlos controla 24/7', 'Reportes automáticos']
+    }
+];
+
+function promoIniciar() {
+    if (!localStorage.getItem('anotdigi_inicio')) {
+        localStorage.setItem('anotdigi_inicio', new Date().toISOString().split('T')[0]);
+    }
+}
+
+function promoActivo() {
+    const expiry = localStorage.getItem('anotdigi_expiry');
+    if (expiry) return new Date(expiry) >= new Date();
+
+    const inicio = localStorage.getItem('anotdigi_inicio');
+    if (!inicio) return true; // primer uso, todavía no se registró
+    const dias = Math.floor((new Date() - new Date(inicio)) / 86400000);
+    return dias < PROMO_DIAS;
+}
+
+function promoDiasRestantes() {
+    const expiry = localStorage.getItem('anotdigi_expiry');
+    const plan   = localStorage.getItem('anotdigi_plan');
+    if (expiry && plan) {
+        const d = Math.ceil((new Date(expiry) - new Date()) / 86400000);
+        return { dias: Math.max(0, d), plan, esPlan: true };
+    }
+    const inicio = localStorage.getItem('anotdigi_inicio');
+    if (!inicio) return { dias: PROMO_DIAS, plan: null, esPlan: false };
+    const pasados = Math.floor((new Date() - new Date(inicio)) / 86400000);
+    return { dias: Math.max(0, PROMO_DIAS - pasados), plan: null, esPlan: false };
+}
+
+function promoActualizarBanner() {
+    const banner = document.getElementById('promoBanner');
+    if (!banner) return;
+
+    const { dias, plan, esPlan } = promoDiasRestantes();
+    const activo = promoActivo();
+
+    banner.style.display = 'block';
+    banner.className = '';
+
+    const numEl  = document.getElementById('promoDiasNum');
+    const subEl  = document.getElementById('promoSubText');
+    const lblEl  = document.getElementById('promoBannerLabel');
+
+    if (esPlan) {
+        lblEl.textContent = `Plan ${plan} activo`;
+        numEl.textContent = dias;
+        subEl.textContent = 'días restantes';
+    } else if (activo) {
+        lblEl.textContent = 'Período de prueba';
+        numEl.textContent = dias;
+        subEl.textContent = 'días restantes gratis';
+        if (dias <= 7) banner.classList.add('promo-warning');
+    } else {
+        banner.classList.add('promo-expired');
+        lblEl.textContent = 'Prueba terminada';
+        numEl.textContent = '!';
+        subEl.textContent = 'Elegí un plan para continuar';
+    }
+}
+
+function renderizarPlanes(puedeVolver) {
+    const c    = document.getElementById('planCards');
+    const hint = document.getElementById('spHint');
+    const vol  = document.getElementById('spVolver');
+    if (!c) return;
+
+    hint.textContent = puedeVolver
+        ? 'Podés cambiar de plan cuando quieras'
+        : 'Tu período de prueba terminó — elegí un plan';
+    if (vol) vol.style.display = puedeVolver ? 'block' : 'none';
+
+    c.innerHTML = PLANES_DATA.map(p => `
+        <div class="plan-card ${p.popular ? 'popular' : ''}">
+            ${p.popular ? '<div class="plan-badge">Popular</div>' : ''}
+            <div class="plan-nombre">${p.nombre}</div>
+            <div>
+                <span class="plan-precio">Gs. ${p.precio}</span>
+                <span class="plan-tipo"> ${p.tipo}</span>
+            </div>
+            <div class="plan-desc">${p.desc}</div>
+            <div class="plan-features">
+                ${p.features.map(f => `<div class="plan-feat">${f}</div>`).join('')}
+            </div>
+            <button class="btn-plan" onclick="contactarPlan('${p.nombre}','${p.precio}','${p.tipo}')">
+                Quiero este plan →
+            </button>
+        </div>
+    `).join('');
+}
+
+function contactarPlan(nombre, precio, tipo) {
+    const msg = `Hola Carlos! Quiero activar AnotDigi *Plan ${nombre}* (Gs. ${precio}${tipo}). ¿Cómo procedo?`;
+    window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// ─── Activación por URL: ?act=TOKEN&p=PLAN&d=DIAS ───
+async function checkActivacionURL() {
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('act');
+    const plan   = params.get('p');
+    const dias   = parseInt(params.get('d') || '0');
+    if (!token || !plan || !dias) return;
+
+    try {
+        const SECRET = 'ANOTDIGI2026ISASOFT';
+        const enc    = new TextEncoder();
+        const key    = await crypto.subtle.importKey(
+            'raw', enc.encode(SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+        );
+        const sig      = await crypto.subtle.sign('HMAC', key, enc.encode(`${plan}|${dias}`));
+        const tokenGen = Array.from(new Uint8Array(sig))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('')
+            .substring(0, 16);
+
+        if (token !== tokenGen) { toast('⚠️ Enlace de activación inválido'); return; }
+
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + dias);
+        localStorage.setItem('anotdigi_plan',   plan.toUpperCase());
+        localStorage.setItem('anotdigi_expiry', expiry.toISOString().split('T')[0]);
+
+        window.history.replaceState({}, '', window.location.pathname);
+        setTimeout(() => toast(`Plan ${plan.toUpperCase()} activado — ${dias} días`), 300);
+    } catch(e) { /* SubtleCrypto no disponible */ }
+}
+
+// ─── Init promo ───
+(async function() {
+    await checkActivacionURL();
+    promoIniciar();
+    promoActualizarBanner();
+    if (!promoActivo()) {
+        renderizarPlanes(false);
+        mostrarScreen('sp');
+    }
+})();
 
 // ─── Reiniciar ───
 function reiniciar() {
