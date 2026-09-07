@@ -373,20 +373,17 @@
     <button class="btn-back" onclick="ir(2)">← Atrás</button>
 </div>
 
-<!-- PASO 4: Servicio + Monto opcional -->
+<!-- PASO 4: Trabajo (texto libre, copia fiel) -->
 <div class="screen" id="s4">
     <div class="progress"><div class="progress-bar" style="width:60%"></div></div>
     <div class="question">¿Qué trabajo se hizo?</div>
-    <div class="hint">Escribí o tocá el micrófono para hablar</div>
-    <div class="mic-wrap">
-        <input class="big-input" id="servicio" type="text" placeholder="Mantenimiento motor">
-        <button class="btn-mic" id="mic4" onclick="activarMic('servicio','mic4')" title="Hablar">🎤</button>
-    </div>
-    <div style="margin-top:18px;width:100%">
-        <div style="font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:7px;">
-            Monto <span style="font-weight:400;text-transform:none;">(opcional)</span>
-        </div>
-        <input class="big-input" id="monto" type="text" placeholder="50000 — dejá vacío si no sabés" inputmode="numeric">
+    <div class="hint">Escribí tal cual lo tenés anotado — varias líneas si hace falta</div>
+    <div class="mic-wrap" style="align-items:flex-start;">
+        <textarea class="big-input bulk-ta" id="servicio"
+                  placeholder="Amortiguadores trasero 2&#10;Mano de obra 290.000"
+                  style="min-height:130px;text-align:left;font-size:1rem;padding:14px 56px 14px 16px;line-height:1.6;resize:vertical;"></textarea>
+        <button class="btn-mic" id="mic4" onclick="activarMic('servicio','mic4')" title="Hablar"
+                style="top:12px;transform:none;">🎤</button>
     </div>
     <button class="btn-next" onclick="ir(5)">Siguiente →</button>
     <button class="btn-back" onclick="ir(3)">← Atrás</button>
@@ -433,19 +430,15 @@
             <input class="big-input rev-input" id="rev-fecha" type="date">
         </div>
 
-        <!-- Servicio -->
+        <!-- Servicio (texto libre) -->
         <div style="width:100%">
             <div class="rev-label">Trabajo</div>
-            <div class="mic-wrap">
-                <input class="big-input rev-input" id="rev-servicio" type="text">
-                <button class="btn-mic" id="mic6" onclick="activarMic('rev-servicio','mic6')" title="Hablar">🎤</button>
+            <div class="mic-wrap" style="align-items:flex-start;">
+                <textarea class="big-input rev-input" id="rev-servicio"
+                          style="min-height:100px;text-align:left;font-size:0.95rem;padding:12px 56px 12px 14px;line-height:1.6;resize:vertical;"></textarea>
+                <button class="btn-mic" id="mic6" onclick="activarMic('rev-servicio','mic6')" title="Hablar"
+                        style="top:12px;transform:none;">🎤</button>
             </div>
-        </div>
-
-        <!-- Monto -->
-        <div style="width:100%">
-            <div class="rev-label">Monto <span style="font-weight:400;text-transform:none;font-size:0.75rem;">(opcional)</span></div>
-            <input class="big-input rev-input" id="rev-monto" type="text" inputmode="numeric" placeholder="0">
         </div>
 
     </div>
@@ -478,8 +471,8 @@
 <div class="screen" id="sb2">
     <div class="jobs-wrap">
         <div style="text-align:center;margin-bottom:20px;">
-            <div class="question" style="font-size:1.15rem;">Revisá y asigná clientes</div>
-            <div class="hint" style="margin-top:6px;">El cliente es obligatorio en cada trabajo</div>
+            <div class="question" style="font-size:1.15rem;">Verificá los trabajos</div>
+            <div class="hint" style="margin-top:6px;">El WhatsApp enviará tu texto original — esto es solo para verificar</div>
         </div>
         <div id="jobsContainer"></div>
         <button class="btn-next" onclick="enviarBulk()">💬 Enviar a IsabSoft</button>
@@ -509,7 +502,7 @@ const WA_ISASOFT = "595981153477";
 const GF_API     = "https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec";
 
 // ─── Estado ───
-const datos = { cliente: '', chapa: '', fecha: '', servicio: '', monto: '' };
+const datos = { cliente: '', chapa: '', fecha: '', servicio: '' };
 
 // ─── Fecha de hoy (Paraguay) ───
 (function() {
@@ -586,11 +579,6 @@ document.getElementById('chapa').addEventListener('input', function() {
 document.getElementById('miNumero').addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '');
     localStorage.setItem('mi_numero_wa', this.value);
-});
-
-// ─── Monto: solo dígitos en input texto ───
-document.getElementById('monto').addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '');
 });
 
 // ─── Speech Recognition ───
@@ -675,7 +663,6 @@ function ir(n) {
     if (n > 2 && !validarInput('chapa',    datos, 'chapa'))    return;
     if (n > 3 && !validarInput('fecha',    datos, 'fecha'))    return;
     if (n > 4 && !validarInput('servicio', datos, 'servicio')) return;
-    if (n > 4) capturarMonto();   // monto opcional — sin bloqueo
     if (n > 5 && !validarNumero())                             return;
 
     if (n === 6) armarResumen();
@@ -698,16 +685,6 @@ function validarInput(campo, obj, id) {
     return true;
 }
 
-function capturarMonto() {
-    const val = document.getElementById('monto').value.replace(/\D/g, '');
-    if (!val || Number(val) <= 0) {
-        datos.monto = '0';
-        toast('⚠️ Monto vacío — se enviará como 0');
-    } else {
-        datos.monto = val;
-    }
-}
-
 function validarNumero() {
     const el = document.getElementById('miNumero');
     if (!el.value.trim()) {
@@ -719,72 +696,40 @@ function validarNumero() {
     return true;
 }
 
-// ─── Armar texto ───
-function generarTexto() {
-    const [y, m, d] = datos.fecha.split('-');
-    const monto = Number(datos.monto).toLocaleString('es-PY');
-    return `*TRABAJO REGISTRADO*
-Cliente : ${datos.cliente}
-Chapa   : ${datos.chapa.toUpperCase()}
-Fecha   : ${d}/${m}/${y}
-Trabajo : ${datos.servicio}
-Monto   : Gs. ${monto}`;
-}
-
+// ─── Armar resumen (revisión) ───
 function armarResumen() {
     document.getElementById('rev-cliente').value  = datos.cliente;
     document.getElementById('rev-chapa').value    = datos.chapa.toUpperCase();
     document.getElementById('rev-fecha').value    = datos.fecha;
     document.getElementById('rev-servicio').value = datos.servicio;
-    document.getElementById('rev-monto').value    = datos.monto === '0' ? '' : datos.monto;
 }
 
-// ─── Envío — lee de los campos de revisión ───
-let montoConfirmado = false;
-
+// ─── Envío — copia fiel del texto de Miguel ───
 function enviarIsabSoft() {
     const chapa    = document.getElementById('rev-chapa').value.trim().toUpperCase();
     const fecha    = document.getElementById('rev-fecha').value;
     const servicio = document.getElementById('rev-servicio').value.trim();
-    const montoRaw = document.getElementById('rev-monto').value.replace(/\D/g, '');
-    const monto    = montoRaw || '0';
 
     const clienteFinal = document.getElementById('rev-cliente').value.trim().toUpperCase();
-    if (!clienteFinal) { document.getElementById('rev-cliente').classList.add('error'); setTimeout(() => document.getElementById('rev-cliente').classList.remove('error'), 800); toast('⚠️ El cliente está vacío'); return; }
-    addClienteToList(clienteFinal);
-    if (!chapa)         { toast('⚠️ La chapa está vacía'); return; }
-    if (!fecha)         { toast('⚠️ La fecha está vacía'); return; }
-    if (!servicio)      { toast('⚠️ El trabajo está vacío'); return; }
-
-    if (monto === '0' && !montoConfirmado) {
-        montoConfirmado = true;
-        document.getElementById('rev-monto').classList.add('error');
-        setTimeout(() => document.getElementById('rev-monto').classList.remove('error'), 1500);
-        toast('⚠️ El monto está vacío — completalo o tocá Enviar de nuevo para confirmar con 0');
+    if (!clienteFinal) {
+        document.getElementById('rev-cliente').classList.add('error');
+        setTimeout(() => document.getElementById('rev-cliente').classList.remove('error'), 800);
+        toast('⚠️ El cliente está vacío');
         return;
     }
-
-    montoConfirmado = false;
+    addClienteToList(clienteFinal);
+    if (!chapa)    { toast('⚠️ La chapa está vacía'); return; }
+    if (!fecha)    { toast('⚠️ La fecha está vacía'); return; }
+    if (!servicio) { toast('⚠️ El trabajo está vacío'); return; }
 
     const [y, m, d] = fecha.split('-');
-    const montoFmt  = Number(monto).toLocaleString('es-PY');
 
-    const texto = `*TRABAJO REGISTRADO*
-Cliente : ${clienteFinal}
-Chapa   : ${chapa}
-Fecha   : ${d}/${m}/${y}
-Trabajo : ${servicio}
-Monto   : Gs. ${montoFmt}`;
+    // Formato copia fiel: encabezado compacto + texto de Miguel verbatim
+    const texto = `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
 
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
-
-// Resetear confirmación de monto si empieza a escribir
-document.getElementById('rev-monto').addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '');
-    montoConfirmado = false;
-});
 
 function activarMicBulk(i) {
     activarMic(`jcli-${i}`, `jmic-${i}`, null, function(texto) {
@@ -969,15 +914,10 @@ function enviarBulk() {
     // Guardar clientes nuevos
     parsedJobs.forEach(j => addClienteToList(j.cliente));
 
-    // Generar mensaje
-    const lineas = parsedJobs.map((j, i) => {
-        const [y, m, d] = j.fechaVal ? j.fechaVal.split('-') : ['','',''];
-        const fecha  = j.fechaVal ? `${d}/${m}/${y}` : 'sin fecha';
-        const monto  = j.monto ? Number(j.monto).toLocaleString('es-PY') : '0';
-        return `${i+1}. ${j.chapa} | ${j.cliente} | ${fecha}\n   ${j.servicio}`;
-    });
-
-    const texto = `*TRABAJOS REGISTRADOS* (${parsedJobs.length})\n\n${lineas.join('\n\n')}`;
+    // Generar mensaje: copia fiel del texto original + encabezado cliente
+    const cliente      = document.getElementById('bulkCliente').value.trim().toUpperCase();
+    const textoOriginal = document.getElementById('bulkInput').value.trim();
+    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
@@ -1150,12 +1090,10 @@ async function checkActivacionURL() {
 
 // ─── Reiniciar ───
 function reiniciar() {
-    datos.cliente = ''; datos.chapa = ''; datos.servicio = ''; datos.monto = '';
+    datos.cliente = ''; datos.chapa = ''; datos.servicio = '';
     document.getElementById('clienteInput').value = '';
     document.getElementById('chapa').value    = '';
     document.getElementById('servicio').value = '';
-    document.getElementById('monto').value    = '';
-    datos.monto = '';
 
     // Resetear fecha a hoy
     const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Asuncion" }));
