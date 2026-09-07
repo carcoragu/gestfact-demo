@@ -259,6 +259,41 @@
         .promo-dias  { font-size: 1.8rem; color: #fff; font-weight: 800; line-height: 1; }
         .promo-sub   { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 3px; }
 
+        /* Pantalla info */
+        #sinfo { position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; padding: 24px 16px 48px; background: #1a1a2e; flex-direction: column; align-items: center; }
+        .info-wrap { width: 100%; max-width: 400px; margin: 0 auto; }
+        .info-hero { text-align: center; margin-bottom: 28px; }
+        .info-hero-icon { font-size: 3rem; margin-bottom: 10px; }
+        .info-hero-title { font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .info-hero-sub { font-size: 0.88rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+        .info-dolor {
+            background: rgba(248,113,113,0.08);
+            border: 1px solid rgba(248,113,113,0.25);
+            border-radius: 14px; padding: 16px 18px; margin-bottom: 22px;
+        }
+        .info-dolor-label { font-size: 0.68rem; font-weight: 700; color: #f87171; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+        .info-dolor-text { font-size: 0.88rem; color: rgba(255,255,255,0.75); line-height: 1.65; }
+        .info-steps-title { font-size: 0.75rem; font-weight: 700; color: #4ade80; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+        .info-step {
+            display: flex; align-items: flex-start; gap: 14px;
+            margin-bottom: 16px;
+        }
+        .info-step-num {
+            flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(74,222,128,0.15); border: 1.5px solid rgba(74,222,128,0.4);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: 800; color: #4ade80;
+        }
+        .info-step-body { flex: 1; padding-top: 4px; }
+        .info-step-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 3px; }
+        .info-step-desc { font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.5; }
+        .info-nota {
+            margin-top: 24px; background: rgba(74,222,128,0.07);
+            border: 1px solid rgba(74,222,128,0.2); border-radius: 14px;
+            padding: 14px 16px; font-size: 0.83rem; color: rgba(255,255,255,0.6); line-height: 1.6;
+        }
+        .info-nota strong { color: #4ade80; }
+
         /* Pantalla planes */
         #sp { position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; padding: 20px 16px 40px; background: #1a1a2e; flex-direction: column; align-items: center; }
         .planes-wrap { width: 100%; max-width: 400px; margin: 0 auto; }
@@ -335,6 +370,67 @@
             Pegar lista
             <span class="modo-sub">Varios trabajos de una vez</span>
         </button>
+    </div>
+    <button onclick="mostrarScreen('sinfo')" style="margin-top:18px;background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.8rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;">
+        ¿Cómo funciona AnotDigi?
+    </button>
+</div>
+
+<!-- PANTALLA INFO: ¿Cómo funciona AnotDigi? -->
+<div class="screen" id="sinfo">
+    <div class="info-wrap">
+        <div class="info-hero">
+            <div class="info-hero-icon">📋</div>
+            <div class="info-hero-title">AnotDigi</div>
+            <div class="info-hero-sub">Tu cuaderno de taller, pero digital.<br>Anotás y nosotros cargamos en GestFact.</div>
+        </div>
+
+        <div class="info-dolor">
+            <div class="info-dolor-label">El problema que resolvemos</div>
+            <div class="info-dolor-text">
+                Terminás el día con una lista de trabajos anotados en el celu o en papel — chapa, lo que hiciste, cuánto cobraste. Después tenés que cargar todo eso en GestFact uno por uno. Es tiempo perdido que no le cobrás a nadie.
+            </div>
+        </div>
+
+        <div class="info-steps-title">Cómo funciona</div>
+
+        <div class="info-step">
+            <div class="info-step-num">1</div>
+            <div class="info-step-body">
+                <div class="info-step-title">Anotás como siempre</div>
+                <div class="info-step-desc">Chapa, trabajo y monto — como lo escribís normalmente en el celu. Sin formato especial.</div>
+            </div>
+        </div>
+
+        <div class="info-step">
+            <div class="info-step-num">2</div>
+            <div class="info-step-body">
+                <div class="info-step-title">Pegás la lista acá</div>
+                <div class="info-step-desc">Tocás "Pegar lista", pegás todo junto y AnotDigi separa cada trabajo automáticamente.</div>
+            </div>
+        </div>
+
+        <div class="info-step">
+            <div class="info-step-num">3</div>
+            <div class="info-step-body">
+                <div class="info-step-title">Tocás Enviar</div>
+                <div class="info-step-desc">La lista va directo a Carlos por WhatsApp.</div>
+            </div>
+        </div>
+
+        <div class="info-step">
+            <div class="info-step-num">4</div>
+            <div class="info-step-body">
+                <div class="info-step-title">Carlos carga en GestFact</div>
+                <div class="info-step-desc">Cada trabajo queda registrado con chapa, fecha, servicio y monto. Vos no hacés nada más.</div>
+            </div>
+        </div>
+
+        <div class="info-nota">
+            <strong>Carga Asistida</strong> — Con el Plan Básico, Carlos revisa tu lista, controla que no se repitan trabajos ya cargados, y registra los nuevos en GestFact. Vos solo anotás.
+        </div>
+
+        <button class="btn-back" style="margin-top:24px;width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
     </div>
 </div>
 
