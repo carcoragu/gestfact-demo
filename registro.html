@@ -1229,11 +1229,18 @@ function enviarBulk() {
     // Guardar clientes nuevos
     parsedJobs.forEach(j => addClienteToList(j.cliente));
 
-    const cliente       = document.getElementById('bulkCliente').value.trim().toUpperCase();
-    const textoOriginal = document.getElementById('bulkInput').value.trim();
+    const cliente = document.getElementById('bulkCliente').value.trim().toUpperCase();
 
-    // Enviar todo — nuevos y existentes — el control de duplicados lo hace IsabSoft con Claude
-    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
+    // Construir mensaje desde parsedJobs para incluir montos y campos editados manualmente
+    const cuerpo = parsedJobs.map(j => {
+        const fDis = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
+        let bloque = j.chapa + (fDis ? ` ${fDis}` : '');
+        if (j.servicio) bloque += `\n${j.servicio}`;
+        if (j.monto)    bloque += `\nGs. ${Number(j.monto).toLocaleString('es-PY')}`;
+        return bloque;
+    }).join('\n\n');
+
+    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${cuerpo}`;
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
