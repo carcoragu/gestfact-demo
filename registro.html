@@ -967,7 +967,7 @@ function renderizarJobs() {
                 <div class="rev-label">Chapa</div>
                 <input class="big-input rev-input" id="jchapa-${i}" value="${j.chapa}"
                        autocorrect="off" autocapitalize="characters" spellcheck="false"
-                       oninput="this.value=this.value.toUpperCase().replace(/\\s/g,''); parsedJobs[${i}].chapa=this.value">
+                       oninput="this.value=this.value.toUpperCase().replace(/\\s/g,''); parsedJobs[${i}].chapa=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color');">
             </div>
 
             <div class="job-f">
@@ -1008,6 +1008,19 @@ function enviarBulk() {
         j.servicio = (document.getElementById(`jserv-${i}`)?.value || j.servicio).trim();
         j.cliente  = (document.getElementById(`jcli-${i}`)?.value   || '').trim().toUpperCase();
     });
+
+    // Validar chapas vacías — bloqueo duro
+    const sinChapa = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.chapa);
+    if (sinChapa.length) {
+        sinChapa.forEach(({i}) => {
+            document.getElementById(`jchapa-${i}`)?.classList.add('error');
+            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
+        });
+        const n = sinChapa.length;
+        toast(`⚠️ ${n > 1 ? n + ' trabajos sin' : 'Un trabajo sin'} chapa — completá antes de enviar`);
+        document.getElementById(`jcard-${sinChapa[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
 
     // Validar clientes vacíos
     const sinCliente = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.cliente);
