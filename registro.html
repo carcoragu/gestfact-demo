@@ -443,7 +443,12 @@
 
     </div>
 
-    <div id="dupeWarnWizard" style="display:none;width:100%;margin-top:16px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.5);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:#fbbf24;line-height:1.5;">
+    <div id="chapaMismatchWarn" style="display:none;width:100%;margin-top:16px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.5);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:#f87171;line-height:1.5;">
+        ⚠️ El texto tiene la chapa <strong id="chapaMismatchEnTexto"></strong> pero el campo dice <strong id="chapaMismatchCampo"></strong>.<br>
+        <span style="color:rgba(255,255,255,0.45);">Corregí una de las dos antes de enviar.</span>
+    </div>
+
+    <div id="dupeWarnWizard" style="display:none;width:100%;margin-top:10px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.5);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:#fbbf24;line-height:1.5;">
         ⚠️ Esta chapa ya tiene un registro en GestFact para esta fecha.<br>
         <span style="color:rgba(255,255,255,0.5);">Si es otro trabajo, podés enviar igual.</span>
     </div>
@@ -728,7 +733,20 @@ function armarResumen() {
     document.getElementById('rev-chapa').value    = datos.chapa.toUpperCase();
     document.getElementById('rev-fecha').value    = datos.fecha;
     document.getElementById('rev-servicio').value = datos.servicio;
+    actualizarChapaMismatch();
     actualizarDupeWarnWizard();
+}
+
+const NO_CHAPA_RE = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+
+function extraerChapaDeTexto(texto) {
+    for (const linea of texto.split('\n')) {
+        const m = linea.trim().match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
+        if (m && !NO_CHAPA_RE.test(m[1].trim())) {
+            return (m[1] + m[2]).toUpperCase().replace(/\s/g, '');
+        }
+    }
+    return null;
 }
 
 function actualizarDupeWarnWizard() {
@@ -736,6 +754,21 @@ function actualizarDupeWarnWizard() {
     const fecha = document.getElementById('rev-fecha').value;
     const w = document.getElementById('dupeWarnWizard');
     if (w) w.style.display = esDuplicado(chapa, fecha) ? 'block' : 'none';
+}
+
+function actualizarChapaMismatch() {
+    const chapa       = document.getElementById('rev-chapa').value.trim().toUpperCase();
+    const servicio    = document.getElementById('rev-servicio').value;
+    const chapaTexto  = extraerChapaDeTexto(servicio);
+    const w           = document.getElementById('chapaMismatchWarn');
+    if (!w) return;
+    if (chapaTexto && chapaTexto !== chapa) {
+        document.getElementById('chapaMismatchEnTexto').textContent = chapaTexto;
+        document.getElementById('chapaMismatchCampo').textContent   = chapa || '(vacía)';
+        w.style.display = 'block';
+    } else {
+        w.style.display = 'none';
+    }
 }
 
 // ─── Detección de monto en texto libre ───
@@ -763,6 +796,14 @@ function enviarIsabSoft() {
     if (!fecha)    { toast('⚠️ La fecha está vacía'); return; }
     if (!servicio) { toast('⚠️ El trabajo está vacío'); return; }
 
+    // Chapa mismatch — bloqueo duro (el usuario debe corregir uno de los dos)
+    const chapaTexto = extraerChapaDeTexto(servicio);
+    if (chapaTexto && chapaTexto !== chapa) {
+        actualizarChapaMismatch();
+        toast('⚠️ La chapa del texto no coincide con la ingresada — corregí antes de enviar');
+        return;
+    }
+
     if (!tieneMonto(servicio) && !montoAvisadoWizard) {
         montoAvisadoWizard = true;
         document.getElementById('rev-servicio').classList.add('error');
@@ -782,8 +823,12 @@ function enviarIsabSoft() {
 document.getElementById('rev-servicio').addEventListener('input', function() {
     montoAvisadoWizard = false;
 });
-document.getElementById('rev-chapa').addEventListener('input', actualizarDupeWarnWizard);
+document.getElementById('rev-chapa').addEventListener('input', function() {
+    actualizarChapaMismatch();
+    actualizarDupeWarnWizard();
+});
 document.getElementById('rev-fecha').addEventListener('change', actualizarDupeWarnWizard);
+document.getElementById('rev-servicio').addEventListener('input', actualizarChapaMismatch);
 document.getElementById('bulkInput').addEventListener('input', function() {
     montoAvisadoBulk = false;
 });
@@ -832,8 +877,7 @@ function parsearBloques(texto) {
 
         const primera = b[0];
         const chapaM  = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
-        const NO_CHAPA = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
-        if (!chapaM || NO_CHAPA.test(chapaM[1].trim())) return;
+        if (!chapaM || NO_CHAPA_RE.test(chapaM[1].trim())) return;
 
         const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
 
