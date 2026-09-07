@@ -575,6 +575,11 @@ function esDuplicado(chapa, fechaISO) {
     return registrosGF.some(r => r.chapa === chapa && r.fecha === f);
 }
 
+function chapaExiste(chapa) {
+    if (!chapa || !registrosGF.length) return false;
+    return registrosGF.some(r => r.chapa === chapa);
+}
+
 function addClienteToList(c) {
     if (!c) return;
     const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
@@ -993,14 +998,20 @@ function procesarBulk() {
 function renderizarJobs() {
     const c = document.getElementById('jobsContainer');
     c.innerHTML = parsedJobs.map((j, i) => {
-        const dupe = esDuplicado(j.chapa, j.fechaVal);
+        const dupe       = esDuplicado(j.chapa, j.fechaVal);
+        const chapaVista = !dupe && chapaExiste(j.chapa);
         const dupeHtml = dupe
+            ? `<div style="font-size:0.75rem;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.4);">
+                   🔴 Ya cargado en GestFact — no se enviará al WhatsApp
+               </div>`
+            : chapaVista
             ? `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
-                   ⚠️ Ya existe en GestFact — verificá si es otro trabajo
+                   ⚠️ Chapa ya vista en GestFact — verificá si es otro trabajo
                </div>`
             : '';
+        const cardBorder = dupe ? 'border:1.5px solid rgba(248,113,113,0.45);' : '';
         return `
-        <div class="job-card" id="jcard-${i}">
+        <div class="job-card" id="jcard-${i}" style="${cardBorder}">
             <div class="job-num">#${i+1} — ${j.chapa}</div>
             ${dupeHtml}
 
@@ -1063,21 +1074,16 @@ function enviarBulk() {
         return;
     }
 
-    // Validar fechas vacías — bloqueo duro
-    const sinFecha = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.fechaVal);
-    if (sinFecha.length) {
-        sinFecha.forEach(({i}) => {
-            document.getElementById(`jfecha-${i}`)?.classList.add('error');
-            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
-        });
-        const chapas = sinFecha.map(({j}) => j.chapa || '?').join(', ');
-        toast(`⚠️ Sin fecha: ${chapas} — completá antes de enviar`);
-        document.getElementById(`jcard-${sinFecha[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+    // Filtrar duplicados exactos — se omiten del envío WA
+    const jobsEnviar = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !esDuplicado(j.chapa, j.fechaVal));
+
+    if (!jobsEnviar.length) {
+        toast('⚠️ Todos los trabajos ya están cargados en GestFact — nada nuevo para enviar');
         return;
     }
 
-    // Validar clientes vacíos
-    const sinCliente = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.cliente);
+    // Validar clientes vacíos (solo de los jobs a enviar)
+    const sinCliente = jobsEnviar.filter(({j}) => !j.cliente);
     if (sinCliente.length) {
         sinCliente.forEach(({i}) => {
             document.getElementById(`jcli-${i}`).classList.add('error');
@@ -1102,8 +1108,18 @@ function enviarBulk() {
     }
     montoAvisadoBulk = false;
 
-    // Generar mensaje: copia fiel del texto original + encabezado cliente
-    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
+    // Construir texto con solo los trabajos nuevos (no duplicados exactos)
+    const textoFiltrado = jobsEnviar.map(({j}) => {
+        const fDis = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
+        let bloque = j.chapa + (fDis ? ` ${fDis}` : '');
+        if (j.servicio) bloque += `\n${j.servicio}`;
+        if (j.monto)    bloque += `\n${Number(j.monto).toLocaleString('es-PY')} Gs.`;
+        return bloque;
+    }).join('\n\n');
+
+    const omitidos = parsedJobs.length - jobsEnviar.length;
+    const notaOmitidos = omitidos ? ` (${omitidos} ya cargado${omitidos > 1 ? 's' : ''} omitido${omitidos > 1 ? 's' : ''})` : '';
+    const texto = `${cliente} — ${jobsEnviar.length} trabajo${jobsEnviar.length !== 1 ? 's' : ''}${notaOmitidos}\n\n${textoFiltrado}`;
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
