@@ -1130,12 +1130,18 @@ function renderizarJobs() {
             </div>
 
             <div class="job-f">
+                <div class="rev-label">Monto <span style="color:#f87171">*</span></div>
+                <input class="big-input rev-input" id="jmonto-${i}" type="number" inputmode="numeric"
+                       placeholder="100000" value="${j.monto}"
+                       oninput="parsedJobs[${i}].monto=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color');">
+            </div>
+
+            <div class="job-f">
                 <div class="rev-label">Trabajo</div>
                 <textarea class="big-input rev-input" id="jserv-${i}"
                           style="min-height:80px;resize:vertical;line-height:1.5;text-align:left;font-size:0.9rem;"
                           oninput="parsedJobs[${i}].servicio=this.value">${j.servicio}</textarea>
             </div>
-
 
             <div class="job-f">
                 <div class="rev-label" style="color:rgba(255,255,255,0.4);">Cliente <span style="color:#f87171">*</span></div>
@@ -1158,6 +1164,7 @@ function enviarBulk() {
     parsedJobs.forEach((j, i) => {
         j.chapa    = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
         j.fechaVal = document.getElementById(`jfecha-${i}`)?.value  || j.fechaVal;
+        j.monto    = (document.getElementById(`jmonto-${i}`)?.value || '').trim();
         j.servicio = (document.getElementById(`jserv-${i}`)?.value || j.servicio).trim();
         j.cliente  = (document.getElementById(`jcli-${i}`)?.value   || '').trim().toUpperCase();
     });
@@ -1172,6 +1179,19 @@ function enviarBulk() {
         const n = sinChapa.length;
         toast(`⚠️ ${n > 1 ? n + ' trabajos sin' : 'Un trabajo sin'} chapa — completá antes de enviar`);
         document.getElementById(`jcard-${sinChapa[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    // Validar montos vacíos — bloqueo duro
+    const sinMonto = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.monto || Number(j.monto) <= 0);
+    if (sinMonto.length) {
+        sinMonto.forEach(({i}) => {
+            document.getElementById(`jmonto-${i}`)?.classList.add('error');
+            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
+        });
+        const chapas = sinMonto.map(({j}) => j.chapa || '?').join(', ');
+        toast(`⚠️ Sin monto: ${chapas} — completá antes de enviar`);
+        document.getElementById(`jcard-${sinMonto[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
         return;
     }
 
@@ -1206,13 +1226,6 @@ function enviarBulk() {
 
     const cliente       = document.getElementById('bulkCliente').value.trim().toUpperCase();
     const textoOriginal = document.getElementById('bulkInput').value.trim();
-
-    if (!tieneMonto(textoOriginal) && !montoAvisadoBulk) {
-        montoAvisadoBulk = true;
-        toast('⚠️ No se detectó monto en la lista — tocá Enviar de nuevo para confirmar');
-        return;
-    }
-    montoAvisadoBulk = false;
 
     // Enviar todo — nuevos y existentes — el control de duplicados lo hace Carlos con Claude
     const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
