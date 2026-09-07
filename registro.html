@@ -870,7 +870,8 @@ function mostrarScreen(id) {
 // Detecta chapa en cualquier posición de la línea (para "Changan byb072 ...")
 const CHAPA_INLINE_RE = /\b([A-Z]{2,5})\s?([A-Z]?\s?\d{3})\b/gi;
 // Detecta fecha numérica "DD/MM/YY" o texto "11 de junio"
-const FECHA_EN_LINEA_RE = /\b\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?\b|\b\d{1,2}\s+de\s+\w+\b/i;
+const FECHA_EN_LINEA_RE = /\b\d{1,2}\s*[\/\-]\s*\d{1,2}(?:\s*[\/\-]\s*\d{2,4})?\b|\b\d{1,2}\s+de\s+\w+\b/i;
+const MESES_MAP = {enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,octubre:10,noviembre:11,diciembre:12};
 
 function parsearBloques(texto) {
     const jobs = [];
@@ -899,8 +900,8 @@ function parsearBloques(texto) {
 
         const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
 
-        // Fecha
-        const fechaM = primera.match(/(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);
+        // Fecha — numérica (tolera espacios: "21/ 07") o texto ("11 de junio")
+        const fechaM = primera.match(/(\d{1,2})\s*[\/\-]\s*(\d{1,2})(?:\s*[\/\-]\s*(\d{2,4}))?/);
         let fechaVal = '', fechaDis = '';
         if (fechaM) {
             const d = fechaM[1].padStart(2,'0');
@@ -909,6 +910,19 @@ function parsearBloques(texto) {
             if (y.length === 2) y = '20' + y;
             fechaVal = `${y}-${m}-${d}`;
             fechaDis = `${d}/${m}/${y}`;
+        } else {
+            const textoM = primera.match(/\b(\d{1,2})\s+de\s+(\w+)(?:\s+(?:del?\s+)?(\d{2,4}))?\b/i);
+            if (textoM) {
+                const mes = MESES_MAP[(textoM[2]||'').toLowerCase()];
+                if (mes) {
+                    const d = textoM[1].padStart(2,'0');
+                    const m = String(mes).padStart(2,'0');
+                    let y   = textoM[3] || '26';
+                    if (y.length === 2) y = '20' + y;
+                    fechaVal = `${y}-${m}-${d}`;
+                    fechaDis = `${d}/${m}/${y}`;
+                }
+            }
         }
 
         // Monto: suma todos los patrones XXX.000 en el bloque
