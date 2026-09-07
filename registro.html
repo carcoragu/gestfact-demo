@@ -1131,9 +1131,9 @@ function renderizarJobs() {
 
             <div class="job-f">
                 <div class="rev-label">Monto <span style="color:#f87171">*</span></div>
-                <input class="big-input rev-input" id="jmonto-${i}" type="number" inputmode="numeric"
+                <input class="big-input rev-input" id="jmonto-${i}" type="text" inputmode="numeric"
                        placeholder="100000" value="${j.monto}"
-                       oninput="parsedJobs[${i}].monto=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color');">
+                       oninput="parsedJobs[${i}].monto=this.value.replace(/\\D/g,''); this.value=parsedJobs[${i}].monto; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color');">
             </div>
 
             <div class="job-f">
@@ -1164,7 +1164,6 @@ function enviarBulk() {
     parsedJobs.forEach((j, i) => {
         j.chapa    = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
         j.fechaVal = document.getElementById(`jfecha-${i}`)?.value  || j.fechaVal;
-        j.monto    = (document.getElementById(`jmonto-${i}`)?.value || '').trim();
         j.servicio = (document.getElementById(`jserv-${i}`)?.value || j.servicio).trim();
         j.cliente  = (document.getElementById(`jcli-${i}`)?.value   || '').trim().toUpperCase();
     });
@@ -1182,8 +1181,11 @@ function enviarBulk() {
         return;
     }
 
-    // Validar montos vacíos — bloqueo duro
-    const sinMonto = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.monto || Number(j.monto) <= 0);
+    // Validar montos vacíos — bloqueo duro (lee DOM directo para evitar valores stale)
+    const sinMonto = parsedJobs.map((j,i) => {
+        const raw = (document.getElementById(`jmonto-${i}`)?.value || '').replace(/\D/g,'');
+        return { j, i, raw };
+    }).filter(({raw}) => !raw || parseInt(raw, 10) <= 0);
     if (sinMonto.length) {
         sinMonto.forEach(({i}) => {
             document.getElementById(`jmonto-${i}`)?.classList.add('error');
@@ -1191,9 +1193,12 @@ function enviarBulk() {
         });
         const chapas = sinMonto.map(({j}) => j.chapa || '?').join(', ');
         toast(`⚠️ Sin monto: ${chapas} — completá antes de enviar`);
-        document.getElementById(`jcard-${sinMonto[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        document.getElementById(`jcard-${sinMonto[0].i}`)?.scrollIntoView({behavior:'smooth', block:'center'});
         return;
     }
+    parsedJobs.forEach((j,i) => {
+        j.monto = (document.getElementById(`jmonto-${i}`)?.value || '').replace(/\D/g,'');
+    });
 
     // Validar fechas vacías — bloqueo duro
     const sinFecha = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.fechaVal);
