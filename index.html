@@ -930,13 +930,13 @@ function renderKPIs(){
   var dd=String(hoy.getDate()).padStart(2,'0');
   var mm=String(hoy.getMonth()+1).padStart(2,'0');
   var yyyy=hoy.getFullYear();
-  var fechaHoy=dd+'/'+mm+'/'+yyyy;
-  var mesActual=mm+'/'+yyyy;
+  var fechaHoy=yyyy+'-'+mm+'-'+dd;
+  var mesActual=yyyy+'-'+mm;
   var meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   var nomMes=meses[hoy.getMonth()];
 
-  var ordHoy=ordenes.filter(function(o){return o.fecha===fechaHoy;}).length;
-  var facturado=ordenes.filter(function(o){return(o.cobrado===true||o.cobrado==='true')&&o.fecha&&o.fecha.slice(3)===mesActual;}).reduce(function(s,o){return s+Number(o.monto||0);},0);
+  var ordHoy=ordenes.filter(function(o){return (o.fecha||'').substring(0,10)===fechaHoy;}).length;
+  var facturado=ordenes.filter(function(o){return(o.cobrado===true||o.cobrado==='true')&&o.fecha&&o.fecha.substring(0,7)===mesActual;}).reduce(function(s,o){return s+Number(o.monto||0);},0);
   var presPend=ordenes.filter(function(o){return o.estado==='presupuesto';}).length;
   var stockBajo=stockItems.filter(function(s){return Number(s.qty||0)<Number(s.min||0);}).length;
 
@@ -1181,7 +1181,8 @@ function guardarOrden(target){
   var km=kmEl?kmEl.value:'';
   var anio=anioEl?anioEl.value:'';
   var fechaInput=document.getElementById('ord-fecha');
-  var fecha=fechaInput&&fechaInput.value?fechaInput.value+'T12:00:00.000Z':new Date().toISOString();
+  var hoyISO=new Date();var _dy=hoyISO.getFullYear(),_dm=String(hoyISO.getMonth()+1).padStart(2,'0'),_dd=String(hoyISO.getDate()).padStart(2,'0');
+  var fecha=fechaInput&&fechaInput.value?fechaInput.value:_dy+'-'+_dm+'-'+_dd;
   var numPres='P-'+String(Date.now()).slice(-4);
   var servicioDesc=itemsData.map(function(it){return it.desc;}).filter(Boolean).join(' | ')||(desc?desc.value:'Servicio');
   var esEdicion=editandoOrden&&currentOrdenId;
@@ -1197,7 +1198,7 @@ function guardarOrden(target){
       ordenes[idx].items=JSON.stringify(itemsData);
       ordenes[idx].monto=total;
       var fechaInputEdit=document.getElementById('ord-fecha');
-      ordenes[idx].fecha=fechaInputEdit&&fechaInputEdit.value?fechaInputEdit.value+'T12:00:00.000Z':ordenes[idx].fecha;
+      ordenes[idx].fecha=fechaInputEdit&&fechaInputEdit.value?fechaInputEdit.value:ordenes[idx].fecha;
       apiFire({action:'saveOrden',data:ordenes[idx]});
     }
     editandoOrden=false;
@@ -1662,9 +1663,9 @@ function renderGestion(){
     var ep=o.estado_pres||'pendiente';
     if(filtroGestion!=='todos'&&ep!==filtroGestion)return false;
     if(desdeVal||hastaVal){
-      var d=new Date(o.fecha);
-      var dDesde=desdeVal?new Date(desdeVal):null;
-      var dHasta=hastaVal?new Date(hastaVal+'T23:59:59'):null;
+      var d=_parseFecha(o.fecha);
+      var dDesde=desdeVal?_parseFecha(desdeVal):null;
+      var dHasta=hastaVal?new Date(_parseFecha(hastaVal).getTime()+86399999):null;
       if(dDesde&&d<dDesde)return false;
       if(dHasta&&d>dHasta)return false;
     }
@@ -1946,24 +1947,27 @@ function toggleCobro(idx,cobrado){
 }
 
 function fmtGs(n){return String(Math.round(Number(n)||0)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function _parseFecha(f){
+  if(!f)return new Date();
+  var s=String(f);
+  if(s.indexOf('T')>=0)s=s.substring(0,10);
+  var p=s.split('-');
+  if(p.length===3&&p[0].length===4)return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
+  p=s.split('/');
+  if(p.length===3)return new Date(parseInt(p[2]),parseInt(p[1])-1,parseInt(p[0]));
+  return new Date(s);
+}
 function fmtFechaLarga(f){
-  var d=f?new Date(f):new Date();
+  var d=_parseFecha(f||'');
   if(isNaN(d.getTime()))d=new Date();
   var meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   return 'Asunción, '+d.getDate()+' de '+meses[d.getMonth()]+' de '+d.getFullYear();
 }
 function fmtFecha(f){
   if(!f)return '';
-  var d=new Date(f);
-  if(!isNaN(d.getTime())&&String(f).indexOf('T')>=0){
-    var dd=String(d.getDate()).padStart(2,'0');
-    var mm=String(d.getMonth()+1).padStart(2,'0');
-    var yyyy=d.getFullYear();
-    var hh=String(d.getHours()).padStart(2,'0');
-    var min=String(d.getMinutes()).padStart(2,'0');
-    return dd+'/'+mm+'/'+yyyy+' '+hh+':'+min;
-  }
-  return String(f);
+  var d=_parseFecha(f);
+  if(isNaN(d.getTime()))return String(f);
+  return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
 }
 function elegirEnvioPresupuesto(){
   var panel=document.getElementById('panel-envio-pres');
