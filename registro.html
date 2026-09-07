@@ -580,6 +580,11 @@ function chapaExiste(chapa) {
     return registrosGF.some(r => r.chapa === chapa);
 }
 
+function esPlanPremium() {
+    const p = localStorage.getItem('anotdigi_plan');
+    return p === 'completo' || p === 'full';
+}
+
 function addClienteToList(c) {
     if (!c) return;
     const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
@@ -1000,7 +1005,7 @@ function renderizarJobs() {
     c.innerHTML = parsedJobs.map((j, i) => {
         const dupe       = esDuplicado(j.chapa, j.fechaVal);
         const chapaVista = !dupe && chapaExiste(j.chapa);
-        const dupeHtml = dupe
+        const dupeHtml = (dupe && esPlanPremium())
             ? `<div style="font-size:0.75rem;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.4);">
                    🔴 Ya cargado en GestFact — no se enviará al WhatsApp
                </div>`
@@ -1009,7 +1014,7 @@ function renderizarJobs() {
                    ⚠️ Chapa ya vista en GestFact — verificá si es otro trabajo
                </div>`
             : '';
-        const cardBorder = dupe ? 'border:1.5px solid rgba(248,113,113,0.45);' : '';
+        const cardBorder = (dupe && esPlanPremium()) ? 'border:1.5px solid rgba(248,113,113,0.45);' : '';
         return `
         <div class="job-card" id="jcard-${i}" style="${cardBorder}">
             <div class="job-num">#${i+1} — ${j.chapa}</div>
@@ -1071,6 +1076,19 @@ function enviarBulk() {
         const n = sinChapa.length;
         toast(`⚠️ ${n > 1 ? n + ' trabajos sin' : 'Un trabajo sin'} chapa — completá antes de enviar`);
         document.getElementById(`jcard-${sinChapa[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    // Validar fechas vacías — bloqueo duro
+    const sinFecha = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.fechaVal);
+    if (sinFecha.length) {
+        sinFecha.forEach(({i}) => {
+            document.getElementById(`jfecha-${i}`)?.classList.add('error');
+            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
+        });
+        const chapas = sinFecha.map(({j}) => j.chapa || '?').join(', ');
+        toast(`⚠️ Sin fecha: ${chapas} — completá antes de enviar`);
+        document.getElementById(`jcard-${sinFecha[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
         return;
     }
 
