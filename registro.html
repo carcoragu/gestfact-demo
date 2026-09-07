@@ -1074,16 +1074,8 @@ function enviarBulk() {
         return;
     }
 
-    // Filtrar duplicados exactos — se omiten del envío WA
-    const jobsEnviar = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !esDuplicado(j.chapa, j.fechaVal));
-
-    if (!jobsEnviar.length) {
-        toast('⚠️ Todos los trabajos ya están cargados en GestFact — nada nuevo para enviar');
-        return;
-    }
-
-    // Validar clientes vacíos (solo de los jobs a enviar)
-    const sinCliente = jobsEnviar.filter(({j}) => !j.cliente);
+    // Validar clientes vacíos
+    const sinCliente = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.cliente);
     if (sinCliente.length) {
         sinCliente.forEach(({i}) => {
             document.getElementById(`jcli-${i}`).classList.add('error');
@@ -1108,18 +1100,8 @@ function enviarBulk() {
     }
     montoAvisadoBulk = false;
 
-    // Construir texto con solo los trabajos nuevos (no duplicados exactos)
-    const textoFiltrado = jobsEnviar.map(({j}) => {
-        const fDis = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
-        let bloque = j.chapa + (fDis ? ` ${fDis}` : '');
-        if (j.servicio) bloque += `\n${j.servicio}`;
-        if (j.monto)    bloque += `\n${Number(j.monto).toLocaleString('es-PY')} Gs.`;
-        return bloque;
-    }).join('\n\n');
-
-    const omitidos = parsedJobs.length - jobsEnviar.length;
-    const notaOmitidos = omitidos ? ` (${omitidos} ya cargado${omitidos > 1 ? 's' : ''} omitido${omitidos > 1 ? 's' : ''})` : '';
-    const texto = `${cliente} — ${jobsEnviar.length} trabajo${jobsEnviar.length !== 1 ? 's' : ''}${notaOmitidos}\n\n${textoFiltrado}`;
+    // Enviar todo — nuevos y existentes — el control de duplicados lo hace Carlos con Claude
+    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
