@@ -414,20 +414,20 @@
             <div class="info-step-num">3</div>
             <div class="info-step-body">
                 <div class="info-step-title">Tocás Enviar</div>
-                <div class="info-step-desc">La lista va directo a Carlos por WhatsApp.</div>
+                <div class="info-step-desc">La lista va directo a IsabSoft por WhatsApp.</div>
             </div>
         </div>
 
         <div class="info-step">
             <div class="info-step-num">4</div>
             <div class="info-step-body">
-                <div class="info-step-title">Carlos carga en GestFact</div>
+                <div class="info-step-title">IsabSoft carga en GestFact</div>
                 <div class="info-step-desc">Cada trabajo queda registrado con chapa, fecha, servicio y monto. Vos no hacés nada más.</div>
             </div>
         </div>
 
         <div class="info-nota">
-            <strong>Carga Asistida</strong> — Con el Plan Básico, Carlos revisa tu lista, controla que no se repitan trabajos ya cargados, y registra los nuevos en GestFact. Vos solo anotás.
+            <strong>Carga Asistida</strong> — Con el Plan Básico, IsabSoft revisa tu lista, controla que no se repitan trabajos ya cargados, y registra los nuevos en GestFact. Vos solo anotás.
         </div>
 
         <button class="btn-back" style="margin-top:24px;width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
@@ -1232,7 +1232,7 @@ function enviarBulk() {
     const cliente       = document.getElementById('bulkCliente').value.trim().toUpperCase();
     const textoOriginal = document.getElementById('bulkInput').value.trim();
 
-    // Enviar todo — nuevos y existentes — el control de duplicados lo hace Carlos con Claude
+    // Enviar todo — nuevos y existentes — el control de duplicados lo hace IsabSoft con Claude
     const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
@@ -1246,23 +1246,23 @@ const PROMO_DIAS = 90;
 const PLANES_DATA = [
     {
         id: 'sesion', nombre: 'Sesión', precio: '80.000', tipo: 'pago único', popular: false,
-        desc: 'Carlos carga y organiza todo en GestFact una sola vez.',
+        desc: 'IsabSoft carga y organiza todo en GestFact una sola vez.',
         features: ['1 sesión de carga completa', 'AnotDigi incluido', 'Sin mensualidad']
     },
     {
         id: 'basico', nombre: 'Básico', precio: '50.000', tipo: '/mes', popular: false,
-        desc: 'Registrá con AnotDigi, Carlos carga todo en GestFact por vos.',
-        features: ['AnotDigi sin límite de registros', 'Carlos carga en GestFact', 'Reporte mensual']
+        desc: 'Registrá con AnotDigi, IsabSoft carga todo en GestFact por vos.',
+        features: ['AnotDigi sin límite de registros', 'IsabSoft carga en GestFact', 'Reporte mensual']
     },
     {
         id: 'completo', nombre: 'Completo', precio: '100.000', tipo: '/mes', popular: true,
         desc: 'Básico más presupuestos ilimitados y control total.',
-        features: ['AnotDigi sin límite', 'Presupuestos ilimitados', 'Carlos controla todo', 'Soporte prioritario']
+        features: ['AnotDigi sin límite', 'Presupuestos ilimitados', 'IsabSoft controla todo', 'Soporte prioritario']
     },
     {
         id: 'full', nombre: 'Full', precio: '150.000', tipo: '/mes', popular: false,
-        desc: 'AnotDigi conectado directo a GestFact. Carlos monitorea todo.',
-        features: ['AnotDigi → GestFact directo', 'Sin límite de nada', 'Carlos controla 24/7', 'Reportes automáticos']
+        desc: 'AnotDigi conectado directo a GestFact. IsabSoft monitorea todo.',
+        features: ['AnotDigi → GestFact directo', 'Sin límite de nada', 'IsabSoft controla 24/7', 'Reportes automáticos']
     }
 ];
 
@@ -1357,7 +1357,7 @@ function renderizarPlanes(puedeVolver) {
 }
 
 function contactarPlan(nombre, precio, tipo) {
-    const msg = `Hola Carlos! Quiero activar AnotDigi *Plan ${nombre}* (Gs. ${precio}${tipo}). ¿Cómo procedo?`;
+    const msg = `Hola IsabSoft! Quiero activar AnotDigi *Plan ${nombre}* (Gs. ${precio}${tipo}). ¿Cómo procedo?`;
     window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
