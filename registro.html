@@ -561,6 +561,8 @@ async function fetchClientesSheet() {
                 if (chapa && fecha) registrosGF.push({ chapa, fecha });
             }
         });
+        console.log(`[AnotDigi] registrosGF cargados: ${registrosGF.length} registros`);
+        if (registrosGF.length) console.log('[AnotDigi] primero:', registrosGF[0], '| último:', registrosGF[registrosGF.length-1]);
         loadClientes([...clientes]);
     } catch(e) {
         loadClientes(); // fallback a localStorage
@@ -865,6 +867,11 @@ function mostrarScreen(id) {
 }
 
 // ─── Parser ───
+// Detecta chapa en cualquier posición de la línea (para "Changan byb072 ...")
+const CHAPA_INLINE_RE = /\b([A-Z]{2,5})\s?([A-Z]?\s?\d{3})\b/gi;
+// Detecta fecha numérica "DD/MM/YY" o texto "11 de junio"
+const FECHA_EN_LINEA_RE = /\b\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?\b|\b\d{1,2}\s+de\s+\w+\b/i;
+
 function parsearBloques(texto) {
     const jobs = [];
     const lineas = texto.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
@@ -876,8 +883,19 @@ function parsearBloques(texto) {
         if (!b.length) return;
 
         const primera = b[0];
-        const chapaM  = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
-        if (!chapaM || NO_CHAPA_RE.test(chapaM[1].trim())) return;
+
+        // Buscar chapa al inicio primero; si no, buscar en toda la línea cuando hay fecha
+        let chapaM = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{3})\b/i);
+        if (!chapaM || NO_CHAPA_RE.test(chapaM[1].trim())) {
+            if (FECHA_EN_LINEA_RE.test(primera)) {
+                CHAPA_INLINE_RE.lastIndex = 0;
+                let m;
+                while ((m = CHAPA_INLINE_RE.exec(primera)) !== null) {
+                    if (!NO_CHAPA_RE.test(m[1].trim())) { chapaM = m; break; }
+                }
+            }
+            if (!chapaM || NO_CHAPA_RE.test((chapaM[1]||'').trim())) return;
+        }
 
         const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
 
@@ -912,7 +930,16 @@ function parsearBloques(texto) {
 
     lineas.forEach(linea => {
         const t = linea.trim();
-        if (/^[A-Z]{2,5}\s?[A-Z]?\s?\d{2,4}/i.test(t) && bloque.length) {
+        const comienzaConChapa = /^[A-Z]{2,5}\s?[A-Z]?\s?\d{3}\b/i.test(t);
+        const tieneChapaYFecha = !comienzaConChapa && FECHA_EN_LINEA_RE.test(t) && (() => {
+            CHAPA_INLINE_RE.lastIndex = 0;
+            let m;
+            while ((m = CHAPA_INLINE_RE.exec(t)) !== null) {
+                if (!NO_CHAPA_RE.test(m[1].trim())) return true;
+            }
+            return false;
+        })();
+        if ((comienzaConChapa || tieneChapaYFecha) && bloque.length) {
             procesarBloque(bloque);
             bloque = [t];
         } else {
@@ -1019,6 +1046,19 @@ function enviarBulk() {
         const n = sinChapa.length;
         toast(`⚠️ ${n > 1 ? n + ' trabajos sin' : 'Un trabajo sin'} chapa — completá antes de enviar`);
         document.getElementById(`jcard-${sinChapa[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    // Validar fechas vacías — bloqueo duro
+    const sinFecha = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.fechaVal);
+    if (sinFecha.length) {
+        sinFecha.forEach(({i}) => {
+            document.getElementById(`jfecha-${i}`)?.classList.add('error');
+            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
+        });
+        const chapas = sinFecha.map(({j}) => j.chapa || '?').join(', ');
+        toast(`⚠️ Sin fecha: ${chapas} — completá antes de enviar`);
+        document.getElementById(`jcard-${sinFecha[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
         return;
     }
 
