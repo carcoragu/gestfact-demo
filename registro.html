@@ -443,7 +443,12 @@
 
     </div>
 
-    <button class="btn-next" style="margin-top:22px;" onclick="enviarIsabSoft()">💬 Enviar a IsabSoft</button>
+    <div id="dupeWarnWizard" style="display:none;width:100%;margin-top:16px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.5);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:#fbbf24;line-height:1.5;">
+        ⚠️ Esta chapa ya tiene un registro en GestFact para esta fecha.<br>
+        <span style="color:rgba(255,255,255,0.5);">Si es otro trabajo, podés enviar igual.</span>
+    </div>
+
+    <button class="btn-next" style="margin-top:14px;" onclick="enviarIsabSoft()">💬 Enviar a IsabSoft</button>
     <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo registro</button>
 </div>
 
@@ -523,23 +528,44 @@ function loadClientes(extra = []) {
         todos.map(c => `<option value="${c}">`).join('');
 }
 
+let registrosGF = []; // {chapa, fecha YYYY-MM-DD} para detección de duplicados
+
+function normalizarFecha(f) {
+    if (!f) return '';
+    if (f.includes('T')) f = f.split('T')[0];          // ISO full → YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(f)) return f;
+    const m = f.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+    return '';
+}
+
 async function fetchClientesSheet() {
     try {
         const res = await fetch(GF_API + '?action=syncExportOrdenes');
         const csv = await res.text();
         const lineas = csv.split('\n').filter(l => l.trim());
         const clientes = new Set();
+        registrosGF = [];
         lineas.slice(1).forEach(l => {
             const cols = l.split(',');
-            if (cols.length >= 2) {
+            if (cols.length >= 5) {
                 const c = cols[1].trim().toUpperCase();
                 if (c) clientes.add(c);
+                const chapa = cols[3].trim().toUpperCase().replace(/\s/g, '');
+                const fecha = normalizarFecha(cols[4].trim());
+                if (chapa && fecha) registrosGF.push({ chapa, fecha });
             }
         });
         loadClientes([...clientes]);
     } catch(e) {
         loadClientes(); // fallback a localStorage
     }
+}
+
+function esDuplicado(chapa, fechaISO) {
+    if (!chapa || !fechaISO || !registrosGF.length) return false;
+    const f = normalizarFecha(fechaISO);
+    return registrosGF.some(r => r.chapa === chapa && r.fecha === f);
 }
 
 function addClienteToList(c) {
@@ -702,6 +728,14 @@ function armarResumen() {
     document.getElementById('rev-chapa').value    = datos.chapa.toUpperCase();
     document.getElementById('rev-fecha').value    = datos.fecha;
     document.getElementById('rev-servicio').value = datos.servicio;
+    actualizarDupeWarnWizard();
+}
+
+function actualizarDupeWarnWizard() {
+    const chapa = document.getElementById('rev-chapa').value.trim().toUpperCase();
+    const fecha = document.getElementById('rev-fecha').value;
+    const w = document.getElementById('dupeWarnWizard');
+    if (w) w.style.display = esDuplicado(chapa, fecha) ? 'block' : 'none';
 }
 
 // ─── Detección de monto en texto libre ───
@@ -744,10 +778,12 @@ function enviarIsabSoft() {
     window.open(url, '_blank');
 }
 
-// Reset flag si corrige el texto
+// Reset flag y re-check duplicado si corrige campos en revisión
 document.getElementById('rev-servicio').addEventListener('input', function() {
     montoAvisadoWizard = false;
 });
+document.getElementById('rev-chapa').addEventListener('input', actualizarDupeWarnWizard);
+document.getElementById('rev-fecha').addEventListener('change', actualizarDupeWarnWizard);
 document.getElementById('bulkInput').addEventListener('input', function() {
     montoAvisadoBulk = false;
 });
@@ -871,9 +907,17 @@ function procesarBulk() {
 
 function renderizarJobs() {
     const c = document.getElementById('jobsContainer');
-    c.innerHTML = parsedJobs.map((j, i) => `
+    c.innerHTML = parsedJobs.map((j, i) => {
+        const dupe = esDuplicado(j.chapa, j.fechaVal);
+        const dupeHtml = dupe
+            ? `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
+                   ⚠️ Ya existe en GestFact — verificá si es otro trabajo
+               </div>`
+            : '';
+        return `
         <div class="job-card" id="jcard-${i}">
             <div class="job-num">#${i+1} — ${j.chapa}</div>
+            ${dupeHtml}
 
             <div class="job-f">
                 <div class="rev-label">Chapa</div>
@@ -907,7 +951,8 @@ function renderizarJobs() {
                 </div>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // ─── Enviar bulk ───
