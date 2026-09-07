@@ -561,14 +561,9 @@ async function fetchClientesSheet() {
                 if (chapa && fecha) registrosGF.push({ chapa, fecha });
             }
         });
-        console.log(`[AnotDigi] registrosGF cargados: ${registrosGF.length} registros`);
-        if (registrosGF.length) {
-            console.log('[AnotDigi] primero:', JSON.stringify(registrosGF[0]));
-            console.log('[AnotDigi] último:', JSON.stringify(registrosGF[registrosGF.length-1]));
-            const aavy = registrosGF.filter(r => r.chapa === 'AAVY299');
-            console.log('[AnotDigi] AAVY299 en registrosGF:', JSON.stringify(aavy));
-        }
         loadClientes([...clientes]);
+        // Si ya hay tarjetas renderizadas, actualizarlas con los duplicados recién cargados
+        if (parsedJobs.length) renderizarJobs();
     } catch(e) {
         loadClientes(); // fallback a localStorage
     }
