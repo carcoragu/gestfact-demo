@@ -704,7 +704,14 @@ function armarResumen() {
     document.getElementById('rev-servicio').value = datos.servicio;
 }
 
+// ─── Detección de monto en texto libre ───
+function tieneMonto(texto) {
+    return /\b\d{1,3}\.\d{3}\b|\b\d{5,}\b/.test(texto);
+}
+
 // ─── Envío — copia fiel del texto de Miguel ───
+let montoAvisadoWizard = false;
+
 function enviarIsabSoft() {
     const chapa    = document.getElementById('rev-chapa').value.trim().toUpperCase();
     const fecha    = document.getElementById('rev-fecha').value;
@@ -722,14 +729,28 @@ function enviarIsabSoft() {
     if (!fecha)    { toast('⚠️ La fecha está vacía'); return; }
     if (!servicio) { toast('⚠️ El trabajo está vacío'); return; }
 
+    if (!tieneMonto(servicio) && !montoAvisadoWizard) {
+        montoAvisadoWizard = true;
+        document.getElementById('rev-servicio').classList.add('error');
+        setTimeout(() => document.getElementById('rev-servicio').classList.remove('error'), 1500);
+        toast('⚠️ No se detectó monto — tocá Enviar de nuevo para confirmar');
+        return;
+    }
+    montoAvisadoWizard = false;
+
     const [y, m, d] = fecha.split('-');
-
-    // Formato copia fiel: encabezado compacto + texto de Miguel verbatim
     const texto = `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
-
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
+
+// Reset flag si corrige el texto
+document.getElementById('rev-servicio').addEventListener('input', function() {
+    montoAvisadoWizard = false;
+});
+document.getElementById('bulkInput').addEventListener('input', function() {
+    montoAvisadoBulk = false;
+});
 
 function activarMicBulk(i) {
     activarMic(`jcli-${i}`, `jmic-${i}`, null, function(texto) {
@@ -745,7 +766,8 @@ function activarMicBulk(i) {
 //  MODO BULK — pegar lista
 // ══════════════════════════════════════════
 
-let parsedJobs = [];
+let parsedJobs      = [];
+let montoAvisadoBulk = false;
 
 function irWizard() {
     if (!promoActivo()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
@@ -914,9 +936,17 @@ function enviarBulk() {
     // Guardar clientes nuevos
     parsedJobs.forEach(j => addClienteToList(j.cliente));
 
-    // Generar mensaje: copia fiel del texto original + encabezado cliente
-    const cliente      = document.getElementById('bulkCliente').value.trim().toUpperCase();
+    const cliente       = document.getElementById('bulkCliente').value.trim().toUpperCase();
     const textoOriginal = document.getElementById('bulkInput').value.trim();
+
+    if (!tieneMonto(textoOriginal) && !montoAvisadoBulk) {
+        montoAvisadoBulk = true;
+        toast('⚠️ No se detectó monto en la lista — tocá Enviar de nuevo para confirmar');
+        return;
+    }
+    montoAvisadoBulk = false;
+
+    // Generar mensaje: copia fiel del texto original + encabezado cliente
     const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
