@@ -1064,7 +1064,8 @@ function parsearBloques(texto) {
 
     lineas.forEach(linea => {
         const t = linea.trim();
-        const comienzaConChapa = /^[A-Z]{2,5}\s?[A-Z]?\s?\d{3}\b/i.test(t);
+        const _cm = t.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{3})\b/i);
+        const comienzaConChapa = !!(_cm && !NO_CHAPA_RE.test(_cm[1].trim()));
         const tieneChapaYFecha = !comienzaConChapa && FECHA_EN_LINEA_RE.test(t) && (() => {
             CHAPA_INLINE_RE.lastIndex = 0;
             let m;
