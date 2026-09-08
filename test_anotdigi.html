@@ -36,7 +36,16 @@ h1 { font-size: 1.2rem; color: #4ade80; margin-bottom: 4px; }
 // FUNCIONES COPIADAS DE registro.html
 // ═══════════════════════════════════════════
 
-const NO_CHAPA_RE = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+const NO_CHAPA_RE   = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+const MARCAS_VEH_RE = /^(toyota|ford|honda|nissan|chevrolet|changan|fiat|volkswagen|vw|renault|peugeot|citroen|hyundai|kia|mercedes|bmw|audi|suzuki|mitsubishi|subaru|jeep|dodge|ram|gmc|mazda|lifan|geely|byd|jac|mg|haval|chery)\b/i;
+
+function extraerVehiculoDeServicio(servicio) {
+    for (const linea of (servicio || '').split('\n')) {
+        const l = linea.trim();
+        if (l && MARCAS_VEH_RE.test(l)) return l;
+    }
+    return '';
+}
 
 const CHAPA_INLINE_RE = /\b([A-Z]{2,5})\s?([A-Z]?\s?\d{3})\b/gi;
 const FECHA_EN_LINEA_RE = /\b\d{1,2}\s*[\/\-]\s*\d{1,2}(?:\s*[\/\-]\s*\d{2,4})?\b|\b\d{1,2}\s+de\s+\w+\b/i;
@@ -404,6 +413,48 @@ Mano de obra 290.000`);
     t(s,'4) Sin marca/modelo → monto 290000','', c4[0]?.monto==='290000', `got="${c4[0]?.monto}"`);
     t(s,'4) Sin marca/modelo → sinMarca detectado — bloquea envío','', validar(c4).sinMarca.length===1, `sinMarca=${validar(c4).sinMarca.length}`);
     t(s,'4) Sin marca/modelo → chapa/fecha/monto OK (solo marca bloquea)','', validar(c4).sinChapa.length===0 && validar(c4).sinFecha.length===0 && validar(c4).sinMonto.length===0, 'hay otros bloqueos inesperados');
+});
+
+// ─── SUITE 11: Prueba funcional — Miguel usa AnotDigi paso a paso ───
+suite('Prueba funcional — Miguel no carga bien los datos', s => {
+
+    // PASO 1: Solo chapa y fecha, nada más
+    const p1 = parsearBloques(`AASL205 31/07/26\n290.000`);
+    const v1 = validar(p1);
+    t(s,'Paso 1 — Chapa detectada','AASL205', p1[0]?.chapa==='AASL205', `got="${p1[0]?.chapa}"`);
+    t(s,'Paso 1 — Sin vehículo → sinMarca BLOQUEA','', v1.sinMarca.length===1, `sinMarca=${v1.sinMarca.length}`);
+    t(s,'Paso 1 — Sin trabajo → sinServicio BLOQUEA','', v1.sinServicio.length===1, `sinServicio=${v1.sinServicio.length}`);
+
+    // PASO 2: Chapa + fecha + trabajo, sin vehículo
+    const p2 = parsearBloques(`AASL205 31/07/26\nAmortiguadores trasero 2\nTorreta 2\nMano de obra 290.000`);
+    const v2 = validar(p2);
+    t(s,'Paso 2 — Sin vehículo → sinMarca BLOQUEA','', v2.sinMarca.length===1, `sinMarca=${v2.sinMarca.length}`);
+    t(s,'Paso 2 — Trabajo y monto presentes → no bloquean','', v2.sinServicio.length===0 && v2.sinMonto.length===0, `serv=${v2.sinServicio.length} monto=${v2.sinMonto.length}`);
+
+    // PASO 3: Todo completo — PASA
+    const p3 = parsearBloques(`AASL205 toyota vitz 31/07/26\nAmortiguadores trasero 2\nTorreta 2\nMano de obra 290.000`);
+    const v3 = validar(p3);
+    t(s,'Paso 3 — Todo completo → cero bloqueos','', v3.sinChapa.length===0&&v3.sinFecha.length===0&&v3.sinServicio.length===0&&v3.sinMarca.length===0&&v3.sinMonto.length===0, 'tiene bloqueos');
+    t(s,'Paso 3 — Vehículo "toyota vitz" extraído','', p3[0]?.marcaModelo==='toyota vitz', `got="${p3[0]?.marcaModelo}"`);
+    t(s,'Paso 3 — Fecha 2026-07-31','', p3[0]?.fechaVal==='2026-07-31', `got="${p3[0]?.fechaVal}"`);
+    t(s,'Paso 3 — Monto 290000','', p3[0]?.monto==='290000', `got="${p3[0]?.monto}"`);
+
+    // PASO 4: Con vehículo pero sin monto
+    const p4 = parsearBloques(`AASL205 toyota vitz 31/07/26\nAmortiguadores trasero 2\nTorreta 2\nMano de obra`);
+    const v4 = validar(p4);
+    t(s,'Paso 4 — Sin monto → sinMonto BLOQUEA','', v4.sinMonto.length===1, `sinMonto=${v4.sinMonto.length}`);
+    t(s,'Paso 4 — Vehículo/chapa/fecha/trabajo OK','', v4.sinChapa.length===0&&v4.sinFecha.length===0&&v4.sinMarca.length===0&&v4.sinServicio.length===0, 'hay otros bloqueos');
+
+    // PASO 5: Con vehículo y fecha pero solo pone el monto (sin descripción de trabajo)
+    const p5 = parsearBloques(`AASL205 toyota vitz 31/07/26\n290.000`);
+    const v5 = validar(p5);
+    t(s,'Paso 5 — Solo monto, sin trabajo → sinServicio BLOQUEA','', v5.sinServicio.length===1, `sinServicio=${v5.sinServicio.length}`);
+    t(s,'Paso 5 — Monto capturado igual → no bloquea monto','', v5.sinMonto.length===0, `sinMonto=${v5.sinMonto.length}`);
+
+    // PASO 6: Auto-detección de vehículo en modo uno-a-uno
+    t(s,'Paso 6 — "toyota vitz" detectado como vehículo','', extraerVehiculoDeServicio('toyota vitz\nMano de obra 290.000')==='toyota vitz', `got="${extraerVehiculoDeServicio('toyota vitz\nMano de obra 290.000')}"`);
+    t(s,'Paso 6 — "Amortiguadores" NO es vehículo','', extraerVehiculoDeServicio('Amortiguadores trasero 2\nMano de obra 290.000')==='', `got="${extraerVehiculoDeServicio('Amortiguadores trasero 2\nMano de obra 290.000')}"`);
+    t(s,'Paso 6 — "changan byb072" detectado como vehículo','', extraerVehiculoDeServicio('changan byb072\nCambio aceite 50.000')==='changan byb072', `got="${extraerVehiculoDeServicio('changan byb072\nCambio aceite 50.000')}"`);
 });
 
 // ═══════════════════════════════════════════
