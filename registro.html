@@ -1022,7 +1022,7 @@ function parsearBloques(texto) {
 
         // Fecha — numérica (tolera espacios: "21/ 07") o texto ("11 de junio")
         const fechaM = primera.match(/(\d{1,2})\s*[\/\-]\s*(\d{1,2})(?:\s*[\/\-]\s*(\d{2,4}))?/);
-        let fechaVal = '', fechaDis = '';
+        let fechaVal = '', fechaDis = '', textoM = null;
         if (fechaM) {
             const d = fechaM[1].padStart(2,'0');
             const m = fechaM[2].padStart(2,'0');
@@ -1031,7 +1031,7 @@ function parsearBloques(texto) {
             fechaVal = `${y}-${m}-${d}`;
             fechaDis = `${d}/${m}/${y}`;
         } else {
-            const textoM = primera.match(/\b(\d{1,2})\s+de\s+(\w+)(?:\s+(?:del?\s+)?(\d{2,4}))?\b/i);
+            textoM = primera.match(/\b(\d{1,2})\s+de\s+(\w+)(?:\s+(?:del?\s+)?(\d{2,4}))?\b/i);
             if (textoM) {
                 const mes = MESES_MAP[(textoM[2]||'').toLowerCase()];
                 if (mes) {
@@ -1059,7 +1059,13 @@ function parsearBloques(texto) {
             .filter(l => l && !notas.test(l))
             .join(' / ');
 
-        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', cliente: '' });
+        // Marca/Modelo: primera línea sin chapa, sin fecha, sin notas
+        let marcaRaw = primera.slice(0, chapaM.index || 0) + primera.slice((chapaM.index || 0) + chapaM[0].length);
+        if (fechaM) marcaRaw = marcaRaw.replace(fechaM[0], ' ');
+        else if (textoM) marcaRaw = marcaRaw.replace(textoM[0], ' ');
+        const marcaModelo = marcaRaw.replace(/\b(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca|falta|cargado)\b/gi, '').replace(/\s+/g,' ').trim();
+
+        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', marcaModelo, cliente: '' });
     }
 
     lineas.forEach(linea => {
@@ -1145,6 +1151,14 @@ function renderizarJobs() {
             </div>
 
             <div class="job-f">
+                <div class="rev-label">Marca/Modelo <span style="color:#f87171">*</span></div>
+                <input class="big-input rev-input" id="jmarca-${i}" type="text"
+                       placeholder="toyota vitz" value="${j.marcaModelo || ''}"
+                       autocorrect="off" autocapitalize="words" spellcheck="false"
+                       oninput="parsedJobs[${i}].marcaModelo=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color');">
+            </div>
+
+            <div class="job-f">
                 <div class="rev-label">Monto <span style="color:#f87171">*</span></div>
                 <input class="big-input rev-input" id="jmonto-${i}" type="text" inputmode="numeric"
                        placeholder="100000" value="${j.monto}"
@@ -1178,10 +1192,11 @@ function renderizarJobs() {
 function enviarBulk() {
     // Leer valores actuales de todos los inputs
     parsedJobs.forEach((j, i) => {
-        j.chapa    = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
-        j.fechaVal = document.getElementById(`jfecha-${i}`)?.value  || j.fechaVal;
-        j.servicio = (document.getElementById(`jserv-${i}`)?.value || j.servicio).trim();
-        j.cliente  = (document.getElementById(`jcli-${i}`)?.value   || '').trim().toUpperCase();
+        j.chapa       = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
+        j.fechaVal    = document.getElementById(`jfecha-${i}`)?.value  || j.fechaVal;
+        j.marcaModelo = (document.getElementById(`jmarca-${i}`)?.value || '').trim();
+        j.servicio    = (document.getElementById(`jserv-${i}`)?.value || j.servicio).trim();
+        j.cliente     = (document.getElementById(`jcli-${i}`)?.value   || '').trim().toUpperCase();
     });
 
     // Validar chapas vacías — bloqueo duro
@@ -1229,6 +1244,19 @@ function enviarBulk() {
         return;
     }
 
+    // Validar marca/modelo — bloqueo duro
+    const sinMarca = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.marcaModelo || !j.marcaModelo.trim());
+    if (sinMarca.length) {
+        sinMarca.forEach(({i}) => {
+            document.getElementById(`jmarca-${i}`)?.classList.add('error');
+            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
+        });
+        const chapas = sinMarca.map(({j}) => j.chapa || '?').join(', ');
+        toast(`⚠️ Sin marca/modelo: ${chapas} — completá antes de enviar`);
+        document.getElementById(`jcard-${sinMarca[0].i}`)?.scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
     // Validar chapa mismatch — bloqueo duro
     const conMismatch = parsedJobs.map((j,i) => {
         const chapa      = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
@@ -1267,8 +1295,9 @@ function enviarBulk() {
 
     // Construir mensaje desde parsedJobs para incluir montos y campos editados manualmente
     const cuerpo = parsedJobs.map(j => {
-        const fDis = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
-        let bloque = j.chapa + (fDis ? ` ${fDis}` : '');
+        const fDis  = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
+        const marca = j.marcaModelo ? ` ${j.marcaModelo}` : '';
+        let bloque  = j.chapa + marca + (fDis ? ` — ${fDis}` : '');
         if (j.servicio) bloque += `\n${j.servicio}`;
         if (j.monto)    bloque += `\nGs. ${Number(j.monto).toLocaleString('es-PY')}`;
         return bloque;

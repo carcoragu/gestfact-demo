@@ -72,13 +72,13 @@ function parsearBloques(texto) {
         }
         const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g,'');
         const fechaM = primera.match(/(\d{1,2})\s*[\/\-]\s*(\d{1,2})(?:\s*[\/\-]\s*(\d{2,4}))?/);
-        let fechaVal = '', fechaDis = '';
+        let fechaVal = '', fechaDis = '', textoM = null;
         if (fechaM) {
             const d = fechaM[1].padStart(2,'0'), mo = fechaM[2].padStart(2,'0');
             let y = fechaM[3] || '26'; if (y.length===2) y='20'+y;
             fechaVal = `${y}-${mo}-${d}`; fechaDis = `${d}/${mo}/${y}`;
         } else {
-            const textoM = primera.match(/\b(\d{1,2})\s+de\s+(\w+)(?:\s+(?:del?\s+)?(\d{2,4}))?\b/i);
+            textoM = primera.match(/\b(\d{1,2})\s+de\s+(\w+)(?:\s+(?:del?\s+)?(\d{2,4}))?\b/i);
             if (textoM) {
                 const mes = MESES_MAP[(textoM[2]||'').toLowerCase()];
                 if (mes) {
@@ -95,7 +95,13 @@ function parsearBloques(texto) {
         });
         const notas = /falta cargar|hasta ac[aá] cargado|hasta aca|falta|cargado/i;
         const serv = b.slice(1).map(l=>l.trim()).filter(l=>l&&!notas.test(l)).join(' / ');
-        jobs.push({ chapa, fechaVal, fechaDis, monto: montoTotal>0?String(montoTotal):'', servicio: serv });
+        // Marca/Modelo: primera línea sin chapa, sin fecha, sin notas
+        let marcaRaw = primera.slice(0, chapaM.index || 0) + primera.slice((chapaM.index || 0) + chapaM[0].length);
+        if (fechaM) marcaRaw = marcaRaw.replace(fechaM[0], ' ');
+        else if (textoM) marcaRaw = marcaRaw.replace(textoM[0], ' ');
+        const marcaModelo = marcaRaw.replace(/\b(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca|falta|cargado)\b/gi, '').replace(/\s+/g,' ').trim();
+
+        jobs.push({ chapa, fechaVal, fechaDis, monto: montoTotal>0?String(montoTotal):'', servicio: serv, marcaModelo });
     }
 
     lineas.forEach(linea => {
@@ -120,11 +126,12 @@ function validar(jobs) {
     const sinChapa  = jobs.filter(j => !j.chapa);
     const sinMonto  = jobs.filter(j => !j.monto || parseInt(j.monto) <= 0);
     const sinFecha  = jobs.filter(j => !j.fechaVal);
+    const sinMarca  = jobs.filter(j => !j.marcaModelo || !j.marcaModelo.trim());
     const mismatch  = jobs.filter(j => {
         const ct = extraerChapaDeTexto(j.servicio);
         return ct && ct !== j.chapa;
     });
-    return { sinChapa, sinMonto, sinFecha, mismatch };
+    return { sinChapa, sinMonto, sinFecha, sinMarca, mismatch };
 }
 
 // ═══════════════════════════════════════════
@@ -288,6 +295,9 @@ Mano de obra 50.000 para anibal.`;
     const jobs = parsearBloques(lista);
     t(s,'Total: 13 cards','', jobs.length===13, `got=${jobs.length}`);
     t(s,'#1 AASL204 — monto 290000','', jobs[0]?.chapa==='AASL204'&&jobs[0]?.monto==='290000', `chapa=${jobs[0]?.chapa} monto=${jobs[0]?.monto}`);
+    t(s,'#1 AASL204 — marcaModelo "toyota vitz"','', jobs[0]?.marcaModelo==='toyota vitz', `got="${jobs[0]?.marcaModelo}"`);
+    t(s,'#5 AAZX033 — marcaModelo "toyota ractis"','', jobs[4]?.marcaModelo==='toyota ractis', `got="${jobs[4]?.marcaModelo}"`);
+    t(s,'Todos los 13 tienen marcaModelo','', jobs.every(j=>j.marcaModelo && j.marcaModelo.trim()), `vacios: ${jobs.filter(j=>!j.marcaModelo).map(j=>j.chapa).join(',')}`);
     t(s,'#5 AAZX033 — monto 480000 (180k+300k)','', jobs[4]?.monto==='480000', `got=${jobs[4]?.monto}`);
     t(s,'#7 AARO223 — año 2025 detectado','', jobs[6]?.fechaVal==='2025-08-17', `got=${jobs[6]?.fechaVal}`);
     t(s,'#9 AANP018 — monto 270000 (Mano 270.000)','', jobs[8]?.monto==='270000', `got=${jobs[8]?.monto}`);
@@ -318,6 +328,12 @@ suite('Validaciones — bloqueos', s => {
 
     const noMis = [{chapa:'AAZX033',fechaVal:'2026-08-17',monto:'100000',servicio:'Cambio de aceite / Pastillas'}];
     t(s,'Servicio sin chapa → sin mismatch','', validar(noMis).mismatch.length===0, 'detectó mismatch incorrecto');
+
+    const sinMar = [{chapa:'AAZX033',fechaVal:'2026-08-17',monto:'480000',marcaModelo:'',servicio:'Aceite'}];
+    t(s,'Sin marca/modelo → sinMarca detectado','', validar(sinMar).sinMarca.length===1, 'no detectó');
+
+    const conMar = [{chapa:'AAZX033',fechaVal:'2026-08-17',monto:'480000',marcaModelo:'toyota ractis',servicio:'Aceite'}];
+    t(s,'Con marca/modelo → sin bloqueo sinMarca','', validar(conMar).sinMarca.length===0, 'detectó error incorrecto');
 });
 
 // ─── SUITE 9: Validaciones — monto cero ───
@@ -370,7 +386,8 @@ Mano de obra 290.000`);
     t(s,'4) Sin marca/modelo → chapa correcta','', c4[0]?.chapa==='AASL204', `got="${c4[0]?.chapa}"`);
     t(s,'4) Sin marca/modelo → fecha correcta','', c4[0]?.fechaVal==='2026-07-31', `got="${c4[0]?.fechaVal}"`);
     t(s,'4) Sin marca/modelo → monto 290000','', c4[0]?.monto==='290000', `got="${c4[0]?.monto}"`);
-    t(s,'4) Sin marca/modelo → sin bloqueos de validación','', validar(c4).sinChapa.length===0 && validar(c4).sinFecha.length===0 && validar(c4).sinMonto.length===0, 'tiene bloqueos inesperados');
+    t(s,'4) Sin marca/modelo → sinMarca detectado — bloquea envío','', validar(c4).sinMarca.length===1, `sinMarca=${validar(c4).sinMarca.length}`);
+    t(s,'4) Sin marca/modelo → chapa/fecha/monto OK (solo marca bloquea)','', validar(c4).sinChapa.length===0 && validar(c4).sinFecha.length===0 && validar(c4).sinMonto.length===0, 'hay otros bloqueos inesperados');
 });
 
 // ═══════════════════════════════════════════
