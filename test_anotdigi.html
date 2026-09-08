@@ -329,6 +329,50 @@ suite('Validaciones — monto cero y negativo', s => {
     t(s,'Monto negativo → sinMonto detectado','', validar(mNeg).sinMonto.length===1, 'no detectó');
 });
 
+// ─── SUITE 10: Pruebas individuales — 4 casos ───
+suite('Pruebas individuales — 4 casos de validación', s => {
+
+    // CASO 1: Sin chapa
+    const c1 = parsearBloques(`toyota vitz  31/07/26 falta cargar
+Amortiguadores trasero 2
+Torreta 2
+Mantenimiento motor
+Mano de obra 290.000`);
+    t(s,'1) Sin chapa → parser no crea card','(no hay chapa en primera línea)', c1.length===0, `got ${c1.length} cards`);
+
+    // CASO 2: Sin fecha
+    const c2 = parsearBloques(`AASL204 toyota vitz  falta cargar
+Amortiguadores trasero 2
+Torreta 2
+Mantenimiento motor
+Mano de obra 290.000`);
+    t(s,'2) Sin fecha → parser crea 1 card','AASL204 sin fecha', c2.length===1, `got ${c2.length} cards`);
+    t(s,'2) Sin fecha → fechaVal vacío','', c2[0]?.fechaVal==='', `got="${c2[0]?.fechaVal}"`);
+    t(s,'2) Sin fecha → validación sinFecha lo detecta','', validar(c2).sinFecha.length===1, `sinFecha=${validar(c2).sinFecha.length}`);
+
+    // CASO 3: Sin monto
+    const c3 = parsearBloques(`AASL204 toyota vitz  31/07/26 falta cargar
+Amortiguadores trasero 2
+Torreta 2
+Mantenimiento motor
+Mano de obra `);
+    t(s,'3) Sin monto → parser crea 1 card','AASL204 con fecha, sin monto', c3.length===1, `got ${c3.length} cards`);
+    t(s,'3) Sin monto → monto vacío','', !c3[0]?.monto, `got="${c3[0]?.monto}"`);
+    t(s,'3) Sin monto → validación sinMonto lo detecta','', validar(c3).sinMonto.length===1, `sinMonto=${validar(c3).sinMonto.length}`);
+
+    // CASO 4: Sin marca y modelo (solo chapa + fecha + servicios)
+    const c4 = parsearBloques(`AASL204 31/07/26
+Amortiguadores trasero 2
+Torreta 2
+Mantenimiento motor
+Mano de obra 290.000`);
+    t(s,'4) Sin marca/modelo → parser igual crea 1 card','AASL204 sin "toyota vitz"', c4.length===1, `got ${c4.length} cards`);
+    t(s,'4) Sin marca/modelo → chapa correcta','', c4[0]?.chapa==='AASL204', `got="${c4[0]?.chapa}"`);
+    t(s,'4) Sin marca/modelo → fecha correcta','', c4[0]?.fechaVal==='2026-07-31', `got="${c4[0]?.fechaVal}"`);
+    t(s,'4) Sin marca/modelo → monto 290000','', c4[0]?.monto==='290000', `got="${c4[0]?.monto}"`);
+    t(s,'4) Sin marca/modelo → sin bloqueos de validación','', validar(c4).sinChapa.length===0 && validar(c4).sinFecha.length===0 && validar(c4).sinMonto.length===0, 'tiene bloqueos inesperados');
+});
+
 // ═══════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════
