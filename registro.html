@@ -520,6 +520,13 @@
                    autocorrect="off" autocapitalize="characters" spellcheck="false">
         </div>
 
+        <!-- Vehículo -->
+        <div style="width:100%">
+            <div class="rev-label">Vehículo <span style="color:#f87171">*</span></div>
+            <input class="big-input rev-input" id="rev-marca" type="text"
+                   placeholder="toyota vitz" autocorrect="off" autocapitalize="words" spellcheck="false">
+        </div>
+
         <!-- Fecha -->
         <div style="width:100%">
             <div class="rev-label">Fecha</div>
@@ -839,6 +846,7 @@ function validarNumero() {
 function armarResumen() {
     document.getElementById('rev-cliente').value  = datos.cliente;
     document.getElementById('rev-chapa').value    = datos.chapa.toUpperCase();
+    document.getElementById('rev-marca').value    = '';
     document.getElementById('rev-fecha').value    = datos.fecha;
     document.getElementById('rev-servicio').value = datos.servicio;
     actualizarChapaMismatch();
@@ -903,6 +911,7 @@ let montoAvisadoWizard = false;
 
 function enviarIsabSoft() {
     const chapa    = document.getElementById('rev-chapa').value.trim().toUpperCase();
+    const marca    = document.getElementById('rev-marca').value.trim();
     const fecha    = document.getElementById('rev-fecha').value;
     const servicio = document.getElementById('rev-servicio').value.trim();
 
@@ -915,6 +924,7 @@ function enviarIsabSoft() {
     }
     addClienteToList(clienteFinal);
     if (!chapa)    { toast('⚠️ La chapa está vacía'); return; }
+    if (!marca)    { document.getElementById('rev-marca').classList.add('error'); setTimeout(()=>document.getElementById('rev-marca').classList.remove('error'),1500); toast('⚠️ El vehículo está vacío — agregá marca y modelo'); return; }
     if (!fecha)    { toast('⚠️ La fecha está vacía'); return; }
     if (!servicio) { toast('⚠️ El trabajo está vacío'); return; }
 
@@ -936,7 +946,7 @@ function enviarIsabSoft() {
     montoAvisadoWizard = false;
 
     const [y, m, d] = fecha.split('-');
-    const texto = `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
+    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
