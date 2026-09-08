@@ -846,14 +846,23 @@ function validarNumero() {
 function armarResumen() {
     document.getElementById('rev-cliente').value  = datos.cliente;
     document.getElementById('rev-chapa').value    = datos.chapa.toUpperCase();
-    document.getElementById('rev-marca').value    = '';
+    document.getElementById('rev-marca').value    = extraerVehiculoDeServicio(datos.servicio);
     document.getElementById('rev-fecha').value    = datos.fecha;
     document.getElementById('rev-servicio').value = datos.servicio;
     actualizarChapaMismatch();
     actualizarDupeWarnWizard();
 }
 
-const NO_CHAPA_RE = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+const NO_CHAPA_RE   = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+const MARCAS_VEH_RE = /^(toyota|ford|honda|nissan|chevrolet|changan|fiat|volkswagen|vw|renault|peugeot|citroen|hyundai|kia|mercedes|bmw|audi|suzuki|mitsubishi|subaru|jeep|dodge|ram|gmc|mazda|lifan|geely|byd|jac|mg|haval|chery)\b/i;
+
+function extraerVehiculoDeServicio(servicio) {
+    for (const linea of (servicio || '').split('\n')) {
+        const l = linea.trim();
+        if (l && MARCAS_VEH_RE.test(l)) return l;
+    }
+    return '';
+}
 
 function extraerChapaDeTexto(texto) {
     for (const linea of texto.split('\n')) {
