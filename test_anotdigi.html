@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AnotDigi — Tests Funcionales</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; background: #0f0f1a; color: #e2e8f0; padding: 24px; }
+h1 { font-size: 1.2rem; color: #4ade80; margin-bottom: 4px; }
+.subtitle { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 24px; }
+.suite { margin-bottom: 28px; }
+.suite-title { font-size: 0.7rem; font-weight: 700; color: #94a3b8; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px; }
+.test { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; font-size: 0.82rem; line-height: 1.5; }
+.test.pass { background: rgba(74,222,128,0.07); border: 1px solid rgba(74,222,128,0.2); }
+.test.fail { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.35); }
+.badge { flex-shrink:0; font-size:0.7rem; font-weight:800; padding:2px 8px; border-radius:50px; margin-top:1px; }
+.badge.p { background:#16a34a; color:#fff; }
+.badge.f { background:#dc2626; color:#fff; }
+.test-name { font-weight: 600; color: #e2e8f0; }
+.test-detail { font-size: 0.76rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+.test-fail-msg { font-size: 0.76rem; color: #f87171; margin-top: 3px; font-weight: 600; }
+.summary { margin-top: 28px; padding: 16px 20px; border-radius: 12px; font-size: 0.95rem; font-weight: 700; }
+.summary.all-pass { background: rgba(74,222,128,0.1); border: 1.5px solid rgba(74,222,128,0.4); color: #4ade80; }
+.summary.has-fail { background: rgba(248,113,113,0.1); border: 1.5px solid rgba(248,113,113,0.4); color: #f87171; }
+</style>
+</head>
+<body>
+<h1>AnotDigi — Tests Funcionales</h1>
+<div class="subtitle" id="ts"></div>
+<div id="results"></div>
+<div class="summary" id="summary"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// FUNCIONES COPIADAS DE registro.html
+// ═══════════════════════════════════════════
+
+const NO_CHAPA_RE = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+
+const CHAPA_INLINE_RE = /\b([A-Z]{2,5})\s?([A-Z]?\s?\d{3})\b/gi;
+const FECHA_EN_LINEA_RE = /\b\d{1,2}\s*[\/\-]\s*\d{1,2}(?:\s*[\/\-]\s*\d{2,4})?\b|\b\d{1,2}\s+de\s+\w+\b/i;
+const MESES_MAP = {enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,octubre:10,noviembre:11,diciembre:12};
+
+function extraerChapaDeTexto(texto) {
+    for (const linea of texto.split('\n')) {
+        const m = linea.trim().match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
+        if (m && !NO_CHAPA_RE.test(m[1].trim()))
+            return (m[1] + m[2]).toUpperCase().replace(/\s/g, '');
+    }
+    return null;
+}
+
+function parsearBloques(texto) {
+    const jobs = [];
+    const lineas = texto.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+    let bloque = [];
+
+    function procesarBloque(b) {
+        while (b.length && !b[0].trim()) b.shift();
+        while (b.length && !b[b.length-1].trim()) b.pop();
+        if (!b.length) return;
+        const primera = b[0];
+        let chapaM = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{3})\b/i);
+        if (!chapaM || NO_CHAPA_RE.test(chapaM[1].trim())) {
+            if (FECHA_EN_LINEA_RE.test(primera)) {
+                CHAPA_INLINE_RE.lastIndex = 0; let m;
+                while ((m = CHAPA_INLINE_RE.exec(primera)) !== null)
+                    if (!NO_CHAPA_RE.test(m[1].trim())) { chapaM = m; break; }
+            }
+            if (!chapaM || NO_CHAPA_RE.test((chapaM[1]||'').trim())) return;
+        }
+        const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g,'');
+        const fechaM = primera.match(/(\d{1,2})\s*[\/\-]\s*(\d{1,2})(?:\s*[\/\-]\s*(\d{2,4}))?/);
+        let fechaVal = '', fechaDis = '';
+        if (fechaM) {
+            const d = fechaM[1].padStart(2,'0'), mo = fechaM[2].padStart(2,'0');
+            let y = fechaM[3] || '26'; if (y.length===2) y='20'+y;
+            fechaVal = `${y}-${mo}-${d}`; fechaDis = `${d}/${mo}/${y}`;
+        } else {
+            const textoM = primera.match(/\b(\d{1,2})\s+de\s+(\w+)(?:\s+(?:del?\s+)?(\d{2,4}))?\b/i);
+            if (textoM) {
+                const mes = MESES_MAP[(textoM[2]||'').toLowerCase()];
+                if (mes) {
+                    const d = textoM[1].padStart(2,'0'), mo = String(mes).padStart(2,'0');
+                    let y = textoM[3]||'26'; if(y.length===2) y='20'+y;
+                    fechaVal=`${y}-${mo}-${d}`; fechaDis=`${d}/${mo}/${y}`;
+                }
+            }
+        }
+        let montoTotal = 0;
+        b.forEach(l => {
+            const ms = [...l.matchAll(/\b(\d{1,3})\.(\d{3})\b/g)];
+            ms.forEach(mm => { montoTotal += parseInt(mm[1]+mm[2]); });
+        });
+        const notas = /falta cargar|hasta ac[aá] cargado|hasta aca|falta|cargado/i;
+        const serv = b.slice(1).map(l=>l.trim()).filter(l=>l&&!notas.test(l)).join(' / ');
+        jobs.push({ chapa, fechaVal, fechaDis, monto: montoTotal>0?String(montoTotal):'', servicio: serv });
+    }
+
+    lineas.forEach(linea => {
+        const t = linea.trim();
+        const _cm = t.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{3})\b/i);
+        const comienzaConChapa = !!(_cm && !NO_CHAPA_RE.test(_cm[1].trim()));
+        const tieneChapaYFecha = !comienzaConChapa && FECHA_EN_LINEA_RE.test(t) && (() => {
+            CHAPA_INLINE_RE.lastIndex = 0; let m;
+            while ((m = CHAPA_INLINE_RE.exec(t)) !== null)
+                if (!NO_CHAPA_RE.test(m[1].trim())) return true;
+            return false;
+        })();
+        if ((comienzaConChapa || tieneChapaYFecha) && bloque.length) { procesarBloque(bloque); bloque=[t]; }
+        else bloque.push(t);
+    });
+    if (bloque.length) procesarBloque(bloque);
+    return jobs;
+}
+
+// Validaciones (lógica pura, sin DOM)
+function validar(jobs) {
+    const sinChapa  = jobs.filter(j => !j.chapa);
+    const sinMonto  = jobs.filter(j => !j.monto || parseInt(j.monto) <= 0);
+    const sinFecha  = jobs.filter(j => !j.fechaVal);
+    const mismatch  = jobs.filter(j => {
+        const ct = extraerChapaDeTexto(j.servicio);
+        return ct && ct !== j.chapa;
+    });
+    return { sinChapa, sinMonto, sinFecha, mismatch };
+}
+
+// ═══════════════════════════════════════════
+// TEST RUNNER
+// ═══════════════════════════════════════════
+
+let total = 0, passed = 0;
+const suites = [];
+
+function suite(name, fn) { const s={name,tests:[]}; suites.push(s); fn(s); }
+function t(s, name, detail, ok, failMsg) {
+    total++; if(ok) passed++;
+    s.tests.push({name, detail, ok, failMsg: ok?null:failMsg});
+}
+
+// ─── SUITE 1: Parser — campos básicos ───
+suite('Parser — campos básicos', s => {
+    const jobs = parsearBloques(`AAZX033 toyota ractis 17/08
+Rectificacion de frenos delantero 180.000
+Cambio de pastilla
+Mano de obra 300.000`);
+
+    t(s,'Detecta 1 card','AAZX033', jobs.length===1, `cards=${jobs.length}`);
+    t(s,'Chapa correcta','AAZX033', jobs[0]?.chapa==='AAZX033', `got="${jobs[0]?.chapa}"`);
+    t(s,'Fecha 17/08 → 2026-08-17','',jobs[0]?.fechaVal==='2026-08-17',`got="${jobs[0]?.fechaVal}"`);
+    t(s,'Monto 180k+300k = 480000','',jobs[0]?.monto==='480000',`got="${jobs[0]?.monto}"`);
+    t(s,'Servicio incluye trabajo','',jobs[0]?.servicio.includes('Cambio de pastilla'),'no incluye');
+});
+
+// ─── SUITE 2: Parser — fechas especiales ───
+suite('Parser — formatos de fecha', s => {
+    const c1 = parsearBloques(`AAON696 vitz 21/ 07\nCambio aceite 50.000`);
+    t(s,'Fecha con espacio "21/ 07"','→ 2026-07-21', c1[0]?.fechaVal==='2026-07-21', `got="${c1[0]?.fechaVal}"`);
+
+    const c2 = parsearBloques(`AAZX031 vitz 20-8/26\nMano de obra 50.000`);
+    t(s,'Fecha mixta "20-8/26"','→ 2026-08-20', c2[0]?.fechaVal==='2026-08-20', `got="${c2[0]?.fechaVal}"`);
+
+    const c3 = parsearBloques(`AAZJ247 vitz 11 de junio\nAceite 50.000`);
+    t(s,'Fecha texto "11 de junio"','→ 2026-06-11', c3[0]?.fechaVal==='2026-06-11', `got="${c3[0]?.fechaVal}"`);
+
+    const c4 = parsearBloques(`AASL204 vitz 31/07/26\nMano de obra 290.000`);
+    t(s,'Fecha con año "31/07/26"','→ 2026-07-31', c4[0]?.fechaVal==='2026-07-31', `got="${c4[0]?.fechaVal}"`);
+
+    const c5 = parsearBloques(`AASL204 vitz 2/08/26\nMano de obra 50.000`);
+    t(s,'Fecha día 1 dígito "2/08/26"','→ 2026-08-02', c5[0]?.fechaVal==='2026-08-02', `got="${c5[0]?.fechaVal}"`);
+});
+
+// ─── SUITE 3: Parser — chapa en mid-line ───
+suite('Parser — chapa en medio de línea', s => {
+    const jobs = parsearBloques(`Changan byb072 28/07/26\nCambio aceite 50.000`);
+    t(s,'Detecta BYB072 en "Changan byb072 28/07"','', jobs.length===1,'no detectó card');
+    t(s,'Chapa = BYB072','', jobs[0]?.chapa==='BYB072',`got="${jobs[0]?.chapa}"`);
+    t(s,'Fecha 28/07 → 2026-07-28','', jobs[0]?.fechaVal==='2026-07-28',`got="${jobs[0]?.fechaVal}"`);
+});
+
+// ─── SUITE 4: Parser — filtro "notas" ───
+suite('Parser — filtro de notas de gestión', s => {
+    const c1 = parsearBloques(`AASL204 vitz 31/07/26 falta cargar\nAmortiguadores 290.000`);
+    t(s,'"falta cargar" en encabezado — no aparece en servicio','',
+        !c1[0]?.servicio.includes('falta'), `serv="${c1[0]?.servicio}"`);
+
+    const c2 = parsearBloques(`AAOM941 vitz 28/08/26 hasta aca cargado\nCambio de radiador 240.000`);
+    t(s,'"hasta aca cargado" filtrado del servicio','',
+        !c2[0]?.servicio.includes('cargado'), `serv="${c2[0]?.servicio}"`);
+});
+
+// ─── SUITE 5: Parser — "Mano NNN" no divide bloque ───
+suite('Parser — NO_CHAPA_RE en división de bloques', s => {
+    const jobs = parsearBloques(`AANP018 toyota vitz 18/08/26
+Cardancito de direccion
+Pastilla de freno
+Torreta 2
+Mano 270.000`);
+    t(s,'AANP018: "Mano 270.000" no crea bloque nuevo','→ 1 card', jobs.length===1, `cards=${jobs.length}`);
+    t(s,'AANP018: monto = 270000','', jobs[0]?.monto==='270000', `got="${jobs[0]?.monto}"`);
+
+    const j2 = parsearBloques(`AAON696 vitz 22/08\nBieleta 2\nMano de obra\n260.000`);
+    t(s,'Monto en línea separada "260.000"','→ 260000', j2[0]?.monto==='260000', `got="${j2[0]?.monto}"`);
+});
+
+// ─── SUITE 6: Parser — chapa con espacios ───
+suite('Parser — chapas con espacio', s => {
+    const j1 = parsearBloques(`AAON 696 vitz 22/08\nPastilla 60.000`);
+    t(s,'"AAON 696" → AAON696','', j1[0]?.chapa==='AAON696', `got="${j1[0]?.chapa}"`);
+
+    const j2 = parsearBloques(`AAOM 941 vitz 17/08\nMano de obra 120.000`);
+    t(s,'"AAOM 941" → AAOM941','', j2[0]?.chapa==='AAOM941', `got="${j2[0]?.chapa}"`);
+});
+
+// ─── SUITE 7: Parser — lista completa Miguel ───
+suite('Parser — lista completa (13 cards de prueba)', s => {
+    const lista = `AASL204 toyota vitz  31/07/26 falta cargar
+Amortiguadores trasero 2
+Torreta 2
+Mantenimiento motor
+Mano de obra 290.000
+
+AARO223 toyota vitz 07/08 falta cargar
+Torreta 1
+Amortiguadores trasero 2
+Cambio de bobinas 3
+Mano de obra 170.000
+
+AAON 696 toyota vitz 10/08 falta cargar
+Amortiguador lado derecho
+Mano de obra 100.000
+
+AAON 699  toyota vitz 14/08
+Cambio de pastilla
+Mano de obra 60.000
+
+AAZX033 toyota ractis 17/08
+Rectificacion de frenos delantero 180.000
+Cambio de pastilla
+Amortiguador delannntero lado derecho 1
+Mano de obra 300.000
+
+AAOM 941 toyota vitz 17/08/26
+Cellado de carter
+Mano de obra 120.000
+
+AARO223 toyota vitz 17/08/25
+Cellado de carter
+Mano de obra 120.000
+
+AARS908 toyota ractis 18/08
+Bujes 4
+Precap 2
+Pastilla
+Torreta 2
+Ruleman trasero 1
+Mano de obra 420.000
+
+AANP018 toyota vitz 18/08/26
+Cardancito de direccion
+Pastilla de freno
+Torreta 2
+Mano 270.000
+
+AAZX031 toyota vitz 20-8/26
+Chapista 350.000 para enderezar y colocar bien todo
+Caño de agua 85.000
+Mano de obra 50.000
+
+AAON 696 toyota vitz 22/08
+Bieleta 2
+Pastilla 2
+Bujes parilla
+Mano de obra
+260.000
+
+AAOM 941 toyota vitz 28/08/26 hasta aca cargado
+Cambio de radiador
+Cambio de bomba y filtro de combustible
+Mano de obra 240.000
+
+AAON696 toyota vitz 2/08/26
+Mantenimiento motor
+Mano de obra 50.000 para anibal.`;
+
+    const jobs = parsearBloques(lista);
+    t(s,'Total: 13 cards','', jobs.length===13, `got=${jobs.length}`);
+    t(s,'#1 AASL204 — monto 290000','', jobs[0]?.chapa==='AASL204'&&jobs[0]?.monto==='290000', `chapa=${jobs[0]?.chapa} monto=${jobs[0]?.monto}`);
+    t(s,'#5 AAZX033 — monto 480000 (180k+300k)','', jobs[4]?.monto==='480000', `got=${jobs[4]?.monto}`);
+    t(s,'#7 AARO223 — año 2025 detectado','', jobs[6]?.fechaVal==='2025-08-17', `got=${jobs[6]?.fechaVal}`);
+    t(s,'#9 AANP018 — monto 270000 (Mano 270.000)','', jobs[8]?.monto==='270000', `got=${jobs[8]?.monto}`);
+    t(s,'#10 AAZX031 — fecha 20-8/26 → 2026-08-20','', jobs[9]?.fechaVal==='2026-08-20', `got=${jobs[9]?.fechaVal}`);
+    t(s,'#10 AAZX031 — monto 485000 (350k+85k+50k)','', jobs[9]?.monto==='485000', `got=${jobs[9]?.monto}`);
+    t(s,'#11 AAON696 — monto 260000 (monto en línea sola)','', jobs[10]?.monto==='260000', `got=${jobs[10]?.monto}`);
+    t(s,'#12 AAOM941 — "hasta aca cargado" filtrado','', !jobs[11]?.servicio.includes('cargado'), `serv=${jobs[11]?.servicio}`);
+    t(s,'#13 AAON696 — fecha 2/08/26 → 2026-08-02','', jobs[12]?.fechaVal==='2026-08-02', `got=${jobs[12]?.fechaVal}`);
+});
+
+// ─── SUITE 8: Validaciones ───
+suite('Validaciones — bloqueos', s => {
+    const valid = [{chapa:'AAZX033',fechaVal:'2026-08-17',monto:'480000',servicio:'Cambio aceite'}];
+    const v0 = validar(valid);
+    t(s,'Card completo → sin bloqueos','', v0.sinChapa.length===0&&v0.sinMonto.length===0&&v0.sinFecha.length===0&&v0.mismatch.length===0,'tiene errores inesperados');
+
+    const sinCh = [{chapa:'',fechaVal:'2026-08-17',monto:'100000',servicio:'Aceite'}];
+    t(s,'Sin chapa → sinChapa detectado','', validar(sinCh).sinChapa.length===1, 'no detectó');
+
+    const sinMo = [{chapa:'AAZX033',fechaVal:'2026-08-17',monto:'',servicio:'Aceite'}];
+    t(s,'Sin monto → sinMonto detectado','', validar(sinMo).sinMonto.length===1, 'no detectó');
+
+    const sinFe = [{chapa:'AAZX033',fechaVal:'',monto:'100000',servicio:'Aceite'}];
+    t(s,'Sin fecha → sinFecha detectado','', validar(sinFe).sinFecha.length===1, 'no detectó');
+
+    const mis = [{chapa:'AAZX033',fechaVal:'2026-08-17',monto:'100000',servicio:'AAON696 vitz\nCambio aceite'}];
+    t(s,'Chapa en servicio diferente → mismatch detectado','AAON696 ≠ AAZX033', validar(mis).mismatch.length===1, 'no detectó mismatch');
+
+    const noMis = [{chapa:'AAZX033',fechaVal:'2026-08-17',monto:'100000',servicio:'Cambio de aceite / Pastillas'}];
+    t(s,'Servicio sin chapa → sin mismatch','', validar(noMis).mismatch.length===0, 'detectó mismatch incorrecto');
+});
+
+// ─── SUITE 9: Validaciones — monto cero ───
+suite('Validaciones — monto cero y negativo', s => {
+    const m0 = [{chapa:'AAZX033',fechaVal:'2026-08-17',monto:'0',servicio:'Aceite'}];
+    t(s,'Monto "0" → sinMonto detectado','', validar(m0).sinMonto.length===1, 'no detectó');
+
+    const mNeg = [{chapa:'AAZX033',fechaVal:'2026-08-17',monto:'-500',servicio:'Aceite'}];
+    t(s,'Monto negativo → sinMonto detectado','', validar(mNeg).sinMonto.length===1, 'no detectó');
+});
+
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+
+document.getElementById('ts').textContent = `Ejecutado: ${new Date().toLocaleString('es-PY')} — ${total} tests`;
+
+const out = document.getElementById('results');
+suites.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'suite';
+    div.innerHTML = `<div class="suite-title">${s.name}</div>`;
+    s.tests.forEach(test => {
+        const row = document.createElement('div');
+        row.className = 'test ' + (test.ok ? 'pass' : 'fail');
+        row.innerHTML = `
+            <span class="badge ${test.ok?'p':'f'}">${test.ok?'PASS':'FAIL'}</span>
+            <div>
+                <div class="test-name">${test.name}</div>
+                ${test.detail ? `<div class="test-detail">${test.detail}</div>` : ''}
+                ${!test.ok ? `<div class="test-fail-msg">✗ ${test.failMsg}</div>` : ''}
+            </div>`;
+        div.appendChild(row);
+    });
+    out.appendChild(div);
+});
+
+const sum = document.getElementById('summary');
+sum.className = 'summary ' + (passed===total ? 'all-pass' : 'has-fail');
+sum.textContent = passed===total
+    ? `✅ ${passed}/${total} tests pasaron — todo OK`
+    : `❌ ${passed}/${total} pasaron — ${total-passed} fallaron`;
+</script>
+</body>
+</html>
