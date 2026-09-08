@@ -879,6 +879,20 @@ function actualizarChapaMismatch() {
     }
 }
 
+function checkMismatchBulk(i) {
+    const chapa      = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
+    const serv       = document.getElementById(`jserv-${i}`)?.value || '';
+    const chapaTexto = extraerChapaDeTexto(serv);
+    const warn       = document.getElementById(`jmismatch-${i}`);
+    if (!warn) return;
+    if (chapaTexto && chapaTexto !== chapa) {
+        warn.textContent = `⚠️ El trabajo tiene la chapa ${chapaTexto} — ¿es la chapa correcta?`;
+        warn.style.display = 'block';
+    } else {
+        warn.style.display = 'none';
+    }
+}
+
 // ─── Detección de monto en texto libre ───
 function tieneMonto(texto) {
     return /\b\d{1,3}\.\d{3}\b|\b\d{5,}\b/.test(texto);
@@ -1120,7 +1134,7 @@ function renderizarJobs() {
                 <div class="rev-label">Chapa</div>
                 <input class="big-input rev-input" id="jchapa-${i}" value="${j.chapa}"
                        autocorrect="off" autocapitalize="characters" spellcheck="false"
-                       oninput="this.value=this.value.toUpperCase().replace(/\\s/g,''); parsedJobs[${i}].chapa=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color');">
+                       oninput="this.value=this.value.toUpperCase().replace(/\\s/g,''); parsedJobs[${i}].chapa=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color'); checkMismatchBulk(${i});">
             </div>
 
             <div class="job-f">
@@ -1140,7 +1154,8 @@ function renderizarJobs() {
                 <div class="rev-label">Trabajo</div>
                 <textarea class="big-input rev-input" id="jserv-${i}"
                           style="min-height:80px;resize:vertical;line-height:1.5;text-align:left;font-size:0.9rem;"
-                          oninput="parsedJobs[${i}].servicio=this.value">${j.servicio}</textarea>
+                          oninput="parsedJobs[${i}].servicio=this.value; checkMismatchBulk(${i});">${j.servicio}</textarea>
+                <div id="jmismatch-${i}" style="display:none;font-size:0.75rem;color:#f87171;margin-top:6px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.3);"></div>
             </div>
 
             <div class="job-f">
@@ -1210,6 +1225,24 @@ function enviarBulk() {
         const chapas = sinFecha.map(({j}) => j.chapa || '?').join(', ');
         toast(`⚠️ Sin fecha: ${chapas} — completá antes de enviar`);
         document.getElementById(`jcard-${sinFecha[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    // Validar chapa mismatch — bloqueo duro
+    const conMismatch = parsedJobs.map((j,i) => {
+        const chapa      = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
+        const serv       = document.getElementById(`jserv-${i}`)?.value || '';
+        const chapaTexto = extraerChapaDeTexto(serv);
+        return { j, i, chapa, chapaTexto };
+    }).filter(({chapa, chapaTexto}) => chapaTexto && chapaTexto !== chapa);
+    if (conMismatch.length) {
+        conMismatch.forEach(({i, chapaTexto}) => {
+            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
+            const warn = document.getElementById(`jmismatch-${i}`);
+            if (warn) { warn.textContent = `⚠️ El trabajo tiene la chapa ${chapaTexto} — corregí antes de enviar`; warn.style.display = 'block'; }
+        });
+        toast(`⚠️ Chapa no coincide en ${conMismatch.length > 1 ? conMismatch.length + ' trabajos' : 'un trabajo'} — corregí antes de enviar`);
+        document.getElementById(`jcard-${conMismatch[0].i}`)?.scrollIntoView({behavior:'smooth', block:'center'});
         return;
     }
 
