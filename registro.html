@@ -1052,11 +1052,12 @@ function parsearBloques(texto) {
             ms.forEach(mm => { montoTotal += parseInt(mm[1] + mm[2]); });
         });
 
-        // Servicio: líneas 1+ sin notas de gestión
-        const notas = /falta cargar|hasta ac[aá] cargado|hasta aca|falta|cargado/i;
+        // Servicio: líneas 1+ sin notas de gestión ni líneas de solo monto (ej: "290.000")
+        const notas    = /falta cargar|hasta ac[aá] cargado|hasta aca|falta|cargado/i;
+        const esMontoRe = /^\d{1,3}(\.\d{3})+$/;
         const serv = b.slice(1)
             .map(l => l.trim())
-            .filter(l => l && !notas.test(l))
+            .filter(l => l && !notas.test(l) && !esMontoRe.test(l))
             .join(' / ');
 
         // Marca/Modelo: primera línea sin chapa, sin fecha, sin notas
@@ -1166,10 +1167,11 @@ function renderizarJobs() {
             </div>
 
             <div class="job-f">
-                <div class="rev-label">Trabajo</div>
+                <div class="rev-label">Trabajo <span style="color:#f87171">*</span></div>
                 <textarea class="big-input rev-input" id="jserv-${i}"
                           style="min-height:80px;resize:vertical;line-height:1.5;text-align:left;font-size:0.9rem;"
-                          oninput="parsedJobs[${i}].servicio=this.value; checkMismatchBulk(${i});">${j.servicio}</textarea>
+                          placeholder="Describí el trabajo realizado"
+                          oninput="parsedJobs[${i}].servicio=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color'); checkMismatchBulk(${i});">${j.servicio}</textarea>
                 <div id="jmismatch-${i}" style="display:none;font-size:0.75rem;color:#f87171;margin-top:6px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.3);"></div>
             </div>
 
@@ -1241,6 +1243,19 @@ function enviarBulk() {
         const chapas = sinFecha.map(({j}) => j.chapa || '?').join(', ');
         toast(`⚠️ Sin fecha: ${chapas} — completá antes de enviar`);
         document.getElementById(`jcard-${sinFecha[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    // Validar trabajo/servicio — bloqueo duro
+    const sinServicio = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.servicio || !j.servicio.trim());
+    if (sinServicio.length) {
+        sinServicio.forEach(({i}) => {
+            document.getElementById(`jserv-${i}`)?.classList.add('error');
+            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
+        });
+        const chapas = sinServicio.map(({j}) => j.chapa || '?').join(', ');
+        toast(`⚠️ Sin trabajo: ${chapas} — describí el trabajo antes de enviar`);
+        document.getElementById(`jcard-${sinServicio[0].i}`)?.scrollIntoView({behavior:'smooth', block:'center'});
         return;
     }
 
