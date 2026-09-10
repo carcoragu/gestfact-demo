@@ -225,6 +225,8 @@
         .plan-toggle-btn { flex:1; padding:9px 6px; border:none; border-radius:8px; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.18s; background:transparent; color:rgba(255,255,255,0.4); }
         .plan-toggle-btn.activo { background:#4ade80; color:#1a1a2e; }
         .plan-bim-ahorro { display:inline-block; background:rgba(74,222,128,0.18); color:#4ade80; font-size:0.68rem; font-weight:800; padding:2px 7px; border-radius:50px; margin-left:5px; vertical-align:middle; }
+        .planes-sep { font-size:0.68rem; font-weight:800; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:1px; margin:20px 0 10px; display:flex; align-items:center; gap:10px; }
+        .planes-sep::before, .planes-sep::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.08); }
 
         /* Selector estado pago */
         .estado-wrap { width:100%; margin-bottom:20px; padding:14px 16px; background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.12); border-radius:14px; }
@@ -461,10 +463,6 @@
             Después aprobás y enviás transferencia a IsabSoft para continuar.
         </div>
 
-        <div class="plan-toggle" id="toggleSinfo">
-            <button class="plan-toggle-btn activo" id="btnMensualSinfo"    onclick="setModoBimestral(false)">Mensual</button>
-            <button class="plan-toggle-btn"        id="btnBimestralSinfo"  onclick="setModoBimestral(true)">Bimestral <span class="plan-bim-ahorro">−10%</span></button>
-        </div>
 
         <div id="sinfoPlanes" style="width:100%;"></div>
 
@@ -673,10 +671,6 @@
             <div class="question" style="font-size:1.15rem;">Elegí tu plan</div>
             <div class="hint" style="margin-top:6px;" id="spHint">Continuá usando AnotDigi</div>
         </div>
-        <div class="plan-toggle" id="toggleSp">
-            <button class="plan-toggle-btn activo" id="btnMensualSp"    onclick="setModoBimestral(false)">Mensual</button>
-            <button class="plan-toggle-btn"        id="btnBimestralSp"  onclick="setModoBimestral(true)">Bimestral <span class="plan-bim-ahorro">−10%</span></button>
-        </div>
 
         <div id="planCards"></div>
         <div id="spVolver" style="display:none;margin-top:6px;">
@@ -775,14 +769,6 @@ function esPlanPremium() {
 
 function setModoBimestral(bim) {
     modoBimestral = bim;
-    // Sync ambos toggles
-    ['Sinfo','Sp'].forEach(sfx => {
-        const bimEl = document.getElementById(`btnBimestral${sfx}`);
-        const menEl = document.getElementById(`btnMensual${sfx}`);
-        if (bimEl) bimEl.className = 'plan-toggle-btn' + (bim ? ' activo' : '');
-        if (menEl) menEl.className = 'plan-toggle-btn' + (!bim ? ' activo' : '');
-    });
-    // Re-render pantalla activa
     if (document.getElementById('sinfo').classList.contains('active')) renderizarPlanesInfo();
     if (document.getElementById('sp').classList.contains('active'))    renderizarPlanes(_planesVolver);
 }
@@ -1239,7 +1225,14 @@ function renderizarPlanesInfo() {
         </button>
     </div>`;
 
-    c.innerHTML = comboHtml + PLANES_DATA.map(p => {
+    const _toggleBimHtml = `
+    <div class="planes-sep">Planes mensuales</div>
+    <div class="plan-toggle">
+        <button class="plan-toggle-btn${!modoBimestral ? ' activo' : ''}" onclick="setModoBimestral(false)">Mensual</button>
+        <button class="plan-toggle-btn${modoBimestral ? ' activo' : ''}" onclick="setModoBimestral(true)">Bimestral <span class="plan-bim-ahorro">−10%</span></button>
+    </div>`;
+
+    const _cardsSinfo = PLANES_DATA.map(p => {
         const esActual = planActual === p.id.toUpperCase();
         const badge = esActual
             ? `<div style="position:absolute;top:-10px;right:14px;background:#4ade80;color:#1a1a2e;font-size:0.62rem;font-weight:800;padding:3px 10px;border-radius:50px;letter-spacing:0.8px;text-transform:uppercase;">En prueba</div>`
@@ -1264,7 +1257,8 @@ function renderizarPlanesInfo() {
             </button>
             ${backlogHint}
         </div>`;
-    }).join('');
+    });
+    c.innerHTML = comboHtml + _cardsSinfo[0] + _toggleBimHtml + _cardsSinfo.slice(1).join('');
 }
 
 function activarPruebaPlan(planId) {
@@ -1874,7 +1868,14 @@ function renderizarPlanes(puedeVolver) {
         </button>
     </div>`;
 
-    c.innerHTML = comboCard + PLANES_DATA.map(p => {
+    const _toggleSpHtml = `
+    <div class="planes-sep">Planes mensuales</div>
+    <div class="plan-toggle">
+        <button class="plan-toggle-btn${!modoBimestral ? ' activo' : ''}" onclick="setModoBimestral(false)">Mensual</button>
+        <button class="plan-toggle-btn${modoBimestral ? ' activo' : ''}" onclick="setModoBimestral(true)">Bimestral <span class="plan-bim-ahorro">−10%</span></button>
+    </div>`;
+
+    const _cardsSp = PLANES_DATA.map(p => {
         const bim   = modoBimestral && p.bimestral;
         const pmStr = bim ? p.bimestral.precioMes.toLocaleString('es-PY') : p.precio;
         const tStr  = bim ? p.bimestral.total.toLocaleString('es-PY')    : null;
@@ -1901,7 +1902,8 @@ function renderizarPlanes(puedeVolver) {
             </button>
             ${backlogHint}
         </div>`;
-    }).join('');
+    });
+    c.innerHTML = comboCard + _cardsSp[0] + _toggleSpHtml + _cardsSp.slice(1).join('');
 }
 
 function contactarPlan(planId) {
