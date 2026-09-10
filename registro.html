@@ -341,6 +341,9 @@
         .plan-features { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); }
         .plan-feat { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin-bottom: 5px; }
         .plan-feat::before { content: '✓  '; color: #4ade80; }
+        .plan-cob { margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .plan-cob-si { font-size: 0.7rem; color: rgba(74,222,128,0.75); margin-bottom: 3px; }
+        .plan-cob-no { font-size: 0.7rem; color: rgba(255,165,0,0.6); margin-bottom: 3px; }
         .btn-plan {
             width: 100%; margin-top: 14px; padding: 13px;
             background: #4ade80; border: none; border-radius: 12px;
@@ -1218,7 +1221,11 @@ function renderizarPlanesInfo() {
             </div>
         </div>
         <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">${COMBO_DATA.desc}</div>
-        <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:12px;line-height:1.8;">${COMBO_DATA.features.map(f => '✓ ' + f).join('<br>')}</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:8px;line-height:1.8;">${COMBO_DATA.features.map(f => '✓ ' + f).join('<br>')}</div>
+        <div class="plan-cob" style="margin-bottom:12px;">
+            ${(COMBO_DATA.cubre||[]).map(t => `<div class="plan-cob-si">✓ ${t}</div>`).join('')}
+            ${(COMBO_DATA.noCubre||[]).map(t => `<div class="plan-cob-no">✗ ${t}</div>`).join('')}
+        </div>
         <button onclick="contactarPlan('combo')"
                 style="width:100%;padding:12px;background:#4ade80;color:#1a1a2e;border:none;border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;">
             Quiero el Combo →
@@ -1250,7 +1257,11 @@ function renderizarPlanesInfo() {
                 <div style="text-align:right;">${_precioHtml(p)}</div>
             </div>
             <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">${p.desc}</div>
-            <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:12px;line-height:1.8;">${p.features.map(f => '✓ ' + f).join('<br>')}</div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:8px;line-height:1.8;">${p.features.map(f => '✓ ' + f).join('<br>')}</div>
+            <div class="plan-cob" style="margin-bottom:12px;">
+                ${(p.cubre||[]).map(t=>`<div class="plan-cob-si">✓ ${t}</div>`).join('')}
+                ${(p.noCubre||[]).map(t=>`<div class="plan-cob-no">✗ ${t}</div>`).join('')}
+            </div>
             <button onclick="activarPruebaPlan('${p.id}')"
                     style="width:100%;padding:12px;background:${esActual ? 'rgba(74,222,128,0.12)' : '#4ade80'};color:${esActual ? '#4ade80' : '#1a1a2e'};border:${esActual ? '1.5px solid #4ade80' : 'none'};border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;">
                 ${esActual ? '✓ En prueba — extender 30 días' : 'Probar 30 días gratis →'}
@@ -1737,7 +1748,9 @@ const COMBO_DATA = {
     id: 'combo', nombre: 'Combo Arranque',
     precioRegular: 130000, precioNum: 110000, ahorro: 20000,
     desc: 'Ideal para empezar. Cargamos todo lo que tenés acumulado y arrancamos el mes juntos.',
-    features: ['Sesión completa — historial sin límite', '1er mes Básico incluido', 'Ahorrás Gs. 20.000']
+    features: ['Sesión completa — historial sin límite', '1er mes Básico incluido', 'Ahorrás Gs. 20.000'],
+    cubre: ['Cargamos todo el historial que nos mandás, sin límite', 'Primer mes de carga mensual incluido'],
+    noCubre: ['Lo que mandás se carga tal cual — si falta algo en tu lista, no lo detectamos']
 };
 
 const PLANES_DATA = [
@@ -1745,26 +1758,34 @@ const PLANES_DATA = [
         id: 'sesion', nombre: 'Sesión', precio: '80.000', tipo: 'pago único', popular: false,
         precioNum: 80000, bimestral: null,
         desc: 'Cargamos todo lo que tenés acumulado en GestFact. Sin límite de registros, una sola vez.',
-        features: ['Todo tu historial cargado de una vez', 'Sin límite de registros', 'AnotDigi incluido', 'Sin mensualidad']
+        features: ['Todo tu historial cargado de una vez', 'Sin límite de registros', 'AnotDigi incluido', 'Sin mensualidad'],
+        cubre: ['Cargamos todos los registros que nos mandás, sin límite de cantidad'],
+        noCubre: ['No detectamos si falta alguno en tu lista — cargamos lo que recibimos', 'No incluye correcciones después de la sesión']
     },
     {
         id: 'basico', nombre: 'Básico', precio: '50.000', tipo: '/mes', popular: false,
         precioNum: 50000, bimestral: { precioMes: 45000, total: 90000, ahorro: 10000 },
         backlogHint: true,
         desc: 'Carga mensual de los trabajos nuevos que vas generando. Empezás limpio.',
-        features: ['Registros del mes en curso', 'IsabSoft carga en GestFact', 'Reporte mensual de pendientes']
+        features: ['Registros del mes en curso', 'IsabSoft carga en GestFact', 'Reporte mensual de pendientes'],
+        cubre: ['Cargamos los trabajos del mes que nos enviás'],
+        noCubre: ['No detectamos faltantes ni duplicados', 'Errores de meses anteriores no se corrigen']
     },
     {
         id: 'completo', nombre: 'Completo', precio: '100.000', tipo: '/mes', popular: true,
         precioNum: 100000, bimestral: { precioMes: 90000, total: 180000, ahorro: 20000 },
         desc: 'Básico más control total y seguimiento avanzado.',
-        features: ['Todo lo del Básico', 'Control de estados avanzado', 'IsabSoft controla todo', 'Soporte prioritario']
+        features: ['Todo lo del Básico', 'Control de estados avanzado', 'IsabSoft controla todo', 'Soporte prioritario'],
+        cubre: ['Carga mensual + corregimos si nos avisás un error', 'Seguimiento de estado de cada trabajo'],
+        noCubre: ['Si falta algo o hay un error, necesitás avisarnos vos']
     },
     {
         id: 'full', nombre: 'Full', precio: '150.000', tipo: '/mes', popular: false,
         precioNum: 150000, bimestral: { precioMes: 135000, total: 270000, ahorro: 30000 },
         desc: 'AnotDigi conectado directo a GestFact. IsabSoft monitorea todo.',
-        features: ['AnotDigi → GestFact directo', 'Sin límite de nada', 'IsabSoft controla 24/7', 'Reportes automáticos']
+        features: ['AnotDigi → GestFact directo', 'Sin límite de nada', 'IsabSoft controla 24/7', 'Reportes automáticos'],
+        cubre: ['Coteamos tu lista vs GestFact y corregimos diferencias sin que avises', 'Historial siempre limpio y verificado'],
+        noCubre: []
     }
 ];
 
@@ -1863,6 +1884,10 @@ function renderizarPlanes(puedeVolver) {
         <div class="plan-features">
             ${COMBO_DATA.features.map(f => `<div class="plan-feat">${f}</div>`).join('')}
         </div>
+        <div class="plan-cob">
+            ${(COMBO_DATA.cubre||[]).map(t => `<div class="plan-cob-si">✓ ${t}</div>`).join('')}
+            ${(COMBO_DATA.noCubre||[]).map(t => `<div class="plan-cob-no">✗ ${t}</div>`).join('')}
+        </div>
         <button class="btn-plan" onclick="contactarPlan('combo')">
             Quiero el Combo →
         </button>
@@ -1884,6 +1909,11 @@ function renderizarPlanes(puedeVolver) {
         const backlogHint = p.backlogHint
             ? `<div style="font-size:0.72rem;color:rgba(255,255,255,0.3);margin-top:8px;text-align:center;">¿Tenés registros acumulados? Empezá con el <span style="color:rgba(74,222,128,0.7);">Combo Arranque ↑</span></div>`
             : '';
+        const cobItems = [
+            ...(p.cubre||[]).map(t => `<div class="plan-cob-si">✓ ${t}</div>`),
+            ...(p.noCubre||[]).map(t => `<div class="plan-cob-no">✗ ${t}</div>`)
+        ].join('');
+        const cobSection = cobItems ? `<div class="plan-cob">${cobItems}</div>` : '';
         return `
         <div class="plan-card ${p.popular ? 'popular' : ''}">
             ${p.popular ? '<div class="plan-badge">Popular</div>' : ''}
@@ -1897,6 +1927,7 @@ function renderizarPlanes(puedeVolver) {
             <div class="plan-features">
                 ${p.features.map(f => `<div class="plan-feat">${f}</div>`).join('')}
             </div>
+            ${cobSection}
             <button class="btn-plan" onclick="contactarPlan('${p.id}')">
                 Quiero este plan →
             </button>
