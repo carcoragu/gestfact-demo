@@ -1956,6 +1956,17 @@ async function checkActivacionURL() {
 // ─── Init promo ───
 (async function() {
     await checkActivacionURL();
+
+    // Test rápido: ?testexp=N → fija expiry a hoy+N días (solo para pruebas internas)
+    const _te = new URLSearchParams(window.location.search).get('testexp');
+    if (_te !== null) {
+        const _d = new Date();
+        _d.setDate(_d.getDate() + (parseInt(_te) || 0));
+        localStorage.setItem('anotdigi_expiry', _d.toISOString().split('T')[0]);
+        if (!localStorage.getItem('anotdigi_plan')) localStorage.setItem('anotdigi_plan', 'BASICO');
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+
     promoIniciar();
     promoActualizarBanner();
     if (!promoActivo()) {
