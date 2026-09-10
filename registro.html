@@ -1280,9 +1280,15 @@ function procesarBulk() {
 
 function renderizarJobs() {
     const c = document.getElementById('jobsContainer');
+
+    // Detectar chapas repetidas dentro de la misma lista
+    const conteoChapas = {};
+    parsedJobs.forEach(j => { conteoChapas[j.chapa] = (conteoChapas[j.chapa] || 0) + 1; });
+
     c.innerHTML = parsedJobs.map((j, i) => {
         const dupe       = esDuplicado(j.chapa, j.fechaVal);
         const chapaVista = !dupe && chapaExiste(j.chapa);
+        const repetida   = conteoChapas[j.chapa] > 1;
         const dupeHtml = (dupe && esPlanPremium())
             ? `<div style="font-size:0.75rem;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.4);">
                    🔴 Ya cargado en GestFact — no se enviará al WhatsApp
@@ -1292,11 +1298,17 @@ function renderizarJobs() {
                    ⚠️ Chapa ya vista en GestFact — verificá si es otro trabajo
                </div>`
             : '';
+        const repetidaHtml = repetida
+            ? `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
+                   ⚠️ Esta chapa aparece ${conteoChapas[j.chapa]}x en esta lista — verificá las fechas
+               </div>`
+            : '';
         const cardBorder = (dupe && esPlanPremium()) ? 'border:1.5px solid rgba(248,113,113,0.45);' : '';
         return `
         <div class="job-card" id="jcard-${i}" style="${cardBorder}">
             <div class="job-num">#${i+1} — ${j.chapa}</div>
             ${dupeHtml}
+            ${repetidaHtml}
 
             <div class="job-f">
                 <div class="rev-label">Chapa</div>
