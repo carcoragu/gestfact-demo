@@ -219,6 +219,15 @@
         .jobs-wrap { width: 100%; max-width: 440px; margin: 0 auto; }
         .job-card  { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
         .job-card.sin-cliente { border-color: #f87171; }
+
+        /* Selector estado pago */
+        .estado-wrap { width:100%; margin-bottom:20px; padding:14px 16px; background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.12); border-radius:14px; }
+        .estado-wrap.sin-seleccion { border-color:#f87171; animation: shake 0.28s; }
+        .estado-label { font-size:0.72rem; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; }
+        .estado-btns  { display:flex; gap:10px; }
+        .btn-estado   { flex:1; padding:13px 8px; border-radius:11px; border:2px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.55); font-size:0.95rem; font-weight:700; cursor:pointer; transition:all 0.18s; }
+        .btn-estado.activo-pendiente { border-color:#fbbf24; background:rgba(251,191,36,0.15); color:#fbbf24; }
+        .btn-estado.activo-cobrado   { border-color:#4ade80; background:rgba(74,222,128,0.15); color:#4ade80; }
         .job-num  { font-size: 0.75rem; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
         .job-f    { margin-bottom: 10px; }
 
@@ -583,6 +592,15 @@
         <span style="color:rgba(255,255,255,0.5);">Si es otro trabajo, podés enviar igual.</span>
     </div>
 
+    <!-- Selector estado pago — wizard -->
+    <div class="estado-wrap" id="estadoWrapWizard" style="margin-top:18px;">
+        <div class="estado-label">Estado del trabajo <span style="color:#f87171">*</span></div>
+        <div class="estado-btns">
+            <button class="btn-estado" id="btnPendienteWizard" onclick="setEstadoWizard('pendiente')">⏳ Pendiente</button>
+            <button class="btn-estado" id="btnCobradoWizard"   onclick="setEstadoWizard('cobrado')">✅ Cobrado</button>
+        </div>
+    </div>
+
     <button class="btn-next" style="margin-top:14px;" onclick="enviarIsabSoft()">💬 Enviar a IsabSoft</button>
     <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo registro</button>
 </div>
@@ -612,8 +630,18 @@
     <div class="jobs-wrap">
         <div style="text-align:center;margin-bottom:20px;">
             <div class="question" style="font-size:1.15rem;">Verificá los trabajos</div>
-            <div class="hint" style="margin-top:6px;">El WhatsApp enviará tu texto original — esto es solo para verificar</div>
+            <div class="hint" style="margin-top:6px;">Revisá cada tarjeta y elegí el estado antes de enviar</div>
         </div>
+
+        <!-- Selector estado pago — global para toda la lista -->
+        <div class="estado-wrap" id="estadoWrapBulk">
+            <div class="estado-label">Estado de estos trabajos <span style="color:#f87171">*</span></div>
+            <div class="estado-btns">
+                <button class="btn-estado" id="btnPendienteBulk" onclick="setEstadoBulk('pendiente')">⏳ Pendiente</button>
+                <button class="btn-estado" id="btnCobradoBulk"   onclick="setEstadoBulk('cobrado')">✅ Cobrado</button>
+            </div>
+        </div>
+
         <div id="jobsContainer"></div>
         <button class="btn-next" onclick="enviarBulk()">💬 Enviar a IsabSoft</button>
         <button class="btn-back" style="margin-top:14px;width:100%;text-align:center;" onclick="mostrarScreen('sb1')">← Volver a editar lista</button>
@@ -643,6 +671,8 @@ const GF_API     = "https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7K
 
 // ─── Estado ───
 const datos = { cliente: '', chapa: '', fecha: '', servicio: '' };
+let estadoPagoBulk   = ''; // 'pendiente' | 'cobrado' — global para lista bulk
+let estadoPagoWizard = ''; // 'pendiente' | 'cobrado' — para wizard uno-a-uno
 
 // ─── Fecha de hoy (Paraguay) ───
 (function() {
@@ -718,6 +748,20 @@ function chapaExiste(chapa) {
 function esPlanPremium() {
     const p = localStorage.getItem('anotdigi_plan');
     return p === 'completo' || p === 'full';
+}
+
+function setEstadoBulk(estado) {
+    estadoPagoBulk = estado;
+    document.getElementById('btnPendienteBulk').className = 'btn-estado' + (estado === 'pendiente' ? ' activo-pendiente' : '');
+    document.getElementById('btnCobradoBulk').className   = 'btn-estado' + (estado === 'cobrado'   ? ' activo-cobrado'   : '');
+    document.getElementById('estadoWrapBulk').classList.remove('sin-seleccion');
+}
+
+function setEstadoWizard(estado) {
+    estadoPagoWizard = estado;
+    document.getElementById('btnPendienteWizard').className = 'btn-estado' + (estado === 'pendiente' ? ' activo-pendiente' : '');
+    document.getElementById('btnCobradoWizard').className   = 'btn-estado' + (estado === 'cobrado'   ? ' activo-cobrado'   : '');
+    document.getElementById('estadoWrapWizard').classList.remove('sin-seleccion');
 }
 
 function addClienteToList(c) {
@@ -1055,8 +1099,17 @@ function enviarIsabSoft() {
     }
     montoAvisadoWizard = false;
 
+    if (!estadoPagoWizard) {
+        const wrap = document.getElementById('estadoWrapWizard');
+        wrap.classList.add('sin-seleccion');
+        wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        toast('⚠️ Indicá si el trabajo está pendiente o cobrado');
+        return;
+    }
+
+    const estadoLabel = estadoPagoWizard === 'cobrado' ? '✅ COBRADO' : '⏳ PENDIENTE';
     const [y, m, d] = fecha.split('-');
-    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
+    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteFinal} | ${estadoLabel}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
@@ -1260,6 +1313,12 @@ function parsearBloques(texto) {
 
 // ─── Renderizar tarjetas ───
 function procesarBulk() {
+    // Reset estado al procesar nueva lista
+    estadoPagoBulk = '';
+    document.getElementById('btnPendienteBulk').className = 'btn-estado';
+    document.getElementById('btnCobradoBulk').className   = 'btn-estado';
+    document.getElementById('estadoWrapBulk').classList.remove('sin-seleccion');
+
     const clienteEl = document.getElementById('bulkCliente');
     const cliente   = clienteEl.value.trim().toUpperCase();
     if (!cliente) {
@@ -1557,10 +1616,20 @@ function enviarBulk() {
         return;
     }
 
+    // Validar estado de pago
+    if (!estadoPagoBulk) {
+        const wrap = document.getElementById('estadoWrapBulk');
+        wrap.classList.add('sin-seleccion');
+        wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        toast('⚠️ Indicá si los trabajos están pendientes o cobrados');
+        return;
+    }
+
     // Guardar clientes nuevos
     parsedJobs.forEach(j => addClienteToList(j.cliente));
 
-    const cliente = document.getElementById('bulkCliente').value.trim().toUpperCase();
+    const cliente     = document.getElementById('bulkCliente').value.trim().toUpperCase();
+    const estadoLabel = estadoPagoBulk === 'cobrado' ? '✅ COBRADO' : '⏳ PENDIENTE';
 
     // Construir mensaje desde parsedJobs para incluir montos y campos editados manualmente
     const cuerpo = parsedJobs.map(j => {
@@ -1572,7 +1641,7 @@ function enviarBulk() {
         return bloque;
     }).join('\n\n');
 
-    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${cuerpo}`;
+    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel}\n\n${cuerpo}`;
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
@@ -1749,6 +1818,10 @@ function reiniciar() {
     document.getElementById('clienteInput').value = '';
     document.getElementById('chapa').value    = '';
     document.getElementById('servicio').value = '';
+    estadoPagoWizard = '';
+    document.getElementById('btnPendienteWizard').className = 'btn-estado';
+    document.getElementById('btnCobradoWizard').className   = 'btn-estado';
+    document.getElementById('estadoWrapWizard').classList.remove('sin-seleccion');
 
     // Resetear fecha a hoy
     const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Asuncion" }));
