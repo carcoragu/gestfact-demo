@@ -1256,7 +1256,8 @@ function renderizarJobs() {
             <div class="job-f">
                 <div class="rev-label">Fecha</div>
                 <input class="big-input rev-input" id="jfecha-${i}" type="date" value="${j.fechaVal}"
-                       onchange="parsedJobs[${i}].fechaVal=this.value">
+                       onchange="parsedJobs[${i}].fechaVal=this.value; checkFechaMismatchBulk(${i});">
+                <div id="jfechamismatch-${i}" style="display:none;font-size:0.75rem;color:#f87171;margin-top:6px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.3);"></div>
             </div>
 
             <div class="job-f">
@@ -1264,7 +1265,10 @@ function renderizarJobs() {
                 <input class="big-input rev-input" id="jmarca-${i}" type="text"
                        placeholder="toyota vitz" value="${j.marcaModelo || ''}"
                        autocorrect="off" autocapitalize="words" spellcheck="false"
-                       oninput="parsedJobs[${i}].marcaModelo=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color');">
+                       oninput="parsedJobs[${i}].marcaModelo=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color'); document.getElementById('jvehiculowarn-${i}').style.display=this.value.trim()?'none':'block';">
+                <div id="jvehiculowarn-${i}" style="display:${j.marcaModelo ? 'none' : 'block'};font-size:0.75rem;color:#f87171;margin-top:6px;padding:6px 10px;background:rgba(248,113,113,0.08);border-radius:8px;border:1px solid rgba(248,113,113,0.3);">
+                    ⚠️ El texto no tiene vehículo — completá marca y modelo antes de enviar.
+                </div>
             </div>
 
             <div class="job-f">
@@ -1279,7 +1283,7 @@ function renderizarJobs() {
                 <textarea class="big-input rev-input" id="jserv-${i}"
                           style="min-height:80px;resize:vertical;line-height:1.5;text-align:left;font-size:0.9rem;"
                           placeholder="Describí el trabajo realizado"
-                          oninput="parsedJobs[${i}].servicio=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color'); checkMismatchBulk(${i});">${j.servicio}</textarea>
+                          oninput="parsedJobs[${i}].servicio=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color'); checkMismatchBulk(${i}); checkFechaMismatchBulk(${i});">${j.servicio}</textarea>
                 <div id="jmismatch-${i}" style="display:none;font-size:0.75rem;color:#f87171;margin-top:6px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.3);"></div>
             </div>
 
@@ -1296,6 +1300,24 @@ function renderizarJobs() {
         </div>
         `;
     }).join('');
+
+    // Inicializar fecha mismatch en tarjetas ya parseadas
+    parsedJobs.forEach((j, i) => checkFechaMismatchBulk(i));
+}
+
+function checkFechaMismatchBulk(i) {
+    const fecha    = document.getElementById(`jfecha-${i}`)?.value || '';
+    const serv     = document.getElementById(`jserv-${i}`)?.value || '';
+    const fechaTxt = extraerFechaDeTexto(serv);
+    const warn     = document.getElementById(`jfechamismatch-${i}`);
+    if (!warn) return;
+    if (fechaTxt && fechaTxt !== fecha) {
+        const [ty, tm, td] = fechaTxt.split('-');
+        warn.textContent = `⚠️ El trabajo tiene la fecha ${td}/${tm}/${ty} — ¿es la fecha correcta?`;
+        warn.style.display = 'block';
+    } else {
+        warn.style.display = 'none';
+    }
 }
 
 // ─── Enviar bulk ───
@@ -1395,6 +1417,31 @@ function enviarBulk() {
         });
         toast(`⚠️ Chapa no coincide en ${conMismatch.length > 1 ? conMismatch.length + ' trabajos' : 'un trabajo'} — corregí antes de enviar`);
         document.getElementById(`jcard-${conMismatch[0].i}`)?.scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    // Validar fecha mismatch — bloqueo duro
+    const conFechaMismatch = parsedJobs.map((j,i) => {
+        const fecha    = document.getElementById(`jfecha-${i}`)?.value || '';
+        const serv     = document.getElementById(`jserv-${i}`)?.value || '';
+        const fechaTxt = extraerFechaDeTexto(serv);
+        return { j, i, fecha, fechaTxt };
+    }).filter(({fecha, fechaTxt}) => fechaTxt && fechaTxt !== fecha);
+    if (conFechaMismatch.length) {
+        conFechaMismatch.forEach(({i, fechaTxt}) => {
+            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
+            document.getElementById(`jfecha-${i}`)?.classList.add('error');
+            setTimeout(() => document.getElementById(`jfecha-${i}`)?.classList.remove('error'), 1500);
+            const warn = document.getElementById(`jfechamismatch-${i}`);
+            if (warn) {
+                const [ty, tm, td] = fechaTxt.split('-');
+                warn.textContent = `⚠️ El trabajo tiene la fecha ${td}/${tm}/${ty} — corregí antes de enviar`;
+                warn.style.display = 'block';
+            }
+        });
+        const chapas = conFechaMismatch.map(({j}) => j.chapa || '?').join(', ');
+        toast(`⚠️ Fecha no coincide en: ${chapas} — corregí antes de enviar`);
+        document.getElementById(`jcard-${conFechaMismatch[0].i}`)?.scrollIntoView({behavior:'smooth', block:'center'});
         return;
     }
 
