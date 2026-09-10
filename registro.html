@@ -524,7 +524,11 @@
         <div style="width:100%">
             <div class="rev-label">Vehículo <span style="color:#f87171">*</span></div>
             <input class="big-input rev-input" id="rev-marca" type="text"
-                   placeholder="toyota vitz" autocorrect="off" autocapitalize="words" spellcheck="false">
+                   placeholder="toyota vitz" autocorrect="off" autocapitalize="words" spellcheck="false"
+                   oninput="document.getElementById('vehiculoWarn').style.display=this.value.trim()?'none':'block';">
+            <div id="vehiculoWarn" style="display:none;font-size:0.75rem;color:#f87171;margin-top:6px;padding:6px 10px;background:rgba(248,113,113,0.08);border-radius:8px;border:1px solid rgba(248,113,113,0.3);">
+                ⚠️ El texto no tiene vehículo — completá marca y modelo antes de enviar.
+            </div>
         </div>
 
         <!-- Fecha -->
@@ -554,6 +558,11 @@
     <div id="fechaMismatchWarn" style="display:none;width:100%;margin-top:10px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.5);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:#f87171;line-height:1.5;">
         ⚠️ El trabajo tiene la fecha <strong id="fechaMismatchEnTexto"></strong> pero el campo dice <strong id="fechaMismatchCampo"></strong>.<br>
         <span style="color:rgba(255,255,255,0.45);">Corregí una de las dos antes de enviar.</span>
+    </div>
+
+    <div id="fechaSinFechaWarn" style="display:none;width:100%;margin-top:10px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.5);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:#f87171;line-height:1.5;">
+        ⚠️ El trabajo no tiene fecha — agregala en el texto antes de enviar.<br>
+        <span style="color:rgba(255,255,255,0.45);">Ej: AARO223 toyota vitz 09/09</span>
     </div>
 
     <div id="dupeWarnWizard" style="display:none;width:100%;margin-top:10px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.5);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:#fbbf24;line-height:1.5;">
@@ -857,6 +866,9 @@ function armarResumen() {
     actualizarChapaMismatch();
     actualizarFechaMismatch();
     actualizarDupeWarnWizard();
+    const marca = document.getElementById('rev-marca').value.trim();
+    const vWarn = document.getElementById('vehiculoWarn');
+    if (vWarn) vWarn.style.display = marca ? 'none' : 'block';
 }
 
 const NO_CHAPA_RE   = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
@@ -933,20 +945,27 @@ function extraerFechaDeTexto(texto) {
 }
 
 function actualizarFechaMismatch() {
-    const fechaCampo = document.getElementById('rev-fecha').value;
-    const servicio   = document.getElementById('rev-servicio').value;
-    const fechaTexto = extraerFechaDeTexto(servicio);
-    const w = document.getElementById('fechaMismatchWarn');
-    if (!w) return;
-    if (fechaTexto && fechaTexto !== fechaCampo) {
+    const fechaCampo    = document.getElementById('rev-fecha').value;
+    const servicio      = document.getElementById('rev-servicio').value;
+    const fechaTexto    = extraerFechaDeTexto(servicio);
+    const wMismatch     = document.getElementById('fechaMismatchWarn');
+    const wSinFecha     = document.getElementById('fechaSinFechaWarn');
+    if (!wMismatch || !wSinFecha) return;
+
+    if (!fechaTexto) {
+        wSinFecha.style.display  = 'block';
+        wMismatch.style.display  = 'none';
+    } else if (fechaTexto !== fechaCampo) {
+        wSinFecha.style.display  = 'none';
+        wMismatch.style.display  = 'block';
         const [ty, tm, td] = fechaTexto.split('-');
         document.getElementById('fechaMismatchEnTexto').textContent = `${td}/${tm}/${ty}`;
         const partes = (fechaCampo || '').split('-');
         document.getElementById('fechaMismatchCampo').textContent = partes.length === 3
             ? `${partes[2]}/${partes[1]}/${partes[0]}` : '(vacía)';
-        w.style.display = 'block';
     } else {
-        w.style.display = 'none';
+        wSinFecha.style.display  = 'none';
+        wMismatch.style.display  = 'none';
     }
 }
 
@@ -999,9 +1018,16 @@ function enviarIsabSoft() {
         return;
     }
 
-    // Fecha mismatch — bloqueo duro
+    // Fecha en texto — bloqueo duro (sin fecha o con mismatch)
     const fechaTexto = extraerFechaDeTexto(servicio);
-    if (fechaTexto && fechaTexto !== fecha) {
+    if (!fechaTexto) {
+        actualizarFechaMismatch();
+        document.getElementById('rev-servicio').classList.add('error');
+        setTimeout(() => document.getElementById('rev-servicio').classList.remove('error'), 1500);
+        toast('⚠️ El trabajo no tiene fecha — agregala en el texto');
+        return;
+    }
+    if (fechaTexto !== fecha) {
         actualizarFechaMismatch();
         document.getElementById('rev-fecha').classList.add('error');
         setTimeout(() => document.getElementById('rev-fecha').classList.remove('error'), 1500);
