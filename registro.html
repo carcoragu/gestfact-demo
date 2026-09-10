@@ -953,7 +953,7 @@ function actualizarFechaMismatch() {
     if (!wMismatch || !wSinFecha) return;
 
     if (!fechaTexto) {
-        wSinFecha.style.display  = 'block';
+        wSinFecha.style.display  = 'none';
         wMismatch.style.display  = 'none';
     } else if (fechaTexto !== fechaCampo) {
         wSinFecha.style.display  = 'none';
@@ -1018,16 +1018,9 @@ function enviarIsabSoft() {
         return;
     }
 
-    // Fecha en texto — bloqueo duro (sin fecha o con mismatch)
+    // Fecha mismatch — bloqueo duro (solo si hay fecha en el texto y no coincide)
     const fechaTexto = extraerFechaDeTexto(servicio);
-    if (!fechaTexto) {
-        actualizarFechaMismatch();
-        document.getElementById('rev-servicio').classList.add('error');
-        setTimeout(() => document.getElementById('rev-servicio').classList.remove('error'), 1500);
-        toast('⚠️ El trabajo no tiene fecha — agregala en el texto');
-        return;
-    }
-    if (fechaTexto !== fecha) {
+    if (fechaTexto && fechaTexto !== fecha) {
         actualizarFechaMismatch();
         document.getElementById('rev-fecha').classList.add('error');
         setTimeout(() => document.getElementById('rev-fecha').classList.remove('error'), 1500);
