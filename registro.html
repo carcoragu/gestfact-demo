@@ -434,6 +434,15 @@
             <strong>Carga Asistida</strong> — Con el Plan Básico, IsabSoft revisa tu lista, controla que no se repitan trabajos ya cargados, y registra los nuevos en GestFact. Vos solo anotás.
         </div>
 
+        <div class="info-steps-title" style="margin-top:32px;">Planes Carga Asistida</div>
+
+        <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);border-radius:12px;padding:12px 16px;margin-bottom:18px;text-align:center;font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.7;">
+            Probá cualquier plan <strong style="color:#4ade80;">30 días gratis</strong>, sin tarjeta.<br>
+            Después aprobás y enviás transferencia a IsabSoft para continuar.
+        </div>
+
+        <div id="sinfoPlanes" style="width:100%;"></div>
+
         <button class="btn-back" style="margin-top:24px;width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
     </div>
 </div>
@@ -1096,6 +1105,45 @@ function irBulk() {
 function mostrarScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    if (id === 'sinfo') renderizarPlanesInfo();
+}
+
+function renderizarPlanesInfo() {
+    const c = document.getElementById('sinfoPlanes');
+    if (!c) return;
+    const planActual = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    c.innerHTML = PLANES_DATA.map(p => {
+        const esActual = planActual === p.id.toUpperCase();
+        const badge = esActual
+            ? `<div style="position:absolute;top:-10px;right:14px;background:#4ade80;color:#1a1a2e;font-size:0.62rem;font-weight:800;padding:3px 10px;border-radius:50px;letter-spacing:0.8px;text-transform:uppercase;">En prueba</div>`
+            : p.popular
+            ? `<div style="position:absolute;top:-10px;right:14px;background:rgba(255,255,255,0.15);color:#fff;font-size:0.62rem;font-weight:800;padding:3px 10px;border-radius:50px;letter-spacing:0.8px;text-transform:uppercase;">Popular</div>`
+            : '';
+        return `
+        <div style="background:rgba(255,255,255,0.05);border:1.5px solid ${esActual ? '#4ade80' : 'rgba(255,255,255,0.1)'};border-radius:14px;padding:16px;margin-bottom:12px;position:relative;">
+            ${badge}
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-weight:800;color:#fff;font-size:1rem;">${p.nombre}</span>
+                <span style="color:#4ade80;font-weight:800;font-size:1.05rem;">Gs.${p.precio}<span style="font-size:0.7rem;color:rgba(255,255,255,0.4);"> ${p.tipo}</span></span>
+            </div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">${p.desc}</div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:12px;line-height:1.8;">${p.features.map(f => '✓ ' + f).join('<br>')}</div>
+            <button onclick="activarPruebaPlan('${p.id}')"
+                    style="width:100%;padding:12px;background:${esActual ? 'rgba(74,222,128,0.12)' : '#4ade80'};color:${esActual ? '#4ade80' : '#1a1a2e'};border:${esActual ? '1.5px solid #4ade80' : 'none'};border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;">
+                ${esActual ? '✓ En prueba — extender 30 días' : 'Probar 30 días gratis →'}
+            </button>
+        </div>`;
+    }).join('');
+}
+
+function activarPruebaPlan(planId) {
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 30);
+    localStorage.setItem('anotdigi_plan',   planId.toUpperCase());
+    localStorage.setItem('anotdigi_expiry', expiry.toISOString().split('T')[0]);
+    promoActualizarBanner();
+    mostrarScreen('s0');
+    setTimeout(() => toast('Plan ' + planId.charAt(0).toUpperCase() + planId.slice(1) + ' activado — 30 días gratis ✓'), 300);
 }
 
 // ─── Parser ───
@@ -1486,7 +1534,7 @@ function enviarBulk() {
 //  SISTEMA DE PLANES / PROMO
 // ═══════════════════════════════════════════════════════
 
-const PROMO_DIAS = 90;
+const PROMO_DIAS = 30;
 const PLANES_DATA = [
     {
         id: 'sesion', nombre: 'Sesión', precio: '80.000', tipo: 'pago único', popular: false,
