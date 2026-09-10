@@ -1289,10 +1289,14 @@ function renderizarJobs() {
         const dupe       = esDuplicado(j.chapa, j.fechaVal);
         const chapaVista = !dupe && chapaExiste(j.chapa);
         const repetida   = conteoChapas[j.chapa] > 1;
-        const dupeHtml = (dupe && esPlanPremium())
-            ? `<div style="font-size:0.75rem;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.4);">
-                   🔴 Ya cargado en GestFact — no se enviará al WhatsApp
-               </div>`
+        const dupeHtml = dupe
+            ? (esPlanPremium()
+                ? `<div style="font-size:0.75rem;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.4);">
+                       🔴 Ya cargado en GestFact — no se enviará al WhatsApp
+                   </div>`
+                : `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
+                       ⚠️ Ya cargado en GestFact para esta fecha — verificá antes de enviar
+                   </div>`)
             : chapaVista
             ? `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
                    ⚠️ Chapa ya vista en GestFact — verificá si es otro trabajo
