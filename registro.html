@@ -220,6 +220,12 @@
         .job-card  { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
         .job-card.sin-cliente { border-color: #f87171; }
 
+        /* Toggle mensual / bimestral */
+        .plan-toggle { display:flex; background:rgba(255,255,255,0.07); border-radius:10px; padding:3px; margin-bottom:20px; width:100%; }
+        .plan-toggle-btn { flex:1; padding:9px 6px; border:none; border-radius:8px; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.18s; background:transparent; color:rgba(255,255,255,0.4); }
+        .plan-toggle-btn.activo { background:#4ade80; color:#1a1a2e; }
+        .plan-bim-ahorro { display:inline-block; background:rgba(74,222,128,0.18); color:#4ade80; font-size:0.68rem; font-weight:800; padding:2px 7px; border-radius:50px; margin-left:5px; vertical-align:middle; }
+
         /* Selector estado pago */
         .estado-wrap { width:100%; margin-bottom:20px; padding:14px 16px; background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.12); border-radius:14px; }
         .estado-wrap.sin-seleccion { border-color:#f87171; animation: shake 0.28s; }
@@ -451,6 +457,11 @@
             Después aprobás y enviás transferencia a IsabSoft para continuar.
         </div>
 
+        <div class="plan-toggle" id="toggleSinfo">
+            <button class="plan-toggle-btn activo" id="btnMensualSinfo"    onclick="setModoBimestral(false)">Mensual</button>
+            <button class="plan-toggle-btn"        id="btnBimestralSinfo"  onclick="setModoBimestral(true)">Bimestral <span class="plan-bim-ahorro">−10%</span></button>
+        </div>
+
         <div id="sinfoPlanes" style="width:100%;"></div>
 
         <button class="btn-back" style="margin-top:24px;width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
@@ -658,6 +669,11 @@
             <div class="question" style="font-size:1.15rem;">Elegí tu plan</div>
             <div class="hint" style="margin-top:6px;" id="spHint">Continuá usando AnotDigi</div>
         </div>
+        <div class="plan-toggle" id="toggleSp">
+            <button class="plan-toggle-btn activo" id="btnMensualSp"    onclick="setModoBimestral(false)">Mensual</button>
+            <button class="plan-toggle-btn"        id="btnBimestralSp"  onclick="setModoBimestral(true)">Bimestral <span class="plan-bim-ahorro">−10%</span></button>
+        </div>
+
         <div id="planCards"></div>
         <div id="spVolver" style="display:none;margin-top:6px;">
             <button class="btn-back" style="width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
@@ -751,6 +767,20 @@ function chapaExiste(chapa) {
 function esPlanPremium() {
     const p = localStorage.getItem('anotdigi_plan');
     return p === 'completo' || p === 'full';
+}
+
+function setModoBimestral(bim) {
+    modoBimestral = bim;
+    // Sync ambos toggles
+    ['Sinfo','Sp'].forEach(sfx => {
+        const bimEl = document.getElementById(`btnBimestral${sfx}`);
+        const menEl = document.getElementById(`btnMensual${sfx}`);
+        if (bimEl) bimEl.className = 'plan-toggle-btn' + (bim ? ' activo' : '');
+        if (menEl) menEl.className = 'plan-toggle-btn' + (!bim ? ' activo' : '');
+    });
+    // Re-render pantalla activa
+    if (document.getElementById('sinfo').classList.contains('active')) renderizarPlanesInfo();
+    if (document.getElementById('sp').classList.contains('active'))    renderizarPlanes(_planesVolver);
 }
 
 function _aplicarEstadoBtns(pfx, estado) {
@@ -1175,6 +1205,18 @@ function mostrarScreen(id) {
     if (id === 'sinfo') renderizarPlanesInfo();
 }
 
+function _precioHtml(p) {
+    if (modoBimestral && p.bimestral) {
+        const b  = p.bimestral;
+        const pm = b.precioMes.toLocaleString('es-PY');
+        const t  = b.total.toLocaleString('es-PY');
+        const ah = b.ahorro.toLocaleString('es-PY');
+        return `<span style="color:#4ade80;font-weight:800;font-size:1.05rem;">Gs.${pm}<span style="font-size:0.7rem;color:rgba(255,255,255,0.4);"> /mes × 2</span></span>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:2px;">Total Gs.${t} — <span style="color:#4ade80;">ahorrás Gs.${ah}</span></div>`;
+    }
+    return `<span style="color:#4ade80;font-weight:800;font-size:1.05rem;">Gs.${p.precio}<span style="font-size:0.7rem;color:rgba(255,255,255,0.4);"> ${p.tipo}</span></span>`;
+}
+
 function renderizarPlanesInfo() {
     const c = document.getElementById('sinfoPlanes');
     if (!c) return;
@@ -1189,9 +1231,9 @@ function renderizarPlanesInfo() {
         return `
         <div style="background:rgba(255,255,255,0.05);border:1.5px solid ${esActual ? '#4ade80' : 'rgba(255,255,255,0.1)'};border-radius:14px;padding:16px;margin-bottom:12px;position:relative;">
             ${badge}
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
                 <span style="font-weight:800;color:#fff;font-size:1rem;">${p.nombre}</span>
-                <span style="color:#4ade80;font-weight:800;font-size:1.05rem;">Gs.${p.precio}<span style="font-size:0.7rem;color:rgba(255,255,255,0.4);"> ${p.tipo}</span></span>
+                <div style="text-align:right;">${_precioHtml(p)}</div>
             </div>
             <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">${p.desc}</div>
             <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:12px;line-height:1.8;">${p.features.map(f => '✓ ' + f).join('<br>')}</div>
@@ -1671,24 +1713,31 @@ function enviarBulk() {
 // ═══════════════════════════════════════════════════════
 
 const PROMO_DIAS = 30;
+let   modoBimestral  = false;
+let   _planesVolver  = false; // para re-render desde setModoBimestral
+
 const PLANES_DATA = [
     {
         id: 'sesion', nombre: 'Sesión', precio: '80.000', tipo: 'pago único', popular: false,
+        precioNum: 80000, bimestral: null,
         desc: 'IsabSoft carga y organiza todo en GestFact una sola vez.',
         features: ['1 sesión de carga completa', 'AnotDigi incluido', 'Sin mensualidad']
     },
     {
         id: 'basico', nombre: 'Básico', precio: '50.000', tipo: '/mes', popular: false,
+        precioNum: 50000, bimestral: { precioMes: 45000, total: 90000, ahorro: 10000 },
         desc: 'Registrá con AnotDigi, IsabSoft carga todo en GestFact por vos.',
         features: ['AnotDigi sin límite de registros', 'IsabSoft carga en GestFact', 'Reporte mensual']
     },
     {
         id: 'completo', nombre: 'Completo', precio: '100.000', tipo: '/mes', popular: true,
+        precioNum: 100000, bimestral: { precioMes: 90000, total: 180000, ahorro: 20000 },
         desc: 'Básico más presupuestos ilimitados y control total.',
         features: ['AnotDigi sin límite', 'Presupuestos ilimitados', 'IsabSoft controla todo', 'Soporte prioritario']
     },
     {
         id: 'full', nombre: 'Full', precio: '150.000', tipo: '/mes', popular: false,
+        precioNum: 150000, bimestral: { precioMes: 135000, total: 270000, ahorro: 30000 },
         desc: 'AnotDigi conectado directo a GestFact. IsabSoft monitorea todo.',
         features: ['AnotDigi → GestFact directo', 'Sin límite de nada', 'IsabSoft controla 24/7', 'Reportes automáticos']
     }
@@ -1755,6 +1804,7 @@ function promoActualizarBanner() {
 }
 
 function renderizarPlanes(puedeVolver) {
+    _planesVolver = puedeVolver;
     const c    = document.getElementById('planCards');
     const hint = document.getElementById('spHint');
     const vol  = document.getElementById('spVolver');
@@ -1765,27 +1815,41 @@ function renderizarPlanes(puedeVolver) {
         : 'Tu período de prueba terminó — elegí un plan';
     if (vol) vol.style.display = puedeVolver ? 'block' : 'none';
 
-    c.innerHTML = PLANES_DATA.map(p => `
+    c.innerHTML = PLANES_DATA.map(p => {
+        const bim   = modoBimestral && p.bimestral;
+        const pmStr = bim ? p.bimestral.precioMes.toLocaleString('es-PY') : p.precio;
+        const tStr  = bim ? p.bimestral.total.toLocaleString('es-PY')    : null;
+        const aStr  = bim ? p.bimestral.ahorro.toLocaleString('es-PY')   : null;
+        const tipoStr = bim ? '/mes × 2' : p.tipo;
+        return `
         <div class="plan-card ${p.popular ? 'popular' : ''}">
             ${p.popular ? '<div class="plan-badge">Popular</div>' : ''}
             <div class="plan-nombre">${p.nombre}</div>
             <div>
-                <span class="plan-precio">Gs. ${p.precio}</span>
-                <span class="plan-tipo"> ${p.tipo}</span>
+                <span class="plan-precio">Gs. ${pmStr}</span>
+                <span class="plan-tipo"> ${tipoStr}</span>
             </div>
-            <div class="plan-desc">${p.desc}</div>
+            ${bim ? `<div style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:2px;">Total Gs.${tStr} — <span style="color:#4ade80;">ahorrás Gs.${aStr}</span></div>` : ''}
+            <div class="plan-desc" style="margin-top:8px;">${p.desc}</div>
             <div class="plan-features">
                 ${p.features.map(f => `<div class="plan-feat">${f}</div>`).join('')}
             </div>
-            <button class="btn-plan" onclick="contactarPlan('${p.nombre}','${p.precio}','${p.tipo}')">
+            <button class="btn-plan" onclick="contactarPlan('${p.id}')">
                 Quiero este plan →
             </button>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 }
 
-function contactarPlan(nombre, precio, tipo) {
-    const msg = `Hola IsabSoft! Quiero activar AnotDigi *Plan ${nombre}* (Gs. ${precio}${tipo}). ¿Cómo procedo?`;
+function contactarPlan(planId) {
+    const p   = PLANES_DATA.find(x => x.id === planId);
+    if (!p) return;
+    const bim = modoBimestral && p.bimestral;
+    const precioStr = bim
+        ? `Gs. ${p.bimestral.precioMes.toLocaleString('es-PY')}/mes × 2 meses (total Gs. ${p.bimestral.total.toLocaleString('es-PY')})`
+        : `Gs. ${p.precio}${p.tipo}`;
+    const modoStr = bim ? ' *Bimestral*' : '';
+    const msg = `Hola IsabSoft! Quiero activar AnotDigi *Plan ${p.nombre}*${modoStr} (${precioStr}). ¿Cómo procedo?`;
     window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
