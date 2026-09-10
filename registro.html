@@ -664,6 +664,7 @@ function loadClientes(extra = []) {
 }
 
 let registrosGF = []; // {chapa, fecha YYYY-MM-DD} para detección de duplicados
+let gfEstado = 'cargando'; // 'ok' | 'vacio' | 'error'
 
 function normalizarFecha(f) {
     if (!f) return '';
@@ -677,6 +678,7 @@ function normalizarFecha(f) {
 async function fetchClientesSheet() {
     try {
         const res = await fetch(GF_API + '?action=syncExportOrdenes');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const csv = await res.text();
         const lineas = csv.split('\n').filter(l => l.trim());
         const clientes = new Set();
@@ -691,11 +693,14 @@ async function fetchClientesSheet() {
                 if (chapa && fecha) registrosGF.push({ chapa, fecha });
             }
         });
+        gfEstado = registrosGF.length > 0 ? 'ok' : 'vacio';
         loadClientes([...clientes]);
         // Si ya hay tarjetas renderizadas, actualizarlas con los duplicados recién cargados
         if (parsedJobs.length) renderizarJobs();
     } catch(e) {
+        gfEstado = 'error';
         loadClientes(); // fallback a localStorage
+        if (parsedJobs.length) renderizarJobs();
     }
 }
 
@@ -1369,8 +1374,24 @@ function renderizarJobs() {
         `;
     }).join('');
 
-    // Inicializar fecha mismatch en tarjetas ya parseadas
-    parsedJobs.forEach((j, i) => checkFechaMismatchBulk(i));
+    // Inicializar advertencias en tarjetas ya parseadas
+    parsedJobs.forEach((j, i) => { checkFechaMismatchBulk(i); checkMismatchBulk(i); });
+
+    // Banner estado GestFact
+    const bannerExist = document.getElementById('gfStatusBanner');
+    if (bannerExist) bannerExist.remove();
+    if (gfEstado !== 'ok') {
+        const banner = document.createElement('div');
+        banner.id = 'gfStatusBanner';
+        banner.style.cssText = 'width:100%;margin-bottom:14px;padding:8px 12px;border-radius:10px;font-size:0.78rem;line-height:1.5;' +
+            (gfEstado === 'cargando'
+                ? 'background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);'
+                : 'background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.35);');
+        banner.textContent = gfEstado === 'cargando'
+            ? '⏳ Verificando GestFact…'
+            : '⚠️ GestFact no disponible — verificá duplicados manualmente';
+        c.prepend(banner);
+    }
 }
 
 function checkFechaMismatchBulk(i) {
