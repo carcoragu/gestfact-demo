@@ -37,6 +37,7 @@ h1 { font-size: 1.2rem; color: #4ade80; margin-bottom: 4px; }
 // ═══════════════════════════════════════════
 
 const NO_CHAPA_RE   = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+const SIN_CARGO_RE  = /\b(sin\s+cargo|sin\s+costo|gratis|garant[ií]a|garantia|sin\s+cobro)\b/i;
 const MARCAS_VEH_RE = /^(toyota|ford|honda|nissan|chevrolet|changan|fiat|volkswagen|vw|renault|peugeot|citroen|hyundai|kia|mercedes|bmw|audi|suzuki|mitsubishi|subaru|jeep|dodge|ram|gmc|mazda|lifan|geely|byd|jac|mg|haval|chery)\b/i;
 
 function extraerVehiculoDeServicio(servicio) {
@@ -86,7 +87,7 @@ function extraerFechaDeTexto(texto) {
 }
 
 function tieneMonto(texto) {
-    return /\b\d{1,3}\.\d{3}\b|\b\d{5,}\b/.test(texto);
+    return /\b\d{1,3}\.\d{3}\b|\b\d{5,}\b/.test(texto) || SIN_CARGO_RE.test(texto);
 }
 
 function parsearBloques(texto) {
@@ -557,7 +558,7 @@ suite('Wizard — Casos de error Miguel (uno a uno)', s => {
         tieneMonto('Mano de obra 290000') === true,
         'no detectó monto sin puntos');
 
-    t(s,'Texto SIN monto → tieneMonto = false → aviso blando al enviar',
+    t(s,'Texto SIN monto → tieneMonto = false → bloqueo duro al enviar',
         'Miguel olvidó escribir el precio',
         tieneMonto('Cambio de aceite\nTorreta 2\nMano de obra') === false,
         'detectó monto en texto sin precio');
@@ -566,6 +567,26 @@ suite('Wizard — Casos de error Miguel (uno a uno)', s => {
         '',
         tieneMonto('Cambio aceite y pastillas') === false,
         'detectó monto en descripción sin precio');
+
+    t(s,'Texto con "sin cargo" → tieneMonto = true (excepción sin costo)',
+        'Trabajo gratuito / garantía — igual debe poder enviarse',
+        tieneMonto('Revision general sin cargo') === true,
+        'no aceptó "sin cargo" como válido');
+
+    t(s,'Texto con "garantia" → tieneMonto = true',
+        '',
+        tieneMonto('Cambio pastillas garantia') === true,
+        'no aceptó "garantia" como válido');
+
+    t(s,'Texto con "gratis" → tieneMonto = true',
+        '',
+        tieneMonto('Limpieza inyectores gratis') === true,
+        'no aceptó "gratis" como válido');
+
+    t(s,'Texto con "sin cobro" → tieneMonto = true',
+        '',
+        tieneMonto('Ajuste de frenos sin cobro') === true,
+        'no aceptó "sin cobro" como válido');
 
     // ── VEHÍCULO / MARCA ──
     // Miguel no escribe la marca del auto → campo vehículo queda vacío → bloquea envío

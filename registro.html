@@ -973,6 +973,7 @@ function armarResumen() {
 }
 
 const NO_CHAPA_RE   = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+const SIN_CARGO_RE  = /\b(sin\s+cargo|sin\s+costo|gratis|garant[ií]a|garantia|sin\s+cobro)\b/i;
 const MARCAS_VEH_RE = /^(toyota|ford|honda|nissan|chevrolet|changan|fiat|volkswagen|vw|renault|peugeot|citroen|hyundai|kia|mercedes|bmw|audi|suzuki|mitsubishi|subaru|jeep|dodge|ram|gmc|mazda|lifan|geely|byd|jac|mg|haval|chery)\b/i;
 
 function extraerVehiculoDeServicio(servicio) {
@@ -1086,12 +1087,10 @@ function checkMismatchBulk(i) {
 
 // ─── Detección de monto en texto libre ───
 function tieneMonto(texto) {
-    return /\b\d{1,3}\.\d{3}\b|\b\d{5,}\b/.test(texto);
+    return /\b\d{1,3}\.\d{3}\b|\b\d{5,}\b/.test(texto) || SIN_CARGO_RE.test(texto);
 }
 
 // ─── Envío — copia fiel del texto de Miguel ───
-let montoAvisadoWizard = false;
-
 function enviarIsabSoft() {
     const chapa    = document.getElementById('rev-chapa').value.trim().toUpperCase();
     const marca    = document.getElementById('rev-marca').value.trim();
@@ -1129,14 +1128,12 @@ function enviarIsabSoft() {
         return;
     }
 
-    if (!tieneMonto(servicio) && !montoAvisadoWizard) {
-        montoAvisadoWizard = true;
+    if (!tieneMonto(servicio)) {
         document.getElementById('rev-servicio').classList.add('error');
         setTimeout(() => document.getElementById('rev-servicio').classList.remove('error'), 1500);
-        toast('⚠️ No se detectó monto — tocá Enviar de nuevo para confirmar');
+        toast('⚠️ Escribí el monto o indicá "sin cargo" si fue sin costo');
         return;
     }
-    montoAvisadoWizard = false;
 
     if (!estadoPagoWizard) {
         const wrap = document.getElementById('estadoWrapWizard');
@@ -1153,10 +1150,7 @@ function enviarIsabSoft() {
     window.open(url, '_blank');
 }
 
-// Reset flag y re-check duplicado si corrige campos en revisión
-document.getElementById('rev-servicio').addEventListener('input', function() {
-    montoAvisadoWizard = false;
-});
+// Re-check si corrige campos en revisión
 document.getElementById('rev-chapa').addEventListener('input', function() {
     actualizarChapaMismatch();
     actualizarDupeWarnWizard();
@@ -1588,11 +1582,11 @@ function enviarBulk() {
         return;
     }
 
-    // Validar montos vacíos — bloqueo duro (lee DOM directo para evitar valores stale)
+    // Validar montos vacíos — bloqueo duro; excepción si servicio indica "sin cargo"
     const sinMonto = parsedJobs.map((j,i) => {
         const raw = (document.getElementById(`jmonto-${i}`)?.value || '').replace(/\D/g,'');
         return { j, i, raw };
-    }).filter(({raw}) => !raw || parseInt(raw, 10) <= 0);
+    }).filter(({j, raw}) => (!raw || parseInt(raw, 10) <= 0) && !SIN_CARGO_RE.test(j.servicio || ''));
     if (sinMonto.length) {
         sinMonto.forEach(({i}) => {
             document.getElementById(`jmonto-${i}`)?.classList.add('error');
@@ -1723,7 +1717,8 @@ function enviarBulk() {
         const marca = j.marcaModelo ? ` ${j.marcaModelo}` : '';
         let bloque  = j.chapa + marca + (fDis ? ` — ${fDis}` : '');
         if (j.servicio) bloque += `\n${j.servicio}`;
-        if (j.monto)    bloque += `\nGs. ${Number(j.monto).toLocaleString('es-PY')}`;
+        if (j.monto)                                  bloque += `\nGs. ${Number(j.monto).toLocaleString('es-PY')}`;
+        else if (SIN_CARGO_RE.test(j.servicio || '')) bloque += `\nSin cargo`;
         return bloque;
     }).join('\n\n');
 
