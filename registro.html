@@ -1163,6 +1163,25 @@ function parsearBloques(texto) {
     const lineas = texto.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
     let bloque = [];
 
+    function extraerFechaDeLinea(linea) {
+        const fechaM = linea.match(/(\d{1,2})\s*[\/\-]\s*(\d{1,2})(?:\s*[\/\-]\s*(\d{2,4}))?/);
+        if (fechaM) {
+            const d = fechaM[1].padStart(2,'0'), m = fechaM[2].padStart(2,'0');
+            let y = fechaM[3] || '26'; if (y.length === 2) y = '20' + y;
+            return { val: `${y}-${m}-${d}`, dis: `${d}/${m}/${y}`, raw: fechaM[0] };
+        }
+        const textoM = linea.match(/\b(\d{1,2})\s+de\s+(\w+)(?:\s+(?:del?\s+)?(\d{2,4}))?\b/i);
+        if (textoM) {
+            const mes = MESES_MAP[(textoM[2]||'').toLowerCase()];
+            if (mes) {
+                const d = textoM[1].padStart(2,'0'), m = String(mes).padStart(2,'0');
+                let y = textoM[3] || '26'; if (y.length === 2) y = '20' + y;
+                return { val: `${y}-${m}-${d}`, dis: `${d}/${m}/${y}`, raw: textoM[0] };
+            }
+        }
+        return null;
+    }
+
     function procesarBloque(b) {
         while (b.length && !b[0].trim()) b.shift();
         while (b.length && !b[b.length-1].trim()) b.pop();
@@ -1180,35 +1199,15 @@ function parsearBloques(texto) {
                     if (!NO_CHAPA_RE.test(m[1].trim())) { chapaM = m; break; }
                 }
             }
-            if (!chapaM || NO_CHAPA_RE.test((chapaM[1]||'').trim())) return;
         }
 
-        const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
+        const sinChapa = !chapaM || NO_CHAPA_RE.test((chapaM[1]||'').trim());
+        const chapa    = sinChapa ? '' : (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
 
-        // Fecha — numérica (tolera espacios: "21/ 07") o texto ("11 de junio")
-        const fechaM = primera.match(/(\d{1,2})\s*[\/\-]\s*(\d{1,2})(?:\s*[\/\-]\s*(\d{2,4}))?/);
-        let fechaVal = '', fechaDis = '', textoM = null;
-        if (fechaM) {
-            const d = fechaM[1].padStart(2,'0');
-            const m = fechaM[2].padStart(2,'0');
-            let y   = fechaM[3] || '26';
-            if (y.length === 2) y = '20' + y;
-            fechaVal = `${y}-${m}-${d}`;
-            fechaDis = `${d}/${m}/${y}`;
-        } else {
-            textoM = primera.match(/\b(\d{1,2})\s+de\s+(\w+)(?:\s+(?:del?\s+)?(\d{2,4}))?\b/i);
-            if (textoM) {
-                const mes = MESES_MAP[(textoM[2]||'').toLowerCase()];
-                if (mes) {
-                    const d = textoM[1].padStart(2,'0');
-                    const m = String(mes).padStart(2,'0');
-                    let y   = textoM[3] || '26';
-                    if (y.length === 2) y = '20' + y;
-                    fechaVal = `${y}-${m}-${d}`;
-                    fechaDis = `${d}/${m}/${y}`;
-                }
-            }
-        }
+        // Fecha
+        const fechaR   = extraerFechaDeLinea(primera);
+        const fechaVal = fechaR ? fechaR.val : '';
+        const fechaDis = fechaR ? fechaR.dis : '';
 
         // Monto: suma todos los patrones XXX.000 en el bloque
         let montoTotal = 0;
@@ -1226,12 +1225,13 @@ function parsearBloques(texto) {
             .join(' / ');
 
         // Marca/Modelo: primera línea sin chapa, sin fecha, sin notas
-        let marcaRaw = primera.slice(0, chapaM.index || 0) + primera.slice((chapaM.index || 0) + chapaM[0].length);
-        if (fechaM) marcaRaw = marcaRaw.replace(fechaM[0], ' ');
-        else if (textoM) marcaRaw = marcaRaw.replace(textoM[0], ' ');
+        let marcaRaw = sinChapa
+            ? primera
+            : (primera.slice(0, chapaM.index || 0) + primera.slice((chapaM.index || 0) + chapaM[0].length));
+        if (fechaR) marcaRaw = marcaRaw.replace(fechaR.raw, ' ');
         const marcaModelo = marcaRaw.replace(/\b(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca|falta|cargado)\b/gi, '').replace(/\s+/g,' ').trim();
 
-        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', marcaModelo, cliente: '' });
+        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', marcaModelo, cliente: '', sinChapa });
     }
 
     lineas.forEach(linea => {
@@ -1293,7 +1293,7 @@ function renderizarJobs() {
     c.innerHTML = parsedJobs.map((j, i) => {
         const dupe       = esDuplicado(j.chapa, j.fechaVal);
         const chapaVista = !dupe && chapaExiste(j.chapa);
-        const repetida   = conteoChapas[j.chapa] > 1;
+        const repetida   = !!j.chapa && conteoChapas[j.chapa] > 1;
         const dupeHtml = dupe
             ? (esPlanPremium()
                 ? `<div style="font-size:0.75rem;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.4);">
@@ -1312,18 +1312,28 @@ function renderizarJobs() {
                    ⚠️ Esta chapa aparece ${conteoChapas[j.chapa]}x en esta lista — verificá las fechas
                </div>`
             : '';
-        const cardBorder = (dupe && esPlanPremium()) ? 'border:1.5px solid rgba(248,113,113,0.45);' : '';
+        const sinChapaHtml = j.sinChapa
+            ? `<div style="font-size:0.78rem;color:#f87171;margin-bottom:12px;padding:8px 12px;background:rgba(248,113,113,0.12);border-radius:8px;border:1.5px solid rgba(248,113,113,0.5);line-height:1.5;">
+                   🚨 <strong>Sin chapa</strong> — no se pudo detectar la patente. Completá el campo Chapa antes de enviar.
+               </div>`
+            : '';
+        const cardBorder = j.sinChapa ? 'border:1.5px solid rgba(248,113,113,0.55);' : (dupe && esPlanPremium()) ? 'border:1.5px solid rgba(248,113,113,0.45);' : '';
         return `
         <div class="job-card" id="jcard-${i}" style="${cardBorder}">
-            <div class="job-num">#${i+1} — ${j.chapa}</div>
+            <div class="job-num">#${i+1}${j.chapa ? ' — ' + j.chapa : ' — ???'}</div>
+            ${sinChapaHtml}
             ${dupeHtml}
             ${repetidaHtml}
 
             <div class="job-f">
-                <div class="rev-label">Chapa</div>
-                <input class="big-input rev-input" id="jchapa-${i}" value="${j.chapa}"
+                <div class="rev-label">Chapa <span style="color:#f87171">*</span></div>
+                <input class="big-input rev-input${j.sinChapa ? ' error' : ''}" id="jchapa-${i}" value="${j.chapa}"
                        autocorrect="off" autocapitalize="characters" spellcheck="false"
-                       oninput="this.value=this.value.toUpperCase().replace(/\\s/g,''); parsedJobs[${i}].chapa=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color'); checkMismatchBulk(${i});">
+                       placeholder="ej: AASL205"
+                       oninput="this.value=this.value.toUpperCase().replace(/\\s/g,''); parsedJobs[${i}].chapa=this.value; parsedJobs[${i}].sinChapa=!this.value; this.classList.toggle('error',!this.value); document.getElementById('jcard-${i}').style.removeProperty('border-color'); document.getElementById('jsinchapa-${i}').style.display=this.value?'none':'block'; checkMismatchBulk(${i});">
+                <div id="jsinchapa-${i}" style="display:${j.sinChapa ? 'block' : 'none'};font-size:0.75rem;color:#f87171;margin-top:6px;padding:6px 10px;background:rgba(248,113,113,0.08);border-radius:8px;border:1px solid rgba(248,113,113,0.3);">
+                    Ingresá la chapa/patente del vehículo.
+                </div>
             </div>
 
             <div class="job-f">
