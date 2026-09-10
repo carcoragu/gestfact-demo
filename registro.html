@@ -269,9 +269,12 @@
         }
         #promoBanner.promo-warning { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.5); }
         #promoBanner.promo-expired { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.5); }
+        #promoBanner.promo-urgent  { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.75); animation: pulso-urgente 1.5s ease-in-out infinite; }
+        @keyframes pulso-urgente { 0%,100%{opacity:1} 50%{opacity:0.6} }
         .promo-label { font-size: 0.68rem; color: #4ade80; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
         .promo-warning .promo-label { color: #fbbf24; }
         .promo-expired .promo-label { color: #f87171; }
+        .promo-urgent  .promo-label { color: #f87171; }
         .promo-dias  { font-size: 1.8rem; color: #fff; font-weight: 800; line-height: 1; }
         .promo-sub   { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 3px; }
 
@@ -1817,12 +1820,21 @@ function promoActualizarBanner() {
     if (esPlan) {
         lblEl.textContent = `Plan ${plan} activo`;
         numEl.textContent = dias;
-        subEl.textContent = 'días restantes';
+        if (dias <= 3) {
+            banner.classList.add('promo-urgent');
+            subEl.textContent = '⚠️ Vence pronto — contactá a IsabSoft';
+        } else if (dias <= 7) {
+            banner.classList.add('promo-warning');
+            subEl.textContent = 'días restantes — renovar pronto';
+        } else {
+            subEl.textContent = 'días restantes';
+        }
     } else if (activo) {
         lblEl.textContent = 'Período de prueba';
         numEl.textContent = dias;
         subEl.textContent = 'días restantes gratis';
-        if (dias <= 7) banner.classList.add('promo-warning');
+        if (dias <= 3)      banner.classList.add('promo-urgent');
+        else if (dias <= 7) banner.classList.add('promo-warning');
     } else {
         banner.classList.add('promo-expired');
         lblEl.textContent = 'Prueba terminada';
