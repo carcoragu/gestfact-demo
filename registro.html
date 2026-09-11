@@ -1122,10 +1122,7 @@ function enviarIsabSoft() {
     }
 
     if (!tieneMonto(servicio)) {
-        document.getElementById('rev-servicio').classList.add('error');
-        setTimeout(() => document.getElementById('rev-servicio').classList.remove('error'), 1500);
-        toast('⚠️ Escribí el monto o indicá "sin cargo" si fue sin costo');
-        return;
+        toast('ℹ️ Sin monto — se enviará sin cargo registrado');
     }
 
     if (!estadoPagoWizard) {
@@ -1360,7 +1357,7 @@ function parsearBloques(texto) {
         });
 
         // Servicio: líneas 1+ sin notas de gestión ni líneas de solo monto (ej: "290.000")
-        const notas    = /falta cargar|hasta ac[aá] cargado|hasta aca|falta|cargado/i;
+        const notas    = /^(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca|falta|cargado)$/i;
         const esMontoRe = /^\d{1,3}(\.\d{3})+$/;
         const serv = b.slice(1)
             .map(l => l.trim())
@@ -1372,7 +1369,7 @@ function parsearBloques(texto) {
             ? primera
             : (primera.slice(0, chapaM.index || 0) + primera.slice((chapaM.index || 0) + chapaM[0].length));
         if (fechaR) marcaRaw = marcaRaw.replace(fechaR.raw, ' ');
-        const marcaModelo = marcaRaw.replace(/\b(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca|falta|cargado)\b/gi, '').replace(/\s+/g,' ').trim();
+        const marcaModelo = marcaRaw.replace(/\b(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca)\b/gi, '').replace(/\s+/g,' ').trim();
 
         jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', marcaModelo, cliente: '', sinChapa });
     }
@@ -1594,21 +1591,13 @@ function enviarBulk() {
         return;
     }
 
-    // Validar montos vacíos — bloqueo duro; excepción si servicio indica "sin cargo"
-    const sinMonto = parsedJobs.map((j,i) => {
+    // Monto vacío — aviso suave, no bloquea
+    parsedJobs.forEach((j,i) => {
         const raw = (document.getElementById(`jmonto-${i}`)?.value || '').replace(/\D/g,'');
-        return { j, i, raw };
-    }).filter(({j, raw}) => (!raw || parseInt(raw, 10) <= 0) && !SIN_CARGO_RE.test(j.servicio || ''));
-    if (sinMonto.length) {
-        sinMonto.forEach(({i}) => {
+        if ((!raw || parseInt(raw, 10) <= 0) && !SIN_CARGO_RE.test(j.servicio || '')) {
             document.getElementById(`jmonto-${i}`)?.classList.add('error');
-            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
-        });
-        const chapas = sinMonto.map(({j}) => j.chapa || '?').join(', ');
-        toast(`⚠️ Sin monto: ${chapas} — completá antes de enviar`);
-        document.getElementById(`jcard-${sinMonto[0].i}`)?.scrollIntoView({behavior:'smooth', block:'center'});
-        return;
-    }
+        }
+    });
     parsedJobs.forEach((j,i) => {
         j.monto = (document.getElementById(`jmonto-${i}`)?.value || '').replace(/\D/g,'');
     });
