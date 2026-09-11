@@ -1242,7 +1242,7 @@ function renderizarPlanesInfo() {
     const _cardsSinfo = PLANES_DATA.map(p => {
         const esActual = planActual === p.id.toUpperCase();
         const badge = esActual
-            ? `<div style="position:absolute;top:-10px;right:14px;background:#4ade80;color:#1a1a2e;font-size:0.62rem;font-weight:800;padding:3px 10px;border-radius:50px;letter-spacing:0.8px;text-transform:uppercase;">En prueba</div>`
+            ? `<div style="position:absolute;top:-10px;right:14px;background:#4ade80;color:#1a1a2e;font-size:0.62rem;font-weight:800;padding:3px 10px;border-radius:50px;letter-spacing:0.8px;text-transform:uppercase;">Tu plan actual</div>`
             : p.popular
             ? `<div style="position:absolute;top:-10px;right:14px;background:rgba(255,255,255,0.15);color:#fff;font-size:0.62rem;font-weight:800;padding:3px 10px;border-radius:50px;letter-spacing:0.8px;text-transform:uppercase;">Popular</div>`
             : '';
@@ -1264,12 +1264,13 @@ function renderizarPlanesInfo() {
             </div>
             <button onclick="activarPruebaPlan('${p.id}')"
                     style="width:100%;padding:12px;background:${esActual ? 'rgba(74,222,128,0.12)' : '#4ade80'};color:${esActual ? '#4ade80' : '#1a1a2e'};border:${esActual ? '1.5px solid #4ade80' : 'none'};border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;">
-                ${esActual ? '✓ En prueba — extender 30 días' : 'Probar 30 días gratis →'}
+                ${esActual ? '✓ Plan seleccionado' : 'Me interesa este plan →'}
             </button>
             ${backlogHint}
         </div>`;
     });
-    c.innerHTML = comboHtml + _cardsSinfo[0] + _toggleBimHtml + _cardsSinfo.slice(1).join('');
+    const introHtml = `<div style="font-size:0.82rem;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:16px;line-height:1.6;">Tenés 30 días para probar — leé cada plan y elegí el que más te conviene cuando estés listo.</div>`;
+    c.innerHTML = introHtml + comboHtml + _cardsSinfo[0] + _toggleBimHtml + _cardsSinfo.slice(1).join('');
 }
 
 function activarPruebaPlan(planId) {
