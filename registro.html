@@ -1220,7 +1220,8 @@ function renderizarPlanesInfo() {
                 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4);"> pago único</span>
             </div>
         </div>
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">${COMBO_DATA.desc}</div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">${COMBO_DATA.desc}</div>
+        ${COMBO_DATA.ejemplo ? `<div style="font-size:0.73rem;color:rgba(255,255,255,0.3);font-style:italic;margin-bottom:8px;">💡 ${COMBO_DATA.ejemplo}</div>` : ''}
         <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:8px;line-height:1.8;">${COMBO_DATA.features.map(f => '✓ ' + f).join('<br>')}</div>
         <div class="plan-cob" style="margin-bottom:12px;">
             ${(COMBO_DATA.cubre||[]).map(t => `<div class="plan-cob-si">✓ ${t}</div>`).join('')}
@@ -1256,7 +1257,8 @@ function renderizarPlanesInfo() {
                 <span style="font-weight:800;color:#fff;font-size:1rem;">${p.nombre}</span>
                 <div style="text-align:right;">${_precioHtml(p)}</div>
             </div>
-            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">${p.desc}</div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">${p.desc}</div>
+            ${p.ejemplo ? `<div style="font-size:0.73rem;color:rgba(255,255,255,0.3);font-style:italic;margin-bottom:8px;">💡 ${p.ejemplo}</div>` : ''}
             <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:8px;line-height:1.8;">${p.features.map(f => '✓ ' + f).join('<br>')}</div>
             <div class="plan-cob" style="margin-bottom:12px;">
                 ${(p.cubre||[]).map(t=>`<div class="plan-cob-si">✓ ${t}</div>`).join('')}
@@ -1749,6 +1751,7 @@ const COMBO_DATA = {
     id: 'combo', nombre: 'Combo Arranque',
     precioRegular: 130000, precioNum: 110000, ahorro: 20000,
     desc: 'Tenés trabajos acumulados sin cargar Y el mes en curso encima. Resolvemos los dos de una vez: limpiamos el atraso y arrancamos el mes.',
+    ejemplo: 'Tenés 3 meses sin cargar y el mes en curso encima — los dos quedan resueltos de una vez.',
     features: ['Limpiamos todo el historial atrasado (Sesión)', 'Cargamos los trabajos del mes en curso (Básico)', 'Ahorrás Gs. 20.000 vs contratar por separado'],
     cubre: [],
     noCubre: ['Lo que mandás se carga tal cual — si falta algo en tu lista, no lo detectamos']
@@ -1759,6 +1762,7 @@ const PLANES_DATA = [
         id: 'sesion', nombre: 'Sesión', precio: '80.000', tipo: 'pago único', popular: false,
         precioNum: 80000, bimestral: null,
         desc: 'Solo el historial, sin compromiso mensual. Limpiamos todo lo que tenés acumulado y después seguís a tu ritmo.',
+        ejemplo: 'Tenés varios meses sin cargar — mandás todo de una vez y quedás al día.',
         features: ['Todo tu historial cargado de una vez', 'Sin mensualidad — pagás una sola vez', 'Podés agregar un plan mensual después cuando quieras'],
         cubre: [],
         noCubre: ['No detectamos si falta alguno en tu lista — cargamos lo que recibimos', 'No incluye correcciones después de la sesión']
@@ -1768,6 +1772,7 @@ const PLANES_DATA = [
         precioNum: 50000, bimestral: { precioMes: 45000, total: 90000, ahorro: 10000 },
         backlogHint: true,
         desc: 'Carga mensual de los trabajos nuevos que vas generando. Empezás limpio.',
+        ejemplo: 'Cada semana mandás la lista por WhatsApp — queda cargado en GestFact sin hacer nada más.',
         features: ['Registros del mes en curso', 'IsabSoft carga en GestFact', 'Reporte mensual de pendientes'],
         cubre: ['Cargamos los trabajos del mes que nos enviás'],
         noCubre: ['No detectamos faltantes ni duplicados', 'Errores de meses anteriores no se corrigen']
@@ -1776,6 +1781,7 @@ const PLANES_DATA = [
         id: 'completo', nombre: 'Completo', precio: '100.000', tipo: '/mes', popular: true,
         precioNum: 100000, bimestral: { precioMes: 90000, total: 180000, ahorro: 20000 },
         desc: 'Básico más control total y seguimiento avanzado.',
+        ejemplo: 'Mandás la lista y si falta algo o hay un error, IsabSoft te avisa — no tenés que revisar nada.',
         features: ['Todo lo del Básico', 'Control de estados avanzado', 'IsabSoft controla todo', 'Soporte prioritario'],
         cubre: ['Carga mensual + corregimos si nos avisás un error', 'Seguimiento de estado de cada trabajo'],
         noCubre: ['Si falta algo o hay un error, necesitás avisarnos vos']
@@ -1784,6 +1790,7 @@ const PLANES_DATA = [
         id: 'full', nombre: 'Full', precio: '150.000', tipo: '/mes', popular: false,
         precioNum: 150000, bimestral: { precioMes: 135000, total: 270000, ahorro: 30000 },
         desc: 'AnotDigi conectado directo a GestFact. IsabSoft monitorea todo.',
+        ejemplo: 'Anotás el trabajo en el celular y en GestFact aparece solo — sin mandar nada, sin esperar nada.',
         features: ['AnotDigi → GestFact directo', 'Sin límite de nada', 'IsabSoft controla 24/7', 'Reportes automáticos'],
         cubre: ['Comparamos tu lista con GestFact y corregimos lo que no cierra, sin que avises', 'Historial siempre limpio y verificado'],
         noCubre: []
@@ -1882,6 +1889,7 @@ function renderizarPlanes(puedeVolver) {
         </div>
         <div style="font-size:0.72rem;color:#4ade80;margin-top:2px;">Ahorrás Gs. ${COMBO_DATA.ahorro.toLocaleString('es-PY')}</div>
         <div class="plan-desc" style="margin-top:8px;">${COMBO_DATA.desc}</div>
+        ${COMBO_DATA.ejemplo ? `<div style="font-size:0.73rem;color:rgba(255,255,255,0.32);font-style:italic;margin-top:5px;margin-bottom:2px;">💡 ${COMBO_DATA.ejemplo}</div>` : ''}
         <div class="plan-features">
             ${COMBO_DATA.features.map(f => `<div class="plan-feat">${f}</div>`).join('')}
         </div>
@@ -1925,6 +1933,7 @@ function renderizarPlanes(puedeVolver) {
             </div>
             ${bim ? `<div style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:2px;">Total Gs.${tStr} — <span style="color:#4ade80;">ahorrás Gs.${aStr}</span></div>` : ''}
             <div class="plan-desc" style="margin-top:8px;">${p.desc}</div>
+            ${p.ejemplo ? `<div style="font-size:0.73rem;color:rgba(255,255,255,0.32);font-style:italic;margin-top:5px;margin-bottom:2px;">💡 ${p.ejemplo}</div>` : ''}
             <div class="plan-features">
                 ${p.features.map(f => `<div class="plan-feat">${f}</div>`).join('')}
             </div>
