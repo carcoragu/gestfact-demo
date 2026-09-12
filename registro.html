@@ -2065,6 +2065,10 @@ async function checkActivacionURL() {
         localStorage.setItem('anotdigi_plan',   plan.toUpperCase());
         localStorage.setItem('anotdigi_expiry', expiry.toISOString().split('T')[0]);
 
+        // Notificar a IsabSoft: plan activado, fecha de vencimiento
+        const _exp = expiry.toISOString().split('T')[0];
+        new Image().src = `https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=plan_activado&id=miguel&plan=${encodeURIComponent(plan.toUpperCase())}&dias=${dias}&expiry=${_exp}`;
+
         window.history.replaceState({}, '', window.location.pathname);
         setTimeout(() => toast(`Plan ${plan.toUpperCase()} activado — ${dias} días`), 300);
     } catch(e) { /* SubtleCrypto no disponible */ }
