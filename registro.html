@@ -661,6 +661,7 @@
             </div>
         </div>
 
+        <div id="clienteDetectadoWarn" style="display:none;margin-bottom:14px;font-size:0.78rem;padding:8px 12px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.35);border-radius:10px;color:#fbbf24;line-height:1.5;"></div>
         <div id="jobsContainer"></div>
         <button class="btn-next" onclick="enviarBulk()">💬 Enviar a IsabSoft</button>
         <button class="btn-back" style="margin-top:14px;width:100%;text-align:center;" onclick="mostrarScreen('sb1')">← Volver a editar lista</button>
@@ -740,7 +741,7 @@ async function fetchClientesSheet() {
                 if (c) clientes.add(c);
                 const chapa = cols[3].trim().toUpperCase().replace(/\s/g, '');
                 const fecha = normalizarFecha(cols[4].trim());
-                if (chapa && fecha) registrosGF.push({ chapa, fecha });
+                if (chapa && fecha) registrosGF.push({ chapa, fecha, cliente: c });
             }
         });
         gfEstado = registrosGF.length > 0 ? 'ok' : 'vacio';
@@ -763,6 +764,28 @@ function esDuplicado(chapa, fechaISO) {
 function chapaExiste(chapa) {
     if (!chapa || !registrosGF.length) return false;
     return registrosGF.some(r => r.chapa === chapa);
+}
+
+function chapaGetCliente(chapa) {
+    if (!chapa || !registrosGF.length) return null;
+    const cn = chapa.toUpperCase().replace(/\s/g,'');
+    const entries = registrosGF.filter(r => r.chapa === cn && r.cliente);
+    return entries.length ? entries[entries.length - 1].cliente : null;
+}
+
+function detectarClienteEnTexto(texto) {
+    const opts = [...document.querySelectorAll('#clientes-list option')]
+        .map(o => o.value.trim().toUpperCase()).filter(c => c.length >= 3);
+    if (!opts.length) return null;
+    const lineas = texto.split('\n').map(l => l.trim()).filter(l => l);
+    for (const linea of lineas) {
+        const up = linea.toUpperCase();
+        if (/\d/.test(up)) continue;
+        if (up.split(/\s+/).length > 5 || up.length < 3) continue;
+        const match = opts.find(c => c === up || c.startsWith(up) || up.startsWith(c));
+        if (match) return match;
+    }
+    return null;
 }
 
 function esPlanPremium() {
@@ -1411,24 +1434,43 @@ function procesarBulk() {
     });
     document.getElementById('estadoWrapBulk').classList.remove('sin-seleccion');
 
-    const clienteEl = document.getElementById('bulkCliente');
-    const cliente   = clienteEl.value.trim().toUpperCase();
-    if (!cliente) {
-        clienteEl.classList.add('error');
-        setTimeout(() => clienteEl.classList.remove('error'), 800);
-        toast('⚠️ Ingresá el cliente primero');
-        return;
-    }
-    addClienteToList(cliente);
+    document.getElementById('clienteDetectadoWarn').style.display = 'none';
 
     const texto = document.getElementById('bulkInput').value.trim();
     if (!texto) { toast('⚠️ Pegá la lista de trabajos'); return; }
+
+    const clienteEl = document.getElementById('bulkCliente');
+    let cliente = clienteEl.value.trim().toUpperCase();
+
+    // Auto-detectar cliente del texto si el campo está vacío
+    if (!cliente) {
+        const detectado = detectarClienteEnTexto(texto);
+        if (detectado) {
+            cliente = detectado;
+            clienteEl.value = cliente;
+            toast(`✓ Cliente detectado en el texto: ${cliente}`);
+        } else {
+            clienteEl.classList.add('error');
+            setTimeout(() => clienteEl.classList.remove('error'), 800);
+            toast('⚠️ Ingresá el cliente primero');
+            return;
+        }
+    }
+    addClienteToList(cliente);
 
     parsedJobs = parsearBloques(texto);
     if (!parsedJobs.length) { toast('⚠️ No se encontraron trabajos — verificá el formato'); return; }
 
     // Pre-llenar cliente en todos los trabajos
     parsedJobs.forEach(j => j.cliente = cliente);
+
+    // Advertir si hay un nombre en el texto distinto al cliente seleccionado
+    const detectadoEnTexto = detectarClienteEnTexto(texto);
+    if (detectadoEnTexto && detectadoEnTexto !== cliente) {
+        const warn = document.getElementById('clienteDetectadoWarn');
+        warn.style.display = 'block';
+        warn.textContent = `⚠️ Se encontró "${detectadoEnTexto}" en el texto pero el cliente seleccionado es "${cliente}" — verificá si son el mismo.`;
+    }
 
     renderizarJobs();
     mostrarScreen('sb2');
@@ -1463,6 +1505,17 @@ function renderizarJobs() {
                    ⚠️ Esta chapa aparece ${conteoChapas[j.chapa]}x en esta lista — verificá las fechas
                </div>`
             : '';
+        const clienteChapa  = chapaGetCliente(j.chapa);
+        const clienteActual = (j.cliente || '').toUpperCase();
+        const chapaClienteHtml = clienteChapa
+            ? clienteChapa === clienteActual
+                ? `<div style="font-size:0.72rem;color:rgba(74,222,128,0.8);margin-bottom:8px;padding:4px 10px;background:rgba(74,222,128,0.07);border-radius:8px;border:1px solid rgba(74,222,128,0.2);">
+                       ✓ Chapa conocida de ${clienteChapa}
+                   </div>`
+                : `<div style="font-size:0.72rem;color:#fbbf24;margin-bottom:8px;padding:4px 10px;background:rgba(251,191,36,0.07);border-radius:8px;border:1px solid rgba(251,191,36,0.25);">
+                       ℹ️ Esta chapa habitualmente es de ${clienteChapa}
+                   </div>`
+            : '';
         const sinChapaHtml = j.sinChapa
             ? `<div style="font-size:0.78rem;color:#f87171;margin-bottom:12px;padding:8px 12px;background:rgba(248,113,113,0.12);border-radius:8px;border:1.5px solid rgba(248,113,113,0.5);line-height:1.5;">
                    🚨 <strong>Sin chapa</strong> — no se pudo detectar la patente. Completá el campo Chapa antes de enviar.
@@ -1475,6 +1528,7 @@ function renderizarJobs() {
             ${sinChapaHtml}
             ${dupeHtml}
             ${repetidaHtml}
+            ${chapaClienteHtml}
 
             <div class="job-f">
                 <div class="rev-label">Chapa <span style="color:#f87171">*</span></div>
