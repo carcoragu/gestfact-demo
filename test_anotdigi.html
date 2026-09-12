@@ -137,7 +137,7 @@ function parsearBloques(texto) {
             const ms = [...l.matchAll(/\b(\d{1,3})\.(\d{3})\b/g)];
             ms.forEach(mm => { montoTotal += parseInt(mm[1]+mm[2]); });
         });
-        const notas    = /falta cargar|hasta ac[aá] cargado|hasta aca|falta|cargado/i;
+        const notas    = /^(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca|falta|cargado)$/i;
         const esMontoRe = /^\d{1,3}(\.\d{3})+$/;
         const serv = b.slice(1).map(l=>l.trim()).filter(l=>l&&!notas.test(l)&&!esMontoRe.test(l)).join(' / ');
         let marcaRaw = sinChapa
@@ -609,6 +609,217 @@ suite('Wizard — Casos de error Miguel (uno a uno)', s => {
         'toyota en línea 2, no en primera',
         extraerVehiculoDeServicio('Cambio aceite 290.000\ntoyota vitz') === 'toyota vitz',
         `got="${extraerVehiculoDeServicio('Cambio aceite 290.000\ntoyota vitz')}"`);
+});
+
+// ─── SUITE 13: Notas filter — comportamiento anclado ───
+suite('Parser — filtro notas anclado (línea exacta)', s => {
+    const c1 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Amortiguadores trasero
+falta
+Mano de obra 290.000`);
+    t(s,'"falta" como línea sola → filtrada del servicio','',
+        !(c1[0]?.servicio||'').toLowerCase().split(' / ').some(p=>p.trim()==='falta'),
+        `serv="${c1[0]?.servicio}"`);
+
+    const c2 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Amortiguadores trasero
+cargado
+Mano de obra 290.000`);
+    t(s,'"cargado" como línea sola → filtrada','',
+        !(c2[0]?.servicio||'').toLowerCase().split(' / ').some(p=>p.trim()==='cargado'),
+        `serv="${c2[0]?.servicio}"`);
+
+    const c3 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Amortiguadores trasero
+falta validacion.
+Mano de obra 290.000`);
+    t(s,'"falta validacion." → NO filtrada (contiene "falta" pero no es exactamente eso)','',
+        (c3[0]?.servicio||'').toLowerCase().includes('falta validacion'),
+        `serv="${c3[0]?.servicio}"`);
+
+    const c4 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Toyota Vits sin cargo falta
+290.000`);
+    t(s,'"Toyota Vits sin cargo falta" → NO filtrada (línea completa, no es solo "falta")','',
+        (c4[0]?.servicio||'').toLowerCase().includes('falta'),
+        `serv="${c4[0]?.servicio}"`);
+
+    const c5 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Cambio de filtro
+falta de aceite
+Mano de obra 50.000`);
+    t(s,'"falta de aceite" → NO filtrada (el regex viejo lo borraba, este no)','',
+        (c5[0]?.servicio||'').toLowerCase().includes('falta de aceite'),
+        `serv="${c5[0]?.servicio}"`);
+
+    const c6 = parsearBloques(`AASL204 toyota vitz 31/07/26
+falta cargar
+Amortiguadores
+Mano de obra 290.000`);
+    t(s,'"falta cargar" como línea sola en servicios → filtrada','',
+        !(c6[0]?.servicio||'').toLowerCase().split(' / ').some(p=>p.trim()==='falta cargar'),
+        `serv="${c6[0]?.servicio}"`);
+
+    const c7 = parsearBloques(`AASL204 toyota vitz 31/07/26
+hasta aca
+Amortiguadores
+Mano de obra 290.000`);
+    t(s,'"hasta aca" como línea sola → filtrada','',
+        !(c7[0]?.servicio||'').toLowerCase().split(' / ').some(p=>p.trim()==='hasta aca'),
+        `serv="${c7[0]?.servicio}"`);
+});
+
+// ─── SUITE 14: Sin cargo — bypass de monto ───
+suite('Sin cargo — bypass de validación de monto', s => {
+    const c1 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Revision general sin cargo`);
+    t(s,'Parser: "sin cargo" en trabajo → monto vacío','',
+        c1[0]?.monto === '',
+        `monto="${c1[0]?.monto}"`);
+    t(s,'SIN_CARGO_RE detecta "sin cargo" en servicio parseado → bypass válido','',
+        SIN_CARGO_RE.test(c1[0]?.servicio||''),
+        `servicio="${c1[0]?.servicio}"`);
+
+    const c2 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Cambio pastillas garantia`);
+    t(s,'"garantia" en trabajo → SIN_CARGO_RE = true','',
+        SIN_CARGO_RE.test(c2[0]?.servicio||''),
+        `serv="${c2[0]?.servicio}"`);
+
+    const c3 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Revisión gratis por cliente frecuente`);
+    t(s,'"gratis" en trabajo → SIN_CARGO_RE = true','',
+        SIN_CARGO_RE.test(c3[0]?.servicio||''),
+        `serv="${c3[0]?.servicio}"`);
+
+    const c4 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Ajuste de frenos sin cobro`);
+    t(s,'"sin cobro" en trabajo → SIN_CARGO_RE = true','',
+        SIN_CARGO_RE.test(c4[0]?.servicio||''),
+        `serv="${c4[0]?.servicio}"`);
+
+    const c5 = parsearBloques(`AASL204 toyota vitz 31/07/26
+Cambio de aceite y filtro`);
+    t(s,'Trabajo normal sin monto → SIN_CARGO_RE = false → bloquea igual','',
+        !SIN_CARGO_RE.test(c5[0]?.servicio||''),
+        `serv="${c5[0]?.servicio}"`);
+
+    // validar() pura no tiene la excepción — el bypass es responsabilidad del UI
+    const jSC = [{chapa:'AASL204',fechaVal:'2026-07-31',monto:'',marcaModelo:'toyota vitz',servicio:'Revision sin cargo'}];
+    t(s,'validar() pura: sin monto + sin cargo → sinMonto=1 (la excepción la aplica el UI, no validar)','',
+        validar(jSC).sinMonto.length === 1,
+        'validar() aplicó la excepción — no debería');
+});
+
+// ═══════════════════════════════════════════
+// HELPERS ADICIONALES (DOM-free)
+// ═══════════════════════════════════════════
+
+function detectarClienteEnTextoArr(texto, clientes) {
+    const opts = clientes.map(c => c.trim().toUpperCase()).filter(c => c.length >= 3);
+    if (!opts.length) return null;
+    const lineas = texto.split('\n').map(l => l.trim()).filter(l => l);
+    for (const linea of lineas) {
+        const up = linea.toUpperCase();
+        if (/\d/.test(up)) continue;
+        if (up.split(/\s+/).length > 5 || up.length < 3) continue;
+        const match = opts.find(c => c === up || c.startsWith(up) || up.startsWith(c));
+        if (match) return match;
+    }
+    return null;
+}
+
+function esClienteNuevoTest(nombre, registros, clientesDefault) {
+    if (!nombre || !registros.length) return false;
+    const up = nombre.toUpperCase().trim();
+    if (clientesDefault.some(c => c.toUpperCase() === up)) return false;
+    return !registros.some(r => r.cliente && r.cliente.toUpperCase() === up);
+}
+
+function chapaGetClienteTest(chapa, registros) {
+    if (!chapa || !registros.length) return null;
+    const cn = chapa.toUpperCase().replace(/\s/g,'');
+    const entries = registros.filter(r => r.chapa === cn && r.cliente);
+    return entries.length ? entries[entries.length-1].cliente : null;
+}
+
+// ─── SUITE 15: Detección de cliente en texto (DOM-free) ───
+suite('Bulk — detección de cliente en texto', s => {
+    const CLIENTES = ['WILIAN RENTACAR', 'ANIBAL SG', 'JOSE GARCIA'];
+
+    t(s,'"WILIAN RENTACAR" en texto → detectado','',
+        detectarClienteEnTextoArr('WILIAN RENTACAR\nAASL204 toyota vitz 31/07\nMano de obra 290.000', CLIENTES) === 'WILIAN RENTACAR',
+        `got="${detectarClienteEnTextoArr('WILIAN RENTACAR\nAASL204 toyota vitz 31/07\nMano de obra 290.000', CLIENTES)}"`);
+
+    t(s,'Texto sin ningún cliente → null','',
+        detectarClienteEnTextoArr('AASL204 toyota vitz 31/07\nMano de obra 290.000', CLIENTES) === null,
+        'detectó cliente en texto sin nombre de cliente');
+
+    t(s,'Línea con número → no confundida como cliente','',
+        detectarClienteEnTextoArr('AASL204 toyota vitz 31/07\n290.000\nMano de obra', CLIENTES) === null,
+        'tomó número como cliente');
+
+    t(s,'"ANIBAL SG" al final del texto → detectado igual','',
+        detectarClienteEnTextoArr('AASL204 toyota vitz 31/07\nMano de obra 290.000\nANIBAL SG', CLIENTES) === 'ANIBAL SG',
+        `got="${detectarClienteEnTextoArr('AASL204 toyota vitz 31/07\nMano de obra 290.000\nANIBAL SG', CLIENTES)}"`);
+
+    t(s,'"WILIAN" (prefix de "WILIAN RENTACAR") → detecta el cliente completo','',
+        detectarClienteEnTextoArr('WILIAN\nAASL204 toyota vitz 31/07\nMano de obra 290.000', CLIENTES) === 'WILIAN RENTACAR',
+        `got="${detectarClienteEnTextoArr('WILIAN\nAASL204 toyota vitz 31/07\nMano de obra 290.000', CLIENTES)}"`);
+
+    t(s,'Lista de clientes vacía → null','',
+        detectarClienteEnTextoArr('WILIAN RENTACAR\nMano de obra 290.000', []) === null,
+        'detectó con lista vacía');
+});
+
+// ─── SUITE 16: esClienteNuevo + chapaGetCliente ───
+suite('Clientes — nuevo vs conocido, chapa→cliente', s => {
+    const registros = [
+        { chapa: 'AASL204', fecha: '2026-07-31', cliente: 'WILIAN RENTACAR' },
+        { chapa: 'AAZX033', fecha: '2026-08-17', cliente: 'ANIBAL SG' },
+        { chapa: 'AARO223', fecha: '2026-08-07', cliente: 'WILIAN RENTACAR' },
+    ];
+    const defaults = ['WILIAN RENTACAR', 'ANIBAL SG'];
+
+    t(s,'WILIAN RENTACAR → NO es nuevo (está en defaults)','',
+        esClienteNuevoTest('WILIAN RENTACAR', registros, defaults) === false,
+        'detectó como nuevo a cliente default');
+
+    t(s,'ANIBAL SG → NO es nuevo (en defaults y registros)','',
+        esClienteNuevoTest('ANIBAL SG', registros, defaults) === false,
+        'detectó ANIBAL SG como nuevo');
+
+    t(s,'JOSE GARCIA → ES nuevo (no en defaults ni registros)','',
+        esClienteNuevoTest('JOSE GARCIA', registros, defaults) === true,
+        'NO detectó JOSE GARCIA como nuevo');
+
+    t(s,'registros vacíos → false (sin datos, sin conclusión)','',
+        esClienteNuevoTest('JOSE GARCIA', [], defaults) === false,
+        'devolvió true con registros vacíos');
+
+    t(s,'nombre vacío → false','',
+        esClienteNuevoTest('', registros, defaults) === false,
+        'devolvió true con nombre vacío');
+
+    t(s,'AASL204 → cliente conocido: WILIAN RENTACAR','',
+        chapaGetClienteTest('AASL204', registros) === 'WILIAN RENTACAR',
+        `got="${chapaGetClienteTest('AASL204', registros)}"`);
+
+    t(s,'AAZX033 → cliente conocido: ANIBAL SG','',
+        chapaGetClienteTest('AAZX033', registros) === 'ANIBAL SG',
+        `got="${chapaGetClienteTest('AAZX033', registros)}"`);
+
+    t(s,'AAON696 → chapa desconocida → null','',
+        chapaGetClienteTest('AAON696', registros) === null,
+        'encontró cliente para chapa desconocida');
+
+    t(s,'"AARO 223" con espacio → normaliza → WILIAN RENTACAR','',
+        chapaGetClienteTest('AARO 223', registros) === 'WILIAN RENTACAR',
+        `got="${chapaGetClienteTest('AARO 223', registros)}"`);
+
+    t(s,'registros vacíos → null','',
+        chapaGetClienteTest('AASL204', []) === null,
+        'encontró cliente con registros vacíos');
 });
 
 // ═══════════════════════════════════════════

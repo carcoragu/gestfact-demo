@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AnotDigi — Generador de Activación</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f1a; color: #e2e8f0; padding: 32px 20px; display: flex; justify-content: center; }
+.wrap { width: 100%; max-width: 480px; }
+h1 { font-size: 1.1rem; color: #4ade80; margin-bottom: 4px; }
+.sub { font-size: 0.8rem; color: rgba(255,255,255,0.35); margin-bottom: 32px; }
+.field { margin-bottom: 18px; }
+label { display: block; font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 7px; }
+select, input[type=number], input[type=text] {
+    width: 100%; padding: 13px 16px;
+    background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 12px; color: #fff; font-size: 1rem;
+    -webkit-appearance: none; outline: none; transition: border-color 0.2s;
+}
+select:focus, input:focus { border-color: #4ade80; }
+select option { background: #1a1a2e; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.btn-gen {
+    width: 100%; padding: 15px; background: #4ade80; border: none;
+    border-radius: 13px; font-size: 1rem; font-weight: 800; color: #1a1a2e;
+    cursor: pointer; margin-top: 8px; transition: background 0.15s, transform 0.1s;
+}
+.btn-gen:active { background: #22c55e; transform: scale(0.98); }
+
+/* Resultado */
+.result { margin-top: 28px; display: none; }
+.res-label { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+.res-box {
+    background: rgba(74,222,128,0.07); border: 1.5px solid rgba(74,222,128,0.3);
+    border-radius: 12px; padding: 14px 16px;
+    font-size: 0.8rem; font-family: monospace; color: #4ade80;
+    word-break: break-all; line-height: 1.7; margin-bottom: 10px;
+}
+.btn-copy {
+    width: 100%; padding: 13px; background: rgba(74,222,128,0.12);
+    border: 1.5px solid rgba(74,222,128,0.4); border-radius: 12px;
+    color: #4ade80; font-size: 0.88rem; font-weight: 700; cursor: pointer;
+    transition: background 0.15s; margin-bottom: 24px;
+}
+.btn-copy:active { background: rgba(74,222,128,0.22); }
+
+.sep { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0 20px; }
+
+.wa-box {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 14px 16px;
+    font-size: 0.82rem; color: rgba(255,255,255,0.75);
+    white-space: pre-wrap; line-height: 1.65; margin-bottom: 10px;
+}
+.btn-wa {
+    width: 100%; padding: 14px; background: #25D366; border: none;
+    border-radius: 12px; color: #fff; font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s;
+}
+.btn-wa:active { background: #1da851; }
+.btn-wa-solo {
+    width: 100%; padding: 13px; background: rgba(37,211,102,0.1);
+    border: 1.5px solid rgba(37,211,102,0.4); border-radius: 12px;
+    color: #25D366; font-size: 0.88rem; font-weight: 700; cursor: pointer;
+    margin-top: 10px;
+}
+
+.info-box {
+    margin-top: 32px; font-size: 0.78rem; color: rgba(255,255,255,0.28);
+    line-height: 1.8; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 22px;
+}
+.info-box strong { color: rgba(255,255,255,0.4); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <h1>AnotDigi — Activación de Plan</h1>
+    <div class="sub">Uso interno IsabSoft — completá después de confirmar el pago</div>
+
+    <div class="field">
+        <label>Nombre del cliente</label>
+        <input type="text" id="cliente" placeholder="Escribí el nombre del cliente" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div class="field">
+        <label>WhatsApp del cliente</label>
+        <input type="text" id="waCliente" placeholder="595961XXXXXX (sin espacios)" inputmode="numeric" autocomplete="off">
+    </div>
+
+    <div class="row2">
+        <div class="field">
+            <label>Plan</label>
+            <select id="plan">
+                <option value="SESION">Sesión — Gs. 80.000</option>
+                <option value="BASICO" selected>Básico — Gs. 50.000/mes</option>
+                <option value="COMPLETO">Completo — Gs. 100.000/mes</option>
+                <option value="FULL">Full — Gs. 150.000/mes</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Días de acceso</label>
+            <input type="number" id="dias" value="30" min="1" max="365">
+        </div>
+    </div>
+
+    <button class="btn-gen" onclick="generar()">Generar link de activación →</button>
+
+    <div class="result" id="result">
+
+        <div class="res-label" style="margin-top:28px;">Link de activación</div>
+        <div class="res-box" id="linkBox"></div>
+        <button class="btn-copy" id="btnCopy" onclick="copiarLink()">📋 Copiar link</button>
+
+        <div class="sep"></div>
+
+        <div id="waSection">
+            <div class="res-label">Mensaje WhatsApp listo para enviar</div>
+            <div class="wa-box" id="waBox"></div>
+            <button class="btn-wa" id="btnWa" onclick="abrirWA()">
+                💬 Abrir en WhatsApp
+            </button>
+        </div>
+
+        <div id="waSinNumero" style="display:none;">
+            <div class="wa-box" id="waBoxSolo"></div>
+            <button class="btn-wa-solo" onclick="copiarMensaje()">📋 Copiar mensaje</button>
+        </div>
+
+    </div>
+
+    <div class="info-box">
+        <strong>Flujo de activación</strong><br>
+        1. Miguel toca "Me interesa Plan X" → te manda WA<br>
+        2. Acordás el pago y lo confirmás<br>
+        3. Completás este formulario → generás el link<br>
+        4. Mandás el link por WhatsApp al cliente<br>
+        5. El cliente abre el link → plan activado solo<br>
+        6. IsabSoft recibe notificación automática
+    </div>
+
+</div>
+
+<script>
+const SECRET  = 'ANOTDIGI2026ISASOFT';
+const APP_URL = 'https://carcoragu.github.io/gestfact-demo/registro.html';
+
+const PLANES_LABEL = {
+    SESION:   'Sesión (Gs. 80.000 pago único)',
+    BASICO:   'Básico (Gs. 50.000/mes)',
+    COMPLETO: 'Completo (Gs. 100.000/mes)',
+    FULL:     'Full (Gs. 150.000/mes)'
+};
+
+let _link = '';
+let _msg  = '';
+let _wa   = '';
+
+async function generar() {
+    const plan    = document.getElementById('plan').value;
+    const dias    = parseInt(document.getElementById('dias').value);
+    const cliente = document.getElementById('cliente').value.trim() || 'Cliente';
+    _wa           = document.getElementById('waCliente').value.replace(/\D/g, '');
+
+    if (!dias || dias < 1) { alert('Ingresá los días de acceso'); return; }
+
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+        'raw', enc.encode(SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+    );
+    const sig   = await crypto.subtle.sign('HMAC', key, enc.encode(`${plan}|${dias}`));
+    const token = Array.from(new Uint8Array(sig))
+        .map(b => b.toString(16).padStart(2,'0'))
+        .join('')
+        .substring(0, 16);
+
+    _link = `${APP_URL}?act=${token}&p=${plan}&d=${dias}`;
+
+    const tipoStr = dias === 1 ? '1 día' : `${dias} días`;
+    _msg = `Hola ${cliente}! ✅ Tu plan *${PLANES_LABEL[plan]}* está activado por ${tipoStr}.\n\nAbrí este link para activarlo:\n${_link}\n\nCualquier consulta, acá estoy 👋`;
+
+    document.getElementById('linkBox').textContent = _link;
+    document.getElementById('result').style.display = 'block';
+
+    if (_wa) {
+        document.getElementById('waBox').textContent    = _msg;
+        document.getElementById('waSection').style.display    = 'block';
+        document.getElementById('waSinNumero').style.display  = 'none';
+    } else {
+        document.getElementById('waBoxSolo').textContent      = _msg;
+        document.getElementById('waSection').style.display    = 'none';
+        document.getElementById('waSinNumero').style.display  = 'block';
+    }
+
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copiarLink() {
+    navigator.clipboard.writeText(_link).then(() => {
+        const btn = document.getElementById('btnCopy');
+        btn.textContent = '✓ Copiado';
+        setTimeout(() => btn.textContent = '📋 Copiar link', 2200);
+    });
+}
+
+function copiarMensaje() {
+    navigator.clipboard.writeText(_msg).then(() => {
+        const btn = document.querySelector('.btn-wa-solo');
+        btn.textContent = '✓ Copiado';
+        setTimeout(() => btn.textContent = '📋 Copiar mensaje', 2200);
+    });
+}
+
+function abrirWA() {
+    if (!_wa) return;
+    window.open(`https://wa.me/${_wa}?text=${encodeURIComponent(_msg)}`, '_blank');
+}
+</script>
+</body>
+</html>
