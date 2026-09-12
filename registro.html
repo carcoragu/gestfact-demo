@@ -793,6 +793,11 @@ function esPlanPremium() {
     return p === 'completo' || p === 'full';
 }
 
+function getPlanLabel() {
+    const labels = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
+    return labels[(localStorage.getItem('anotdigi_plan') || '').toUpperCase()] || 'Sin plan';
+}
+
 function setModoBimestral(bim) {
     modoBimestral = bim;
     if (document.getElementById('sinfo').classList.contains('active')) renderizarPlanesInfo();
@@ -1161,7 +1166,7 @@ function enviarIsabSoft() {
 
     const estadoLabel = estadoPagoWizard === 'cobrado' ? '✅ COBRADO' : estadoPagoWizard === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
     const [y, m, d] = fecha.split('-');
-    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteFinal} | ${estadoLabel}\n\n${servicio}`;
+    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteFinal} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
@@ -1788,7 +1793,7 @@ function enviarBulk() {
         return bloque;
     }).join('\n\n');
 
-    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel}\n\n${cuerpo}`;
+    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${cuerpo}`;
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
