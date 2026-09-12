@@ -798,6 +798,13 @@ function getPlanLabel() {
     return labels[(localStorage.getItem('anotdigi_plan') || '').toUpperCase()] || 'Sin plan';
 }
 
+function esClienteNuevo(nombre) {
+    if (!nombre || !registrosGF.length) return false;
+    const up = nombre.toUpperCase().trim();
+    if (CLIENTES_DEFAULT.some(c => c.toUpperCase() === up)) return false;
+    return !registrosGF.some(r => r.cliente && r.cliente.toUpperCase() === up);
+}
+
 function setModoBimestral(bim) {
     modoBimestral = bim;
     if (document.getElementById('sinfo').classList.contains('active')) renderizarPlanesInfo();
@@ -1166,7 +1173,8 @@ function enviarIsabSoft() {
 
     const estadoLabel = estadoPagoWizard === 'cobrado' ? '✅ COBRADO' : estadoPagoWizard === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
     const [y, m, d] = fecha.split('-');
-    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteFinal} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${servicio}`;
+    const clienteLabelWiz = clienteFinal + (esClienteNuevo(clienteFinal) ? ' (NUEVO)' : '');
+    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteLabelWiz} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
@@ -1510,6 +1518,11 @@ function renderizarJobs() {
                    ⚠️ Esta chapa aparece ${conteoChapas[j.chapa]}x en esta lista — verificá las fechas
                </div>`
             : '';
+        const clienteNuevoHtml = esClienteNuevo(j.cliente)
+            ? `<div style="font-size:0.72rem;color:#fbbf24;margin-top:6px;padding:4px 10px;background:rgba(251,191,36,0.07);border-radius:8px;border:1px solid rgba(251,191,36,0.25);">
+                   ⚠️ Cliente nuevo — IsabSoft creará la ficha
+               </div>`
+            : '';
         const clienteChapa  = chapaGetCliente(j.chapa);
         const clienteActual = (j.cliente || '').toUpperCase();
         const chapaClienteHtml = clienteChapa
@@ -1589,6 +1602,7 @@ function renderizarJobs() {
                            oninput="this.value=this.value.toUpperCase(); parsedJobs[${i}].cliente=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').classList.remove('sin-cliente');">
                     <button class="btn-mic" id="jmic-${i}" onclick="activarMicBulk(${i})">🎤</button>
                 </div>
+                ${clienteNuevoHtml}
             </div>
         </div>
         `;
@@ -1780,6 +1794,7 @@ function enviarBulk() {
     parsedJobs.forEach(j => addClienteToList(j.cliente));
 
     const cliente     = document.getElementById('bulkCliente').value.trim().toUpperCase();
+    const clienteLabel = cliente + (esClienteNuevo(cliente) ? ' (NUEVO)' : '');
     const estadoLabel = estadoPagoBulk === 'cobrado' ? '✅ COBRADO' : estadoPagoBulk === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
 
     // Construir mensaje desde parsedJobs para incluir montos y campos editados manualmente
@@ -1793,7 +1808,7 @@ function enviarBulk() {
         return bloque;
     }).join('\n\n');
 
-    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${cuerpo}`;
+    const texto = `${clienteLabel} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${cuerpo}`;
     const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
 }
