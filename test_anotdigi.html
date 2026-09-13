@@ -832,7 +832,7 @@ function mockLS(datos) {
 const PLAN_LBL = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
 const PROMO_DIAS_T = 15;
 
-function getPlanLabelT(ls)  { return PLAN_LBL[(ls.getItem('anotdigi_plan')||'').toUpperCase()] || 'Sin plan'; }
+function getPlanLabelT(ls)  { return PLAN_LBL[(ls.getItem('anotdigi_plan')||'').toUpperCase()] || 'Prueba'; }
 
 function promoActivoT(ls) {
     const expiry = ls.getItem('anotdigi_expiry');
@@ -865,7 +865,7 @@ suite('Control por plan — etiquetas, acceso y mensaje WA', s => {
     t(s, 'COMPLETO → "Completo"','', getPlanLabelT(mockLS({anotdigi_plan:'COMPLETO'})) === 'Completo', 'etiqueta incorrecta');
     t(s, 'FULL → "Full"',        '', getPlanLabelT(mockLS({anotdigi_plan:'FULL'}))      === 'Full',     'etiqueta incorrecta');
     t(s, 'SESION → "Sesión"',    '', getPlanLabelT(mockLS({anotdigi_plan:'SESION'}))    === 'Sesión',   'etiqueta incorrecta');
-    t(s, 'Sin plan → "Sin plan"','', getPlanLabelT(mockLS({})) === 'Sin plan', 'no devolvió "Sin plan"');
+    t(s, 'Sin plan → "Prueba"','', getPlanLabelT(mockLS({})) === 'Prueba', 'no devolvió "Prueba"');
 
     // Acceso — trial activo / vencido
     const d7  = new Date(); d7.setDate(d7.getDate() + 7);
@@ -893,6 +893,244 @@ suite('Control por plan — etiquetas, acceso y mensaje WA', s => {
     t(s, 'Mensaje wizard Plan Completo incluye "📋 Completo"','', msgWizardT('AASL205','toyota vitz','31/07','WILIAN RENTACAR','✅ COBRADO','COMPLETO').includes('📋 Completo'),'no incluye plan');
     t(s, 'Mensaje wizard Plan Full incluye "📋 Full"',        '', msgWizardT('AASL205','toyota vitz','31/07','WILIAN RENTACAR','✅ COBRADO','FULL').includes('📋 Full'),        'no incluye plan');
     t(s, 'Mensaje wizard Plan Sesión incluye "📋 Sesión"',    '', msgWizardT('AASL205','toyota vitz','31/07','WILIAN RENTACAR','⏳ PENDIENTE','SESION').includes('📋 Sesión'),  'no incluye plan');
+});
+
+// ═══════════════════════════════════════════
+// HELPERS SUITES 18-22
+// ═══════════════════════════════════════════
+
+function stripClientesT(jobs, lista) {
+    lista = lista.map(c => c.trim().toUpperCase()).filter(c => c.length >= 3);
+    jobs.forEach(j => {
+        const eliminados = [];
+        let marca = j.marcaModelo || '';
+        lista.forEach(c => {
+            const re = new RegExp('(?:^|\\s)' + c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '(?:\\s|$)', 'gi');
+            if (re.test(marca)) { eliminados.push(c); marca = marca.replace(re,' ').replace(/\s+/g,' ').trim(); }
+        });
+        j.marcaModelo = marca;
+        const lineasServ = (j.servicio||'').split(' / ').map(l => {
+            let linea = l.trim();
+            lista.forEach(c => {
+                const re = new RegExp('^' + c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '$', 'gi');
+                if (re.test(linea)) { if (!eliminados.includes(c)) eliminados.push(c); linea = ''; }
+            });
+            return linea;
+        }).filter(l => l);
+        j.servicio = lineasServ.join(' / ');
+        j.clientesEliminados = eliminados;
+    });
+    return jobs;
+}
+
+function computeFechaWarningT(fechaISO) {
+    if (!fechaISO) return null;
+    const hoy = new Date(); hoy.setHours(12,0,0,0);
+    const d   = new Date(fechaISO + 'T12:00:00');
+    if (d.getFullYear() !== hoy.getFullYear())
+        return `Fecha del año ${d.getFullYear()} — ¿es correcto?`;
+    const diff = Math.floor((hoy - d) / 86400000);
+    if (diff > 60) return `Fecha de hace ${diff} días — verificá`;
+    return null;
+}
+
+function chapaGetVehiculoT(chapa, registros) {
+    if (!chapa || !registros.length) return null;
+    const cn = chapa.toUpperCase().replace(/\s/g,'');
+    const entries = registros.filter(r => r.chapa === cn && r.vehiculo);
+    return entries.length ? entries[entries.length-1].vehiculo : null;
+}
+
+function recolectarWarningsBulkT(jobs, registros, clientesDefault) {
+    const warns  = [];
+    const conteo = {};
+    jobs.forEach(j => { if (j.chapa) conteo[j.chapa] = (conteo[j.chapa]||0)+1; });
+    jobs.forEach((j, i) => {
+        const chapa = j.chapa || '?';
+        const cn    = (j.chapa||'').toUpperCase().replace(/\s/g,'');
+        if (j.fechaWarning)
+            warns.push({ i, chapa, msg: j.fechaWarning, tipo: 'fecha' });
+        const montoNum = parseInt(j.monto||'0', 10);
+        if (!isNaN(montoNum) && montoNum < 0)
+            warns.push({ i, chapa, msg: `Monto negativo (Gs. ${montoNum.toLocaleString('es-PY')}). ¿Es correcto?`, tipo: 'monto' });
+        if (registros.some(r => r.chapa === cn && r.fecha === j.fechaVal))
+            warns.push({ i, chapa, msg: 'Ya figura en GestFact con esta fecha.', tipo: 'duplicado' });
+        const cliE = registros.filter(r => r.chapa === cn && r.cliente);
+        const cGF  = cliE.length ? cliE[cliE.length-1].cliente : null;
+        if (cGF && cGF !== (j.cliente||'').toUpperCase())
+            warns.push({ i, chapa, msg: `Esta chapa habitualmente es de ${cGF}.`, tipo: 'cliente_chapa' });
+        const esNuevo = j.cliente &&
+            !clientesDefault.some(c => c.toUpperCase() === j.cliente.toUpperCase()) &&
+            !registros.some(r => r.cliente && r.cliente.toUpperCase() === j.cliente.toUpperCase());
+        if (esNuevo)
+            warns.push({ i, chapa, msg: `${j.cliente} no está en GestFact — IsabSoft creará la ficha.`, tipo: 'cliente_nuevo' });
+        if (j.chapa && conteo[j.chapa] > 1)
+            warns.push({ i, chapa, msg: `Chapa repetida ${conteo[j.chapa]}x en esta lista.`, tipo: 'repetida' });
+        const vE  = registros.filter(r => r.chapa === cn && r.vehiculo);
+        const vGF = vE.length ? vE[vE.length-1].vehiculo : null;
+        const vAct = (j.marcaModelo||'').toUpperCase().trim();
+        if (vGF && vAct && !vAct.includes(vGF) && !vGF.includes(vAct))
+            warns.push({ i, chapa, msg: `Vehículo diferente al historial: en GestFact figura como ${vGF}.`, tipo: 'vehiculo' });
+    });
+    return warns;
+}
+
+function dispatchPlanT(planId, warns) {
+    if (planId === 'FULL'     && warns.length) return 'bloquea';
+    if (planId === 'COMPLETO' && warns.length) return 'revision';
+    return 'envia';
+}
+
+// ─── SUITE 18: Strip clientes del texto parseado ───
+suite('Strip clientes — nombre removido de marcaModelo/servicio', s => {
+    const CLIENTES = ['WILIAN RENTACAR', 'ANIBAL SG'];
+
+    const j1 = [{ marcaModelo:'toyota vitz ANIBAL SG', servicio:'Cambio aceite / Pastillas', clientesEliminados:[] }];
+    stripClientesT(j1, CLIENTES);
+    t(s,'"ANIBAL SG" en marcaModelo → removido','', j1[0].marcaModelo==='toyota vitz', `got="${j1[0].marcaModelo}"`);
+    t(s,'"ANIBAL SG" → en clientesEliminados','', j1[0].clientesEliminados.includes('ANIBAL SG'), `elim=${JSON.stringify(j1[0].clientesEliminados)}`);
+
+    const j2 = [{ marcaModelo:'toyota vitz', servicio:'WILIAN RENTACAR / Cambio aceite', clientesEliminados:[] }];
+    stripClientesT(j2, CLIENTES);
+    t(s,'"WILIAN RENTACAR" como línea en servicio → removido','', !j2[0].servicio.includes('WILIAN RENTACAR'), `got="${j2[0].servicio}"`);
+    t(s,'Resto del trabajo se mantiene','', j2[0].servicio.includes('Cambio aceite'), `got="${j2[0].servicio}"`);
+
+    const j3 = [{ marcaModelo:'toyota vitz', servicio:'Cambio aceite / Pastillas', clientesEliminados:[] }];
+    stripClientesT(j3, CLIENTES);
+    t(s,'Sin nombre cliente en texto → marcaModelo sin cambios','', j3[0].marcaModelo==='toyota vitz', `got="${j3[0].marcaModelo}"`);
+    t(s,'Sin nombre cliente → clientesEliminados vacío','', j3[0].clientesEliminados.length===0, `elim=${JSON.stringify(j3[0].clientesEliminados)}`);
+
+    const j4 = [{ marcaModelo:'ANIBAL SG toyota', servicio:'', clientesEliminados:[] }];
+    stripClientesT(j4, []);
+    t(s,'Lista vacía → sin strip','', j4[0].marcaModelo.includes('ANIBAL SG'), `got="${j4[0].marcaModelo}"`);
+
+    const j5 = [{ marcaModelo:'ANIBAL SG toyota vitz', servicio:'', clientesEliminados:[] }];
+    stripClientesT(j5, CLIENTES);
+    t(s,'"ANIBAL SG" al inicio → removido, "toyota vitz" queda','',
+        !j5[0].marcaModelo.includes('ANIBAL SG') && j5[0].marcaModelo.includes('toyota'),
+        `got="${j5[0].marcaModelo}"`);
+});
+
+// ─── SUITE 19: fechaWarning — año ≠ actual y >60 días ───
+suite('Fecha warning — año distinto y fecha muy antigua', s => {
+    const hoy   = new Date();
+    const anio  = hoy.getFullYear();
+    const anioA = anio - 1;
+
+    t(s,`Fecha año ${anioA} → warning contiene "${anioA}"`, '',
+        (computeFechaWarningT(`${anioA}-08-15`)||'').includes(`${anioA}`),
+        `got="${computeFechaWarningT(`${anioA}-08-15`)}"`);
+
+    const d61 = new Date(); d61.setDate(d61.getDate()-61);
+    t(s,'Hace 61 días → warning "días"','',
+        (computeFechaWarningT(d61.toISOString().split('T')[0])||'').includes('días'),
+        `got="${computeFechaWarningT(d61.toISOString().split('T')[0])}"`);
+
+    const d60 = new Date(); d60.setDate(d60.getDate()-60);
+    t(s,'Hace 60 días exactos → sin warning (límite)','',
+        computeFechaWarningT(d60.toISOString().split('T')[0]) === null,
+        `got="${computeFechaWarningT(d60.toISOString().split('T')[0])}"`);
+
+    const d30 = new Date(); d30.setDate(d30.getDate()-30);
+    t(s,'Hace 30 días → sin warning','',
+        computeFechaWarningT(d30.toISOString().split('T')[0]) === null,
+        `got="${computeFechaWarningT(d30.toISOString().split('T')[0])}"`);
+
+    t(s,'Fecha hoy → sin warning','',
+        computeFechaWarningT(hoy.toISOString().split('T')[0]) === null,
+        `got="${computeFechaWarningT(hoy.toISOString().split('T')[0])}"`);
+
+    t(s,'Fecha null → null','',
+        computeFechaWarningT(null) === null, 'devolvió algo distinto de null');
+});
+
+// ─── SUITE 20: chapaGetVehiculo — mismatch de vehículo ───
+suite('Vehículo — historial GestFact vs card', s => {
+    const REG = [
+        { chapa:'AASL204', fecha:'2026-07-31', cliente:'WILIAN RENTACAR', vehiculo:'TOYOTA VITZ' },
+        { chapa:'AAZX033', fecha:'2026-08-17', cliente:'ANIBAL SG',       vehiculo:'TOYOTA RACTIS' },
+        { chapa:'AARO223', fecha:'2026-08-07', cliente:'WILIAN RENTACAR', vehiculo:'RACTIS' },
+    ];
+    const vNoMatch = (vGF, vAct) => vGF && vAct && !vAct.toUpperCase().includes(vGF) && !vGF.includes(vAct.toUpperCase());
+
+    t(s,'AASL204 → "TOYOTA VITZ"','', chapaGetVehiculoT('AASL204',REG)==='TOYOTA VITZ', `got="${chapaGetVehiculoT('AASL204',REG)}"`);
+    t(s,'AARO223 → "RACTIS"','',      chapaGetVehiculoT('AARO223',REG)==='RACTIS',       `got="${chapaGetVehiculoT('AARO223',REG)}"`);
+    t(s,'Chapa desconocida → null','', chapaGetVehiculoT('AAON696',REG)===null, 'encontró vehiculo');
+    t(s,'Registros vacíos → null','',  chapaGetVehiculoT('AASL204',[])===null, 'encontró con vacío');
+
+    t(s,'"TOYOTA VITZ" vs "toyota vitz" → sin mismatch','',      !vNoMatch('TOYOTA VITZ','toyota vitz'),      'detectó mismatch');
+    t(s,'"TOYOTA VITZ" vs "Toyota Vitz 2020" → sin mismatch','', !vNoMatch('TOYOTA VITZ','Toyota Vitz 2020'), 'detectó mismatch');
+    t(s,'"RACTIS" vs "TOYOTA RACTIS" → sin mismatch','',         !vNoMatch('RACTIS','TOYOTA RACTIS'),         'detectó mismatch');
+    t(s,'"TOYOTA RACTIS" vs "ractis" → sin mismatch','',         !vNoMatch('TOYOTA RACTIS','ractis'),         'detectó mismatch');
+    t(s,'"TOYOTA VITZ" vs "Honda Civic" → mismatch','',           vNoMatch('TOYOTA VITZ','Honda Civic'),       'no detectó mismatch');
+    t(s,'"GOL" vs "Toyota Vitz" → mismatch','',                   vNoMatch('GOL','Toyota Vitz'),               'no detectó mismatch');
+});
+
+// ─── SUITE 21: recolectarWarningsBulk — todos los tipos ───
+suite('Warnings suaves bulk — todos los tipos (lógica pura)', s => {
+    const REG  = [
+        { chapa:'AASL204', fecha:'2026-08-15', cliente:'WILIAN RENTACAR', vehiculo:'TOYOTA VITZ' },
+        { chapa:'AAZX033', fecha:'2026-08-17', cliente:'ANIBAL SG',       vehiculo:'TOYOTA RACTIS' },
+    ];
+    const DEFS = ['WILIAN RENTACAR','ANIBAL SG'];
+
+    const mk = (ov) => Object.assign({ chapa:'AASL205', fechaVal:'2026-08-10', monto:'290000',
+        marcaModelo:'toyota vitz', cliente:'WILIAN RENTACAR', fechaWarning:null }, ov);
+
+    t(s,'Job limpio → 0 warnings','',
+        recolectarWarningsBulkT([mk({})], REG, DEFS).length === 0, 'tiene warnings inesperados');
+
+    const wFecha = recolectarWarningsBulkT([mk({ fechaWarning:'Fecha del año 2025 — ¿es correcto?' })], REG, DEFS);
+    t(s,'fechaWarning → warn tipo "fecha"','',
+        wFecha.some(w=>w.tipo==='fecha'), `tipos: ${wFecha.map(w=>w.tipo).join(',')}`);
+
+    const wMonto = recolectarWarningsBulkT([mk({ monto:'-180000' })], REG, DEFS);
+    t(s,'Monto negativo → warn tipo "monto"','',
+        wMonto.some(w=>w.tipo==='monto'), `tipos: ${wMonto.map(w=>w.tipo).join(',')}`);
+
+    const wDupe = recolectarWarningsBulkT([mk({ chapa:'AASL204', fechaVal:'2026-08-15' })], REG, DEFS);
+    t(s,'Duplicado GestFact → warn tipo "duplicado"','',
+        wDupe.some(w=>w.tipo==='duplicado'), `tipos: ${wDupe.map(w=>w.tipo).join(',')}`);
+
+    const wCliC = recolectarWarningsBulkT([mk({ chapa:'AASL204', fechaVal:'2026-09-01', cliente:'JOSE GARCIA' })], REG, DEFS);
+    t(s,'Chapa de otro cliente → warn tipo "cliente_chapa"','',
+        wCliC.some(w=>w.tipo==='cliente_chapa'), `tipos: ${wCliC.map(w=>w.tipo).join(',')}`);
+
+    const wNuevo = recolectarWarningsBulkT([mk({ cliente:'JUAN PEREZ NUEVO' })], REG, DEFS);
+    t(s,'Cliente nuevo → warn tipo "cliente_nuevo"','',
+        wNuevo.some(w=>w.tipo==='cliente_nuevo'), `tipos: ${wNuevo.map(w=>w.tipo).join(',')}`);
+
+    const wRep = recolectarWarningsBulkT([mk({ chapa:'AASL204' }), mk({ chapa:'AASL204', fechaVal:'2026-08-12' })], REG, DEFS);
+    t(s,'Chapa repetida en lista → warn tipo "repetida"','',
+        wRep.some(w=>w.tipo==='repetida'), `tipos: ${wRep.map(w=>w.tipo).join(',')}`);
+
+    const wVeh = recolectarWarningsBulkT([mk({ chapa:'AASL204', fechaVal:'2026-09-01', marcaModelo:'Honda Civic' })], REG, DEFS);
+    t(s,'Vehículo diferente → warn tipo "vehiculo"','',
+        wVeh.some(w=>w.tipo==='vehiculo'), `tipos: ${wVeh.map(w=>w.tipo).join(',')}`);
+
+    const wMulti = recolectarWarningsBulkT([mk({
+        chapa:'AASL204', fechaVal:'2026-08-15', monto:'-100000',
+        marcaModelo:'Honda Civic', cliente:'JUAN PEREZ NUEVO',
+        fechaWarning:'Fecha del año 2025 — ¿es correcto?'
+    })], REG, DEFS);
+    t(s,'Job con múltiples problemas → ≥3 warnings','',
+        wMulti.length >= 3, `got ${wMulti.length}: ${wMulti.map(w=>w.tipo).join(',')}`);
+});
+
+// ─── SUITE 22: Dispatch por plan ───
+suite('Dispatch por plan — bloquea / revisión previa / envío directo', s => {
+    const w1 = [{ tipo:'fecha', msg:'test' }], w0 = [];
+
+    t(s,'FULL + warnings → bloquea','',      dispatchPlanT('FULL',     w1)==='bloquea',  `got="${dispatchPlanT('FULL',w1)}"`);
+    t(s,'FULL + sin warns → envía','',        dispatchPlanT('FULL',     w0)==='envia',    `got="${dispatchPlanT('FULL',w0)}"`);
+    t(s,'COMPLETO + warnings → revisión','',  dispatchPlanT('COMPLETO', w1)==='revision', `got="${dispatchPlanT('COMPLETO',w1)}"`);
+    t(s,'COMPLETO + sin warns → envía','',    dispatchPlanT('COMPLETO', w0)==='envia',    `got="${dispatchPlanT('COMPLETO',w0)}"`);
+    t(s,'BASICO + warnings → envía directo (cards muestran badges)','',
+        dispatchPlanT('BASICO',   w1)==='envia', `got="${dispatchPlanT('BASICO',w1)}"`);
+    t(s,'SESION + warnings → envía directo','',
+        dispatchPlanT('SESION',   w1)==='envia', `got="${dispatchPlanT('SESION',w1)}"`);
+    t(s,'(Prueba) + warnings → envía directo','',
+        dispatchPlanT('',         w1)==='envia', `got="${dispatchPlanT('',w1)}"`);
 });
 
 // ═══════════════════════════════════════════
