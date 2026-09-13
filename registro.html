@@ -1883,7 +1883,8 @@ function promoActualizarBanner() {
     const lblEl  = document.getElementById('promoBannerLabel');
 
     if (esPlan) {
-        lblEl.textContent = `Plan ${plan} activo`;
+        const PLAN_LABELS = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
+        lblEl.textContent = `Plan ${PLAN_LABELS[plan] || plan} activo`;
         numEl.textContent = dias;
         if (dias <= 3) {
             banner.classList.add('promo-urgent');
