@@ -1611,6 +1611,7 @@ function renderizarJobs() {
         return `
         <div class="job-card" id="jcard-${i}" style="${cardBorder}">
             <div class="job-num">#${i+1}${j.chapa ? ' — ' + j.chapa : ' — ???'}</div>
+            <div id="jfullwarn-${i}" style="display:none;font-size:0.78rem;color:#f87171;margin-bottom:12px;padding:10px 12px;background:rgba(248,113,113,0.1);border-radius:10px;border:1.5px solid rgba(248,113,113,0.45);line-height:1.7;"></div>
             ${sinChapaHtml}
             ${dupeHtml}
             ${repetidaHtml}
@@ -1720,33 +1721,33 @@ function recolectarWarningsBulk() {
     const conteo = {};
     parsedJobs.forEach(j => { if (j.chapa) conteo[j.chapa] = (conteo[j.chapa] || 0) + 1; });
 
-    parsedJobs.forEach(j => {
+    parsedJobs.forEach((j, i) => {
         const chapa = j.chapa || '?';
 
         if (j.fechaWarning)
-            warns.push({ chapa, msg: j.fechaWarning, tipo: 'fecha' });
+            warns.push({ i, chapa, msg: j.fechaWarning, tipo: 'fecha' });
 
         const montoNum = parseInt(j.monto || '0', 10);
         if (!isNaN(montoNum) && montoNum < 0)
-            warns.push({ chapa, msg: `Monto negativo (Gs. ${montoNum.toLocaleString('es-PY')}). ¿Es correcto?`, tipo: 'monto' });
+            warns.push({ i, chapa, msg: `Monto negativo (Gs. ${montoNum.toLocaleString('es-PY')}). ¿Es correcto?`, tipo: 'monto' });
 
         if (esDuplicado(j.chapa, j.fechaVal))
-            warns.push({ chapa, msg: 'Ya figura en GestFact con esta fecha.', tipo: 'duplicado' });
+            warns.push({ i, chapa, msg: 'Ya figura en GestFact con esta fecha.', tipo: 'duplicado' });
 
         const clienteChapa = chapaGetCliente(j.chapa);
         if (clienteChapa && clienteChapa !== (j.cliente || '').toUpperCase())
-            warns.push({ chapa, msg: `Esta chapa habitualmente es de ${clienteChapa}.`, tipo: 'cliente_chapa' });
+            warns.push({ i, chapa, msg: `Esta chapa habitualmente es de ${clienteChapa}.`, tipo: 'cliente_chapa' });
 
         if (esClienteNuevo(j.cliente))
-            warns.push({ chapa, msg: `${j.cliente || '(sin nombre)'} no está en GestFact — IsabSoft creará la ficha.`, tipo: 'cliente_nuevo' });
+            warns.push({ i, chapa, msg: `${j.cliente || '(sin nombre)'} no está en GestFact — IsabSoft creará la ficha.`, tipo: 'cliente_nuevo' });
 
         if (j.chapa && conteo[j.chapa] > 1)
-            warns.push({ chapa, msg: `Chapa repetida ${conteo[j.chapa]}x en esta lista.`, tipo: 'repetida' });
+            warns.push({ i, chapa, msg: `Chapa repetida ${conteo[j.chapa]}x en esta lista.`, tipo: 'repetida' });
 
         const vGF  = chapaGetVehiculo(j.chapa);
         const vAct = (j.marcaModelo || '').toUpperCase().trim();
         if (vGF && vAct && !vAct.includes(vGF) && !vGF.includes(vAct))
-            warns.push({ chapa, msg: `Vehículo diferente al historial: en GestFact figura como ${vGF}.`, tipo: 'vehiculo' });
+            warns.push({ i, chapa, msg: `Vehículo diferente al historial: en GestFact figura como ${vGF}.`, tipo: 'vehiculo' });
     });
 
     return warns;
@@ -1935,6 +1936,38 @@ function enviarBulk() {
         wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
         toast('⚠️ Indicá si los trabajos están pendientes o cobrados');
         return;
+    }
+
+    // Plan Full: bloqueo duro — no puede enviar hasta corregir todos los warnings
+    if ((localStorage.getItem('anotdigi_plan') || '').toUpperCase() === 'FULL') {
+        const warns = recolectarWarningsBulk();
+        if (warns.length) {
+            // Limpiar warns previos
+            parsedJobs.forEach((_, idx) => {
+                const el = document.getElementById(`jfullwarn-${idx}`);
+                if (el) { el.style.display = 'none'; el.innerHTML = ''; }
+                document.getElementById(`jcard-${idx}`)?.style.removeProperty('border-color');
+            });
+            // Agrupar por card
+            const porCard = {};
+            warns.forEach(w => { (porCard[w.i] = porCard[w.i] || []).push(w.msg); });
+            let primerIdx = null;
+            Object.entries(porCard).forEach(([idx, msgs]) => {
+                const i = Number(idx);
+                if (primerIdx === null) primerIdx = i;
+                document.getElementById(`jcard-${i}`)?.style.setProperty('border-color', '#f87171');
+                const el = document.getElementById(`jfullwarn-${i}`);
+                if (el) {
+                    el.innerHTML = '🚫 Corregí antes de enviar:<br>' + msgs.map(m => `• ${m}`).join('<br>');
+                    el.style.display = 'block';
+                }
+            });
+            const total = warns.length;
+            toast(`🚫 ${total} problema${total > 1 ? 's' : ''} que corregir antes de enviar`);
+            if (primerIdx !== null)
+                document.getElementById(`jcard-${primerIdx}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
     }
 
     // Plan Completo: revisión previa si hay warnings suaves
