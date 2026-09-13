@@ -800,7 +800,7 @@ function esPlanPremium() {
 
 function getPlanLabel() {
     const labels = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
-    return labels[(localStorage.getItem('anotdigi_plan') || '').toUpperCase()] || 'Sin plan';
+    return labels[(localStorage.getItem('anotdigi_plan') || '').toUpperCase()] || 'Prueba';
 }
 
 function esClienteNuevo(nombre) {
@@ -1313,6 +1313,41 @@ function activarPruebaPlan(planId) {
     setTimeout(() => toast(msg), 300);
 }
 
+// ─── Strip clientes del texto parseado ───
+function stripClientesDeJobs(jobs) {
+    const lista = [...new Set([
+        ...CLIENTES_DEFAULT,
+        ...(JSON.parse(localStorage.getItem('clientes_lista') || '[]')),
+        ...registrosGF.map(r => r.cliente).filter(Boolean)
+    ])].map(c => c.trim().toUpperCase()).filter(c => c.length >= 3);
+    if (!lista.length) return;
+
+    jobs.forEach(j => {
+        const eliminados = [];
+
+        // Chequear marcaModelo
+        let marca = j.marcaModelo || '';
+        lista.forEach(c => {
+            const re = new RegExp('(?:^|\\s)' + c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:\\s|$)', 'gi');
+            if (re.test(marca)) { eliminados.push(c); marca = marca.replace(re, ' ').replace(/\s+/g, ' ').trim(); }
+        });
+        j.marcaModelo = marca;
+
+        // Chequear servicio (línea a línea para no borrar texto de trabajo)
+        const lineasServ = (j.servicio || '').split(' / ').map(l => {
+            let linea = l.trim();
+            lista.forEach(c => {
+                const re = new RegExp('^' + c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'gi');
+                if (re.test(linea)) { if (!eliminados.includes(c)) eliminados.push(c); linea = ''; }
+            });
+            return linea;
+        }).filter(l => l);
+        j.servicio = lineasServ.join(' / ');
+
+        j.clientesEliminados = eliminados;
+    });
+}
+
 // ─── Parser ───
 // Detecta chapa en cualquier posición de la línea (para "Changan byb072 ...")
 const CHAPA_INLINE_RE = /\b([A-Z]{2,5})\s?([A-Z]?\s?\d{3})\b/gi;
@@ -1393,7 +1428,19 @@ function parsearBloques(texto) {
         if (fechaR) marcaRaw = marcaRaw.replace(fechaR.raw, ' ');
         const marcaModelo = marcaRaw.replace(/\b(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca)\b/gi, '').replace(/\s+/g,' ').trim();
 
-        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', marcaModelo, cliente: '', sinChapa });
+        // Warning de fecha sospechosa
+        let fechaWarning = null;
+        if (fechaVal) {
+            const hoyD  = new Date();
+            const fechaD = new Date(fechaVal);
+            const añoActual = hoyD.getFullYear();
+            const diasDiff  = Math.floor((hoyD - fechaD) / 86400000);
+            if (fechaD > hoyD)              fechaWarning = 'Fecha en el futuro — ¿es correcto?';
+            else if (fechaD.getFullYear() !== añoActual) fechaWarning = `Año ${fechaD.getFullYear()} — ¿era ${añoActual}?`;
+            else if (diasDiff > 60)         fechaWarning = `Hace ${diasDiff} días — ¿es correcto?`;
+        }
+
+        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', marcaModelo, cliente: '', sinChapa, fechaWarning });
     }
 
     lineas.forEach(linea => {
@@ -1457,6 +1504,9 @@ function procesarBulk() {
     parsedJobs = parsearBloques(texto);
     if (!parsedJobs.length) { toast('⚠️ No se encontraron trabajos — verificá el formato'); return; }
 
+    // Strip nombres de clientes del texto (marcaModelo + servicio)
+    stripClientesDeJobs(parsedJobs);
+
     // Pre-llenar cliente en todos los trabajos
     parsedJobs.forEach(j => j.cliente = cliente);
 
@@ -1499,6 +1549,11 @@ function renderizarJobs() {
         const repetidaHtml = repetida
             ? `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
                    ⚠️ Esta chapa aparece ${conteoChapas[j.chapa]}x en esta lista — verificá las fechas
+               </div>`
+            : '';
+        const clientesStripHtml = (j.clientesEliminados || []).length
+            ? `<div style="font-size:0.72rem;color:#60a5fa;margin-bottom:8px;padding:6px 10px;background:rgba(96,165,250,0.07);border-radius:8px;border:1px solid rgba(96,165,250,0.25);">
+                   ℹ️ "${j.clientesEliminados.join('", "')}" removido del trabajo
                </div>`
             : '';
         const clienteNuevoHtml = esClienteNuevo(j.cliente)
@@ -1545,7 +1600,8 @@ function renderizarJobs() {
             <div class="job-f">
                 <div class="rev-label">Fecha</div>
                 <input class="big-input rev-input" id="jfecha-${i}" type="date" value="${j.fechaVal}"
-                       onchange="parsedJobs[${i}].fechaVal=this.value; checkFechaMismatchBulk(${i});">
+                       onchange="parsedJobs[${i}].fechaVal=this.value; parsedJobs[${i}].fechaWarning=null; document.getElementById('jfechawarning-${i}').style.display='none'; checkFechaMismatchBulk(${i});">
+                ${j.fechaWarning ? `<div id="jfechawarning-${i}" style="font-size:0.75rem;color:#fbbf24;margin-top:6px;padding:6px 10px;background:rgba(251,191,36,0.08);border-radius:8px;border:1px solid rgba(251,191,36,0.3);">⚠️ ${j.fechaWarning}</div>` : `<div id="jfechawarning-${i}" style="display:none;"></div>`}
                 <div id="jfechamismatch-${i}" style="display:none;font-size:0.75rem;color:#f87171;margin-top:6px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.3);"></div>
             </div>
 
@@ -1585,6 +1641,7 @@ function renderizarJobs() {
                            oninput="this.value=this.value.toUpperCase(); parsedJobs[${i}].cliente=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').classList.remove('sin-cliente');">
                     <button class="btn-mic" id="jmic-${i}" onclick="activarMicBulk(${i})">🎤</button>
                 </div>
+                ${clientesStripHtml}
                 ${clienteNuevoHtml}
             </div>
         </div>
