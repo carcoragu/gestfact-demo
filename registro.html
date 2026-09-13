@@ -829,6 +829,64 @@ function chapaGetVehiculo(chapa) {
     return entries.length ? entries[entries.length - 1].vehiculo : null;
 }
 
+function extraerMontoDeServicio(texto) {
+    const m = (texto || '').match(/\b\d{1,3}(?:\.\d{3})+\b/g) || [];
+    return m.reduce((sum, s) => sum + parseInt(s.replace(/\./g,''), 10), 0);
+}
+
+async function autoCargarEnGF(jobs, clienteGlobal, estadoPago) {
+    const cobrado    = estadoPago === 'cobrado' ? '1' : '0';
+    const estadoPres = estadoPago === 'cobrado' ? 'Cobrado' : estadoPago === 'verificar' ? 'Verificar' : 'Pendiente';
+
+    // 1. Crear fichas de clientes nuevos (sin duplicar por nombre)
+    const nuevos = new Set();
+    jobs.forEach(j => {
+        const c = ((j.cliente || clienteGlobal || '')).toUpperCase().trim();
+        if (c && esClienteNuevo(c) && !nuevos.has(c)) nuevos.add(c);
+    });
+    for (const nombre of nuevos) {
+        const job = jobs.find(j => ((j.cliente || clienteGlobal || '')).toUpperCase().trim() === nombre);
+        try {
+            await fetch(GF_API + '?action=syncPushCliente'
+                + '&nombre='   + encodeURIComponent(nombre)
+                + '&vehiculo=' + encodeURIComponent(job?.marcaModelo || '')
+                + '&patente='  + encodeURIComponent(job?.chapa || ''));
+        } catch(_) {}
+    }
+
+    // 2. Crear/actualizar órdenes
+    const errors = [];
+    let cargados  = 0;
+    for (const j of jobs) {
+        const cliente = ((j.cliente || clienteGlobal || '')).toUpperCase().trim();
+        const gfId    = 'ANOTD-' + (j.chapa || 'XX') + '-' + (j.fechaVal || '').replace(/-/g,'');
+        const monto   = j.monto || 0;
+        const items   = (j.servicio || '') + '~1~' + monto + '~' + monto;
+        const url = GF_API
+            + '?action=syncPush'
+            + '&gf_id='       + encodeURIComponent(gfId)
+            + '&cliente='     + encodeURIComponent(cliente)
+            + '&vehiculo='    + encodeURIComponent(j.marcaModelo || '')
+            + '&patente='     + encodeURIComponent(j.chapa || '')
+            + '&monto='       + monto
+            + '&fecha='       + encodeURIComponent(j.fechaVal || '')
+            + '&items='       + encodeURIComponent(items)
+            + '&estado_pres=' + encodeURIComponent(estadoPres)
+            + '&cobrado='     + cobrado;
+        try {
+            const resp = await fetch(url);
+            const data = JSON.parse(await resp.text());
+            if (data.ok) cargados++;
+            else errors.push((j.chapa || '?') + ': ' + (data.error || 'error'));
+        } catch(e) {
+            errors.push((j.chapa || '?') + ': ' + e.message);
+        }
+    }
+
+    if (!cargados && errors.length) return { ok: false, error: errors[0] };
+    return { ok: true, cargados, errors };
+}
+
 function detectarClienteEnTexto(texto) {
     const opts = [...document.querySelectorAll('#clientes-list option')]
         .map(o => o.value.trim().toUpperCase()).filter(c => c.length >= 3);
@@ -1178,8 +1236,13 @@ function recolectarWarningsWizard() {
     if (clienteChapa && clienteChapa !== cliente)
         warns.push({ msg: `Esta chapa habitualmente es de ${clienteChapa}.`, tipo: 'cliente_chapa' });
 
-    if (esClienteNuevo(cliente))
-        warns.push({ msg: `${cliente} no está en GestFact — IsabSoft creará la ficha.`, tipo: 'cliente_nuevo' });
+    if (esClienteNuevo(cliente)) {
+        const planActivo = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+        const msgNuevo   = planActivo === 'FULL'
+            ? `${cliente} no está en GestFact — se creará la ficha automáticamente.`
+            : `${cliente} no está en GestFact — IsabSoft creará la ficha.`;
+        warns.push({ msg: msgNuevo, tipo: 'cliente_nuevo' });
+    }
 
     const vGF = chapaGetVehiculo(chapa);
     if (vGF && marca && !marca.includes(vGF) && !vGF.includes(marca))
@@ -1204,17 +1267,56 @@ function mostrarRevisionPreviaWizard(warns) {
 
 function confirmarRevisionWizard() { _doEnviarWizard(); }
 
-function _doEnviarWizard() {
+async function _doEnviarWizard() {
+    const planId       = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
     const chapa        = document.getElementById('rev-chapa').value.trim().toUpperCase();
     const marca        = document.getElementById('rev-marca').value.trim();
     const fecha        = document.getElementById('rev-fecha').value;
     const servicio     = document.getElementById('rev-servicio').value.trim();
     const clienteFinal = document.getElementById('rev-cliente').value.trim().toUpperCase();
     const estadoLabel  = estadoPagoWizard === 'cobrado' ? '✅ COBRADO' : estadoPagoWizard === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
+
+    if (planId === 'FULL') {
+        if (esClienteNuevo(clienteFinal)) {
+            try {
+                await fetch(GF_API + '?action=syncPushCliente'
+                    + '&nombre='   + encodeURIComponent(clienteFinal)
+                    + '&vehiculo=' + encodeURIComponent(marca)
+                    + '&patente='  + encodeURIComponent(chapa));
+            } catch(_) {}
+        }
+        const monto      = extraerMontoDeServicio(servicio);
+        const gfId       = 'ANOTD-' + chapa + '-' + (fecha || '').replace(/-/g,'');
+        const items      = servicio + '~1~' + monto + '~' + monto;
+        const cobrado    = estadoPagoWizard === 'cobrado' ? '1' : '0';
+        const estadoPres = estadoPagoWizard === 'cobrado' ? 'Cobrado' : estadoPagoWizard === 'verificar' ? 'Verificar' : 'Pendiente';
+        const url = GF_API
+            + '?action=syncPush'
+            + '&gf_id='       + encodeURIComponent(gfId)
+            + '&cliente='     + encodeURIComponent(clienteFinal)
+            + '&vehiculo='    + encodeURIComponent(marca)
+            + '&patente='     + encodeURIComponent(chapa)
+            + '&monto='       + monto
+            + '&fecha='       + encodeURIComponent(fecha)
+            + '&items='       + encodeURIComponent(items)
+            + '&estado_pres=' + encodeURIComponent(estadoPres)
+            + '&cobrado='     + cobrado;
+        try {
+            toast('⏳ Cargando en GestFact...');
+            const resp = await fetch(url);
+            const data = JSON.parse(await resp.text());
+            if (!data.ok) { toast('⚠️ Error al cargar en GestFact: ' + (data.error || '')); return; }
+        } catch(e) {
+            toast('⚠️ No se pudo conectar con GestFact');
+            return;
+        }
+    }
+
     addClienteToList(clienteFinal);
-    const [y, m, d]     = fecha.split('-');
-    const clienteLabel  = clienteFinal + (esClienteNuevo(clienteFinal) ? ' (NUEVO)' : '');
-    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteLabel} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${servicio}`;
+    const [y, m, d]    = fecha.split('-');
+    const clienteLabel = clienteFinal + (esClienteNuevo(clienteFinal) ? ' (NUEVO)' : '');
+    const sufijoGF     = planId === 'FULL' ? '\n\n✅ Cargado en GestFact' : '';
+    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteLabel} | ${estadoLabel} | 📋 ${getPlanLabel()}${sufijoGF}\n\n${servicio}`;
     window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`, '_blank');
 }
 
@@ -1272,9 +1374,9 @@ function enviarIsabSoft() {
 
     const planId = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
 
-    // Plan Full: bloqueo duro
+    // Plan Full: bloqueo duro — cliente_nuevo no bloquea (se auto-crea en GestFact)
     if (planId === 'FULL') {
-        const warns = recolectarWarningsWizard();
+        const warns = recolectarWarningsWizard().filter(w => w.tipo !== 'cliente_nuevo');
         if (warns.length) {
             const el = document.getElementById('wiz-fullwarn');
             if (el) {
@@ -1852,8 +1954,13 @@ function recolectarWarningsBulk() {
         if (clienteChapa && clienteChapa !== (j.cliente || '').toUpperCase())
             warns.push({ i, chapa, msg: `Esta chapa habitualmente es de ${clienteChapa}.`, tipo: 'cliente_chapa' });
 
-        if (esClienteNuevo(j.cliente))
-            warns.push({ i, chapa, msg: `${j.cliente || '(sin nombre)'} no está en GestFact — IsabSoft creará la ficha.`, tipo: 'cliente_nuevo' });
+        if (esClienteNuevo(j.cliente)) {
+            const planActivo = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+            const msgNuevo   = planActivo === 'FULL'
+                ? `${j.cliente || '(sin nombre)'} no está en GestFact — se creará la ficha automáticamente.`
+                : `${j.cliente || '(sin nombre)'} no está en GestFact — IsabSoft creará la ficha.`;
+            warns.push({ i, chapa, msg: msgNuevo, tipo: 'cliente_nuevo' });
+        }
 
         if (j.chapa && conteo[j.chapa] > 1)
             warns.push({ i, chapa, msg: `Chapa repetida ${conteo[j.chapa]}x en esta lista.`, tipo: 'repetida' });
@@ -1884,12 +1991,23 @@ function mostrarRevisionPrevia(warns) {
 
 function confirmarRevisionBulk() { _doEnviarBulk(); }
 
-function _doEnviarBulk() {
+async function _doEnviarBulk() {
+    const planId = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
     parsedJobs.forEach(j => addClienteToList(j.cliente));
 
     const cliente      = document.getElementById('bulkCliente').value.trim().toUpperCase();
     const clienteLabel = cliente + (esClienteNuevo(cliente) ? ' (NUEVO)' : '');
     const estadoLabel  = estadoPagoBulk === 'cobrado' ? '✅ COBRADO' : estadoPagoBulk === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
+
+    if (planId === 'FULL') {
+        toast('⏳ Cargando en GestFact...');
+        const result = await autoCargarEnGF(parsedJobs, cliente, estadoPagoBulk);
+        if (!result.ok) {
+            toast('⚠️ Error al cargar en GestFact: ' + result.error);
+            return;
+        }
+        toast(`✅ ${result.cargados} trabajo${result.cargados !== 1 ? 's' : ''} cargado${result.cargados !== 1 ? 's' : ''} en GestFact`);
+    }
 
     const cuerpo = parsedJobs.map(j => {
         const fDis  = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
@@ -1901,7 +2019,8 @@ function _doEnviarBulk() {
         return bloque;
     }).join('\n\n');
 
-    const texto = `${clienteLabel} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${cuerpo}`;
+    const sufijoGF = planId === 'FULL' ? '\n\n✅ Cargado en GestFact' : '';
+    const texto = `${clienteLabel} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel} | 📋 ${getPlanLabel()}${sufijoGF}\n\n${cuerpo}`;
     window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`, '_blank');
 }
 
@@ -2052,9 +2171,9 @@ function enviarBulk() {
         return;
     }
 
-    // Plan Full: bloqueo duro — no puede enviar hasta corregir todos los warnings
+    // Plan Full: bloqueo duro — cliente_nuevo no bloquea (se auto-crea en GestFact)
     if ((localStorage.getItem('anotdigi_plan') || '').toUpperCase() === 'FULL') {
-        const warns = recolectarWarningsBulk();
+        const warns = recolectarWarningsBulk().filter(w => w.tipo !== 'cliente_nuevo');
         if (warns.length) {
             // Limpiar warns previos
             parsedJobs.forEach((_, idx) => {
