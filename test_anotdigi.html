@@ -822,6 +822,79 @@ suite('Clientes — nuevo vs conocido, chapa→cliente', s => {
         'encontró cliente con registros vacíos');
 });
 
+// ─── SUITE 17: Control por plan ───
+// Mock localStorage DOM-free
+function mockLS(datos) {
+    const d = Object.assign({}, datos);
+    return { getItem: k => d[k] || null };
+}
+
+const PLAN_LBL = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
+const PROMO_DIAS_T = 15;
+
+function getPlanLabelT(ls)  { return PLAN_LBL[(ls.getItem('anotdigi_plan')||'').toUpperCase()] || 'Sin plan'; }
+
+function promoActivoT(ls) {
+    const expiry = ls.getItem('anotdigi_expiry');
+    if (expiry) return new Date(expiry) >= new Date();
+    const inicio = ls.getItem('anotdigi_inicio');
+    if (!inicio) return true;
+    return Math.floor((new Date() - new Date(inicio)) / 86400000) < PROMO_DIAS_T;
+}
+
+function promoDiasT(ls) {
+    const expiry = ls.getItem('anotdigi_expiry');
+    const plan   = ls.getItem('anotdigi_plan');
+    if (expiry && plan) {
+        const d = Math.ceil((new Date(expiry) - new Date()) / 86400000);
+        return { dias: Math.max(0, d), plan, esPlan: true };
+    }
+    const inicio = ls.getItem('anotdigi_inicio');
+    if (!inicio) return { dias: PROMO_DIAS_T, plan: null, esPlan: false };
+    const pasados = Math.floor((new Date() - new Date(inicio)) / 86400000);
+    return { dias: Math.max(0, PROMO_DIAS_T - pasados), plan: null, esPlan: false };
+}
+
+function msgWizardT(chapa, marca, fecha, cliente, estado, plan) {
+    return `${chapa} ${marca} | ${fecha} | ${cliente} | ${estado} | 📋 ${PLAN_LBL[plan] || plan}`;
+}
+
+suite('Control por plan — etiquetas, acceso y mensaje WA', s => {
+    // Etiquetas por plan
+    t(s, 'BASICO → "Básico"',    '', getPlanLabelT(mockLS({anotdigi_plan:'BASICO'}))    === 'Básico',   'etiqueta incorrecta');
+    t(s, 'COMPLETO → "Completo"','', getPlanLabelT(mockLS({anotdigi_plan:'COMPLETO'})) === 'Completo', 'etiqueta incorrecta');
+    t(s, 'FULL → "Full"',        '', getPlanLabelT(mockLS({anotdigi_plan:'FULL'}))      === 'Full',     'etiqueta incorrecta');
+    t(s, 'SESION → "Sesión"',    '', getPlanLabelT(mockLS({anotdigi_plan:'SESION'}))    === 'Sesión',   'etiqueta incorrecta');
+    t(s, 'Sin plan → "Sin plan"','', getPlanLabelT(mockLS({})) === 'Sin plan', 'no devolvió "Sin plan"');
+
+    // Acceso — trial activo / vencido
+    const d7  = new Date(); d7.setDate(d7.getDate() + 7);
+    const d_1 = new Date(); d_1.setDate(d_1.getDate() - 1);
+    const d16 = new Date(); d16.setDate(d16.getDate() - 16);
+    const exp7  = d7.toISOString().split('T')[0];
+    const expAy = d_1.toISOString().split('T')[0];
+    const ini16 = d16.toISOString().split('T')[0];
+    const hoy   = new Date().toISOString().split('T')[0];
+
+    t(s, 'Plan activo (expiry +7d) → promoActivo = true',        '', promoActivoT(mockLS({anotdigi_plan:'BASICO',  anotdigi_expiry: exp7}))  === true,  'debería ser activo');
+    t(s, 'Plan vencido (expiry ayer) → promoActivo = false',     '', promoActivoT(mockLS({anotdigi_plan:'BASICO',  anotdigi_expiry: expAy})) === false, 'debería estar vencido');
+    t(s, 'Trial libre día 0 (inicio hoy) → promoActivo = true',  '', promoActivoT(mockLS({anotdigi_inicio: hoy}))   === true,  'trial día 0 debería ser activo');
+    t(s, 'Trial libre hace 16d (>15) → promoActivo = false',     '', promoActivoT(mockLS({anotdigi_inicio: ini16})) === false, 'trial vencido debería dar false');
+
+    // Días restantes
+    const r = promoDiasT(mockLS({anotdigi_plan:'COMPLETO', anotdigi_expiry: exp7}));
+    t(s, 'Plan Completo +7d → esPlan=true y dias ≥ 6', '', r.esPlan && r.dias >= 6, `esPlan=${r.esPlan} dias=${r.dias}`);
+
+    const rTrial = promoDiasT(mockLS({anotdigi_inicio: hoy}));
+    t(s, 'Trial libre día 0 → esPlan=false, dias=15', '', !rTrial.esPlan && rTrial.dias === PROMO_DIAS_T, `esPlan=${rTrial.esPlan} dias=${rTrial.dias}`);
+
+    // Mensaje WA incluye plan correcto
+    t(s, 'Mensaje wizard Plan Básico incluye "📋 Básico"',   '', msgWizardT('AASL205','toyota vitz','31/07','WILIAN RENTACAR','⏳ PENDIENTE','BASICO').includes('📋 Básico'),   'no incluye plan');
+    t(s, 'Mensaje wizard Plan Completo incluye "📋 Completo"','', msgWizardT('AASL205','toyota vitz','31/07','WILIAN RENTACAR','✅ COBRADO','COMPLETO').includes('📋 Completo'),'no incluye plan');
+    t(s, 'Mensaje wizard Plan Full incluye "📋 Full"',        '', msgWizardT('AASL205','toyota vitz','31/07','WILIAN RENTACAR','✅ COBRADO','FULL').includes('📋 Full'),        'no incluye plan');
+    t(s, 'Mensaje wizard Plan Sesión incluye "📋 Sesión"',    '', msgWizardT('AASL205','toyota vitz','31/07','WILIAN RENTACAR','⏳ PENDIENTE','SESION').includes('📋 Sesión'),  'no incluye plan');
+});
+
 // ═══════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════
