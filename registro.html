@@ -386,6 +386,7 @@
         <div class="promo-label" id="promoBannerLabel">Período de prueba</div>
         <div class="promo-dias" id="promoDiasNum">90</div>
         <div class="promo-sub" id="promoSubText">días restantes</div>
+        <button id="btnRenovar" onclick="renovarPlan()" style="display:none;margin-top:10px;width:100%;padding:9px;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.3);border-radius:9px;color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;">Renovar — contactar IsabSoft →</button>
     </div>
 
     <div class="modo-grid">
@@ -1289,6 +1290,7 @@ function activarPruebaPlan(planId) {
         localStorage.setItem('anotdigi_expiry', expiry.toISOString().split('T')[0]);
     }
     localStorage.setItem('anotdigi_plan', planId.toUpperCase());
+    new Image().src = `https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=plan_trial_iniciado&id=miguel&plan=${encodeURIComponent(planId.toUpperCase())}`;
     promoActualizarBanner();
     mostrarScreen('s0');
     const nombre = planId.charAt(0).toUpperCase() + planId.slice(1);
@@ -1882,6 +1884,9 @@ function promoActualizarBanner() {
     const subEl  = document.getElementById('promoSubText');
     const lblEl  = document.getElementById('promoBannerLabel');
 
+    const btnRenovar = document.getElementById('btnRenovar');
+    let mostrarRenovar = false;
+
     if (esPlan) {
         const PLAN_LABELS = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
         lblEl.textContent = `Plan ${PLAN_LABELS[plan] || plan} activo`;
@@ -1889,9 +1894,11 @@ function promoActualizarBanner() {
         if (dias <= 3) {
             banner.classList.add('promo-urgent');
             subEl.textContent = '⚠️ Vence pronto — contactá a IsabSoft';
+            mostrarRenovar = true;
         } else if (dias <= 7) {
             banner.classList.add('promo-warning');
             subEl.textContent = 'días restantes — renovar pronto';
+            mostrarRenovar = true;
         } else {
             subEl.textContent = 'días restantes';
         }
@@ -1899,14 +1906,24 @@ function promoActualizarBanner() {
         lblEl.textContent = 'Período de prueba';
         numEl.textContent = dias;
         subEl.textContent = 'días restantes gratis';
-        if (dias <= 3)      banner.classList.add('promo-urgent');
-        else if (dias <= 7) banner.classList.add('promo-warning');
+        if (dias <= 3)      { banner.classList.add('promo-urgent');  mostrarRenovar = true; }
+        else if (dias <= 7) { banner.classList.add('promo-warning'); mostrarRenovar = true; }
     } else {
         banner.classList.add('promo-expired');
         lblEl.textContent = 'Prueba terminada';
         numEl.textContent = '!';
         subEl.textContent = 'Elegí un plan para continuar';
     }
+
+    if (btnRenovar) btnRenovar.style.display = mostrarRenovar ? 'block' : 'none';
+}
+
+function renovarPlan() {
+    const plan = localStorage.getItem('anotdigi_plan') || '';
+    const PLAN_LABELS = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
+    const nombre = PLAN_LABELS[plan.toUpperCase()] || plan || 'mi plan';
+    const msg = `Hola IsabSoft! Quiero renovar AnotDigi *Plan ${nombre}*. ¿Cómo procedo?`;
+    window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function renderizarPlanes(puedeVolver) {
