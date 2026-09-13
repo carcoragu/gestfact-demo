@@ -912,8 +912,8 @@ function detectarClienteEnTexto(texto) {
 }
 
 function esPlanPremium() {
-    const p = localStorage.getItem('anotdigi_plan');
-    return p === 'completo' || p === 'full';
+    const p = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    return p === 'COMPLETO' || p === 'FULL';
 }
 
 function getPlanLabel() {
@@ -1785,13 +1785,18 @@ function renderizarJobs() {
         const dupe       = esDuplicado(j.chapa, j.fechaVal);
         const chapaVista = !dupe && chapaExiste(j.chapa);
         const repetida   = !!j.chapa && conteoChapas[j.chapa] > 1;
+        const _planActivo = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
         const dupeHtml = dupe
-            ? (esPlanPremium()
+            ? (_planActivo === 'FULL'
                 ? `<div style="font-size:0.75rem;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.4);">
-                       🔴 Ya cargado en GestFact — no se enviará al WhatsApp
+                       🔴 Duplicado en GestFact — corregí antes de enviar
+                   </div>`
+                : _planActivo === 'COMPLETO'
+                ? `<div style="font-size:0.75rem;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.4);">
+                       🔴 Duplicado en GestFact — aparecerá en revisión previa
                    </div>`
                 : `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
-                       ⚠️ Ya cargado en GestFact para esta fecha — verificá antes de enviar
+                       ⚠️ Ya figura en GestFact para esta fecha — verificá antes de enviar
                    </div>`)
             : chapaVista
             ? `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
@@ -1808,9 +1813,12 @@ function renderizarJobs() {
                    ℹ️ "${j.clientesEliminados.join('", "')}" removido del trabajo
                </div>`
             : '';
+        const _planCN = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
         const clienteNuevoHtml = esClienteNuevo(j.cliente)
             ? `<div style="font-size:0.72rem;color:#fbbf24;margin-top:6px;padding:4px 10px;background:rgba(251,191,36,0.07);border-radius:8px;border:1px solid rgba(251,191,36,0.25);">
-                   ⚠️ Cliente nuevo — IsabSoft creará la ficha
+                   ${_planCN === 'FULL'
+                       ? '🆕 Cliente nuevo — se creará la ficha automáticamente'
+                       : '⚠️ Cliente nuevo — IsabSoft creará la ficha'}
                </div>`
             : '';
         const vehiculoGF       = chapaGetVehiculo(j.chapa);
@@ -2262,25 +2270,25 @@ const PLANES_DATA = [
         desc: 'Carga mensual de los trabajos nuevos que vas generando. Empezás limpio.',
         ejemplo: 'Cada semana mandás la lista por WhatsApp — queda cargado en GestFact sin hacer nada más.',
         features: ['Registros del mes en curso', 'IsabSoft carga en GestFact', 'Reporte mensual de pendientes'],
-        cubre: ['Cargamos los trabajos del mes que nos enviás'],
-        noCubre: ['No detectamos faltantes ni duplicados', 'Errores de meses anteriores no se corrigen']
+        cubre: ['Cargamos los trabajos del mes que nos enviás', 'AnotDigi te avisa si detecta duplicados o fechas raras en tus cards'],
+        noCubre: ['Los avisos no bloquean el envío — podés mandar igual aunque haya warnings', 'Errores de meses anteriores no se corrigen']
     },
     {
         id: 'completo', nombre: 'Completo', precio: '100.000', tipo: '/mes', popular: true,
         precioNum: 100000, bimestral: { precioMes: 90000, total: 180000, ahorro: 20000 },
-        desc: 'Básico más control total y seguimiento avanzado.',
-        ejemplo: 'Mandás la lista y si falta algo o hay un error, IsabSoft te avisa — no tenés que revisar nada.',
-        features: ['Todo lo del Básico', 'Control de estados avanzado', 'IsabSoft controla todo', 'Soporte prioritario'],
-        cubre: ['Carga mensual + corregimos si nos avisás un error', 'Seguimiento de estado de cada trabajo'],
-        noCubre: ['Si falta algo o hay un error, necesitás avisarnos vos']
+        desc: 'Básico más revisión previa antes de enviar — ves todos los posibles problemas juntos.',
+        ejemplo: 'Mandás la lista y antes de enviar a IsabSoft el app te muestra todo lo que hay que revisar — vos decidís si corregir o confirmar.',
+        features: ['Todo lo del Básico', 'Pantalla de revisión previa con todos los warnings', 'Soporte prioritario'],
+        cubre: ['Carga mensual + revisión previa antes de enviar', 'Ves duplicados, fechas raras y clientes nuevos todos juntos antes de confirmar'],
+        noCubre: ['No auto-cargamos en GestFact — IsabSoft carga después de que confirmás el envío']
     },
     {
         id: 'full', nombre: 'Full', precio: '150.000', tipo: '/mes', popular: false,
         precioNum: 150000, bimestral: { precioMes: 135000, total: 270000, ahorro: 30000 },
-        desc: 'AnotDigi conectado directo a GestFact. IsabSoft monitorea todo.',
-        ejemplo: 'Pegás tu lista en AnotDigi y en minutos queda cargado en GestFact — IsabSoft lo controla y te avisa si hay algo raro.',
-        features: ['AnotDigi → GestFact directo', 'Sin límite de nada', 'IsabSoft controla 24/7', 'Reportes automáticos'],
-        cubre: ['Comparamos tu lista con GestFact y corregimos lo que no cierra, sin que avises', 'Historial siempre limpio y verificado'],
+        desc: 'AnotDigi carga directo en GestFact — sin pasar por IsabSoft. Bloquea cualquier error antes de cargar.',
+        ejemplo: 'Pegás tu lista en AnotDigi y queda cargado en GestFact automáticamente. Si hay un duplicado o una fecha rara, no deja enviar hasta que lo corregís.',
+        features: ['AnotDigi → GestFact directo (sin intervención manual)', 'Clientes nuevos: crea la ficha automáticamente', 'Bloqueo duro — no carga si hay errores', 'IsabSoft monitorea y notifica si hay algo raro'],
+        cubre: ['Carga automática en GestFact sin que IsabSoft intervenga', 'Crea fichas de clientes nuevos automáticamente', 'Bloquea duplicados, fechas raras y vehículos que no coinciden'],
         noCubre: []
     }
 ];
