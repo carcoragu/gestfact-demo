@@ -669,7 +669,20 @@
         </div>
 
         <div id="planCards"></div>
-        <div id="spVolver" style="display:none;margin-top:6px;">
+
+        <div style="margin-top:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;">
+            <div style="font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px;">Datos para el pago</div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:2;">
+                🏦 Banco Itaú Paraguay<br>
+                👤 Carlos A. Coronel Aguirre
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;background:rgba(255,255,255,0.06);border-radius:9px;padding:10px 14px;">
+                <span style="font-size:1rem;font-weight:800;color:#fff;letter-spacing:1px;">🔑 0981 153 477</span>
+                <button onclick="copiarAlias(this)" style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.35);border-radius:7px;color:#4ade80;font-size:0.75rem;font-weight:700;padding:5px 12px;cursor:pointer;">Copiar</button>
+            </div>
+        </div>
+
+        <div id="spVolver" style="display:none;margin-top:12px;">
             <button class="btn-back" style="width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
         </div>
     </div>
@@ -1922,8 +1935,15 @@ function renovarPlan() {
     const plan = localStorage.getItem('anotdigi_plan') || '';
     const PLAN_LABELS = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
     const nombre = PLAN_LABELS[plan.toUpperCase()] || plan || 'mi plan';
-    const msg = `Hola IsabSoft! Quiero renovar AnotDigi *Plan ${nombre}*. ¿Cómo procedo?`;
+    const msg = `Hola IsabSoft! Quiero renovar AnotDigi *Plan ${nombre}*.\n\nVoy a transferir al alias *0981 153 477* (Itaú — Carlos Coronel). Te mando el comprobante. ¿Confirmo?`;
     window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function copiarAlias(btn) {
+    navigator.clipboard.writeText('0981 153 477').then(() => {
+        btn.textContent = '✓ Copiado';
+        setTimeout(() => btn.textContent = 'Copiar', 2000);
+    });
 }
 
 function renderizarPlanes(puedeVolver) {
