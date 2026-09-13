@@ -601,6 +601,8 @@
         <span style="color:rgba(255,255,255,0.5);">Si es otro trabajo, podés enviar igual.</span>
     </div>
 
+    <div id="wiz-fullwarn" style="display:none;width:100%;margin-top:10px;font-size:0.78rem;color:#f87171;padding:10px 14px;background:rgba(248,113,113,0.1);border-radius:10px;border:1.5px solid rgba(248,113,113,0.45);line-height:1.7;"></div>
+
     <!-- Selector estado pago — wizard -->
     <div class="estado-wrap" id="estadoWrapWizard" style="margin-top:18px;">
         <div class="estado-label">Estado del trabajo <span style="color:#f87171">*</span></div>
@@ -613,6 +615,19 @@
 
     <button class="btn-next" style="margin-top:14px;" onclick="enviarIsabSoft()">💬 Enviar a IsabSoft</button>
     <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo registro</button>
+</div>
+
+<!-- WIZARD revisión previa (Plan Completo) -->
+<div class="screen" id="sw-revision">
+    <div class="jobs-wrap">
+        <div style="text-align:center;margin-bottom:20px;">
+            <div class="question" style="font-size:1.1rem;margin-bottom:4px;">Revisión previa</div>
+            <div class="hint">Confirmá estas situaciones antes de enviar</div>
+        </div>
+        <div id="revisionListaWiz" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+        <button class="btn-next" onclick="confirmarRevisionWizard()">✅ Confirmar y enviar →</button>
+        <button class="btn-back" style="margin-top:14px;width:100%;text-align:center;" onclick="mostrarScreen('s6')">← Volver a corregir</button>
+    </div>
 </div>
 
 <!-- BULK 1: cliente + textarea -->
@@ -1121,6 +1136,73 @@ function tieneMonto(texto) {
     return /\b\d{1,3}\.\d{3}\b|\b\d{5,}\b/.test(texto) || SIN_CARGO_RE.test(texto);
 }
 
+// ─── Warnings suaves wizard (Completo / Full) ───
+function recolectarWarningsWizard() {
+    const chapa   = document.getElementById('rev-chapa').value.trim().toUpperCase();
+    const marca   = document.getElementById('rev-marca').value.trim().toUpperCase();
+    const fecha   = document.getElementById('rev-fecha').value;
+    const cliente = document.getElementById('rev-cliente').value.trim().toUpperCase();
+    const warns   = [];
+
+    if (fecha) {
+        const hoy = new Date(); hoy.setHours(12,0,0,0);
+        const d   = new Date(fecha + 'T12:00:00');
+        if (d.getFullYear() !== hoy.getFullYear())
+            warns.push({ msg: `Fecha del año ${d.getFullYear()} — ¿es correcto?`, tipo: 'fecha' });
+        else {
+            const diff = Math.floor((hoy - d) / 86400000);
+            if (diff > 60)
+                warns.push({ msg: `Fecha de hace ${diff} días — ¿es correcto?`, tipo: 'fecha' });
+        }
+    }
+
+    if (esDuplicado(chapa, fecha))
+        warns.push({ msg: 'Ya figura en GestFact con esta fecha.', tipo: 'duplicado' });
+
+    const clienteChapa = chapaGetCliente(chapa);
+    if (clienteChapa && clienteChapa !== cliente)
+        warns.push({ msg: `Esta chapa habitualmente es de ${clienteChapa}.`, tipo: 'cliente_chapa' });
+
+    if (esClienteNuevo(cliente))
+        warns.push({ msg: `${cliente} no está en GestFact — IsabSoft creará la ficha.`, tipo: 'cliente_nuevo' });
+
+    const vGF = chapaGetVehiculo(chapa);
+    if (vGF && marca && !marca.includes(vGF) && !vGF.includes(marca))
+        warns.push({ msg: `Vehículo diferente al historial: en GestFact figura como ${vGF}.`, tipo: 'vehiculo' });
+
+    return warns;
+}
+
+function mostrarRevisionPreviaWizard(warns) {
+    const iconos  = { fecha: '📅', duplicado: '⚠️', cliente_chapa: 'ℹ️', cliente_nuevo: '🆕', vehiculo: '🚗' };
+    const colores = { fecha: '251,191,36', duplicado: '251,191,36', cliente_chapa: '251,191,36',
+                      cliente_nuevo: '251,191,36', vehiculo: '251,191,36' };
+    document.getElementById('revisionListaWiz').innerHTML = warns.map(w => {
+        const rgb = colores[w.tipo] || '251,191,36';
+        return `<div style="padding:12px 14px;border-radius:12px;border:1px solid rgba(${rgb},0.35);background:rgba(${rgb},0.07);line-height:1.5;">
+            <div style="font-size:0.7rem;font-weight:700;color:rgba(${rgb},1);margin-bottom:4px;">${iconos[w.tipo] || '⚠️'}</div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.85);">${w.msg}</div>
+        </div>`;
+    }).join('');
+    mostrarScreen('sw-revision');
+}
+
+function confirmarRevisionWizard() { _doEnviarWizard(); }
+
+function _doEnviarWizard() {
+    const chapa        = document.getElementById('rev-chapa').value.trim().toUpperCase();
+    const marca        = document.getElementById('rev-marca').value.trim();
+    const fecha        = document.getElementById('rev-fecha').value;
+    const servicio     = document.getElementById('rev-servicio').value.trim();
+    const clienteFinal = document.getElementById('rev-cliente').value.trim().toUpperCase();
+    const estadoLabel  = estadoPagoWizard === 'cobrado' ? '✅ COBRADO' : estadoPagoWizard === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
+    addClienteToList(clienteFinal);
+    const [y, m, d]     = fecha.split('-');
+    const clienteLabel  = clienteFinal + (esClienteNuevo(clienteFinal) ? ' (NUEVO)' : '');
+    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteLabel} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${servicio}`;
+    window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`, '_blank');
+}
+
 // ─── Envío — copia fiel del texto de Miguel ───
 function enviarIsabSoft() {
     const chapa    = document.getElementById('rev-chapa').value.trim().toUpperCase();
@@ -1135,7 +1217,6 @@ function enviarIsabSoft() {
         toast('⚠️ El cliente está vacío');
         return;
     }
-    addClienteToList(clienteFinal);
     if (!chapa)    { toast('⚠️ La chapa está vacía'); return; }
     if (!marca)    { document.getElementById('rev-marca').classList.add('error'); setTimeout(()=>document.getElementById('rev-marca').classList.remove('error'),1500); toast('⚠️ El vehículo está vacío — agregá marca y modelo'); return; }
     if (!fecha)    { toast('⚠️ La fecha está vacía'); return; }
@@ -1174,12 +1255,30 @@ function enviarIsabSoft() {
         return;
     }
 
-    const estadoLabel = estadoPagoWizard === 'cobrado' ? '✅ COBRADO' : estadoPagoWizard === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
-    const [y, m, d] = fecha.split('-');
-    const clienteLabelWiz = clienteFinal + (esClienteNuevo(clienteFinal) ? ' (NUEVO)' : '');
-    const texto = `${chapa} ${marca} | ${d}/${m} | ${clienteLabelWiz} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${servicio}`;
-    const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
-    window.open(url, '_blank');
+    const planId = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+
+    // Plan Full: bloqueo duro
+    if (planId === 'FULL') {
+        const warns = recolectarWarningsWizard();
+        if (warns.length) {
+            const el = document.getElementById('wiz-fullwarn');
+            if (el) {
+                el.innerHTML = '🚫 Corregí antes de enviar:<br>' + warns.map(w => `• ${w.msg}`).join('<br>');
+                el.style.display = 'block';
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            toast(`🚫 ${warns.length} problema${warns.length > 1 ? 's' : ''} que corregir antes de enviar`);
+            return;
+        }
+    }
+
+    // Plan Completo: revisión previa
+    if (planId === 'COMPLETO') {
+        const warns = recolectarWarningsWizard();
+        if (warns.length) { mostrarRevisionPreviaWizard(warns); return; }
+    }
+
+    _doEnviarWizard();
 }
 
 // Re-check si corrige campos en revisión
