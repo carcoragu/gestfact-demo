@@ -635,6 +635,19 @@
     <button class="btn-back" onclick="mostrarScreen('s0')">← Atrás</button>
 </div>
 
+<!-- BULK revisión previa (Plan Completo) -->
+<div class="screen" id="sb-revision">
+    <div class="jobs-wrap">
+        <div style="text-align:center;margin-bottom:20px;">
+            <div class="question" style="font-size:1.1rem;margin-bottom:4px;">Revisión previa</div>
+            <div class="hint">Confirmá estas situaciones antes de enviar</div>
+        </div>
+        <div id="revisionLista" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+        <button class="btn-next" onclick="confirmarRevisionBulk()">✅ Confirmar y enviar →</button>
+        <button class="btn-back" style="margin-top:14px;width:100%;text-align:center;" onclick="mostrarScreen('sb2')">← Volver a corregir</button>
+    </div>
+</div>
+
 <!-- BULK 2: revisión por trabajo -->
 <div class="screen" id="sb2">
     <div class="jobs-wrap">
@@ -1683,6 +1696,77 @@ function checkFechaMismatchBulk(i) {
     }
 }
 
+// ─── Revisión previa (Plan Completo) ───
+function recolectarWarningsBulk() {
+    const warns  = [];
+    const conteo = {};
+    parsedJobs.forEach(j => { if (j.chapa) conteo[j.chapa] = (conteo[j.chapa] || 0) + 1; });
+
+    parsedJobs.forEach(j => {
+        const chapa = j.chapa || '?';
+
+        if (j.fechaWarning)
+            warns.push({ chapa, msg: j.fechaWarning, tipo: 'fecha' });
+
+        const montoNum = parseInt(j.monto || '0', 10);
+        if (!isNaN(montoNum) && montoNum < 0)
+            warns.push({ chapa, msg: `Monto negativo (Gs. ${montoNum.toLocaleString('es-PY')}). ¿Es correcto?`, tipo: 'monto' });
+
+        if (esDuplicado(j.chapa, j.fechaVal))
+            warns.push({ chapa, msg: 'Ya figura en GestFact con esta fecha.', tipo: 'duplicado' });
+
+        const clienteChapa = chapaGetCliente(j.chapa);
+        if (clienteChapa && clienteChapa !== (j.cliente || '').toUpperCase())
+            warns.push({ chapa, msg: `Esta chapa habitualmente es de ${clienteChapa}.`, tipo: 'cliente_chapa' });
+
+        if (esClienteNuevo(j.cliente))
+            warns.push({ chapa, msg: `${j.cliente || '(sin nombre)'} no está en GestFact — IsabSoft creará la ficha.`, tipo: 'cliente_nuevo' });
+
+        if (j.chapa && conteo[j.chapa] > 1)
+            warns.push({ chapa, msg: `Chapa repetida ${conteo[j.chapa]}x en esta lista.`, tipo: 'repetida' });
+    });
+
+    return warns;
+}
+
+function mostrarRevisionPrevia(warns) {
+    const iconos  = { fecha: '📅', monto: '💰', duplicado: '⚠️', cliente_chapa: 'ℹ️', cliente_nuevo: '🆕', repetida: '🔁' };
+    const colores = { monto: '248,113,113', duplicado: '251,191,36', fecha: '251,191,36',
+                      cliente_chapa: '251,191,36', cliente_nuevo: '251,191,36', repetida: '251,191,36' };
+
+    document.getElementById('revisionLista').innerHTML = warns.map(w => {
+        const rgb = colores[w.tipo] || '251,191,36';
+        return `<div style="padding:12px 14px;border-radius:12px;border:1px solid rgba(${rgb},0.35);background:rgba(${rgb},0.07);line-height:1.5;">
+            <div style="font-size:0.7rem;font-weight:700;color:rgba(${rgb},1);margin-bottom:4px;">${iconos[w.tipo] || '⚠️'} ${w.chapa}</div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.85);">${w.msg}</div>
+        </div>`;
+    }).join('');
+    mostrarScreen('sb-revision');
+}
+
+function confirmarRevisionBulk() { _doEnviarBulk(); }
+
+function _doEnviarBulk() {
+    parsedJobs.forEach(j => addClienteToList(j.cliente));
+
+    const cliente      = document.getElementById('bulkCliente').value.trim().toUpperCase();
+    const clienteLabel = cliente + (esClienteNuevo(cliente) ? ' (NUEVO)' : '');
+    const estadoLabel  = estadoPagoBulk === 'cobrado' ? '✅ COBRADO' : estadoPagoBulk === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
+
+    const cuerpo = parsedJobs.map(j => {
+        const fDis  = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
+        const marca = j.marcaModelo ? ` ${j.marcaModelo}` : '';
+        let bloque  = j.chapa + marca + (fDis ? ` — ${fDis}` : '');
+        if (j.servicio) bloque += `\n${j.servicio}`;
+        if (j.monto)                                  bloque += `\nGs. ${Number(j.monto).toLocaleString('es-PY')}`;
+        else if (SIN_CARGO_RE.test(j.servicio || '')) bloque += `\nSin cargo`;
+        return bloque;
+    }).join('\n\n');
+
+    const texto = `${clienteLabel} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${cuerpo}`;
+    window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`, '_blank');
+}
+
 // ─── Enviar bulk ───
 function enviarBulk() {
     // Leer valores actuales de todos los inputs
@@ -1830,27 +1914,13 @@ function enviarBulk() {
         return;
     }
 
-    // Guardar clientes nuevos
-    parsedJobs.forEach(j => addClienteToList(j.cliente));
+    // Plan Completo: revisión previa si hay warnings suaves
+    if ((localStorage.getItem('anotdigi_plan') || '').toUpperCase() === 'COMPLETO') {
+        const warns = recolectarWarningsBulk();
+        if (warns.length) { mostrarRevisionPrevia(warns); return; }
+    }
 
-    const cliente     = document.getElementById('bulkCliente').value.trim().toUpperCase();
-    const clienteLabel = cliente + (esClienteNuevo(cliente) ? ' (NUEVO)' : '');
-    const estadoLabel = estadoPagoBulk === 'cobrado' ? '✅ COBRADO' : estadoPagoBulk === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
-
-    // Construir mensaje desde parsedJobs para incluir montos y campos editados manualmente
-    const cuerpo = parsedJobs.map(j => {
-        const fDis  = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
-        const marca = j.marcaModelo ? ` ${j.marcaModelo}` : '';
-        let bloque  = j.chapa + marca + (fDis ? ` — ${fDis}` : '');
-        if (j.servicio) bloque += `\n${j.servicio}`;
-        if (j.monto)                                  bloque += `\nGs. ${Number(j.monto).toLocaleString('es-PY')}`;
-        else if (SIN_CARGO_RE.test(j.servicio || '')) bloque += `\nSin cargo`;
-        return bloque;
-    }).join('\n\n');
-
-    const texto = `${clienteLabel} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel} | 📋 ${getPlanLabel()}\n\n${cuerpo}`;
-    const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
-    window.open(url, '_blank');
+    _doEnviarBulk();
 }
 
 // ═══════════════════════════════════════════════════════
