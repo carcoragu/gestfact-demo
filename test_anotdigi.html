@@ -1133,6 +1133,75 @@ suite('Dispatch por plan — bloquea / revisión previa / envío directo', s => 
         dispatchPlanT('',         w1)==='envia', `got="${dispatchPlanT('',w1)}"`);
 });
 
+// ─── SUITE 23: extraerMontoDeServicio ───
+function extraerMontoDeServicioT(texto) {
+    const m = (texto || '').match(/\b\d{1,3}(?:\.\d{3})+\b/g) || [];
+    return m.reduce((sum, s) => sum + parseInt(s.replace(/\./g,''), 10), 0);
+}
+
+suite('extraerMontoDeServicio — suma montos del texto', s => {
+    t(s,'un monto simple','',
+        extraerMontoDeServicioT('Cambio aceite\nGs. 150.000') === 150000,
+        'esperaba 150000');
+    t(s,'dos montos → suma','',
+        extraerMontoDeServicioT('Repuesto 80.000\nMano obra 150.000') === 230000,
+        'esperaba 230000');
+    t(s,'monto millonario','',
+        extraerMontoDeServicioT('Motor 1.200.000') === 1200000,
+        'esperaba 1200000');
+    t(s,'texto "sin cargo" → 0','',
+        extraerMontoDeServicioT('Sin cargo') === 0,
+        'esperaba 0');
+    t(s,'texto vacío → 0','',
+        extraerMontoDeServicioT('') === 0,
+        'esperaba 0');
+    t(s,'null → 0','',
+        extraerMontoDeServicioT(null) === 0,
+        'esperaba 0');
+    t(s,'número sin puntos de miles no cuenta','',
+        extraerMontoDeServicioT('Km 82000') === 0,
+        'no debería contar enteros sin puntos');
+});
+
+// ─── SUITE 24: Plan Full — cliente_nuevo no bloquea ───
+suite('Plan Full — cliente_nuevo no bloquea, se auto-crea', s => {
+    const wSoloCN = [{ tipo:'cliente_nuevo', msg:'X no está en GestFact' }];
+    const wMixed  = [{ tipo:'cliente_nuevo', msg:'X' }, { tipo:'fecha', msg:'Fecha rara' }];
+    const wFecha  = [{ tipo:'fecha', msg:'Fecha rara' }];
+    const wVeh    = [{ tipo:'vehiculo', msg:'Vehículo distinto' }];
+
+    const filtrar = (warns) => warns.filter(w => w.tipo !== 'cliente_nuevo');
+
+    t(s,'FULL + solo cliente_nuevo → filtrado → envía','',
+        dispatchPlanT('FULL', filtrar(wSoloCN)) === 'envia',
+        `got="${dispatchPlanT('FULL', filtrar(wSoloCN))}"`);
+
+    t(s,'FULL + cliente_nuevo + fecha → filtrado → bloquea por fecha','',
+        dispatchPlanT('FULL', filtrar(wMixed)) === 'bloquea',
+        `got="${dispatchPlanT('FULL', filtrar(wMixed))}"`);
+
+    t(s,'FULL + solo fecha → bloquea','',
+        dispatchPlanT('FULL', filtrar(wFecha)) === 'bloquea',
+        `got="${dispatchPlanT('FULL', filtrar(wFecha))}"`);
+
+    t(s,'FULL + vehiculo distinto → bloquea','',
+        dispatchPlanT('FULL', filtrar(wVeh)) === 'bloquea',
+        `got="${dispatchPlanT('FULL', filtrar(wVeh))}"`);
+
+    t(s,'COMPLETO + solo cliente_nuevo → revisión previa (no se filtra en Completo)','',
+        dispatchPlanT('COMPLETO', wSoloCN) === 'revision',
+        `got="${dispatchPlanT('COMPLETO', wSoloCN)}"`);
+
+    t(s,'filtrar() sobre lista vacía → sin warns','',
+        filtrar([]).length === 0,
+        'esperaba array vacío');
+
+    t(s,'filtrar() solo elimina cliente_nuevo, respeta otros tipos','',
+        filtrar([{ tipo:'cliente_nuevo' }, { tipo:'duplicado' }]).length === 1
+        && filtrar([{ tipo:'cliente_nuevo' }, { tipo:'duplicado' }])[0].tipo === 'duplicado',
+        'tipo incorrecto en resultado');
+});
+
 // ═══════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════

@@ -876,8 +876,17 @@ async function autoCargarEnGF(jobs, clienteGlobal, estadoPago) {
         try {
             const resp = await fetch(url);
             const data = JSON.parse(await resp.text());
-            if (data.ok) cargados++;
-            else errors.push((j.chapa || '?') + ': ' + (data.error || 'error'));
+            if (data.ok) {
+                cargados++;
+                registrosGF.push({
+                    chapa:    (j.chapa || '').toUpperCase().replace(/\s/g,''),
+                    fecha:    j.fechaVal || '',
+                    cliente:  ((j.cliente || clienteGlobal || '')).toUpperCase().trim(),
+                    vehiculo: (j.marcaModelo || '').toUpperCase().trim()
+                });
+            } else {
+                errors.push((j.chapa || '?') + ': ' + (data.error || 'error'));
+            }
         } catch(e) {
             errors.push((j.chapa || '?') + ': ' + e.message);
         }
@@ -1306,6 +1315,12 @@ async function _doEnviarWizard() {
             const resp = await fetch(url);
             const data = JSON.parse(await resp.text());
             if (!data.ok) { toast('⚠️ Error al cargar en GestFact: ' + (data.error || '')); return; }
+            registrosGF.push({
+                chapa:    chapa.replace(/\s/g,''),
+                fecha:    fecha,
+                cliente:  clienteFinal,
+                vehiculo: marca.toUpperCase().trim()
+            });
         } catch(e) {
             toast('⚠️ No se pudo conectar con GestFact');
             return;
