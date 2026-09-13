@@ -372,7 +372,7 @@
     </style>
 </head>
 <body>
-<script>(function(){new Image().src='https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=apertura&id=miguel&ua='+encodeURIComponent(navigator.userAgent)+'&ref='+encodeURIComponent(document.referrer);})();</script>
+<script>(function(){const _cid=localStorage.getItem('anotdigi_id')||'miguel';new Image().src='https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=apertura&id='+_cid+'&ua='+encodeURIComponent(navigator.userAgent)+'&ref='+encodeURIComponent(document.referrer);})();</script>
 
 <!-- MODO: selector inicial -->
 <div class="screen active" id="s0">
@@ -721,7 +721,22 @@
 
 <script>
 const WA_ISASOFT = "595981153477";
-const GF_API     = "https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec";
+
+// ─── Config por cliente ───
+const ANOTDIGI_MAP = {
+    miguel: {
+        gfApi: 'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',
+        clientesDefault: ['WILIAN RENTACAR', 'ANIBAL SG']
+    }
+    // nuevo cliente: id: { gfApi: 'https://...exec', clientesDefault: [] }
+};
+(function() {
+    const id = (new URLSearchParams(location.search).get('id') || '').toLowerCase();
+    if (id && ANOTDIGI_MAP[id]) localStorage.setItem('anotdigi_id', id);
+})();
+const CLIENTE_ID       = localStorage.getItem('anotdigi_id') || 'miguel';
+const _cfg             = ANOTDIGI_MAP[CLIENTE_ID] || ANOTDIGI_MAP.miguel;
+const GF_API           = _cfg.gfApi;
 
 // ─── Estado ───
 const datos = { cliente: '', chapa: '', fecha: '', servicio: '' };
@@ -738,7 +753,7 @@ let estadoPagoWizard = ''; // 'pendiente' | 'cobrado' — para wizard uno-a-uno
 })();
 
 // ─── Clientes: Sheet + localStorage ───
-const CLIENTES_DEFAULT = ['WILIAN RENTACAR', 'ANIBAL SG'];
+const CLIENTES_DEFAULT = _cfg.clientesDefault;
 
 function loadClientes(extra = []) {
     const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
@@ -1423,7 +1438,7 @@ function activarPruebaPlan(planId) {
         localStorage.setItem('anotdigi_expiry', expiry.toISOString().split('T')[0]);
     }
     localStorage.setItem('anotdigi_plan', planId.toUpperCase());
-    new Image().src = `https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=plan_trial_iniciado&id=miguel&plan=${encodeURIComponent(planId.toUpperCase())}`;
+    new Image().src = `https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=plan_trial_iniciado&id=${CLIENTE_ID}&plan=${encodeURIComponent(planId.toUpperCase())}`;
     promoActualizarBanner();
     mostrarScreen('s0');
     const nombre = planId.charAt(0).toUpperCase() + planId.slice(1);
@@ -2355,7 +2370,7 @@ async function checkActivacionURL() {
 
         // Notificar a IsabSoft: plan activado, fecha de vencimiento
         const _exp = expiry.toISOString().split('T')[0];
-        new Image().src = `https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=plan_activado&id=miguel&plan=${encodeURIComponent(plan.toUpperCase())}&dias=${dias}&expiry=${_exp}`;
+        new Image().src = `https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=plan_activado&id=${CLIENTE_ID}&plan=${encodeURIComponent(plan.toUpperCase())}&dias=${dias}&expiry=${_exp}`;
 
         window.history.replaceState({}, '', window.location.pathname);
         setTimeout(() => toast(`Plan ${plan.toUpperCase()} activado — ${dias} días`), 300);
