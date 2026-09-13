@@ -80,9 +80,15 @@ select option { background: #1a1a2e; }
     <h1>AnotDigi — Activación de Plan</h1>
     <div class="sub">Uso interno IsabSoft — completá después de confirmar el pago</div>
 
-    <div class="field">
-        <label>Nombre del cliente</label>
-        <input type="text" id="cliente" placeholder="Escribí el nombre del cliente" autocomplete="off" spellcheck="false">
+    <div class="row2">
+        <div class="field">
+            <label>Nombre del cliente</label>
+            <input type="text" id="cliente" placeholder="Ej: Miguel Acuña" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="field">
+            <label>ID en ANOTDIGI_MAP</label>
+            <input type="text" id="clienteId" placeholder="Ej: miguel, cbtec" autocomplete="off" spellcheck="false" style="text-transform:lowercase;">
+        </div>
     </div>
 
     <div class="field">
@@ -133,12 +139,14 @@ select option { background: #1a1a2e; }
 
     <div class="info-box">
         <strong>Flujo de activación</strong><br>
-        1. Miguel toca "Me interesa Plan X" → te manda WA<br>
+        1. El cliente toca "Me interesa Plan X" → te manda WA<br>
         2. Acordás el pago y lo confirmás<br>
-        3. Completás este formulario → generás el link<br>
+        3. Completás este formulario (nombre, ID en ANOTDIGI_MAP, plan, días)<br>
         4. Mandás el link por WhatsApp al cliente<br>
-        5. El cliente abre el link → plan activado solo<br>
-        6. IsabSoft recibe notificación automática
+        5. El cliente abre el link → plan activado solo (el &id= fija su config)<br>
+        6. IsabSoft recibe notificación automática<br><br>
+        <strong>ID en ANOTDIGI_MAP</strong> — la clave del cliente en el mapa de configuración.<br>
+        Ej: <code style="color:#4ade80">miguel</code>, <code style="color:#4ade80">cbtec</code>, etc. Sin esto, el link defaultea a miguel.
     </div>
 
 </div>
@@ -159,11 +167,13 @@ let _msg  = '';
 let _wa   = '';
 
 async function generar() {
-    const plan    = document.getElementById('plan').value;
-    const dias    = parseInt(document.getElementById('dias').value);
-    const cliente = document.getElementById('cliente').value.trim() || 'Cliente';
-    _wa           = document.getElementById('waCliente').value.replace(/\D/g, '');
+    const plan      = document.getElementById('plan').value;
+    const dias      = parseInt(document.getElementById('dias').value);
+    const cliente   = document.getElementById('cliente').value.trim() || 'Cliente';
+    const clienteId = document.getElementById('clienteId').value.trim().toLowerCase();
+    _wa             = document.getElementById('waCliente').value.replace(/\D/g, '');
 
+    if (!clienteId) { alert('Ingresá el ID del cliente (ej: miguel, cbtec)'); return; }
     if (!dias || dias < 1) { alert('Ingresá los días de acceso'); return; }
 
     const enc = new TextEncoder();
@@ -176,7 +186,7 @@ async function generar() {
         .join('')
         .substring(0, 16);
 
-    _link = `${APP_URL}?act=${token}&p=${plan}&d=${dias}`;
+    _link = `${APP_URL}?act=${token}&p=${plan}&d=${dias}&id=${clienteId}`;
 
     const tipoStr = dias === 1 ? '1 día' : `${dias} días`;
     _msg = `Hola ${cliente}! ✅ Tu plan *${PLANES_LABEL[plan]}* está activado por ${tipoStr}.\n\nAbrí este link para activarlo:\n${_link}\n\nCualquier consulta, acá estoy 👋`;
