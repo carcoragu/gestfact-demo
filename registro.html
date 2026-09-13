@@ -1584,7 +1584,7 @@ function renderizarJobs() {
             : '';
         const vehiculoGF       = chapaGetVehiculo(j.chapa);
         const vehiculoActual   = (j.marcaModelo || '').toUpperCase().trim();
-        const vehiculoDistinto = vehiculoGF && vehiculoActual && !vehiculoActual.includes(vehiculoGF);
+        const vehiculoDistinto = vehiculoGF && vehiculoActual && !vehiculoActual.includes(vehiculoGF) && !vehiculoGF.includes(vehiculoActual);
         const planId           = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
         const vehiculoMismatchHtml = vehiculoDistinto && planId !== 'SESION'
             ? `<div style="font-size:0.72rem;color:#fbbf24;margin-top:6px;padding:4px 10px;background:rgba(251,191,36,0.07);border-radius:8px;border:1px solid rgba(251,191,36,0.25);">
@@ -1745,7 +1745,7 @@ function recolectarWarningsBulk() {
 
         const vGF  = chapaGetVehiculo(j.chapa);
         const vAct = (j.marcaModelo || '').toUpperCase().trim();
-        if (vGF && vAct && !vAct.includes(vGF))
+        if (vGF && vAct && !vAct.includes(vGF) && !vGF.includes(vAct))
             warns.push({ chapa, msg: `Vehículo diferente al historial: en GestFact figura como ${vGF}.`, tipo: 'vehiculo' });
     });
 
