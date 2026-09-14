@@ -1723,7 +1723,8 @@ function parsearBloques(texto) {
             }
             return false;
         })();
-        if ((comienzaConChapa || tieneChapaYFecha) && bloque.length) {
+        const anteriorBlanco = t && bloque.length > 0 && !bloque[bloque.length - 1].trim();
+        if ((comienzaConChapa || tieneChapaYFecha || (anteriorBlanco && FECHA_EN_LINEA_RE.test(t))) && bloque.length) {
             procesarBloque(bloque);
             bloque = [t];
         } else {
@@ -1968,6 +1969,15 @@ function checkFechaMismatchBulk(i) {
     } else {
         warn.style.display = 'none';
     }
+}
+
+// ─── Validación estructural de parsedJobs (usada también en tests E2E) ───
+function validar(jobs) {
+    const sinChapa = jobs.filter(j => !j.chapa);
+    const sinFecha = jobs.filter(j => !j.fechaVal);
+    const sinMonto = jobs.filter(j => !j.monto && !SIN_CARGO_RE.test(j.servicio || ''));
+    const sinMarca = jobs.filter(j => !j.marcaModelo || !j.marcaModelo.trim());
+    return { sinChapa, sinFecha, sinMonto, sinMarca };
 }
 
 // ─── Revisión previa (Plan Completo) ───
