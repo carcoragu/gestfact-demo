@@ -163,29 +163,48 @@ async function fetchConTimeout(url, ms) {
 }
 
 function parseCSV(texto) {
+    function parseRow(line) {
+        const fields = [];
+        let i = 0, f = '';
+        while (i < line.length) {
+            if (line[i] === '"') {
+                i++;
+                while (i < line.length) {
+                    if (line[i] === '"' && line[i+1] === '"') { f += '"'; i += 2; }
+                    else if (line[i] === '"') { i++; break; }
+                    else f += line[i++];
+                }
+                if (i < line.length && line[i] === ',') i++;
+            } else {
+                const end = line.indexOf(',', i);
+                if (end < 0) { f = line.slice(i); i = line.length; }
+                else { f = line.slice(i, end); i = end + 1; }
+            }
+            fields.push(f); f = '';
+        }
+        return fields;
+    }
+
     const lineas = texto.split('\n').filter(l => l.trim());
     if (lineas.length < 2) return [];
-    const headers = lineas[0].split(',').map(h => h.trim().toLowerCase());
+    const headers = parseRow(lineas[0]).map(h => h.trim().toLowerCase());
     const idx = (n) => headers.indexOf(n);
     const iId = idx('id'), iCli = idx('cliente'), iVeh = idx('vehiculo'),
           iPat = idx('patente'), iFecha = idx('fecha'), iMonto = idx('monto'),
           iServ = idx('servicio'), iEstPres = idx('estado_pres'), iCobrado = idx('cobrado');
 
-    // Fallback: si no hay header reconocido, usar índices históricos
-    const useIdx = (primary, fallback) => primary >= 0 ? primary : fallback;
-
     return lineas.slice(1).map(l => {
-        const c = l.split(',');
+        const c = parseRow(l);
         return {
-            id:        (c[useIdx(iId,0)]    || '').trim(),
-            cliente:   (c[useIdx(iCli,1)]   || '').trim(),
-            vehiculo:  (c[useIdx(iVeh,2)]   || '').trim(),
-            patente:   (c[useIdx(iPat,3)]   || '').trim().toUpperCase().replace(/\s/g,''),
-            fecha:     (c[useIdx(iFecha,4)] || '').trim(),
-            monto:     parseInt(c[useIdx(iMonto,9)] || '0', 10) || 0,
-            servicio:  (c[useIdx(iServ,7)]  || '').trim(),
-            estadoPres:(c[useIdx(iEstPres,12)] || '').trim(),
-            cobrado:   (c[useIdx(iCobrado,13)] || '').trim()
+            id:        (c[iId]       || '').trim(),
+            cliente:   (c[iCli]     || '').trim(),
+            vehiculo:  (c[iVeh]     || '').trim(),
+            patente:   (c[iPat]     || '').trim().toUpperCase().replace(/\s/g,''),
+            fecha:     (c[iFecha]   || '').trim(),
+            monto:     parseInt(c[iMonto] || '0', 10) || 0,
+            servicio:  (c[iServ]    || '').trim(),
+            estadoPres:(c[iEstPres] || '').trim(),
+            cobrado:   (c[iCobrado] || '').trim()
         };
     }).filter(r => r.id.startsWith('ANOTD-'));
 }
@@ -271,7 +290,7 @@ function limpiarFiltro() {
 // ── Carga principal ──
 (async function cargar() {
     try {
-        const res = await fetchConTimeout(GF_API + '?action=syncExportOrdenes');
+        const res = await fetchConTimeout(GF_API + '?action=syncExportInforme');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const csv = await res.text();
         const registros = parseCSV(csv);
