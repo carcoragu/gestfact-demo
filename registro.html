@@ -774,9 +774,23 @@ function normalizarFecha(f) {
     return '';
 }
 
+async function fetchConTimeout(url, ms) {
+    ms = ms || 8000;
+    const ctrl = new AbortController();
+    const tid = setTimeout(function() { ctrl.abort(); }, ms);
+    try {
+        const r = await fetch(url, { signal: ctrl.signal });
+        clearTimeout(tid);
+        return r;
+    } catch(e) {
+        clearTimeout(tid);
+        throw e;
+    }
+}
+
 async function fetchClientesSheet() {
     try {
-        const res = await fetch(GF_API + '?action=syncExportOrdenes');
+        const res = await fetchConTimeout(GF_API + '?action=syncExportOrdenes');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const csv = await res.text();
         const lineas = csv.split('\n').filter(l => l.trim());
@@ -847,7 +861,7 @@ async function autoCargarEnGF(jobs, clienteGlobal, estadoPago) {
     for (const nombre of nuevos) {
         const job = jobs.find(j => ((j.cliente || clienteGlobal || '')).toUpperCase().trim() === nombre);
         try {
-            await fetch(GF_API + '?action=syncPushCliente'
+            await fetchConTimeout(GF_API + '?action=syncPushCliente'
                 + '&nombre='   + encodeURIComponent(nombre)
                 + '&vehiculo=' + encodeURIComponent(job?.marcaModelo || '')
                 + '&patente='  + encodeURIComponent(job?.chapa || ''));
@@ -874,8 +888,9 @@ async function autoCargarEnGF(jobs, clienteGlobal, estadoPago) {
             + '&estado_pres=' + encodeURIComponent(estadoPres)
             + '&cobrado='     + cobrado;
         try {
-            const resp = await fetch(url);
-            const data = JSON.parse(await resp.text());
+            const resp = await fetchConTimeout(url);
+            let data;
+            try { data = JSON.parse(await resp.text()); } catch(_) { data = { ok: false, error: 'Respuesta inválida' }; }
             if (data.ok) {
                 cargados++;
                 registrosGF.push({
@@ -1288,7 +1303,7 @@ async function _doEnviarWizard() {
     if (planId === 'FULL') {
         if (esClienteNuevo(clienteFinal)) {
             try {
-                await fetch(GF_API + '?action=syncPushCliente'
+                await fetchConTimeout(GF_API + '?action=syncPushCliente'
                     + '&nombre='   + encodeURIComponent(clienteFinal)
                     + '&vehiculo=' + encodeURIComponent(marca)
                     + '&patente='  + encodeURIComponent(chapa));
@@ -1312,8 +1327,9 @@ async function _doEnviarWizard() {
             + '&cobrado='     + cobrado;
         try {
             toast('⏳ Cargando en GestFact...');
-            const resp = await fetch(url);
-            const data = JSON.parse(await resp.text());
+            const resp = await fetchConTimeout(url);
+            let data;
+            try { data = JSON.parse(await resp.text()); } catch(_) { toast('⚠️ Error de conexión con GestFact'); return; }
             if (!data.ok) { toast('⚠️ Error al cargar en GestFact: ' + (data.error || '')); return; }
             registrosGF.push({
                 chapa:    chapa.replace(/\s/g,''),
