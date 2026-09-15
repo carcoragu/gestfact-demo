@@ -1446,6 +1446,15 @@ document.getElementById('bulkInput').addEventListener('input', function() {
     montoAvisadoBulk = false;
 });
 
+function usarClienteChapa(i, cliente) {
+    const el = document.getElementById(`jcli-${i}`);
+    if (!el) return;
+    el.value = cliente;
+    parsedJobs[i].cliente = cliente;
+    el.classList.remove('error');
+    document.getElementById(`jcard-${i}`)?.classList.remove('sin-cliente');
+}
+
 function activarMicBulk(i) {
     activarMic(`jcli-${i}`, `jmic-${i}`, null, function(texto) {
         const el = document.getElementById(`jcli-${i}`);
@@ -1854,8 +1863,11 @@ function renderizarJobs() {
                 ? `<div style="font-size:0.72rem;color:rgba(74,222,128,0.8);margin-bottom:8px;padding:4px 10px;background:rgba(74,222,128,0.07);border-radius:8px;border:1px solid rgba(74,222,128,0.2);">
                        ✓ Chapa conocida de ${clienteChapa}
                    </div>`
-                : `<div style="font-size:0.72rem;color:#fbbf24;margin-bottom:8px;padding:4px 10px;background:rgba(251,191,36,0.07);border-radius:8px;border:1px solid rgba(251,191,36,0.25);">
+                : `<div style="font-size:0.72rem;color:#fbbf24;margin-bottom:8px;padding:4px 10px 6px;background:rgba(251,191,36,0.07);border-radius:8px;border:1px solid rgba(251,191,36,0.25);">
                        ℹ️ Esta chapa habitualmente es de ${clienteChapa}
+                       <button onclick="usarClienteChapa(${i},'${clienteChapa}')" style="display:block;margin-top:6px;padding:4px 12px;background:rgba(251,191,36,0.18);border:1px solid rgba(251,191,36,0.5);border-radius:6px;color:#fbbf24;font-size:0.72rem;font-weight:700;cursor:pointer;">
+                           Cambiar a ${clienteChapa}
+                       </button>
                    </div>`
             : '';
         const sinChapaHtml = j.sinChapa
