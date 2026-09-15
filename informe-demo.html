@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AnotDigi — Informe DEMO</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+.header{background:#0f172a;padding:16px 20px;display:flex;align-items:center;gap:14px}
+.logo-area{display:flex;align-items:center;gap:10px}
+.logo-placeholder{width:40px;height:40px;background:#0ea5e9;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:#fff;flex-shrink:0}
+.header-text h1{font-size:1rem;color:#fff;font-weight:700}
+.header-text p{font-size:0.75rem;color:#94a3b8;margin-top:1px}
+.badge-isasoft{margin-left:auto;font-size:0.65rem;background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.3);color:#7dd3fc;padding:3px 8px;border-radius:50px;white-space:nowrap}
+.badge-demo{margin-left:8px;font-size:0.65rem;background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.4);color:#fbbf24;padding:3px 8px;border-radius:50px;white-space:nowrap}
+.summary-row{display:flex;gap:12px;padding:16px;overflow-x:auto}
+.sum-card{background:#fff;border-radius:12px;padding:14px 18px;min-width:130px;flex:1;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.sum-card .val{font-size:1.5rem;font-weight:800;color:#0f172a;line-height:1}
+.sum-card .lbl{font-size:0.7rem;color:#64748b;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.sum-card.cobrado .val{color:#16a34a}
+.sum-card.pendiente .val{color:#d97706}
+.sum-card.total-gs .val{font-size:1.1rem}
+.filtros{padding:0 16px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filtros input[type=date],.filtros select{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:0.8rem;color:#1e293b;outline:none}
+.filtros input[type=date]:focus,.filtros select:focus{border-color:#0ea5e9}
+.btn-filtrar{background:#0ea5e9;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:0.8rem;font-weight:600;cursor:pointer}
+.btn-limpiar{background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:0.8rem;cursor:pointer}
+.tabla-wrap{padding:0 16px 24px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+thead{background:#0f172a}
+thead th{color:#94a3b8;font-size:0.68rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:11px 14px;text-align:left;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f1f5f9;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f8fafc}
+tbody td{padding:11px 14px;font-size:0.82rem;vertical-align:middle}
+.td-fecha{color:#64748b;white-space:nowrap;font-size:0.78rem}
+.td-chapa{font-family:monospace;font-weight:700;color:#0f172a;font-size:0.85rem;background:#f1f5f9;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.td-vehiculo{color:#475569;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-cliente{font-weight:600;color:#0f172a;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-servicio{color:#475569;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.78rem}
+.td-monto{text-align:right;font-weight:700;white-space:nowrap;color:#0f172a}
+.td-estado{text-align:center}
+.badge-cobrado{background:#dcfce7;color:#16a34a;font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:50px;white-space:nowrap}
+.badge-pendiente{background:#fef3c7;color:#b45309;font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:50px;white-space:nowrap}
+.badge-verificar{background:#e0f2fe;color:#0369a1;font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:50px;white-space:nowrap}
+.footer{text-align:center;padding:16px;font-size:0.72rem;color:#94a3b8}
+.footer strong{color:#0ea5e9}
+.banner-demo{background:#fef3c7;border-bottom:1px solid #fcd34d;padding:8px 20px;font-size:0.78rem;color:#92400e;text-align:center}
+@media(max-width:600px){
+  .col-vehiculo,.col-servicio{display:none}
+  .summary-row{padding:12px}
+  .sum-card{min-width:100px;padding:10px 12px}
+  .sum-card .val{font-size:1.2rem}
+  .tabla-wrap{padding:0 8px 20px}
+  tbody td{padding:9px 10px}
+  .td-cliente{max-width:100px}
+}
+</style>
+</head>
+<body>
+
+<div class="banner-demo">⚠️ Vista de demostración — datos de ejemplo, no reales</div>
+
+<div class="header">
+  <div class="logo-area">
+    <div class="logo-placeholder">🔧</div>
+    <div class="header-text">
+      <h1>Taller PCM — Miguel Acuña</h1>
+      <p>Registros cargados vía AnotDigi</p>
+    </div>
+  </div>
+  <span class="badge-demo">DEMO</span>
+  <span class="badge-isasoft">IsabSoft</span>
+</div>
+
+<div class="summary-row" id="summary-row">
+  <div class="sum-card"><div class="val" id="s-total">—</div><div class="lbl">Trabajos</div></div>
+  <div class="sum-card total-gs"><div class="val" id="s-monto">—</div><div class="lbl">Total Gs.</div></div>
+  <div class="sum-card cobrado"><div class="val" id="s-cobrado">—</div><div class="lbl">Cobrados</div></div>
+  <div class="sum-card pendiente"><div class="val" id="s-pendiente">—</div><div class="lbl">Pendientes</div></div>
+</div>
+
+<div class="filtros" id="filtros">
+  <input type="date" id="f-desde" title="Desde">
+  <input type="date" id="f-hasta" title="Hasta">
+  <select id="f-cliente"><option value="">Todos los clientes</option></select>
+  <button class="btn-filtrar" onclick="aplicarFiltro()">Filtrar</button>
+  <button class="btn-limpiar" onclick="limpiarFiltro()">Limpiar</button>
+</div>
+
+<div class="tabla-wrap">
+  <table id="tabla">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Chapa</th>
+        <th class="col-vehiculo">Vehículo</th>
+        <th>Cliente</th>
+        <th class="col-servicio">Servicio</th>
+        <th style="text-align:right">Monto</th>
+        <th style="text-align:center">Estado</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<div class="footer">
+  Procesado por <strong>IsabSoft</strong> · AnotDigi V1 · <span id="footer-fecha"></span>
+</div>
+
+<script>
+document.getElementById('footer-fecha').textContent = new Date().toLocaleDateString('es-PY');
+
+// ── Datos de prueba (9 trabajos pegados — 4 válidos cargados, 5 con error bloqueados) ──
+var REGISTROS = [
+  { id:'ANOTD-AAON777-20260814', cliente:'WILIAN RENTACAR', vehiculo:'toyota vitz', patente:'AAON777',
+    fecha:'2026-08-14', monto:60000,  servicio:'Cambio de pastilla / Mano de obra 60.000', estadoPres:'Pendiente', cobrado:'0' },
+  { id:'ANOTD-AAON696-20260810', cliente:'WILIAN RENTACAR', vehiculo:'toyota vitz', patente:'AAON696',
+    fecha:'2026-08-10', monto:100000, servicio:'Amortiguador lado derecho / Mano de obra 100.000', estadoPres:'Cobrado', cobrado:'1' },
+  { id:'ANOTD-AARO223-20260807', cliente:'WILIAN RENTACAR', vehiculo:'toyota vitz', patente:'AARO223',
+    fecha:'2026-08-07', monto:170000, servicio:'Torreta 1 / Amortiguadores trasero 2 / Cambio de bobinas 3', estadoPres:'Pendiente', cobrado:'0' },
+  { id:'ANOTD-AASL204-20260731', cliente:'WILIAN RENTACAR', vehiculo:'toyota vitz', patente:'AASL204',
+    fecha:'2026-07-31', monto:290000, servicio:'Amortiguadores trasero 2 / Torreta 2 / Mantenimiento motor', estadoPres:'Pendiente', cobrado:'0' }
+];
+
+let todosLosRegistros = REGISTROS.slice();
+
+function formatFecha(iso) {
+  if (!iso) return '—';
+  const m = iso.match(/(\d{4})-(\d{2})-(\d{2})/);
+  return m ? m[3]+'/'+m[2]+'/'+m[1] : iso;
+}
+function formatMonto(n) {
+  if (!n || n <= 0) return '—';
+  return 'Gs. ' + n.toLocaleString('es-PY');
+}
+function badgeEstado(r) {
+  const c = (r.cobrado||'').trim();
+  const ep = (r.estadoPres||'').trim().toLowerCase();
+  if (c==='1'||ep==='cobrado') return '<span class="badge-cobrado">✅ Cobrado</span>';
+  if (ep==='verificar')        return '<span class="badge-verificar">🔍 A verificar</span>';
+  return '<span class="badge-pendiente">⏳ Pendiente</span>';
+}
+
+function renderTabla(registros) {
+  const tbody = document.getElementById('tbody');
+  if (!registros.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:#94a3b8">Sin registros para los filtros seleccionados</td></tr>';
+  } else {
+    tbody.innerHTML = registros.map(function(r) { return '<tr>' +
+      '<td class="td-fecha">'+formatFecha(r.fecha)+'</td>' +
+      '<td><span class="td-chapa">'+(r.patente||'—')+'</span></td>' +
+      '<td class="td-vehiculo col-vehiculo">'+(r.vehiculo||'—')+'</td>' +
+      '<td class="td-cliente">'+(r.cliente||'—')+'</td>' +
+      '<td class="td-servicio col-servicio" title="'+(r.servicio||'')+'">'+(r.servicio||'—')+'</td>' +
+      '<td class="td-monto">'+formatMonto(r.monto)+'</td>' +
+      '<td class="td-estado">'+badgeEstado(r)+'</td>' +
+      '</tr>';
+    }).join('');
+  }
+  const total    = registros.length;
+  const montoSum = registros.reduce(function(s,r){ return s+(r.monto||0); }, 0);
+  const cobrados = registros.filter(function(r){ return r.cobrado==='1'||(r.estadoPres||'').toLowerCase()==='cobrado'; }).length;
+  const pend     = total - cobrados;
+  document.getElementById('s-total').textContent     = total;
+  document.getElementById('s-monto').textContent     = montoSum > 0 ? montoSum.toLocaleString('es-PY') : '—';
+  document.getElementById('s-cobrado').textContent   = cobrados;
+  document.getElementById('s-pendiente').textContent = pend;
+}
+
+function poblarFiltroCliente(registros) {
+  var clientes = registros.map(function(r){ return r.cliente; }).filter(Boolean)
+    .filter(function(v,i,a){ return a.indexOf(v)===i; }).sort();
+  var sel = document.getElementById('f-cliente');
+  clientes.forEach(function(c) {
+    var opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    sel.appendChild(opt);
+  });
+}
+
+function aplicarFiltro() {
+  var desde   = document.getElementById('f-desde').value;
+  var hasta   = document.getElementById('f-hasta').value;
+  var cliente = document.getElementById('f-cliente').value;
+  var r = todosLosRegistros;
+  if (desde)   r = r.filter(function(x){ return (x.fecha||'')>=desde; });
+  if (hasta)   r = r.filter(function(x){ return (x.fecha||'')<=hasta; });
+  if (cliente) r = r.filter(function(x){ return x.cliente===cliente; });
+  renderTabla(r);
+}
+
+function limpiarFiltro() {
+  document.getElementById('f-desde').value   = '';
+  document.getElementById('f-hasta').value   = '';
+  document.getElementById('f-cliente').value = '';
+  renderTabla(todosLosRegistros);
+}
+
+// Inicializar
+poblarFiltroCliente(todosLosRegistros);
+renderTabla(todosLosRegistros);
+</script>
+</body>
+</html>

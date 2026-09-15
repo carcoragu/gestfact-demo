@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AnotDigi — Lo que enviaste vs lo que el sistema procesa</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+.header{background:#0f172a;padding:16px 20px;display:flex;align-items:center;gap:12px}
+.header h1{font-size:0.95rem;color:#fff;font-weight:700;flex:1}
+.header p{font-size:0.72rem;color:#94a3b8;margin-top:2px}
+.badge-is{font-size:0.62rem;background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.3);color:#7dd3fc;padding:3px 8px;border-radius:50px;white-space:nowrap}
+
+/* Plan tabs */
+.tabs{display:flex;gap:8px;padding:16px;overflow-x:auto;background:#fff;border-bottom:1px solid #e2e8f0}
+.tab{flex:1;min-width:80px;padding:10px 6px;border-radius:10px;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;text-align:center;font-size:0.72rem;font-weight:600;color:#64748b;transition:.15s;white-space:nowrap}
+.tab .precio{font-size:0.65rem;font-weight:400;color:#94a3b8;display:block;margin-top:2px}
+.tab.active{border-color:currentColor}
+.tab.s.active{color:#0369a1;background:#e0f2fe;border-color:#0369a1}
+.tab.b.active{color:#047857;background:#d1fae5;border-color:#047857}
+.tab.c.active{color:#7c3aed;background:#ede9fe;border-color:#7c3aed}
+.tab.f.active{color:#b45309;background:#fef3c7;border-color:#b45309}
+
+/* Plan info */
+.plan-info{padding:12px 16px;font-size:0.78rem;border-left:3px solid;margin:12px 16px;border-radius:0 8px 8px 0}
+.plan-info.s{background:#e0f2fe;border-color:#0369a1;color:#0c4a6e}
+.plan-info.b{background:#d1fae5;border-color:#047857;color:#064e3b}
+.plan-info.c{background:#ede9fe;border-color:#7c3aed;color:#4c1d95}
+.plan-info.f{background:#fef3c7;border-color:#b45309;color:#78350f}
+
+/* Resumen superior */
+.resumen{display:flex;gap:8px;padding:0 16px 12px;flex-wrap:wrap}
+.res-card{background:#fff;border-radius:10px;padding:10px 14px;flex:1;min-width:80px;box-shadow:0 1px 3px rgba(0,0,0,.06);text-align:center}
+.res-card .val{font-size:1.3rem;font-weight:800;line-height:1}
+.res-card .lbl{font-size:0.62rem;color:#64748b;text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+.res-card.v .val{color:#16a34a}
+.res-card.w .val{color:#d97706}
+.res-card.x .val{color:#dc2626}
+
+/* Lista de trabajos */
+.lista{padding:0 16px 24px;display:flex;flex-direction:column;gap:10px}
+.trabajo{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.07);overflow:hidden;display:flex}
+.trabajo.bloqueado{opacity:.85}
+
+/* Columna izquierda */
+.col-envio{padding:12px 14px;flex:0 0 42%;border-right:1px solid #f1f5f9;min-width:0}
+.col-envio .etiqueta{font-size:0.6rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.chapa-tag{font-family:monospace;font-weight:700;font-size:0.9rem;color:#0f172a;background:#f1f5f9;border-radius:4px;padding:1px 6px;display:inline-block}
+.chapa-tag.err{background:#fee2e2;color:#dc2626}
+.meta{font-size:0.72rem;color:#475569;margin-top:4px;line-height:1.5}
+.meta span{display:block}
+.meta .err-campo{color:#dc2626;font-weight:600}
+.raw-text{font-size:0.68rem;color:#94a3b8;margin-top:6px;font-style:italic;line-height:1.4;border-top:1px solid #f1f5f9;padding-top:6px}
+
+/* Columna derecha */
+.col-resultado{padding:12px 14px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:50px;white-space:normal;line-height:1.3}
+.badge.ok   {background:#dcfce7;color:#15803d}
+.badge.auto {background:#fef9c3;color:#a16207;border:1px solid #fcd34d}
+.badge.warn {background:#fef3c7;color:#b45309}
+.badge.prev {background:#ede9fe;color:#7c3aed}
+.badge.block{background:#fee2e2;color:#dc2626}
+.badge.pass {background:#e0f2fe;color:#0369a1}
+.desc-resultado{font-size:0.7rem;color:#64748b;line-height:1.4}
+
+/* Informe tag */
+.informe-tag{font-size:0.62rem;background:#0f172a;color:#7dd3fc;border-radius:4px;padding:2px 7px;align-self:flex-start;margin-top:2px}
+
+/* Separador de sección */
+.seccion{font-size:0.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.7px;padding:8px 16px 4px}
+
+/* Footer */
+.footer-nota{background:#fff;margin:0 16px 24px;border-radius:10px;padding:14px;font-size:0.75rem;color:#475569;border-left:3px solid #0ea5e9}
+.footer-nota strong{color:#0f172a}
+.footer{text-align:center;padding:16px;font-size:0.7rem;color:#94a3b8}
+.footer strong{color:#0ea5e9}
+
+@media(max-width:520px){
+  .col-envio{flex:0 0 45%}
+  .chapa-tag{font-size:0.8rem}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="flex:1">
+    <h1>Lo que enviaste vs lo que el sistema procesa</h1>
+    <p>AnotDigi — Taller PCM Miguel Acuña · 14/09/2026</p>
+  </div>
+  <span class="badge-is">IsabSoft</span>
+</div>
+
+<!-- Tabs de plan -->
+<div class="tabs">
+  <div class="tab s active" onclick="setPlan('s')">
+    📋 Sesión
+    <span class="precio">Gs. 80.000 / carga</span>
+  </div>
+  <div class="tab b" onclick="setPlan('b')">
+    📅 Básico
+    <span class="precio">Gs. 50.000 / mes</span>
+  </div>
+  <div class="tab c" onclick="setPlan('c')">
+    🔍 Completo
+    <span class="precio">Gs. 100.000 / mes</span>
+  </div>
+  <div class="tab f" onclick="setPlan('f')">
+    ⚡ Full
+    <span class="precio">Gs. 150.000 / mes</span>
+  </div>
+</div>
+
+<!-- Info del plan activo -->
+<div id="plan-info"></div>
+
+<!-- Resumen -->
+<div class="resumen" id="resumen"></div>
+
+<!-- Lista -->
+<div class="lista" id="lista"></div>
+
+<!-- Nota informe -->
+<div class="footer-nota" id="nota-informe"></div>
+
+<div class="footer">Procesado por <strong>IsabSoft</strong> · AnotDigi V1</div>
+
+<script>
+var PLANES = {
+  s: {
+    cls: 's',
+    nombre: 'Plan Sesión',
+    desc: 'IsabSoft recibe el mensaje por WhatsApp y carga manualmente en GestFact. Muestra advertencias pero deja enviar igual. No requiere suscripción mensual.',
+  },
+  b: {
+    cls: 'b',
+    nombre: 'Plan Básico',
+    desc: 'Igual que Sesión pero con suscripción mensual. Chequea historial de GestFact para detectar posibles duplicados.',
+  },
+  c: {
+    cls: 'c',
+    nombre: 'Plan Completo',
+    desc: 'Antes de enviar a IsabSoft, muestra una pantalla de revisión previa con todos los trabajos con advertencias juntos. Más control, menos errores.',
+  },
+  f: {
+    cls: 'f',
+    nombre: 'Plan Full',
+    desc: 'El sistema carga los trabajos directamente en GestFact sin intervención de IsabSoft. Errores = bloqueo duro, no se pueden ignorar. Los trabajos procesados aparecen en el Informe.',
+  }
+};
+
+var TRABAJOS = [
+  {
+    seccion: '✅ Trabajos válidos',
+    num: 1,
+    chapa: 'AASL204', vehiculo: 'toyota vitz', fecha: '31/07/2026', monto: 'Gs. 290.000',
+    raw: 'Amortiguadores trasero 2 / Torreta 2 / Mantenimiento motor / Mano de obra 290.000',
+    s: { badge: 'ok',   icono: '✅', label: 'Se envía a IsabSoft',        desc: 'Cliente nuevo — IsabSoft creará la ficha en GestFact.' },
+    b: { badge: 'ok',   icono: '✅', label: 'Se envía a IsabSoft',        desc: 'Cliente nuevo — IsabSoft creará la ficha en GestFact.' },
+    c: { badge: 'ok',   icono: '✅', label: 'Se envía a IsabSoft',        desc: 'Cliente nuevo — aparece en revisión previa antes de enviar.' },
+    f: { badge: 'auto', icono: '🤖', label: 'Cargado automático',         desc: 'El sistema creó la ficha del cliente y registró el trabajo en GestFact.', informe: true },
+  },
+  {
+    num: 2,
+    chapa: 'AARO223', vehiculo: 'toyota vitz', fecha: '07/08/2026', monto: 'Gs. 170.000',
+    raw: 'Torreta 1 / Amortiguadores trasero 2 / Cambio de bobinas 3 / Mano de obra 170.000',
+    s: { badge: 'warn', icono: '⚠️', label: 'Se envía con advertencia',   desc: 'Esta chapa aparece varias veces en la lista — verificá que las fechas sean distintas.' },
+    b: { badge: 'warn', icono: '⚠️', label: 'Se envía con advertencia',   desc: 'Esta chapa aparece varias veces en la lista — verificá que las fechas sean distintas.' },
+    c: { badge: 'prev', icono: '🔍', label: 'Va a revisión previa',       desc: 'Chapa repetida en la lista. Aparece en la pantalla de revisión antes de enviar.' },
+    f: { badge: 'block',icono: '🚫', label: 'BLOQUEADO',                  desc: 'Chapa aparece varias veces en la misma lista. Corregí o eliminá el duplicado antes de enviar.', informe: false },
+  },
+  {
+    num: 3,
+    chapa: 'AAON696', vehiculo: 'toyota vitz', fecha: '10/08/2026', monto: 'Gs. 100.000',
+    raw: 'Amortiguador lado derecho / Mano de obra 100.000',
+    s: { badge: 'warn', icono: '⚠️', label: 'Se envía con advertencia',   desc: 'Esta chapa aparece 2 veces en la lista — verificá que las fechas sean distintas.' },
+    b: { badge: 'warn', icono: '⚠️', label: 'Se envía con advertencia',   desc: 'Esta chapa aparece 2 veces en la lista — verificá que las fechas sean distintas.' },
+    c: { badge: 'prev', icono: '🔍', label: 'Va a revisión previa',       desc: 'Chapa repetida. Aparece en la pantalla de revisión antes de enviar.' },
+    f: { badge: 'block',icono: '🚫', label: 'BLOQUEADO',                  desc: 'Chapa aparece 2 veces. Eliminá el duplicado — el sistema no puede cargar dos veces la misma chapa.', informe: false },
+  },
+  {
+    num: 4,
+    chapa: 'AAON777', vehiculo: 'toyota vitz', fecha: '14/08/2026', monto: 'Gs. 60.000',
+    raw: 'Cambio de pastilla / Mano de obra 60.000',
+    s: { badge: 'ok',   icono: '✅', label: 'Se envía a IsabSoft',        desc: 'Cliente nuevo — IsabSoft creará la ficha en GestFact.' },
+    b: { badge: 'ok',   icono: '✅', label: 'Se envía a IsabSoft',        desc: 'Cliente nuevo — IsabSoft creará la ficha en GestFact.' },
+    c: { badge: 'prev', icono: '🔍', label: 'Va a revisión previa',       desc: 'Cliente nuevo — aparece en revisión previa antes de confirmar el envío.' },
+    f: { badge: 'auto', icono: '🤖', label: 'Cargado automático',         desc: 'Sistema creó la ficha del cliente y registró el trabajo en GestFact automáticamente.', informe: true },
+  },
+  {
+    seccion: '⚠️ Trabajos con problemas detectados',
+    num: 5,
+    chapa: 'AAON696', vehiculo: 'toyota vitz', fecha: '10/08/2026', monto: 'Gs. 100.000',
+    raw: '⚠️ Mismo trabajo que #3 — chapa + fecha idénticas',
+    s: { badge: 'warn', icono: '⚠️', label: 'Se envía con advertencia',   desc: 'Duplicado exacto del trabajo #3. Se envía igual — verificá si ya fue cargado.' },
+    b: { badge: 'warn', icono: '⚠️', label: 'Se envía con advertencia',   desc: 'Duplicado exacto del trabajo #3. Se envía igual — verificá si ya fue cargado.' },
+    c: { badge: 'prev', icono: '🔍', label: 'Va a revisión previa',       desc: 'Duplicado exacto. Aparece en revisión previa para que lo confirmes o lo elimines.' },
+    f: { badge: 'block',icono: '🚫', label: 'BLOQUEADO',                  desc: 'Duplicado exacto del trabajo #3. El sistema no carga dos veces la misma chapa y fecha.', informe: false },
+  },
+  {
+    num: 6,
+    chapa: null, vehiculo: 'toyota vitz', fecha: '07/08/2026', monto: 'Gs. 170.000',
+    raw: 'Torreta 1 / Amortiguadores trasero 2 / Cambio de bobinas 3 / Mano de obra 170.000',
+    s: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin chapa',      desc: 'El sistema no pudo detectar la patente. Completá el campo Chapa antes de enviar.' },
+    b: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin chapa',      desc: 'El sistema no pudo detectar la patente. Completá el campo Chapa antes de enviar.' },
+    c: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin chapa',      desc: 'El sistema no pudo detectar la patente. Completá el campo Chapa antes de enviar.' },
+    f: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin chapa',      desc: 'El sistema no pudo detectar la patente. Completá el campo Chapa antes de enviar.', informe: false },
+  },
+  {
+    num: 7,
+    chapa: 'AARO223', vehiculo: null, fecha: '07/08/2026', monto: 'Gs. 170.000',
+    raw: 'Torreta 1 / Amortiguadores trasero 2 / Cambio de bobinas 3 / Mano de obra 170.000',
+    s: { badge: 'pass', icono: 'ℹ️', label: 'Pasa — completar vehículo', desc: 'El campo vehículo quedó como "(sin vehiculo)". Se puede enviar, pero completá la marca/modelo antes.' },
+    b: { badge: 'pass', icono: 'ℹ️', label: 'Pasa — completar vehículo', desc: 'El campo vehículo quedó como "(sin vehiculo)". Se puede enviar, pero completá la marca/modelo antes.' },
+    c: { badge: 'pass', icono: 'ℹ️', label: 'Pasa — completar vehículo', desc: 'El campo vehículo quedó como "(sin vehiculo)". Se puede enviar, pero completá la marca/modelo antes.' },
+    f: { badge: 'pass', icono: 'ℹ️', label: 'Pasa — completar vehículo', desc: 'Se cargará en GestFact con vehículo incompleto. Completá la marca/modelo antes de procesar.', informe: false },
+  },
+  {
+    num: 8,
+    chapa: 'AARO223', vehiculo: 'toyota vitz', fecha: null, monto: 'Gs. 170.000',
+    raw: 'Torreta 1 / Amortiguadores trasero 2 / Cambio de bobinas 3 / Mano de obra 170.000',
+    s: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin fecha',      desc: 'La fecha es obligatoria. No se puede enviar ningún trabajo sin fecha.' },
+    b: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin fecha',      desc: 'La fecha es obligatoria. No se puede enviar ningún trabajo sin fecha.' },
+    c: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin fecha',      desc: 'La fecha es obligatoria. No se puede enviar ningún trabajo sin fecha.' },
+    f: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin fecha',      desc: 'La fecha es obligatoria. No se puede enviar ningún trabajo sin fecha.', informe: false },
+  },
+  {
+    num: 9,
+    chapa: 'AARO223', vehiculo: 'toyota vitz', fecha: null, monto: null,
+    raw: 'Torreta 1 / Amortiguadores trasero 2 / Cambio de bobinas 3 / Mano de obra',
+    s: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin monto',      desc: 'El monto es obligatorio. Agregá el importe o escribí "sin cargo" si no se cobra.' },
+    b: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin monto',      desc: 'El monto es obligatorio. Agregá el importe o escribí "sin cargo" si no se cobra.' },
+    c: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin monto',      desc: 'El monto es obligatorio. Agregá el importe o escribí "sin cargo" si no se cobra.' },
+    f: { badge: 'block',icono: '🚫', label: 'BLOQUEADO — sin monto',      desc: 'El monto es obligatorio. Agregá el importe o escribí "sin cargo" si no se cobra.', informe: false },
+  }
+];
+
+var planActual = 's';
+
+function setPlan(p) {
+  planActual = p;
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelector('.tab.'+p).classList.add('active');
+  render();
+}
+
+function render() {
+  var pl = PLANES[planActual];
+
+  // Plan info
+  document.getElementById('plan-info').innerHTML =
+    '<div class="plan-info '+pl.cls+'" style="font-size:0.78rem"><strong>'+pl.nombre+'</strong> — '+pl.desc+'</div>';
+
+  // Resumen
+  var ok=0, warn=0, block=0, auto=0, informe=0;
+  TRABAJOS.forEach(function(t){
+    var r = t[planActual];
+    if (r.badge==='block') block++;
+    else if (r.badge==='auto') { auto++; ok++; if(r.informe) informe++; }
+    else ok++;
+  });
+  var res = document.getElementById('resumen');
+  res.innerHTML =
+    '<div class="res-card v"><div class="val">'+ok+'</div><div class="lbl">Se procesan</div></div>' +
+    (planActual==='f' ? '<div class="res-card" style=""><div class="val" style="color:#a16207">'+auto+'</div><div class="lbl">Auto-cargados</div></div>' : '') +
+    '<div class="res-card x"><div class="val">'+block+'</div><div class="lbl">Bloqueados</div></div>' +
+    (planActual==='f' ? '<div class="res-card" style=""><div class="val" style="color:#0ea5e9">'+informe+'</div><div class="lbl">En informe</div></div>' : '');
+
+  // Lista
+  var html = '';
+  TRABAJOS.forEach(function(t) {
+    var r = t[planActual];
+    if (t.seccion) html += '<div class="seccion">'+t.seccion+'</div>';
+
+    // Columna izquierda
+    var chapaHtml = t.chapa
+      ? '<span class="chapa-tag">' + t.chapa + '</span>'
+      : '<span class="chapa-tag err">SIN CHAPA</span>';
+    var metaHtml = '';
+    metaHtml += '<span>' + (t.vehiculo || '<span class="err-campo">sin vehículo</span>') + '</span>';
+    metaHtml += '<span>' + (t.fecha ? t.fecha : '<span class="err-campo">SIN FECHA</span>') + '</span>';
+    metaHtml += '<span>' + (t.monto || '<span class="err-campo">SIN MONTO</span>') + '</span>';
+
+    // Columna derecha
+    var informeTag = (planActual==='f' && r.informe) ? '<div class="informe-tag">📊 Aparece en el Informe</div>' : '';
+
+    html += '<div class="trabajo' + (r.badge==='block'?' bloqueado':'') + '">' +
+      '<div class="col-envio">' +
+        '<div class="etiqueta">Lo que enviaste #'+t.num+'</div>' +
+        chapaHtml +
+        '<div class="meta">'+metaHtml+'</div>' +
+        '<div class="raw-text">'+t.raw+'</div>' +
+      '</div>' +
+      '<div class="col-resultado">' +
+        '<span class="badge '+r.badge+'">'+r.icono+' '+r.label+'</span>' +
+        '<div class="desc-resultado">'+r.desc+'</div>' +
+        informeTag +
+      '</div>' +
+    '</div>';
+  });
+  document.getElementById('lista').innerHTML = html;
+
+  // Nota informe
+  var nota = '';
+  if (planActual === 'f') {
+    nota = '<strong>📊 Informe AnotDigi</strong> — Los trabajos cargados automáticamente quedan registrados en el Informe. Desde ahí podés ver el total cobrado, pendiente y filtrar por fecha o cliente.';
+  } else {
+    nota = 'El <strong>Informe AnotDigi</strong> solo está disponible en el <strong>Plan Full</strong>. Con otros planes, IsabSoft carga los trabajos manualmente desde el WhatsApp.';
+  }
+  document.getElementById('nota-informe').innerHTML = nota;
+}
+
+render();
+</script>
+</body>
+</html>

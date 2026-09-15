@@ -2509,6 +2509,27 @@ function contactarPlan(planId) {
     window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
+// ─── Plan server-side (Apps Script PropertiesService) ───
+async function cargarPlanServidor() {
+    try {
+        const r = await fetchConTimeout(GF_API + '?action=getPlan', 5000);
+        const d = JSON.parse(await r.text());
+        if (d.plan && d.expiry) {
+            localStorage.setItem('anotdigi_plan',   d.plan.toUpperCase());
+            localStorage.setItem('anotdigi_expiry', d.expiry);
+        }
+    } catch(e) { /* sin conexión → usa localStorage cacheado */ }
+}
+
+async function guardarPlanServidor(plan, expiry) {
+    try {
+        await fetchConTimeout(
+            GF_API + `?action=setPlan&adminKey=ISASOFT2026&plan=${encodeURIComponent(plan)}&expiry=${encodeURIComponent(expiry)}`,
+            5000
+        );
+    } catch(e) {}
+}
+
 // ─── Activación por URL: ?act=TOKEN&p=PLAN&d=DIAS ───
 async function checkActivacionURL() {
     const params = new URLSearchParams(window.location.search);
@@ -2533,11 +2554,14 @@ async function checkActivacionURL() {
 
         const expiry = new Date();
         expiry.setDate(expiry.getDate() + dias);
-        localStorage.setItem('anotdigi_plan',   plan.toUpperCase());
-        localStorage.setItem('anotdigi_expiry', expiry.toISOString().split('T')[0]);
-
-        // Notificar a IsabSoft: plan activado, fecha de vencimiento
         const _exp = expiry.toISOString().split('T')[0];
+        localStorage.setItem('anotdigi_plan',   plan.toUpperCase());
+        localStorage.setItem('anotdigi_expiry', _exp);
+
+        // Persistir en servidor (PropertiesService del cliente)
+        await guardarPlanServidor(plan.toUpperCase(), _exp);
+
+        // Notificar a IsabSoft
         new Image().src = `https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=plan_activado&id=${CLIENTE_ID}&plan=${encodeURIComponent(plan.toUpperCase())}&dias=${dias}&expiry=${_exp}`;
 
         window.history.replaceState({}, '', window.location.pathname);
@@ -2548,6 +2572,7 @@ async function checkActivacionURL() {
 // ─── Init promo ───
 (async function() {
     await checkActivacionURL();
+    await cargarPlanServidor(); // plan del servidor tiene prioridad sobre localStorage
 
     // Test rápido: ?testexp=N → fija expiry a hoy+N días (solo para pruebas internas)
     const _te = new URLSearchParams(window.location.search).get('testexp');

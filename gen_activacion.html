@@ -87,7 +87,7 @@ select option { background: #1a1a2e; }
         </div>
         <div class="field">
             <label>ID en ANOTDIGI_MAP</label>
-            <input type="text" id="clienteId" placeholder="Ej: miguel, cbtec" autocomplete="off" spellcheck="false" style="text-transform:lowercase;">
+            <input type="text" id="clienteId" placeholder="Ej: miguel, cbtec" autocomplete="off" spellcheck="false" style="text-transform:lowercase;" oninput="autoFillGfApi(this.value)">
         </div>
     </div>
 
@@ -112,11 +112,14 @@ select option { background: #1a1a2e; }
         </div>
     </div>
 
-    <button class="btn-gen" onclick="generar()">Generar link de activación →</button>
+    <button class="btn-gen" onclick="generar()">Activar plan →</button>
 
     <div class="result" id="result">
 
-        <div class="res-label" style="margin-top:28px;">Link de activación</div>
+        <div class="res-label" style="margin-top:28px;">Estado del servidor</div>
+        <div id="serverStatus" style="font-size:0.82rem;padding:10px 14px;border-radius:10px;margin-bottom:14px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.45);">Esperando...</div>
+
+        <div class="res-label">Link de activación (backup)</div>
         <div class="res-box" id="linkBox"></div>
         <button class="btn-copy" id="btnCopy" onclick="copiarLink()">📋 Copiar link</button>
 
@@ -139,14 +142,13 @@ select option { background: #1a1a2e; }
 
     <div class="info-box">
         <strong>Flujo de activación</strong><br>
-        1. El cliente toca "Me interesa Plan X" → te manda WA<br>
-        2. Acordás el pago y lo confirmás<br>
-        3. Completás este formulario (nombre, ID en ANOTDIGI_MAP, plan, días)<br>
-        4. Mandás el link por WhatsApp al cliente<br>
-        5. El cliente abre el link → plan activado solo (el &id= fija su config)<br>
-        6. IsabSoft recibe notificación automática<br><br>
-        <strong>ID en ANOTDIGI_MAP</strong> — la clave del cliente en el mapa de configuración.<br>
-        Ej: <code style="color:#4ade80">miguel</code>, <code style="color:#4ade80">cbtec</code>, etc. Sin esto, el link defaultea a miguel.
+        1. El cliente confirma el pago → vos lo cobrás<br>
+        2. Completás este formulario y tocás "Activar plan"<br>
+        3. El plan se guarda en el servidor del cliente <em>de inmediato</em><br>
+        4. La próxima vez que el cliente abra AnotDigi, ya tiene el plan activo<br>
+        5. El link de backup sirve si el cliente abre AnotDigi offline<br><br>
+        <strong>ID en ANOTDIGI_MAP</strong> — la clave del cliente.<br>
+        Ej: <code style="color:#4ade80">miguel</code>, <code style="color:#4ade80">cbtec</code>. Se autocompleta la URL al tipear.
     </div>
 
 </div>
@@ -154,6 +156,13 @@ select option { background: #1a1a2e; }
 <script>
 const SECRET  = 'ANOTDIGI2026ISASOFT';
 const APP_URL = 'https://carcoragu.github.io/gestfact-demo/registro.html';
+const ADMIN_KEY = 'ISASOFT2026';
+
+// Map de IDs a GF API URLs — agregar un cliente nuevo acá
+const GF_APIS = {
+    miguel: 'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',
+    // cbtec: 'https://script.google.com/macros/s/XXXX/exec',
+};
 
 const PLANES_LABEL = {
     SESION:   'Sesión (Gs. 80.000 pago único)',
@@ -166,6 +175,45 @@ let _link = '';
 let _msg  = '';
 let _wa   = '';
 
+function autoFillGfApi(id) {
+    // no UI visible — solo se usa internamente al generar
+}
+
+function setServerStatus(msg, color) {
+    const el = document.getElementById('serverStatus');
+    el.textContent = msg;
+    el.style.background = color === 'ok'  ? 'rgba(74,222,128,0.12)'  :
+                          color === 'err' ? 'rgba(248,113,113,0.12)' :
+                                           'rgba(255,255,255,0.05)';
+    el.style.color = color === 'ok'  ? '#4ade80'  :
+                     color === 'err' ? '#f87171'  :
+                                      'rgba(255,255,255,0.45)';
+}
+
+async function pushPlanServidor(clienteId, plan, expiry) {
+    const gfApi = GF_APIS[clienteId];
+    if (!gfApi) {
+        setServerStatus(`⚠️ ID "${clienteId}" no tiene GF_API registrada — solo se generó el link`, 'err');
+        return false;
+    }
+    try {
+        setServerStatus('Activando en servidor...', '');
+        const url = `${gfApi}?action=setPlan&adminKey=${ADMIN_KEY}&plan=${encodeURIComponent(plan)}&expiry=${encodeURIComponent(expiry)}`;
+        const r   = await fetch(url, { redirect: 'follow' });
+        const txt = await r.text();
+        const d   = JSON.parse(txt);
+        if (d.ok) {
+            setServerStatus(`✅ Plan ${plan} activado en servidor hasta ${expiry}`, 'ok');
+            return true;
+        }
+        setServerStatus(`⚠️ Servidor respondió error: ${txt.substring(0,80)}`, 'err');
+        return false;
+    } catch(e) {
+        setServerStatus(`❌ Error de conexión con el servidor: ${e.message}`, 'err');
+        return false;
+    }
+}
+
 async function generar() {
     const plan      = document.getElementById('plan').value;
     const dias      = parseInt(document.getElementById('dias').value);
@@ -176,6 +224,12 @@ async function generar() {
     if (!clienteId) { alert('Ingresá el ID del cliente (ej: miguel, cbtec)'); return; }
     if (!dias || dias < 1) { alert('Ingresá los días de acceso'); return; }
 
+    // Calcular expiry
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + dias);
+    const expiryStr = expiry.toISOString().split('T')[0];
+
+    // Generar token HMAC para link de backup
     const enc = new TextEncoder();
     const key = await crypto.subtle.importKey(
         'raw', enc.encode(SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
@@ -188,23 +242,28 @@ async function generar() {
 
     _link = `${APP_URL}?act=${token}&p=${plan}&d=${dias}&id=${clienteId}`;
 
-    const tipoStr = dias === 1 ? '1 día' : `${dias} días`;
-    _msg = `Hola ${cliente}! ✅ Tu plan *${PLANES_LABEL[plan]}* está activado por ${tipoStr}.\n\nAbrí este link para activarlo:\n${_link}\n\nCualquier consulta, acá estoy 👋`;
-
+    // Mostrar resultado primero
     document.getElementById('linkBox').textContent = _link;
     document.getElementById('result').style.display = 'block';
+    setServerStatus('Activando en servidor...', '');
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Push al servidor
+    await pushPlanServidor(clienteId, plan, expiryStr);
+
+    // Armar mensaje WA
+    const tipoStr = dias === 1 ? '1 día' : `${dias} días`;
+    _msg = `Hola ${cliente}! ✅ Tu plan *${PLANES_LABEL[plan]}* ya está activo.\n\nTenés acceso por ${tipoStr} (hasta ${expiryStr}).\n\nSi usás AnotDigi en un dispositivo nuevo, abrí este link para sincronizarlo:\n${_link}\n\nCualquier consulta, acá estoy 👋`;
 
     if (_wa) {
-        document.getElementById('waBox').textContent    = _msg;
-        document.getElementById('waSection').style.display    = 'block';
-        document.getElementById('waSinNumero').style.display  = 'none';
+        document.getElementById('waBox').textContent         = _msg;
+        document.getElementById('waSection').style.display   = 'block';
+        document.getElementById('waSinNumero').style.display = 'none';
     } else {
-        document.getElementById('waBoxSolo').textContent      = _msg;
-        document.getElementById('waSection').style.display    = 'none';
-        document.getElementById('waSinNumero').style.display  = 'block';
+        document.getElementById('waBoxSolo').textContent     = _msg;
+        document.getElementById('waSection').style.display   = 'none';
+        document.getElementById('waSinNumero').style.display = 'block';
     }
-
-    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function copiarLink() {
