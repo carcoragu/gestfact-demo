@@ -765,7 +765,7 @@ function loadClientes(extra = []) {
         todos.map(c => `<option value="${c}">`).join('');
 }
 
-let registrosGF = []; // {chapa, fecha YYYY-MM-DD} para detección de duplicados
+let registrosGF = JSON.parse(localStorage.getItem('registros_cache_gf') || '[]'); // {chapa, fecha YYYY-MM-DD} para detección de duplicados
 let gfEstado = 'cargando'; // 'ok' | 'vacio' | 'error'
 
 function normalizarFecha(f) {
@@ -811,6 +811,7 @@ async function fetchClientesSheet() {
             }
         });
         gfEstado = registrosGF.length > 0 ? 'ok' : 'vacio';
+        localStorage.setItem('registros_cache_gf', JSON.stringify(registrosGF));
         localStorage.setItem('clientes_cache_gf', JSON.stringify([...clientes]));
         loadClientes([...clientes]);
         // Si ya hay tarjetas renderizadas, actualizarlas con los duplicados recién cargados
