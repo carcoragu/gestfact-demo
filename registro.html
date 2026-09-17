@@ -495,6 +495,7 @@
     <div class="hint">Número de matrícula del vehículo</div>
     <input class="big-input" id="chapa" type="text" placeholder="AAZJ233" maxlength="10"
            autocorrect="off" autocapitalize="characters" spellcheck="false">
+    <div id="wizChapaBadge" style="margin-top:10px;min-height:28px;"></div>
     <button class="btn-next" onclick="ir(3)">Siguiente →</button>
     <button class="btn-back" onclick="ir(1)">← Atrás</button>
 </div>
@@ -1002,11 +1003,21 @@ fetchClientesSheet(); // carga desde Sheet en background
     });
 });
 
-// ─── Chapa uppercase ───
+// ─── Chapa uppercase + badge wizard ───
 document.getElementById('chapa').addEventListener('input', function() {
     const p = this.selectionStart;
     this.value = this.value.toUpperCase().replace(/\s/g, '');
     try { this.setSelectionRange(p, p); } catch(e) {}
+    const badge = document.getElementById('wizChapaBadge');
+    if (!badge) return;
+    const cli = chapaGetCliente(this.value);
+    if (!cli) { badge.innerHTML = ''; return; }
+    const clienteActual = (datos.cliente || '').toUpperCase();
+    if (cli === clienteActual) {
+        badge.innerHTML = `<div style="font-size:0.78rem;color:rgba(74,222,128,0.9);padding:6px 12px;background:rgba(74,222,128,0.08);border-radius:8px;border:1px solid rgba(74,222,128,0.25);">✓ Chapa conocida de ${cli}</div>`;
+    } else {
+        badge.innerHTML = `<div style="font-size:0.78rem;color:#fbbf24;padding:6px 12px;background:rgba(251,191,36,0.07);border-radius:8px;border:1px solid rgba(251,191,36,0.25);">ℹ️ Esta chapa habitualmente es de ${cli}</div>`;
+    }
 });
 
 // ─── Speech Recognition ───
