@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Registro de Trabajo</title>
+    <link rel="manifest" href="manifest-miguel.json">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -2670,6 +2671,12 @@ document.addEventListener('keydown', function(e) {
     const siguiente = paso === 4 ? 6 : paso + 1;
     if (paso < 6) ir(siguiente);
 });
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/gestfact-demo/sw.js')
+        .catch(function(){});
+}
 </script>
 </body>
 </html>

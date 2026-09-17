@@ -2,7 +2,7 @@
   "name": "GestFact — Miguel Acuña",
   "short_name": "GestFact",
   "description": "Sistema de Taller — Miguel Acuña",
-  "start_url": "/gestfact-demo/miguel.html",
+  "start_url": "/gestfact-demo/registro.html?id=miguel",
   "scope": "/gestfact-demo/",
   "display": "standalone",
   "background_color": "#0a1628",
