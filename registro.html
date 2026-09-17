@@ -758,7 +758,8 @@ const CLIENTES_DEFAULT = _cfg.clientesDefault;
 
 function loadClientes(extra = []) {
     const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
-    const todos = [...new Set([...CLIENTES_DEFAULT, ...guardados, ...extra])].sort();
+    const cache     = JSON.parse(localStorage.getItem('clientes_cache_gf') || '[]');
+    const todos = [...new Set([...CLIENTES_DEFAULT, ...cache, ...guardados, ...extra])].sort();
     document.getElementById('clientes-list').innerHTML =
         todos.map(c => `<option value="${c}">`).join('');
 }
@@ -809,6 +810,7 @@ async function fetchClientesSheet() {
             }
         });
         gfEstado = registrosGF.length > 0 ? 'ok' : 'vacio';
+        localStorage.setItem('clientes_cache_gf', JSON.stringify([...clientes]));
         loadClientes([...clientes]);
         // Si ya hay tarjetas renderizadas, actualizarlas con los duplicados recién cargados
         if (parsedJobs.length) renderizarJobs();
