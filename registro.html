@@ -1717,13 +1717,30 @@ function parsearBloques(texto) {
             const ms = [...l.matchAll(/\b(\d{1,3})\.(\d{3})\b/g)];
             ms.forEach(mm => { montoTotal += parseInt(mm[1] + mm[2]); });
         });
+        // "sin cargo" anula cualquier monto detectado
+        if (/\bsin\s+cargo\b/i.test(b.join(' '))) montoTotal = 0;
+
+        // Detectar cliente por tarjeta: línea 2 sin dígitos, 2-5 palabras, no es descripción de servicio
+        const SVC_KW = /^(cambio|pastillas?|aceite|frenos?|amortiguadores?|correa|filtro|revisi[oó]n|revisar|lavado|afina|alineaci|balanceo|pintura|chaper[ií]a|reparaci|instalaci|coloca|diagn[oó]stico|escaneo|tensor|disco|embrague|radiador|bater[ií]a|llanta|neum[aá]tico|limpieza|perno|tuerca|buje|r[oó]tula|mano|ajuste|mantenimiento|servicio|inspecci)/i;
+        const lineas2 = b.slice(1).map(l => l.trim()).filter(l => l);
+        let clienteCard = '';
+        if (lineas2.length) {
+            const l2 = lineas2[0];
+            const words = l2.split(/\s+/);
+            if (!/\d/.test(l2) && words.length >= 2 && words.length <= 5 && !SVC_KW.test(l2)) {
+                const optsCard = [...document.querySelectorAll('#clientes-list option')]
+                    .map(o => o.value.trim().toUpperCase()).filter(c => c.length >= 3);
+                const matchCard = optsCard.find(c => c === l2.toUpperCase() || l2.toUpperCase().startsWith(c) || c.startsWith(l2.toUpperCase()));
+                clienteCard = matchCard || l2.toUpperCase();
+            }
+        }
 
         // Servicio: líneas 1+ sin notas de gestión ni líneas de solo monto (ej: "290.000")
         const notas    = /^(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca|falta|cargado)$/i;
         const esMontoRe = /^\d{1,3}(\.\d{3})+$/;
         const serv = b.slice(1)
             .map(l => l.trim())
-            .filter(l => l && !notas.test(l) && !esMontoRe.test(l))
+            .filter(l => l && !notas.test(l) && !esMontoRe.test(l) && (!clienteCard || l.toUpperCase() !== clienteCard))
             .join(' / ');
 
         // Marca/Modelo: primera línea sin chapa, sin fecha, sin notas
@@ -1745,7 +1762,7 @@ function parsearBloques(texto) {
             else if (diasDiff > 60)         fechaWarning = `Hace ${diasDiff} días — ¿es correcto?`;
         }
 
-        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', marcaModelo, cliente: '', sinChapa, fechaWarning });
+        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', marcaModelo, cliente: clienteCard, sinChapa, fechaWarning });
     }
 
     lineas.forEach(linea => {
@@ -1813,8 +1830,8 @@ function procesarBulk() {
     // Strip nombres de clientes del texto (marcaModelo + servicio)
     stripClientesDeJobs(parsedJobs);
 
-    // Pre-llenar cliente en todos los trabajos
-    parsedJobs.forEach(j => j.cliente = cliente);
+    // Pre-llenar cliente — respetar el detectado por tarjeta si ya fue asignado
+    parsedJobs.forEach(j => { if (!j.cliente) j.cliente = cliente; });
 
     // Advertir si hay un nombre en el texto distinto al cliente seleccionado
     const detectadoEnTexto = detectarClienteEnTexto(texto);
