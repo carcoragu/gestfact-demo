@@ -1721,13 +1721,13 @@ function parsearBloques(texto) {
         if (/\bsin\s+cargo\b/i.test(b.join(' '))) montoTotal = 0;
 
         // Detectar cliente por tarjeta: línea 2 sin dígitos, 2-5 palabras, no es descripción de servicio
-        const SVC_KW = /^(cambio|pastillas?|aceite|frenos?|amortiguadores?|correa|filtro|revisi[oó]n|revisar|lavado|afina|alineaci|balanceo|pintura|chaper[ií]a|reparaci|instalaci|coloca|diagn[oó]stico|escaneo|tensor|disco|embrague|radiador|bater[ií]a|llanta|neum[aá]tico|limpieza|perno|tuerca|buje|r[oó]tula|mano|ajuste|mantenimiento|servicio|inspecci)/i;
+        const SVC_KW = /^(cambio|pastillas?|aceite|frenos?|amortiguador(es)?|correa|filtro|revisi[oó]n|revisar|lavado|afina|alineaci|balanceo|pintura|chaper[ií]a|reparaci|instalaci|coloca|diagn[oó]stico|escaneo|tensor|disco|embrague|radiador|bater[ií]a|llanta|neum[aá]tico|limpieza|perno|tuerca|buje|r[oó]tula|mano|ajuste|mantenimiento|servicio|inspecci|torreta|bobinas?|rectificaci|culata|compresor|inyector|carburador|termostato|caja|diferencial|transmisi|suspensi|direcci|cluth|clutch|lado|delantero|trasero|superior|inferior)/i;
         const lineas2 = b.slice(1).map(l => l.trim()).filter(l => l);
         let clienteCard = '';
         if (lineas2.length) {
             const l2 = lineas2[0];
             const words = l2.split(/\s+/);
-            if (!/\d/.test(l2) && words.length >= 2 && words.length <= 5 && !SVC_KW.test(l2)) {
+            if (!/\d/.test(l2) && words.length >= 2 && words.length <= 5 && !SVC_KW.test(l2) && !notas.test(l2)) {
                 const optsCard = [...document.querySelectorAll('#clientes-list option')]
                     .map(o => o.value.trim().toUpperCase()).filter(c => c.length >= 3);
                 const matchCard = optsCard.find(c => c === l2.toUpperCase() || l2.toUpperCase().startsWith(c) || c.startsWith(l2.toUpperCase()));
@@ -1742,6 +1742,8 @@ function parsearBloques(texto) {
         const serv = b.slice(1)
             .map(l => l.trim())
             .filter(l => l && !notas.test(l) && !esMontoRe.test(l) && !esMontoEstado.test(l) && (!clienteCard || l.toUpperCase() !== clienteCard))
+            .map(l => l.replace(/\s+\d{1,3}\.\d{3}\s*$/, '').trim())
+            .filter(l => l)
             .join(' / ');
 
         // Marca/Modelo: primera línea sin chapa, sin fecha, sin notas
