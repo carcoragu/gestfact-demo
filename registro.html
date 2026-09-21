@@ -2101,13 +2101,19 @@ async function _doEnviarBulk() {
     const planId = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
     parsedJobs.forEach(j => addClienteToList(j.cliente));
 
-    const cliente      = document.getElementById('bulkCliente').value.trim().toUpperCase();
-    const clienteLabel = cliente + (esClienteNuevo(cliente) ? ' (NUEVO)' : '');
-    const estadoLabel  = estadoPagoBulk === 'cobrado' ? '✅ COBRADO' : estadoPagoBulk === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
+    const clienteGlobalWA = document.getElementById('bulkCliente').value.trim().toUpperCase();
+    const estadoLabel     = estadoPagoBulk === 'cobrado' ? '✅ COBRADO' : estadoPagoBulk === 'verificar' ? '🔍 A VERIFICAR' : '⏳ PENDIENTE';
+
+    // Detectar si hay múltiples clientes distintos entre los trabajos
+    const clientesUnicos = [...new Set(parsedJobs.map(j => (j.cliente || clienteGlobalWA).toUpperCase()).filter(Boolean))];
+    const multiCliente   = clientesUnicos.length > 1;
+    const clienteLabel   = multiCliente
+        ? clientesUnicos.join(' + ')
+        : (clientesUnicos[0] || clienteGlobalWA) + (esClienteNuevo(clientesUnicos[0] || clienteGlobalWA) ? ' (NUEVO)' : '');
 
     if (planId === 'FULL') {
         toast('⏳ Cargando en GestFact...');
-        const result = await autoCargarEnGF(parsedJobs, cliente, estadoPagoBulk);
+        const result = await autoCargarEnGF(parsedJobs, clienteGlobalWA, estadoPagoBulk);
         if (!result.ok) {
             toast('⚠️ Error al cargar en GestFact: ' + result.error);
             return;
@@ -2116,10 +2122,12 @@ async function _doEnviarBulk() {
     }
 
     const cuerpo = parsedJobs.map(j => {
-        const fDis  = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
-        const marca = j.marcaModelo ? ` ${j.marcaModelo}` : '';
-        let bloque  = j.chapa + marca + (fDis ? ` — ${fDis}` : '');
-        if (j.servicio) bloque += `\n${j.servicio}`;
+        const fDis     = j.fechaVal ? j.fechaVal.split('-').reverse().join('/') : '';
+        const marca    = j.marcaModelo ? ` ${j.marcaModelo}` : '';
+        const jCliente = (j.cliente || clienteGlobalWA).toUpperCase();
+        let bloque     = j.chapa + marca + (fDis ? ` — ${fDis}` : '');
+        if (multiCliente) bloque += ` | ${jCliente}`;
+        if (j.servicio)   bloque += `\n${j.servicio}`;
         if (j.monto)                                  bloque += `\nGs. ${Number(j.monto).toLocaleString('es-PY')}`;
         else if (SIN_CARGO_RE.test(j.servicio || '')) bloque += `\nSin cargo`;
         return bloque;
