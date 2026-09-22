@@ -2130,7 +2130,7 @@ async function _doEnviarBulk() {
         let bloque     = j.chapa + marca + (fDis ? ` — ${fDis}` : '');
         if (multiCliente) bloque += ` | ${jCliente}`;
         if (j.servicio)   bloque += `\n${j.servicio}`;
-        if (j.monto)                                  bloque += `\nGs. ${Number(j.monto).toLocaleString('es-PY')}`;
+        if (j.monto)                                  bloque += `\nTotal: Gs. ${Number(j.monto).toLocaleString('es-PY')}`;
         else if (SIN_CARGO_RE.test(j.servicio || '')) bloque += `\nSin cargo`;
         return bloque;
     }).join('\n\n');
