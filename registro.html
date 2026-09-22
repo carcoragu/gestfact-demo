@@ -2135,8 +2135,10 @@ async function _doEnviarBulk() {
         return bloque;
     }).join('\n\n');
 
+    const totalGs = parsedJobs.reduce((sum, j) => sum + (Number(j.monto) || 0), 0);
+    const totalLinea = totalGs > 0 ? `\n\nTotal: Gs. ${totalGs.toLocaleString('es-PY')}` : '';
     const sufijoGF = planId === 'FULL' ? '\n\n✅ Cargado en GestFact' : '';
-    const texto = `${clienteLabel} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel} | 📋 ${getPlanLabel()}${sufijoGF}\n\n${cuerpo}`;
+    const texto = `${clienteLabel} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''} | ${estadoLabel} | 📋 ${getPlanLabel()}${sufijoGF}\n\n${cuerpo}${totalLinea}`;
     window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`, '_blank');
 }
 
