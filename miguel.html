@@ -48,8 +48,8 @@ body{background:#0a1628;display:flex;flex-direction:column;align-items:center;ju
 <script>
 function ingresar(){
   var inp=document.getElementById('clave');
-  if(inp.value==='taller2026'){
-    var cfg={key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'taller2026'};
+  if(inp.value==='pcm123'){
+    var cfg={key:'MIGUEL_001',nombre:'Miguel Acuna',url:'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec',user:'miguel',pass:'pcm123'};
     try{sessionStorage.setItem('gf_client_key',cfg.key);sessionStorage.setItem('gf_client_nombre',cfg.nombre);sessionStorage.setItem('gf_gestfact_url',cfg.url);sessionStorage.setItem('gf_user',cfg.user);sessionStorage.setItem('gf_pass',cfg.pass);}catch(e){}
     try{localStorage.setItem('gf_boot',JSON.stringify(cfg));}catch(e){}
     var _b64=btoa(unescape(encodeURIComponent(JSON.stringify(cfg))));
