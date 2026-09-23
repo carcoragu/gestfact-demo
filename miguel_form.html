@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registro de Trabajo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 0.25s ease;
+        }
+        .screen.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progreso */
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 4px;
+            margin-bottom: 36px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #4ade80;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        /* Pregunta */
+        .question {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+        .hint {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.45);
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        /* Input único */
+        .big-input {
+            width: 100%;
+            padding: 16px 18px;
+            font-size: 1.2rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.07);
+            color: #fff;
+            text-align: center;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+        .big-input::placeholder { color: rgba(255,255,255,0.25); }
+        .big-input:focus {
+            outline: none;
+            border-color: #4ade80;
+        }
+        .big-input.error { border-color: #f87171; animation: shake 0.28s; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            30%      { transform: translateX(-8px); }
+            70%      { transform: translateX(8px); }
+        }
+
+        /* Input cliente con datalist */
+        input[list] { cursor: pointer; }
+        input[list]::-webkit-calendar-picker-indicator { opacity: 0.4; filter: invert(1); }
+
+        /* Botón siguiente */
+        .btn-next {
+            margin-top: 22px;
+            width: 100%;
+            padding: 16px;
+            background: #4ade80;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.12s;
+        }
+        .btn-next:active { transform: scale(0.97); background: #22c55e; }
+
+        /* Botón atrás */
+        .btn-back {
+            margin-top: 14px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 8px;
+        }
+        .btn-back:hover { color: rgba(255,255,255,0.65); }
+
+        /* Pantalla final */
+        .resumen {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            padding: 18px 20px;
+            color: #fff;
+            font-size: 0.92rem;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            font-family: monospace;
+            margin-bottom: 20px;
+        }
+        .btn-wa-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+        .btn-wa {
+            padding: 16px 10px;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.12s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-wa:active { transform: scale(0.96); }
+        .btn-copy-wa { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-green-wa { background: #25D366; color: #fff; }
+
+        .btn-reiniciar {
+            margin-top: 14px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.82rem;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* Micrófono */
+        .mic-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .mic-wrap .big-input { padding-right: 56px; }
+        .btn-mic {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        .btn-mic:active { background: rgba(255,255,255,0.2); }
+        .btn-mic.grabando {
+            background: rgba(248,113,113,0.3);
+            animation: pulse 0.8s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(248,113,113,0.5); }
+            50%      { box-shadow: 0 0 0 8px rgba(248,113,113,0); }
+        }
+
+        /* Selector de modo */
+        .modo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+        .modo-btn  { padding: 24px 10px; background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.15); border-radius: 14px; color: #fff; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.18s; }
+        .modo-btn:active { background: rgba(74,222,128,0.18); border-color: #4ade80; }
+        .modo-icon { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+        .modo-sub  { font-size: 0.72rem; font-weight: 400; color: rgba(255,255,255,0.4); display: block; margin-top: 4px; }
+
+        /* Bulk textarea */
+        .bulk-ta { width: 100%; min-height: 220px; padding: 14px; background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.15); border-radius: 14px; color: #fff; font-size: 0.82rem; line-height: 1.6; resize: vertical; font-family: monospace; transition: border-color 0.2s; }
+        .bulk-ta:focus { outline: none; border-color: #4ade80; }
+        .bulk-ta::placeholder { color: rgba(255,255,255,0.2); }
+
+        /* Bulk review — pantalla scrollable */
+        #sb2 { position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; padding: 20px 16px 40px; background: #1a1a2e; flex-direction: column; align-items: center; }
+
+        /* Job cards */
+        .jobs-wrap { width: 100%; max-width: 440px; margin: 0 auto; }
+        .job-card  { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+        .job-card.sin-cliente { border-color: #f87171; }
+        .job-num  { font-size: 0.75rem; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+        .job-f    { margin-bottom: 10px; }
+
+        /* Mini cliente */
+        .cli-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .mini-btn { padding: 10px; background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; color: rgba(255,255,255,0.6); font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.18s; }
+        .mini-btn.selected { background: rgba(74,222,128,0.18); border-color: #4ade80; color: #4ade80; }
+        .mini-btn.err-cli  { border-color: #f87171; color: #f87171; }
+        .cli-req  { font-size: 0.72rem; color: #f87171; margin-top: 4px; display: none; }
+        .cli-req.show { display: block; }
+
+        /* Revisión editable */
+        .rev-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+        .rev-input { font-size: 1rem; padding: 12px 14px; }
+
+        /* Promo banner */
+        #promoBanner {
+            width: 100%;
+            background: rgba(74,222,128,0.1);
+            border: 1px solid rgba(74,222,128,0.35);
+            border-radius: 12px;
+            padding: 11px 16px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        #promoBanner.promo-warning { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.5); }
+        #promoBanner.promo-expired { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.5); }
+        .promo-label { font-size: 0.68rem; color: #4ade80; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+        .promo-warning .promo-label { color: #fbbf24; }
+        .promo-expired .promo-label { color: #f87171; }
+        .promo-dias  { font-size: 1.8rem; color: #fff; font-weight: 800; line-height: 1; }
+        .promo-sub   { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 3px; }
+
+        /* Pantalla planes */
+        #sp { position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; padding: 20px 16px 40px; background: #1a1a2e; flex-direction: column; align-items: center; }
+        .planes-wrap { width: 100%; max-width: 400px; margin: 0 auto; }
+        .plan-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 14px;
+            position: relative;
+        }
+        .plan-card.popular { border-color: #4ade80; background: rgba(74,222,128,0.06); }
+        .plan-badge {
+            position: absolute; top: -10px; right: 16px;
+            background: #4ade80; color: #1a1a2e;
+            font-size: 0.65rem; font-weight: 800;
+            padding: 3px 10px; border-radius: 50px;
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
+        .plan-nombre { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .plan-precio { font-size: 1.45rem; font-weight: 800; color: #4ade80; line-height: 1; }
+        .plan-tipo   { font-size: 0.75rem; color: rgba(255,255,255,0.45); }
+        .plan-desc   { font-size: 0.82rem; color: rgba(255,255,255,0.6); margin-top: 10px; line-height: 1.5; }
+        .plan-features { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .plan-feat { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin-bottom: 5px; }
+        .plan-feat::before { content: '✓  '; color: #4ade80; }
+        .btn-plan {
+            width: 100%; margin-top: 14px; padding: 13px;
+            background: #4ade80; border: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 700; color: #1a1a2e;
+            cursor: pointer; transition: background 0.15s, transform 0.12s;
+        }
+        .btn-plan:active { transform: scale(0.97); background: #22c55e; }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #fff;
+            color: #1a1a2e;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: transform 0.28s cubic-bezier(.34,1.56,.64,1);
+            z-index: 999;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Egresos */
+        #se,#se-nuevo { position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:0;background:#1a1a2e;flex-direction:column; }
+        .eg-topbar { display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;background:#1a1a2e;z-index:10; }
+        .eg-title { font-size:1rem;font-weight:700;color:#fff; }
+        .eg-btn-icon { background:rgba(255,255,255,0.08);border:none;border-radius:10px;width:38px;height:38px;color:#fff;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+        .eg-content { padding:16px; }
+        .eg-filters { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px; }
+        .eg-label { font-size:.7rem;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px; }
+        .eg-input { width:100%;padding:10px 12px;background:rgba(255,255,255,0.07);border:2px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:.85rem; }
+        .eg-input:focus { outline:none;border-color:#4ade80; }
+        .eg-select { width:100%;padding:10px 12px;background:rgba(255,255,255,0.07);border:2px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:.85rem; }
+        .eg-select:focus { outline:none;border-color:#4ade80; }
+        .eg-item { background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:10px; }
+        .eg-info { flex:1; }
+        .eg-nombre { font-size:.9rem;font-weight:700;color:#fff; }
+        .eg-sub { font-size:.75rem;color:rgba(255,255,255,0.45);margin-top:3px; }
+        .eg-monto { font-size:.85rem;font-weight:700;color:#f85149; }
+        .eg-cat-badge { font-size:.68rem;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.1);color:#8b949e;display:inline-block; }
+        .eg-total { background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.25);border-radius:12px;padding:18px;text-align:center;margin-top:14px; }
+        .eg-total-lbl { font-size:.7rem;color:#8b949e;text-transform:uppercase;letter-spacing:1px; }
+        .eg-total-val { font-size:1.7rem;font-weight:800;color:#f85149;margin-top:4px; }
+    </style>
+</head>
+<body>
+
+<!-- MODO: selector inicial -->
+<div class="screen active" id="s0">
+    <div class="question" style="margin-bottom:10px;">¿Cómo querés cargar?</div>
+    <div class="hint" style="margin-bottom:28px;">Elegí la forma más cómoda</div>
+    <div id="promoBanner" style="display:none">
+        <div class="promo-label" id="promoBannerLabel">Período de prueba</div>
+        <div class="promo-dias" id="promoDiasNum">90</div>
+        <div class="promo-sub" id="promoSubText">días restantes</div>
+    </div>
+
+    <div class="modo-grid">
+        <button class="modo-btn" onclick="irWizard()">
+            <span class="modo-icon">✏️</span>
+            Uno por uno
+            <span class="modo-sub">Paso a paso con micrófono</span>
+        </button>
+        <button class="modo-btn" onclick="irBulk()">
+            <span class="modo-icon">📋</span>
+            Pegar lista
+            <span class="modo-sub">Varios trabajos de una vez</span>
+        </button>
+    </div>
+    <div id="btnEgresoWrap" style="display:none;width:100%;margin-top:10px;">
+        <button class="modo-btn" style="width:100%;" onclick="irEgresos()">
+            <span class="modo-icon">💸</span>
+            Egresos
+            <span class="modo-sub">Registrar gastos del taller</span>
+        </button>
+    </div>
+</div>
+
+<!-- PASO 1: Cliente -->
+<div class="screen" id="s1">
+    <div class="progress"><div class="progress-bar" style="width:16%"></div></div>
+    <div class="question">¿De quién es el trabajo?</div>
+    <div class="hint">Elegí de la lista, escribí o usá el micrófono</div>
+    <div class="mic-wrap">
+        <input class="big-input" id="clienteInput" list="clientes-list"
+               placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
+        <button class="btn-mic" id="micCliente" onclick="activarMic('clienteInput','micCliente')">🎤</button>
+    </div>
+    <button class="btn-next" onclick="ir(2)">Siguiente →</button>
+    <button class="btn-back" onclick="mostrarScreen('s0')">← Atrás</button>
+</div>
+
+<!-- PASO 2: Chapa -->
+<div class="screen" id="s2">
+    <div class="progress"><div class="progress-bar" style="width:33%"></div></div>
+    <div class="question">¿Cuál es la chapa?</div>
+    <div class="hint">Número de matrícula del vehículo</div>
+    <input class="big-input" id="chapa" type="text" placeholder="AAZJ233" maxlength="10"
+           autocorrect="off" autocapitalize="characters" spellcheck="false">
+    <button class="btn-next" onclick="ir(3)">Siguiente →</button>
+    <button class="btn-back" onclick="ir(1)">← Atrás</button>
+</div>
+
+<!-- PASO 3: Fecha -->
+<div class="screen" id="s3">
+    <div class="progress"><div class="progress-bar" style="width:50%"></div></div>
+    <div class="question">¿Cuándo fue el trabajo?</div>
+    <div class="hint">Ya viene con la fecha de hoy</div>
+    <input class="big-input" id="fecha" type="date">
+    <button class="btn-next" onclick="ir(4)">Siguiente →</button>
+    <button class="btn-back" onclick="ir(2)">← Atrás</button>
+</div>
+
+<!-- PASO 4: Trabajo (texto libre, copia fiel) -->
+<div class="screen" id="s4">
+    <div class="progress"><div class="progress-bar" style="width:60%"></div></div>
+    <div class="question">¿Qué trabajo se hizo?</div>
+    <div class="hint">Escribí tal cual lo tenés anotado — varias líneas si hace falta</div>
+    <div class="mic-wrap" style="align-items:flex-start;">
+        <textarea class="big-input bulk-ta" id="servicio"
+                  placeholder="Amortiguadores trasero 2&#10;Mano de obra 290.000"
+                  style="min-height:130px;text-align:left;font-size:1rem;padding:14px 56px 14px 16px;line-height:1.6;resize:vertical;"></textarea>
+        <button class="btn-mic" id="mic4" onclick="activarMic('servicio','mic4')" title="Hablar"
+                style="top:12px;transform:none;">🎤</button>
+    </div>
+    <button class="btn-next" onclick="ir(5)">Siguiente →</button>
+    <button class="btn-back" onclick="ir(3)">← Atrás</button>
+</div>
+
+<!-- PASO 5: Mi número -->
+<div class="screen" id="s5">
+    <div class="progress"><div class="progress-bar" style="width:85%"></div></div>
+    <div class="question">¿Tu número de WhatsApp?</div>
+    <div class="hint">Solo la primera vez — queda guardado</div>
+    <input class="big-input" id="miNumero" type="text" placeholder="595961807675" maxlength="20" inputmode="numeric">
+    <button class="btn-next" onclick="ir(6)">Ver resumen →</button>
+    <button class="btn-back" onclick="ir(4)">← Atrás</button>
+</div>
+
+<!-- PASO 6: Revisión editable + envío -->
+<div class="screen" id="s6">
+    <div class="progress"><div class="progress-bar" style="width:100%"></div></div>
+    <div class="question" style="font-size:1.2rem;margin-bottom:6px;">Revisá antes de enviar</div>
+    <div class="hint" style="margin-bottom:20px;">Tocá cualquier campo para corregir</div>
+
+    <div style="width:100%;display:flex;flex-direction:column;gap:12px;">
+
+        <!-- Cliente -->
+        <div style="width:100%">
+            <div class="rev-label">Cliente</div>
+            <div class="mic-wrap">
+                <input class="big-input rev-input" id="rev-cliente" list="clientes-list"
+                       placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
+                <button class="btn-mic" id="micRevCliente" onclick="activarMic('rev-cliente','micRevCliente')">🎤</button>
+            </div>
+        </div>
+
+        <!-- Chapa -->
+        <div style="width:100%">
+            <div class="rev-label">Chapa</div>
+            <input class="big-input rev-input" id="rev-chapa" type="text" maxlength="10"
+                   autocorrect="off" autocapitalize="characters" spellcheck="false">
+        </div>
+
+        <!-- Fecha -->
+        <div style="width:100%">
+            <div class="rev-label">Fecha</div>
+            <input class="big-input rev-input" id="rev-fecha" type="date">
+        </div>
+
+        <!-- Servicio (texto libre) -->
+        <div style="width:100%">
+            <div class="rev-label">Trabajo</div>
+            <div class="mic-wrap" style="align-items:flex-start;">
+                <textarea class="big-input rev-input" id="rev-servicio"
+                          style="min-height:100px;text-align:left;font-size:0.95rem;padding:12px 56px 12px 14px;line-height:1.6;resize:vertical;"></textarea>
+                <button class="btn-mic" id="mic6" onclick="activarMic('rev-servicio','mic6')" title="Hablar"
+                        style="top:12px;transform:none;">🎤</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="chapaMismatchWarn" style="display:none;width:100%;margin-top:16px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.5);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:#f87171;line-height:1.5;">
+        ⚠️ El texto tiene la chapa <strong id="chapaMismatchEnTexto"></strong> pero el campo dice <strong id="chapaMismatchCampo"></strong>.<br>
+        <span style="color:rgba(255,255,255,0.45);">Corregí una de las dos antes de enviar.</span>
+    </div>
+
+    <div id="dupeWarnWizard" style="display:none;width:100%;margin-top:10px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.5);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:#fbbf24;line-height:1.5;">
+        ⚠️ Esta chapa ya tiene un registro en GestFact para esta fecha.<br>
+        <span style="color:rgba(255,255,255,0.5);">Si es otro trabajo, podés enviar igual.</span>
+    </div>
+
+    <button class="btn-next" style="margin-top:14px;" onclick="enviarIsabSoft()">💬 Enviar a IsabSoft</button>
+    <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo registro</button>
+</div>
+
+<!-- BULK 1: cliente + textarea -->
+<div class="screen" id="sb1">
+    <div class="question" style="font-size:1.2rem;margin-bottom:6px;">Cargar lista</div>
+    <div class="hint" style="margin-bottom:18px;">Primero el cliente, luego pegá los trabajos</div>
+
+    <div style="width:100%;margin-bottom:16px;">
+        <div class="rev-label" style="margin-bottom:7px;">Cliente <span style="color:#f87171">*</span></div>
+        <input class="big-input" id="bulkCliente" list="clientes-list"
+               placeholder="Nombre del cliente" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div style="width:100%;">
+        <div class="rev-label" style="margin-bottom:7px;">Lista de trabajos <span style="color:#f87171">*</span></div>
+        <textarea class="bulk-ta" id="bulkInput" placeholder="AASL204 toyota vitz 31/07/26&#10;Amortiguadores trasero 2&#10;Mano de obra 290.000&#10;&#10;AARO223 toyota vitz 07/08&#10;Torreta 1&#10;Mano de obra 170.000"></textarea>
+    </div>
+
+    <button class="btn-next" style="margin-top:18px;" onclick="procesarBulk()">Procesar →</button>
+    <button class="btn-back" onclick="mostrarScreen('s0')">← Atrás</button>
+</div>
+
+<!-- BULK 2: revisión por trabajo -->
+<div class="screen" id="sb2">
+    <div class="jobs-wrap">
+        <div style="text-align:center;margin-bottom:20px;">
+            <div class="question" style="font-size:1.15rem;">Verificá los trabajos</div>
+            <div class="hint" style="margin-top:6px;">El WhatsApp enviará tu texto original — esto es solo para verificar</div>
+        </div>
+        <div id="jobsContainer"></div>
+        <button class="btn-next" onclick="enviarBulk()">💬 Enviar a IsabSoft</button>
+        <button class="btn-back" style="margin-top:14px;width:100%;text-align:center;" onclick="mostrarScreen('sb1')">← Volver a editar lista</button>
+    </div>
+</div>
+
+<!-- PLANES -->
+<div class="screen" id="sp">
+    <div class="planes-wrap">
+        <div style="text-align:center;margin-bottom:22px;">
+            <div class="question" style="font-size:1.15rem;">Elegí tu plan</div>
+            <div class="hint" style="margin-top:6px;" id="spHint">Continuá usando AnotDigi</div>
+        </div>
+        <div id="planCards"></div>
+        <div id="spVolver" style="display:none;margin-top:6px;">
+            <button class="btn-back" style="width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
+        </div>
+    </div>
+</div>
+
+<!-- EGRESOS LIST -->
+<div class="screen" id="se">
+  <div class="eg-topbar">
+    <button class="eg-btn-icon" onclick="mostrarScreen('s0')">&#8249;</button>
+    <span class="eg-title">&#128181; Egresos</span>
+    <button class="eg-btn-icon" onclick="abrirNuevoEgreso_ad()">+</button>
+  </div>
+  <div class="eg-content">
+    <div class="eg-filters">
+      <div><div class="eg-label">Desde</div><input class="eg-input" type="date" id="eg-desde" onchange="renderEgresos_ad()"/></div>
+      <div><div class="eg-label">Hasta</div><input class="eg-input" type="date" id="eg-hasta" onchange="renderEgresos_ad()"/></div>
+    </div>
+    <div id="egresoList_ad"></div>
+    <div class="eg-total">
+      <div class="eg-total-lbl">Total egresos en el período</div>
+      <div class="eg-total-val" id="eg-total-val">Gs. 0</div>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVO EGRESO -->
+<div class="screen" id="se-nuevo">
+  <div class="eg-topbar">
+    <button class="eg-btn-icon" onclick="mostrarScreen('se')">&#8249;</button>
+    <span class="eg-title">Nuevo Egreso</span>
+  </div>
+  <div class="eg-content">
+    <div style="margin-bottom:16px;">
+      <div class="eg-label">Descripción</div>
+      <input class="big-input" id="eg-desc" placeholder="Ej: Aceite sintético 5W-30 x20L"/>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div class="eg-label">Categoría</div>
+      <select class="eg-select" id="eg-cat">
+        <option>Repuestos</option>
+        <option>Combustible</option>
+        <option>Herramientas</option>
+        <option>Sueldos</option>
+        <option>Servicios</option>
+        <option>Alquiler</option>
+        <option>Otros</option>
+      </select>
+    </div>
+    <div style="margin-bottom:24px;">
+      <div class="eg-label">Monto (Gs.)</div>
+      <input class="big-input" type="number" id="eg-monto" placeholder="0" min="0" inputmode="numeric"/>
+    </div>
+    <button class="btn-next" onclick="guardarEgreso_ad()">Guardar Egreso</button>
+    <button class="btn-back" onclick="mostrarScreen('se')">← Cancelar</button>
+  </div>
+</div>
+
+<datalist id="clientes-list"></datalist>
+<div id="toast"></div>
+
+<script>
+const WA_ISASOFT = "595981153477";
+const GF_API     = "https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec";
+
+// ─── Estado ───
+const datos = { cliente: '', chapa: '', fecha: '', servicio: '' };
+
+// ─── Fecha de hoy (Paraguay) ───
+(function() {
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Asuncion" }));
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    document.getElementById('fecha').value = `${y}-${m}-${d}`;
+})();
+
+// ─── Clientes: Sheet + localStorage ───
+const CLIENTES_DEFAULT = ['WILIAN RENTACAR', 'ANIBAL SG'];
+
+function loadClientes(extra = []) {
+    const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
+    const todos = [...new Set([...CLIENTES_DEFAULT, ...guardados, ...extra])].sort();
+    document.getElementById('clientes-list').innerHTML =
+        todos.map(c => `<option value="${c}">`).join('');
+}
+
+let registrosGF = []; // {chapa, fecha YYYY-MM-DD} para detección de duplicados
+
+function normalizarFecha(f) {
+    if (!f) return '';
+    if (f.includes('T')) f = f.split('T')[0];          // ISO full → YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(f)) return f;
+    const m = f.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+    return '';
+}
+
+async function fetchClientesSheet() {
+    try {
+        const res = await fetch(GF_API + '?action=syncExportOrdenes');
+        const csv = await res.text();
+        const lineas = csv.split('\n').filter(l => l.trim());
+        const clientes = new Set();
+        registrosGF = [];
+        lineas.slice(1).forEach(l => {
+            const cols = l.split(',');
+            if (cols.length >= 5) {
+                const c = cols[1].trim().toUpperCase();
+                if (c) clientes.add(c);
+                const chapa = cols[3].trim().toUpperCase().replace(/\s/g, '');
+                const fecha = normalizarFecha(cols[4].trim());
+                if (chapa && fecha) registrosGF.push({ chapa, fecha });
+            }
+        });
+        loadClientes([...clientes]);
+    } catch(e) {
+        loadClientes(); // fallback a localStorage
+    }
+}
+
+function esDuplicado(chapa, fechaISO) {
+    if (!chapa || !fechaISO || !registrosGF.length) return false;
+    const f = normalizarFecha(fechaISO);
+    return registrosGF.some(r => r.chapa === chapa && r.fecha === f);
+}
+
+function addClienteToList(c) {
+    if (!c) return;
+    const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
+    if (!CLIENTES_DEFAULT.includes(c) && !guardados.includes(c)) {
+        guardados.push(c);
+        localStorage.setItem('clientes_lista', JSON.stringify(guardados));
+        loadClientes(guardados);
+    }
+}
+
+loadClientes();
+fetchClientesSheet(); // carga desde Sheet en background
+
+// ─── Uppercase automático en inputs de cliente ───
+['clienteInput','rev-cliente','bulkCliente'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+});
+
+// ─── Mi número: cargar guardado ───
+(function() {
+    const n = localStorage.getItem('mi_numero_wa');
+    if (n) document.getElementById('miNumero').value = n;
+})();
+
+// ─── Chapa uppercase ───
+document.getElementById('chapa').addEventListener('input', function() {
+    const p = this.selectionStart;
+    this.value = this.value.toUpperCase().replace(/\s/g, '');
+    try { this.setSelectionRange(p, p); } catch(e) {}
+});
+
+// ─── Monto / número: solo dígitos ───
+document.getElementById('miNumero').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+    localStorage.setItem('mi_numero_wa', this.value);
+});
+
+// ─── Speech Recognition ───
+let micActivo = null;
+
+function activarMic(inputId, btnId, modo, onResult) {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) { toast('⚠️ Tu navegador no soporta micrófono'); return; }
+
+    const btn = document.getElementById(btnId);
+
+    // Si hay uno activo, detenerlo
+    if (micActivo) {
+        micActivo.stop();
+        btn.classList.remove('grabando');
+        btn.textContent = '🎤';
+        micActivo = null;
+        return;
+    }
+
+    // Verificar HTTPS
+    if (location.protocol === 'file:') {
+        toast('⚠️ El micrófono requiere HTTPS — subí el archivo a GitHub Pages');
+        return;
+    }
+
+    const rec = new SpeechRec();
+    rec.lang = 'es';
+    rec.continuous = false;
+    rec.interimResults = false;
+
+    btn.classList.add('grabando');
+    btn.textContent = '⏹';
+    micActivo = rec;
+
+    // Timeout de seguridad: 10 segundos
+    const timeout = setTimeout(() => {
+        if (micActivo) { micActivo.stop(); toast('⏱ Tiempo agotado — intentá de nuevo'); }
+    }, 10000);
+
+    rec.onresult = function(e) {
+        clearTimeout(timeout);
+        let texto = e.results[0][0].transcript;
+        if (modo === 'numero') {
+            texto = texto.replace(/\./g, '').replace(/,/g, '').replace(/\D/g, '');
+        }
+        document.getElementById(inputId).value = texto;
+        document.getElementById(inputId).classList.remove('error');
+    };
+
+    rec.onerror = function(e) {
+        clearTimeout(timeout);
+        const msgs = {
+            'not-allowed'  : '⚠️ Permiso de micrófono denegado',
+            'no-speech'    : '⚠️ No se escuchó nada — intentá de nuevo',
+            'network'      : '⚠️ Error de red — necesita conexión',
+            'aborted'      : ''
+        };
+        const m = msgs[e.error] || '⚠️ Error de micrófono: ' + e.error;
+        if (m) toast(m);
+    };
+
+    rec.onend = function() {
+        clearTimeout(timeout);
+        btn.classList.remove('grabando');
+        btn.textContent = '🎤';
+        micActivo = null;
+    };
+
+    rec.start();
+}
+
+// ─── Navegación entre pantallas ───
+function ir(n) {
+    if (n > 1) {
+        const el  = document.getElementById('clienteInput');
+        const val = el.value.trim().toUpperCase();
+        if (!val) { el.classList.add('error'); setTimeout(() => el.classList.remove('error'), 800); toast('⚠️ Ingresá el cliente'); return; }
+        datos.cliente = val;
+        addClienteToList(val);
+    }
+    if (n > 2 && !validarInput('chapa',    datos, 'chapa'))    return;
+    if (n > 3 && !validarInput('fecha',    datos, 'fecha'))    return;
+    if (n > 4 && !validarInput('servicio', datos, 'servicio')) return;
+    if (n > 5 && !validarNumero())                             return;
+
+    if (n === 6) armarResumen();
+
+    mostrarScreen('s' + n);
+    const inputs = { 2:'chapa', 3:'fecha', 4:'servicio', 5:'miNumero' };
+    if (inputs[n]) setTimeout(() => document.getElementById(inputs[n]).focus(), 80);
+}
+
+function validarInput(campo, obj, id) {
+    const el  = document.getElementById(id);
+    const val = el.value.trim();
+    if (!val) {
+        el.classList.add('error');
+        setTimeout(() => el.classList.remove('error'), 800);
+        toast('⚠️ Este campo es obligatorio');
+        return false;
+    }
+    obj[campo] = val;
+    return true;
+}
+
+function validarNumero() {
+    const el = document.getElementById('miNumero');
+    if (!el.value.trim()) {
+        el.classList.add('error');
+        setTimeout(() => el.classList.remove('error'), 800);
+        toast('⚠️ Ingresá tu número');
+        return false;
+    }
+    return true;
+}
+
+// ─── Armar resumen (revisión) ───
+function armarResumen() {
+    document.getElementById('rev-cliente').value  = datos.cliente;
+    document.getElementById('rev-chapa').value    = datos.chapa.toUpperCase();
+    document.getElementById('rev-fecha').value    = datos.fecha;
+    document.getElementById('rev-servicio').value = datos.servicio;
+    actualizarChapaMismatch();
+    actualizarDupeWarnWizard();
+}
+
+const NO_CHAPA_RE = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
+
+function extraerChapaDeTexto(texto) {
+    for (const linea of texto.split('\n')) {
+        const m = linea.trim().match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
+        if (m && !NO_CHAPA_RE.test(m[1].trim())) {
+            return (m[1] + m[2]).toUpperCase().replace(/\s/g, '');
+        }
+    }
+    return null;
+}
+
+function actualizarDupeWarnWizard() {
+    const chapa = document.getElementById('rev-chapa').value.trim().toUpperCase();
+    const fecha = document.getElementById('rev-fecha').value;
+    const w = document.getElementById('dupeWarnWizard');
+    if (w) w.style.display = esDuplicado(chapa, fecha) ? 'block' : 'none';
+}
+
+function actualizarChapaMismatch() {
+    const chapa       = document.getElementById('rev-chapa').value.trim().toUpperCase();
+    const servicio    = document.getElementById('rev-servicio').value;
+    const chapaTexto  = extraerChapaDeTexto(servicio);
+    const w           = document.getElementById('chapaMismatchWarn');
+    if (!w) return;
+    if (chapaTexto && chapaTexto !== chapa) {
+        document.getElementById('chapaMismatchEnTexto').textContent = chapaTexto;
+        document.getElementById('chapaMismatchCampo').textContent   = chapa || '(vacía)';
+        w.style.display = 'block';
+    } else {
+        w.style.display = 'none';
+    }
+}
+
+// ─── Detección de monto en texto libre ───
+function tieneMonto(texto) {
+    return /\b\d{1,3}\.\d{3}\b|\b\d{5,}\b/.test(texto);
+}
+
+// ─── Envío — copia fiel del texto de Miguel ───
+let montoAvisadoWizard = false;
+
+function enviarIsabSoft() {
+    const chapa    = document.getElementById('rev-chapa').value.trim().toUpperCase();
+    const fecha    = document.getElementById('rev-fecha').value;
+    const servicio = document.getElementById('rev-servicio').value.trim();
+
+    const clienteFinal = document.getElementById('rev-cliente').value.trim().toUpperCase();
+    if (!clienteFinal) {
+        document.getElementById('rev-cliente').classList.add('error');
+        setTimeout(() => document.getElementById('rev-cliente').classList.remove('error'), 800);
+        toast('⚠️ El cliente está vacío');
+        return;
+    }
+    addClienteToList(clienteFinal);
+    if (!chapa)    { toast('⚠️ La chapa está vacía'); return; }
+    if (!fecha)    { toast('⚠️ La fecha está vacía'); return; }
+    if (!servicio) { toast('⚠️ El trabajo está vacío'); return; }
+
+    // Chapa mismatch — bloqueo duro (el usuario debe corregir uno de los dos)
+    const chapaTexto = extraerChapaDeTexto(servicio);
+    if (chapaTexto && chapaTexto !== chapa) {
+        actualizarChapaMismatch();
+        toast('⚠️ La chapa del texto no coincide con la ingresada — corregí antes de enviar');
+        return;
+    }
+
+    if (!tieneMonto(servicio) && !montoAvisadoWizard) {
+        montoAvisadoWizard = true;
+        document.getElementById('rev-servicio').classList.add('error');
+        setTimeout(() => document.getElementById('rev-servicio').classList.remove('error'), 1500);
+        toast('⚠️ No se detectó monto — tocá Enviar de nuevo para confirmar');
+        return;
+    }
+    montoAvisadoWizard = false;
+
+    const [y, m, d] = fecha.split('-');
+    const texto = `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
+    const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank');
+}
+
+// Reset flag y re-check duplicado si corrige campos en revisión
+document.getElementById('rev-servicio').addEventListener('input', function() {
+    montoAvisadoWizard = false;
+});
+document.getElementById('rev-chapa').addEventListener('input', function() {
+    actualizarChapaMismatch();
+    actualizarDupeWarnWizard();
+});
+document.getElementById('rev-fecha').addEventListener('change', actualizarDupeWarnWizard);
+document.getElementById('rev-servicio').addEventListener('input', actualizarChapaMismatch);
+document.getElementById('bulkInput').addEventListener('input', function() {
+    montoAvisadoBulk = false;
+});
+
+function activarMicBulk(i) {
+    activarMic(`jcli-${i}`, `jmic-${i}`, null, function(texto) {
+        const el = document.getElementById(`jcli-${i}`);
+        el.value = texto.toUpperCase();
+        parsedJobs[i].cliente = el.value.trim();
+        el.classList.remove('error');
+        document.getElementById(`jcard-${i}`).classList.remove('sin-cliente');
+    });
+}
+
+// ══════════════════════════════════════════
+//  MODO BULK — pegar lista
+// ══════════════════════════════════════════
+
+let parsedJobs      = [];
+let montoAvisadoBulk = false;
+
+function irWizard() {
+    if (!promoActivo()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    mostrarScreen('s1');
+}
+function irBulk() {
+    if (!promoActivo()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    mostrarScreen('sb1');
+}
+
+function mostrarScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+// ─── Parser ───
+function parsearBloques(texto) {
+    const jobs = [];
+    const lineas = texto.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    let bloque = [];
+
+    function procesarBloque(b) {
+        while (b.length && !b[0].trim()) b.shift();
+        while (b.length && !b[b.length-1].trim()) b.pop();
+        if (!b.length) return;
+
+        const primera = b[0];
+        const chapaM  = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
+        if (!chapaM || NO_CHAPA_RE.test(chapaM[1].trim())) return;
+
+        const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
+
+        // Fecha
+        const fechaM = primera.match(/(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);
+        let fechaVal = '', fechaDis = '';
+        if (fechaM) {
+            const d = fechaM[1].padStart(2,'0');
+            const m = fechaM[2].padStart(2,'0');
+            let y   = fechaM[3] || '26';
+            if (y.length === 2) y = '20' + y;
+            fechaVal = `${y}-${m}-${d}`;
+            fechaDis = `${d}/${m}/${y}`;
+        }
+
+        // Monto: suma todos los patrones XXX.000 en el bloque
+        let montoTotal = 0;
+        b.forEach(l => {
+            const ms = [...l.matchAll(/\b(\d{1,3})\.(\d{3})\b/g)];
+            ms.forEach(mm => { montoTotal += parseInt(mm[1] + mm[2]); });
+        });
+
+        // Servicio: líneas 1+ sin notas de gestión
+        const notas = /falta cargar|hasta ac[aá] cargado|hasta aca|falta|cargado/i;
+        const serv = b.slice(1)
+            .map(l => l.trim())
+            .filter(l => l && !notas.test(l))
+            .join(' / ');
+
+        jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', cliente: '' });
+    }
+
+    lineas.forEach(linea => {
+        const t = linea.trim();
+        if (/^[A-Z]{2,5}\s?[A-Z]?\s?\d{2,4}/i.test(t) && bloque.length) {
+            procesarBloque(bloque);
+            bloque = [t];
+        } else {
+            bloque.push(t);
+        }
+    });
+    if (bloque.length) procesarBloque(bloque);
+
+    return jobs;
+}
+
+// ─── Renderizar tarjetas ───
+function procesarBulk() {
+    const clienteEl = document.getElementById('bulkCliente');
+    const cliente   = clienteEl.value.trim().toUpperCase();
+    if (!cliente) {
+        clienteEl.classList.add('error');
+        setTimeout(() => clienteEl.classList.remove('error'), 800);
+        toast('⚠️ Ingresá el cliente primero');
+        return;
+    }
+    addClienteToList(cliente);
+
+    const texto = document.getElementById('bulkInput').value.trim();
+    if (!texto) { toast('⚠️ Pegá la lista de trabajos'); return; }
+
+    parsedJobs = parsearBloques(texto);
+    if (!parsedJobs.length) { toast('⚠️ No se encontraron trabajos — verificá el formato'); return; }
+
+    // Pre-llenar cliente en todos los trabajos
+    parsedJobs.forEach(j => j.cliente = cliente);
+
+    renderizarJobs();
+    mostrarScreen('sb2');
+}
+
+function renderizarJobs() {
+    const c = document.getElementById('jobsContainer');
+    c.innerHTML = parsedJobs.map((j, i) => {
+        const dupe = esDuplicado(j.chapa, j.fechaVal);
+        const dupeHtml = dupe
+            ? `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
+                   ⚠️ Ya existe en GestFact — verificá si es otro trabajo
+               </div>`
+            : '';
+        return `
+        <div class="job-card" id="jcard-${i}">
+            <div class="job-num">#${i+1} — ${j.chapa}</div>
+            ${dupeHtml}
+
+            <div class="job-f">
+                <div class="rev-label">Chapa</div>
+                <input class="big-input rev-input" id="jchapa-${i}" value="${j.chapa}"
+                       autocorrect="off" autocapitalize="characters" spellcheck="false"
+                       oninput="this.value=this.value.toUpperCase().replace(/\\s/g,''); parsedJobs[${i}].chapa=this.value; this.classList.remove('error'); document.getElementById('jcard-${i}').style.removeProperty('border-color');">
+            </div>
+
+            <div class="job-f">
+                <div class="rev-label">Fecha</div>
+                <input class="big-input rev-input" id="jfecha-${i}" type="date" value="${j.fechaVal}"
+                       onchange="parsedJobs[${i}].fechaVal=this.value">
+            </div>
+
+            <div class="job-f">
+                <div class="rev-label">Trabajo</div>
+                <textarea class="big-input rev-input" id="jserv-${i}"
+                          style="min-height:80px;resize:vertical;line-height:1.5;text-align:left;font-size:0.9rem;"
+                          oninput="parsedJobs[${i}].servicio=this.value">${j.servicio}</textarea>
+            </div>
+
+
+            <div class="job-f">
+                <div class="rev-label" style="color:rgba(255,255,255,0.4);">Cliente <span style="color:#f87171">*</span></div>
+                <div class="mic-wrap">
+                    <input class="big-input rev-input" id="jcli-${i}" list="clientes-list"
+                           placeholder="Elegí o escribí el cliente" autocomplete="off" spellcheck="false"
+                           value="${j.cliente}"
+                           oninput="this.value=this.value.toUpperCase(); parsedJobs[${i}].cliente=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').classList.remove('sin-cliente');">
+                    <button class="btn-mic" id="jmic-${i}" onclick="activarMicBulk(${i})">🎤</button>
+                </div>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+// ─── Enviar bulk ───
+function enviarBulk() {
+    // Leer valores actuales de todos los inputs
+    parsedJobs.forEach((j, i) => {
+        j.chapa    = (document.getElementById(`jchapa-${i}`)?.value || '').toUpperCase().replace(/\s/g,'');
+        j.fechaVal = document.getElementById(`jfecha-${i}`)?.value  || j.fechaVal;
+        j.servicio = (document.getElementById(`jserv-${i}`)?.value || j.servicio).trim();
+        j.cliente  = (document.getElementById(`jcli-${i}`)?.value   || '').trim().toUpperCase();
+    });
+
+    // Validar chapas vacías — bloqueo duro
+    const sinChapa = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.chapa);
+    if (sinChapa.length) {
+        sinChapa.forEach(({i}) => {
+            document.getElementById(`jchapa-${i}`)?.classList.add('error');
+            document.getElementById(`jcard-${i}`)?.style.setProperty('border-color','#f87171');
+        });
+        const n = sinChapa.length;
+        toast(`⚠️ ${n > 1 ? n + ' trabajos sin' : 'Un trabajo sin'} chapa — completá antes de enviar`);
+        document.getElementById(`jcard-${sinChapa[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    // Validar clientes vacíos
+    const sinCliente = parsedJobs.map((j,i) => ({j,i})).filter(({j}) => !j.cliente);
+    if (sinCliente.length) {
+        sinCliente.forEach(({i}) => {
+            document.getElementById(`jcli-${i}`).classList.add('error');
+            document.getElementById(`jcard-${i}`).classList.add('sin-cliente');
+        });
+        const chapas = sinCliente.map(({j}) => j.chapa).join(', ');
+        toast(`⚠️ Sin cliente: ${chapas}`);
+        document.getElementById(`jcard-${sinCliente[0].i}`).scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+    }
+
+    // Guardar clientes nuevos
+    parsedJobs.forEach(j => addClienteToList(j.cliente));
+
+    const cliente       = document.getElementById('bulkCliente').value.trim().toUpperCase();
+    const textoOriginal = document.getElementById('bulkInput').value.trim();
+
+    if (!tieneMonto(textoOriginal) && !montoAvisadoBulk) {
+        montoAvisadoBulk = true;
+        toast('⚠️ No se detectó monto en la lista — tocá Enviar de nuevo para confirmar');
+        return;
+    }
+    montoAvisadoBulk = false;
+
+    // Generar mensaje: copia fiel del texto original + encabezado cliente
+    const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
+    const url   = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank');
+}
+
+// ═══════════════════════════════════════════════════════
+//  SISTEMA DE PLANES / PROMO
+// ═══════════════════════════════════════════════════════
+
+const PROMO_DIAS = 90;
+const PLANES_DATA = [
+    {
+        id: 'sesion', nombre: 'Sesión', precio: '80.000', tipo: 'pago único', popular: false,
+        desc: 'Carlos carga y organiza todo en GestFact una sola vez.',
+        features: ['1 sesión de carga completa', 'AnotDigi incluido', 'Sin mensualidad']
+    },
+    {
+        id: 'basico', nombre: 'Básico', precio: '50.000', tipo: '/mes', popular: false,
+        desc: 'Registrá con AnotDigi, Carlos carga todo en GestFact por vos.',
+        features: ['AnotDigi sin límite de registros', 'Carlos carga en GestFact', 'Reporte mensual']
+    },
+    {
+        id: 'completo', nombre: 'Completo', precio: '100.000', tipo: '/mes', popular: true,
+        desc: 'Básico más presupuestos ilimitados y control total.',
+        features: ['AnotDigi sin límite', 'Presupuestos ilimitados', 'Carlos controla todo', 'Soporte prioritario']
+    },
+    {
+        id: 'full', nombre: 'Full', precio: '150.000', tipo: '/mes', popular: false,
+        desc: 'AnotDigi conectado directo a GestFact. Carlos monitorea todo.',
+        features: ['AnotDigi → GestFact directo', 'Sin límite de nada', 'Carlos controla 24/7', 'Reportes automáticos']
+    }
+];
+
+function promoIniciar() {
+    if (!localStorage.getItem('anotdigi_inicio')) {
+        localStorage.setItem('anotdigi_inicio', new Date().toISOString().split('T')[0]);
+    }
+}
+
+function promoActivo() {
+    const expiry = localStorage.getItem('anotdigi_expiry');
+    if (expiry) return new Date(expiry) >= new Date();
+
+    const inicio = localStorage.getItem('anotdigi_inicio');
+    if (!inicio) return true; // primer uso, todavía no se registró
+    const dias = Math.floor((new Date() - new Date(inicio)) / 86400000);
+    return dias < PROMO_DIAS;
+}
+
+function promoDiasRestantes() {
+    const expiry = localStorage.getItem('anotdigi_expiry');
+    const plan   = localStorage.getItem('anotdigi_plan');
+    if (expiry && plan) {
+        const d = Math.ceil((new Date(expiry) - new Date()) / 86400000);
+        return { dias: Math.max(0, d), plan, esPlan: true };
+    }
+    const inicio = localStorage.getItem('anotdigi_inicio');
+    if (!inicio) return { dias: PROMO_DIAS, plan: null, esPlan: false };
+    const pasados = Math.floor((new Date() - new Date(inicio)) / 86400000);
+    return { dias: Math.max(0, PROMO_DIAS - pasados), plan: null, esPlan: false };
+}
+
+function promoActualizarBanner() {
+    const banner = document.getElementById('promoBanner');
+    if (!banner) return;
+
+    const { dias, plan, esPlan } = promoDiasRestantes();
+    const activo = promoActivo();
+
+    banner.style.display = 'block';
+    banner.className = '';
+
+    const numEl  = document.getElementById('promoDiasNum');
+    const subEl  = document.getElementById('promoSubText');
+    const lblEl  = document.getElementById('promoBannerLabel');
+
+    if (esPlan) {
+        lblEl.textContent = `Plan ${plan} activo`;
+        numEl.textContent = dias;
+        subEl.textContent = 'días restantes';
+    } else if (activo) {
+        lblEl.textContent = 'Período de prueba';
+        numEl.textContent = dias;
+        subEl.textContent = 'días restantes gratis';
+        if (dias <= 7) banner.classList.add('promo-warning');
+    } else {
+        banner.classList.add('promo-expired');
+        lblEl.textContent = 'Prueba terminada';
+        numEl.textContent = '!';
+        subEl.textContent = 'Elegí un plan para continuar';
+    }
+}
+
+function renderizarPlanes(puedeVolver) {
+    const c    = document.getElementById('planCards');
+    const hint = document.getElementById('spHint');
+    const vol  = document.getElementById('spVolver');
+    if (!c) return;
+
+    hint.textContent = puedeVolver
+        ? 'Podés cambiar de plan cuando quieras'
+        : 'Tu período de prueba terminó — elegí un plan';
+    if (vol) vol.style.display = puedeVolver ? 'block' : 'none';
+
+    c.innerHTML = PLANES_DATA.map(p => `
+        <div class="plan-card ${p.popular ? 'popular' : ''}">
+            ${p.popular ? '<div class="plan-badge">Popular</div>' : ''}
+            <div class="plan-nombre">${p.nombre}</div>
+            <div>
+                <span class="plan-precio">Gs. ${p.precio}</span>
+                <span class="plan-tipo"> ${p.tipo}</span>
+            </div>
+            <div class="plan-desc">${p.desc}</div>
+            <div class="plan-features">
+                ${p.features.map(f => `<div class="plan-feat">${f}</div>`).join('')}
+            </div>
+            <button class="btn-plan" onclick="contactarPlan('${p.nombre}','${p.precio}','${p.tipo}')">
+                Quiero este plan →
+            </button>
+        </div>
+    `).join('');
+}
+
+function contactarPlan(nombre, precio, tipo) {
+    const msg = `Hola Carlos! Quiero activar AnotDigi *Plan ${nombre}* (Gs. ${precio}${tipo}). ¿Cómo procedo?`;
+    window.open(`https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// ─── Activación por URL: ?act=TOKEN&p=PLAN&d=DIAS ───
+async function checkActivacionURL() {
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('act');
+    const plan   = params.get('p');
+    const dias   = parseInt(params.get('d') || '0');
+    if (!token || !plan || !dias) return;
+
+    try {
+        const SECRET = 'ANOTDIGI2026ISASOFT';
+        const enc    = new TextEncoder();
+        const key    = await crypto.subtle.importKey(
+            'raw', enc.encode(SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+        );
+        const sig      = await crypto.subtle.sign('HMAC', key, enc.encode(`${plan}|${dias}`));
+        const tokenGen = Array.from(new Uint8Array(sig))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('')
+            .substring(0, 16);
+
+        if (token !== tokenGen) { toast('⚠️ Enlace de activación inválido'); return; }
+
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + dias);
+        localStorage.setItem('anotdigi_plan',   plan.toUpperCase());
+        localStorage.setItem('anotdigi_expiry', expiry.toISOString().split('T')[0]);
+
+        window.history.replaceState({}, '', window.location.pathname);
+        setTimeout(() => toast(`Plan ${plan.toUpperCase()} activado — ${dias} días`), 300);
+    } catch(e) { /* SubtleCrypto no disponible */ }
+}
+
+// ─── Init promo ───
+(async function() {
+    await checkActivacionURL();
+    promoIniciar();
+    promoActualizarBanner();
+    if (!promoActivo()) {
+        renderizarPlanes(false);
+        mostrarScreen('sp');
+    }
+})();
+
+// ─── Reiniciar ───
+function reiniciar() {
+    datos.cliente = ''; datos.chapa = ''; datos.servicio = '';
+    document.getElementById('clienteInput').value = '';
+    document.getElementById('chapa').value    = '';
+    document.getElementById('servicio').value = '';
+
+    // Resetear fecha a hoy
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Asuncion" }));
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    document.getElementById('fecha').value = `${y}-${m}-${d}`;
+
+    mostrarScreen('s0');
+}
+
+// ─── Toast ───
+function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════════
+//  EGRESOS (Plan FULL)
+// ═══════════════════════════════════════════════════════
+var egresos_ad = JSON.parse(localStorage.getItem('anotdigi_egresos') || '[]');
+
+function esPlanFull() {
+    return localStorage.getItem('anotdigi_plan') === 'FULL' && promoActivo();
+}
+
+function _saveEgresos_ad() {
+    localStorage.setItem('anotdigi_egresos', JSON.stringify(egresos_ad));
+}
+
+function fmtGs_ad(n) {
+    return Number(n).toLocaleString('es-PY');
+}
+
+function fmtFechaEg(iso) {
+    if (!iso) return '';
+    const p = iso.split('T')[0].split('-');
+    return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+function irEgresos() {
+    if (!esPlanFull()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    renderEgresos_ad();
+    mostrarScreen('se');
+}
+
+function abrirNuevoEgreso_ad() {
+    const d = document.getElementById('eg-desc'); if (d) d.value = '';
+    const m = document.getElementById('eg-monto'); if (m) m.value = '';
+    mostrarScreen('se-nuevo');
+}
+
+function guardarEgreso_ad() {
+    const desc  = ((document.getElementById('eg-desc') || {}).value || '').trim();
+    const cat   = ((document.getElementById('eg-cat')  || {}).value || 'Otros');
+    const monto = parseInt(((document.getElementById('eg-monto') || {}).value || '0'), 10);
+    if (!desc)  { toast('⚠️ Ingresá una descripción'); return; }
+    if (!monto) { toast('⚠️ Ingresá un monto');        return; }
+    const eg = { id: 'EG-' + Date.now(), descripcion: desc, categoria: cat, monto: monto, fecha: new Date().toISOString() };
+    egresos_ad.unshift(eg);
+    _saveEgresos_ad();
+    var _p = new URLSearchParams({ action:'saveEgresoAD', id:eg.id, descripcion:eg.descripcion, categoria:eg.categoria, monto:String(eg.monto), fecha:eg.fecha });
+    fetch(GF_API + '?' + _p.toString()).catch(function(){});
+    mostrarScreen('se');
+    renderEgresos_ad();
+    toast('✓ Egreso guardado');
+}
+
+function eliminarEgreso_ad(id) {
+    if (!confirm('¿Eliminar este egreso?')) return;
+    egresos_ad = egresos_ad.filter(function(e) { return e.id !== id; });
+    _saveEgresos_ad();
+    renderEgresos_ad();
+    fetch(GF_API + '?action=deleteEgresoAD&id=' + encodeURIComponent(id)).catch(function(){});
+}
+
+function renderEgresos_ad() {
+    const desde  = document.getElementById('eg-desde');
+    const hasta  = document.getElementById('eg-hasta');
+    const desdeD = desde && desde.value ? new Date(desde.value) : null;
+    const hastaD = hasta && hasta.value  ? new Date(hasta.value + 'T23:59:59') : null;
+    const lista  = egresos_ad.filter(function(e) {
+        const d = new Date(e.fecha);
+        if (desdeD && d < desdeD) return false;
+        if (hastaD && d > hastaD) return false;
+        return true;
+    }).slice().sort(function(a, b) { return a.fecha < b.fecha ? 1 : -1; });
+    var total = 0;
+    const el = document.getElementById('egresoList_ad');
+    if (el) el.innerHTML = lista.length ? lista.map(function(eg) {
+        total += Number(eg.monto) || 0;
+        return '<div class="eg-item">' +
+            '<div class="eg-info">' +
+            '<div class="eg-nombre">' + eg.descripcion + '</div>' +
+            '<div class="eg-sub"><span class="eg-cat-badge">' + eg.categoria + '</span>&nbsp;&nbsp;' + fmtFechaEg(eg.fecha) + '</div>' +
+            '</div>' +
+            '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">' +
+            '<div class="eg-monto">Gs. ' + fmtGs_ad(eg.monto) + '</div>' +
+            '<button style="background:none;border:none;color:#f85149;cursor:pointer;font-size:1rem;padding:2px;" onclick="eliminarEgreso_ad(\'' + eg.id + '\')">&#128465;</button>' +
+            '</div></div>';
+    }).join('') : '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:30px;font-size:.85rem;">Sin egresos registrados</div>';
+    const tv = document.getElementById('eg-total-val');
+    if (tv) tv.textContent = 'Gs. ' + fmtGs_ad(total);
+}
+
+// Mostrar botón Egresos en s0 solo si Plan FULL activo
+(function() {
+    const wrap = document.getElementById('btnEgresoWrap');
+    if (wrap && esPlanFull()) wrap.style.display = 'block';
+})();
+
+// Enter avanza al siguiente paso
+document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    const activa = document.querySelector('.screen.active');
+    if (!activa) return;
+    const paso = parseInt(activa.id.replace('s',''));
+    if (paso < 6) ir(paso + 1);
+});
+</script>
+</body>
+</html>
