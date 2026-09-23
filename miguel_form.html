@@ -1640,9 +1640,10 @@ function guardarEgresosBulk() {
 }
 
 
-// Enter avanza al siguiente paso
+// Enter avanza al siguiente paso (no en textarea)
 document.addEventListener('keydown', function(e) {
     if (e.key !== 'Enter') return;
+    if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;
     const activa = document.querySelector('.screen.active');
     if (!activa) return;
     const paso = parseInt(activa.id.replace('s',''));
