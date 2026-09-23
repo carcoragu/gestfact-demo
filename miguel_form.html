@@ -312,7 +312,7 @@
         #toast.show { transform: translateX(-50%) translateY(0); }
 
         /* Egresos */
-        #se,#se-nuevo { position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:0;background:#1a1a2e;flex-direction:column; }
+        #se,#se-nuevo,#se-bulk,#se-bulk-rev { position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:0;background:#1a1a2e;flex-direction:column; }
         .eg-topbar { display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;background:#1a1a2e;z-index:10; }
         .eg-title { font-size:1rem;font-weight:700;color:#fff; }
         .eg-btn-icon { background:rgba(255,255,255,0.08);border:none;border-radius:10px;width:38px;height:38px;color:#fff;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center; }
@@ -538,7 +538,10 @@
   <div class="eg-topbar">
     <button class="eg-btn-icon" onclick="mostrarScreen('s0')">&#8249;</button>
     <span class="eg-title">&#128181; Egresos</span>
-    <button class="eg-btn-icon" onclick="abrirNuevoEgreso_ad()">+</button>
+    <div style="display:flex;gap:6px;">
+      <button class="eg-btn-icon" title="Pegar lista" onclick="irEgresosBulk()">&#128203;</button>
+      <button class="eg-btn-icon" onclick="abrirNuevoEgreso_ad()">+</button>
+    </div>
   </div>
   <div class="eg-content">
     <div class="eg-filters">
@@ -550,6 +553,38 @@
       <div class="eg-total-lbl">Total egresos en el período</div>
       <div class="eg-total-val" id="eg-total-val">Gs. 0</div>
     </div>
+  </div>
+</div>
+
+<!-- EGRESOS BULK INPUT -->
+<div class="screen" id="se-bulk">
+  <div class="eg-topbar">
+    <button class="eg-btn-icon" onclick="mostrarScreen('se')">&#8249;</button>
+    <span class="eg-title">&#128203; Pegar lista</span>
+  </div>
+  <div class="eg-content">
+    <div class="eg-label" style="margin-bottom:6px;">Una línea por gasto</div>
+    <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:.75rem;color:rgba(255,255,255,0.4);line-height:1.8;font-family:monospace;">
+      03/09 Aceite 5W30 x20L 180.000<br>
+      Filtro HF-111 45.000 03/09<br>
+      04/09 Nafta 85.000
+    </div>
+    <textarea class="bulk-ta" id="egBulkInput" placeholder="03/09 Aceite 5W30 x20L 180.000&#10;Filtro HF-111 45.000&#10;04/09 Nafta 85.000"></textarea>
+    <button class="btn-next" style="margin-top:18px;" onclick="procesarEgresosBulk()">Procesar &#8594;</button>
+    <button class="btn-back" onclick="mostrarScreen('se')">&#8592; Atrás</button>
+  </div>
+</div>
+
+<!-- EGRESOS BULK REVIEW -->
+<div class="screen" id="se-bulk-rev">
+  <div class="eg-topbar">
+    <button class="eg-btn-icon" onclick="mostrarScreen('se-bulk')">&#8249;</button>
+    <span class="eg-title">Verificá los egresos</span>
+  </div>
+  <div class="eg-content" style="padding-bottom:20px;">
+    <div id="egBulkCards"></div>
+    <button class="btn-next" onclick="guardarEgresosBulk()">Guardar todos</button>
+    <button class="btn-back" style="margin-top:12px;width:100%;text-align:center;" onclick="mostrarScreen('se-bulk')">&#8592; Volver a editar</button>
   </div>
 </div>
 
@@ -1412,6 +1447,116 @@ function renderEgresos_ad() {
     }).join('') : '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:30px;font-size:.85rem;">Sin egresos registrados</div>';
     const tv = document.getElementById('eg-total-val');
     if (tv) tv.textContent = 'Gs. ' + fmtGs_ad(total);
+}
+
+// ── Egresos Bulk ──────────────────────────────────────
+var _egBulkParsed = [];
+const CATS_EG = ['Repuestos','Combustible','Herramientas','Sueldos','Servicios','Alquiler','Otros'];
+
+function hoyISO_eg() {
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Asuncion' }));
+    return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+}
+
+function detectarCategoria(desc) {
+    const d = (desc || '').toLowerCase();
+    if (/nafta|gasoil|combustible|gas/.test(d))                                   return 'Combustible';
+    if (/sueldo|salario|jornal|empleado|operario/.test(d))                         return 'Sueldos';
+    if (/alquiler|renta/.test(d))                                                  return 'Alquiler';
+    if (/agua|luz|electricidad|internet|tel[eé]fono|servicio/.test(d))             return 'Servicios';
+    if (/herramienta|llave|torque|equipo/.test(d))                                 return 'Herramientas';
+    if (/aceite|filtro|freno|pastilla|amortiguador|repuesto|correa|bujia|llanta|goma/.test(d)) return 'Repuestos';
+    return 'Otros';
+}
+
+function parsearEgresos(texto) {
+    const hoy = hoyISO_eg();
+    return texto.split('\n').filter(function(l){ return l.trim(); }).map(function(linea) {
+        var l = linea.trim();
+
+        // Extraer monto: patrón XXX.000
+        var montoM = l.match(/\b(\d{1,3})\.(\d{3})\b/);
+        var monto = montoM ? parseInt(montoM[1] + montoM[2], 10) : 0;
+        if (montoM) l = l.replace(montoM[0], ' ');
+
+        // Extraer fecha DD/MM o DD/MM/YY o DD/MM/YYYY
+        var fechaM = l.match(/\b(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?\b/);
+        var fechaVal = hoy;
+        if (fechaM) {
+            var fd = fechaM[1].padStart(2,'0');
+            var fm = fechaM[2].padStart(2,'0');
+            var fy = fechaM[3] || '26';
+            if (fy.length === 2) fy = '20' + fy;
+            fechaVal = fy + '-' + fm + '-' + fd;
+            l = l.replace(fechaM[0], ' ');
+        }
+
+        var desc = l.replace(/\s+/g, ' ').replace(/^[\s|\-]+|[\s|\-]+$/g, '').trim();
+        return { desc: desc, monto: monto, fechaVal: fechaVal, cat: detectarCategoria(desc) };
+    }).filter(function(e){ return e.desc || e.monto > 0; });
+}
+
+function irEgresosBulk() {
+    const el = document.getElementById('egBulkInput');
+    if (el) el.value = '';
+    mostrarScreen('se-bulk');
+}
+
+function procesarEgresosBulk() {
+    const texto = ((document.getElementById('egBulkInput') || {}).value || '').trim();
+    if (!texto) { toast('⚠️ Pegá al menos un egreso'); return; }
+    _egBulkParsed = parsearEgresos(texto);
+    if (!_egBulkParsed.length) { toast('⚠️ No se encontraron egresos — revisá el formato'); return; }
+    renderizarEgresosJobs();
+    mostrarScreen('se-bulk-rev');
+}
+
+function renderizarEgresosJobs() {
+    const c = document.getElementById('egBulkCards');
+    if (!c) return;
+    c.innerHTML = _egBulkParsed.map(function(eg, i) {
+        const opts = CATS_EG.map(function(cat){
+            return '<option' + (cat === eg.cat ? ' selected' : '') + '>' + cat + '</option>';
+        }).join('');
+        return '<div class="job-card" style="margin-bottom:14px;">' +
+            '<div class="job-num">#' + (i+1) + '</div>' +
+            '<div class="job-f"><div class="rev-label">Descripción</div>' +
+            '<input class="big-input rev-input" id="ebdesc-'+i+'" value="' + eg.desc.replace(/"/g,'&quot;') + '" style="font-size:.9rem;padding:10px 12px;" oninput="_egBulkParsed['+i+'].desc=this.value"/></div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">' +
+            '<div class="job-f"><div class="rev-label">Fecha</div>' +
+            '<input class="big-input rev-input" id="ebfecha-'+i+'" type="date" value="'+eg.fechaVal+'" style="font-size:.82rem;padding:8px 10px;" onchange="_egBulkParsed['+i+'].fechaVal=this.value"/></div>' +
+            '<div class="job-f"><div class="rev-label">Monto (Gs.)</div>' +
+            '<input class="big-input rev-input" id="ebmonto-'+i+'" type="number" value="'+eg.monto+'" style="font-size:.82rem;padding:8px 10px;" oninput="_egBulkParsed['+i+'].monto=parseInt(this.value)||0"/></div></div>' +
+            '<div class="job-f"><div class="rev-label">Categoría</div>' +
+            '<select class="eg-select" id="ebcat-'+i+'" onchange="_egBulkParsed['+i+'].cat=this.value">' + opts + '</select></div>' +
+            '</div>';
+    }).join('');
+}
+
+function guardarEgresosBulk() {
+    _egBulkParsed.forEach(function(eg, i) {
+        eg.desc    = ((document.getElementById('ebdesc-'+i)  || {}).value || eg.desc).trim();
+        eg.fechaVal= (document.getElementById('ebfecha-'+i)  || {}).value || eg.fechaVal;
+        eg.monto   = parseInt((document.getElementById('ebmonto-'+i) || {}).value || '0', 10);
+        eg.cat     = (document.getElementById('ebcat-'+i)   || {}).value || eg.cat;
+    });
+    const sinDesc = _egBulkParsed.filter(function(e){ return !e.desc; });
+    if (sinDesc.length) { toast('⚠️ Completá las descripciones vacías'); return; }
+
+    const count = _egBulkParsed.length;
+    _egBulkParsed.forEach(function(eg, i) {
+        const obj = { id: 'EG-' + (Date.now() + i), descripcion: eg.desc, categoria: eg.cat, monto: eg.monto, fecha: eg.fechaVal + 'T00:00:00.000Z' };
+        egresos_ad.unshift(obj);
+        const _p = new URLSearchParams({ action:'saveEgresoAD', id:obj.id, descripcion:obj.descripcion, categoria:obj.categoria, monto:String(obj.monto), fecha:obj.fecha });
+        fetch(GF_API + '?' + _p.toString()).catch(function(){});
+    });
+    _saveEgresos_ad();
+    _egBulkParsed = [];
+    const el = document.getElementById('egBulkInput');
+    if (el) el.value = '';
+    mostrarScreen('se');
+    renderEgresos_ad();
+    toast('✓ ' + count + ' egresos guardados');
 }
 
 // Mostrar botón Egresos en s0 solo si Plan FULL activo
