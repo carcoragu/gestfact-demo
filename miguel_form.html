@@ -1261,6 +1261,9 @@ function promoActualizarBanner() {
     const subEl  = document.getElementById('promoSubText');
     const lblEl  = document.getElementById('promoBannerLabel');
 
+    const egBtn = document.getElementById('btnEgresoWrap');
+    if (egBtn) egBtn.style.display = esPlanFull() ? 'block' : 'none';
+
     if (esPlan) {
         lblEl.textContent = `Plan ${plan} activo`;
         numEl.textContent = dias;
@@ -1576,11 +1579,6 @@ function guardarEgresosBulk() {
     toast('✓ ' + count + ' egresos guardados');
 }
 
-// Mostrar botón Egresos en s0 solo si Plan FULL activo
-(function() {
-    const wrap = document.getElementById('btnEgresoWrap');
-    if (wrap && esPlanFull()) wrap.style.display = 'block';
-})();
 
 // Enter avanza al siguiente paso
 document.addEventListener('keydown', function(e) {
