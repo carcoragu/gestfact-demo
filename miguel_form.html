@@ -330,27 +330,49 @@
             }
         }
 
-        /* Egresos */
-        #se,#se-nuevo,#se-bulk,#se-bulk-rev { position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:0;background:#1a1a2e;flex-direction:column; }
+        /* Egresos — base */
+        #se,#se-nuevo,#se-bulk,#se-bulk-rev { position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:0;background:#1a1a2e;flex-direction:column;align-items:center; }
+        .eg-inner { width:100%; }
         .eg-topbar { display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:0;background:#1a1a2e;z-index:10; }
         .eg-title { font-size:1rem;font-weight:700;color:#fff; }
         .eg-btn-icon { background:rgba(255,255,255,0.08);border:none;border-radius:10px;width:38px;height:38px;color:#fff;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center; }
-        .eg-content { padding:16px; }
-        .eg-filters { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px; }
-        .eg-label { font-size:.7rem;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px; }
-        .eg-input { width:100%;padding:10px 12px;background:rgba(255,255,255,0.07);border:2px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:.85rem; }
+        .eg-content { padding:20px; }
+        .eg-filters { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px; }
+        .eg-label { font-size:.7rem;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px; }
+        .eg-input { width:100%;padding:10px 12px;background:rgba(255,255,255,0.07);border:2px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:.9rem; }
         .eg-input:focus { outline:none;border-color:#4ade80; }
-        .eg-select { width:100%;padding:10px 12px;background:rgba(255,255,255,0.07);border:2px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:.85rem; }
-        .eg-select:focus { outline:none;border-color:#4ade80; }
         .eg-item { background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:10px; }
         .eg-info { flex:1; }
         .eg-nombre { font-size:.9rem;font-weight:700;color:#fff; }
         .eg-sub { font-size:.75rem;color:rgba(255,255,255,0.45);margin-top:3px; }
-        .eg-monto { font-size:.85rem;font-weight:700;color:#f85149; }
+        .eg-monto { font-size:.9rem;font-weight:800;color:#f85149; }
         .eg-cat-badge { font-size:.68rem;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.1);color:#8b949e;display:inline-block; }
-        .eg-total { background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.25);border-radius:12px;padding:18px;text-align:center;margin-top:14px; }
+        .eg-total { background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.25);border-radius:12px;padding:18px;text-align:center;margin-top:14px;margin-bottom:8px; }
         .eg-total-lbl { font-size:.7rem;color:#8b949e;text-transform:uppercase;letter-spacing:1px; }
         .eg-total-val { font-size:1.7rem;font-weight:800;color:#f85149;margin-top:4px; }
+        /* Form nuevo egreso — inputs left-aligned */
+        #se-nuevo .big-input { text-align:left; font-size:1rem; }
+
+        /* Egresos desktop — card centrada */
+        @media (min-width: 640px) {
+            #se,#se-nuevo,#se-bulk,#se-bulk-rev {
+                padding: 48px 20px 60px;
+                background:
+                    radial-gradient(ellipse at 18% 28%, rgba(30,136,229,0.10) 0%, transparent 55%),
+                    radial-gradient(ellipse at 82% 72%, rgba(74,222,128,0.07) 0%, transparent 55%),
+                    #1a1a2e;
+            }
+            .eg-inner {
+                max-width: 520px;
+                background: rgba(255,255,255,0.03);
+                border: 1px solid rgba(255,255,255,0.09);
+                border-radius: 22px;
+                box-shadow: 0 24px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04);
+                overflow: hidden;
+            }
+            .eg-topbar { position:relative; border-radius:22px 22px 0 0; }
+            .eg-content { padding: 28px; }
+        }
     </style>
 </head>
 <body>
@@ -554,80 +576,88 @@
 
 <!-- EGRESOS LIST -->
 <div class="screen" id="se">
-  <div class="eg-topbar">
-    <button class="eg-btn-icon" onclick="mostrarScreen('s0')">&#8249;</button>
-    <span class="eg-title">&#128181; Egresos</span>
-    <div style="display:flex;gap:6px;">
-      <button class="eg-btn-icon" title="Pegar lista" onclick="irEgresosBulk()">&#128203;</button>
-      <button class="eg-btn-icon" onclick="abrirNuevoEgreso_ad()">+</button>
+  <div class="eg-inner">
+    <div class="eg-topbar">
+      <button class="eg-btn-icon" onclick="mostrarScreen('s0')">&#8249;</button>
+      <span class="eg-title">💸 Egresos</span>
+      <div style="display:flex;gap:6px;">
+        <button class="eg-btn-icon" title="Pegar lista" onclick="irEgresosBulk()">&#128203;</button>
+        <button class="eg-btn-icon" onclick="abrirNuevoEgreso_ad()" style="font-size:1.4rem;font-weight:300;">+</button>
+      </div>
     </div>
-  </div>
-  <div class="eg-content">
-    <div class="eg-filters">
-      <div><div class="eg-label">Desde</div><input class="eg-input" type="date" id="eg-desde" onchange="renderEgresos_ad()"/></div>
-      <div><div class="eg-label">Hasta</div><input class="eg-input" type="date" id="eg-hasta" onchange="renderEgresos_ad()"/></div>
-    </div>
-    <div id="egresoList_ad"></div>
-    <div class="eg-total">
-      <div class="eg-total-lbl">Total egresos en el período</div>
-      <div class="eg-total-val" id="eg-total-val">Gs. 0</div>
+    <div class="eg-content">
+      <div class="eg-filters">
+        <div><div class="eg-label">Desde</div><input class="eg-input" type="date" id="eg-desde" onchange="renderEgresos_ad()"/></div>
+        <div><div class="eg-label">Hasta</div><input class="eg-input" type="date" id="eg-hasta" onchange="renderEgresos_ad()"/></div>
+      </div>
+      <div id="egresoList_ad"></div>
+      <div class="eg-total">
+        <div class="eg-total-lbl">Total egresos en el período</div>
+        <div class="eg-total-val" id="eg-total-val">Gs. 0</div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- EGRESOS BULK INPUT -->
 <div class="screen" id="se-bulk">
-  <div class="eg-topbar">
-    <button class="eg-btn-icon" onclick="mostrarScreen('se')">&#8249;</button>
-    <span class="eg-title">&#128203; Pegar lista</span>
-  </div>
-  <div class="eg-content">
-    <div class="eg-label" style="margin-bottom:6px;">Una línea por gasto</div>
-    <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:.75rem;color:rgba(255,255,255,0.4);line-height:1.8;font-family:monospace;">
-      03/09 Aceite 5W30 x20L 180.000<br>
-      Filtro HF-111 45.000 03/09<br>
-      04/09 Nafta 85.000
+  <div class="eg-inner">
+    <div class="eg-topbar">
+      <button class="eg-btn-icon" onclick="mostrarScreen('se')">&#8249;</button>
+      <span class="eg-title">📋 Pegar lista</span>
     </div>
-    <textarea class="bulk-ta" id="egBulkInput" placeholder="03/09 Aceite 5W30 x20L 180.000&#10;Filtro HF-111 45.000&#10;04/09 Nafta 85.000"></textarea>
-    <button class="btn-next" style="margin-top:18px;" onclick="procesarEgresosBulk()">Procesar &#8594;</button>
-    <button class="btn-back" onclick="mostrarScreen('se')">&#8592; Atrás</button>
+    <div class="eg-content">
+      <div class="eg-label" style="margin-bottom:6px;">Una línea por gasto</div>
+      <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:.75rem;color:rgba(255,255,255,0.4);line-height:1.8;font-family:monospace;">
+        03/09 Aceite 5W30 x20L 180.000<br>
+        Filtro HF-111 45.000 03/09<br>
+        04/09 Nafta 85.000
+      </div>
+      <textarea class="bulk-ta" id="egBulkInput" placeholder="03/09 Aceite 5W30 x20L 180.000&#10;Filtro HF-111 45.000&#10;04/09 Nafta 85.000"></textarea>
+      <button class="btn-next" style="margin-top:18px;" onclick="procesarEgresosBulk()">Procesar →</button>
+      <button class="btn-back" onclick="mostrarScreen('se')">← Atrás</button>
+    </div>
   </div>
 </div>
 
 <!-- EGRESOS BULK REVIEW -->
 <div class="screen" id="se-bulk-rev">
-  <div class="eg-topbar">
-    <button class="eg-btn-icon" onclick="mostrarScreen('se-bulk')">&#8249;</button>
-    <span class="eg-title">Verificá los egresos</span>
-  </div>
-  <div class="eg-content" style="padding-bottom:20px;">
-    <div id="egBulkCards"></div>
-    <button class="btn-next" onclick="guardarEgresosBulk()">Guardar todos</button>
-    <button class="btn-back" style="margin-top:12px;width:100%;text-align:center;" onclick="mostrarScreen('se-bulk')">&#8592; Volver a editar</button>
+  <div class="eg-inner">
+    <div class="eg-topbar">
+      <button class="eg-btn-icon" onclick="mostrarScreen('se-bulk')">&#8249;</button>
+      <span class="eg-title">✔ Verificá los egresos</span>
+    </div>
+    <div class="eg-content" style="padding-bottom:20px;">
+      <div id="egBulkCards"></div>
+      <button class="btn-next" onclick="guardarEgresosBulk()">Guardar todos</button>
+      <button class="btn-back" style="margin-top:12px;width:100%;text-align:center;" onclick="mostrarScreen('se-bulk')">← Volver a editar</button>
+    </div>
   </div>
 </div>
 
 <!-- NUEVO EGRESO -->
 <div class="screen" id="se-nuevo">
-  <div class="eg-topbar">
-    <button class="eg-btn-icon" onclick="mostrarScreen('se')">&#8249;</button>
-    <span class="eg-title">Nuevo Egreso</span>
-  </div>
-  <div class="eg-content">
-    <div style="margin-bottom:16px;">
-      <div class="eg-label">Descripción</div>
-      <input class="big-input" id="eg-desc" placeholder="Ej: Aceite sintético 5W-30 x20L"/>
+  <div class="eg-inner">
+    <div class="eg-topbar">
+      <button class="eg-btn-icon" onclick="mostrarScreen('se')">&#8249;</button>
+      <span class="eg-title">➕ Nuevo Egreso</span>
     </div>
-    <div style="margin-bottom:16px;">
-      <div class="eg-label">Categoría</div>
-      <input class="big-input" id="eg-cat" list="eg-cats-list" placeholder="Repuestos, Combustible..."/>
+    <div class="eg-content">
+      <div style="margin-bottom:18px;">
+        <div class="eg-label">Descripción</div>
+        <input class="big-input" id="eg-desc" placeholder="Ej: Aceite sintético 5W-30 x20L" autocomplete="off"/>
+      </div>
+      <div style="margin-bottom:18px;">
+        <div class="eg-label">Categoría</div>
+        <input class="big-input" id="eg-cat" list="eg-cats-list" placeholder="Repuestos, Combustible..." autocomplete="off"/>
+      </div>
+      <div style="margin-bottom:28px;">
+        <div class="eg-label">Monto (Gs.)</div>
+        <input class="big-input" type="number" id="eg-monto" placeholder="0" min="0" inputmode="numeric"/>
+      </div>
+      <button class="btn-next" onclick="guardarEgreso_ad()">Guardar Egreso</button>
+      <button class="btn-back" onclick="mostrarScreen('se')">← Cancelar</button>
     </div>
-    <div style="margin-bottom:24px;">
-      <div class="eg-label">Monto (Gs.)</div>
-      <input class="big-input" type="number" id="eg-monto" placeholder="0" min="0" inputmode="numeric"/>
-    </div>
-    <button class="btn-next" onclick="guardarEgreso_ad()">Guardar Egreso</button>
-    <button class="btn-back" onclick="mostrarScreen('se')">← Cancelar</button>
   </div>
 </div>
 
