@@ -601,15 +601,7 @@
     </div>
     <div style="margin-bottom:16px;">
       <div class="eg-label">Categoría</div>
-      <select class="eg-select" id="eg-cat">
-        <option>Repuestos</option>
-        <option>Combustible</option>
-        <option>Herramientas</option>
-        <option>Sueldos</option>
-        <option>Servicios</option>
-        <option>Alquiler</option>
-        <option>Otros</option>
-      </select>
+      <input class="big-input" id="eg-cat" list="eg-cats-list" placeholder="Repuestos, Combustible..."/>
     </div>
     <div style="margin-bottom:24px;">
       <div class="eg-label">Monto (Gs.)</div>
@@ -621,6 +613,15 @@
 </div>
 
 <datalist id="clientes-list"></datalist>
+<datalist id="eg-cats-list">
+  <option value="Repuestos">
+  <option value="Combustible">
+  <option value="Herramientas">
+  <option value="Sueldos">
+  <option value="Servicios">
+  <option value="Alquiler">
+  <option value="Otros">
+</datalist>
 <div id="toast"></div>
 
 <script>
@@ -1515,9 +1516,6 @@ function renderizarEgresosJobs() {
     const c = document.getElementById('egBulkCards');
     if (!c) return;
     c.innerHTML = _egBulkParsed.map(function(eg, i) {
-        const opts = CATS_EG.map(function(cat){
-            return '<option' + (cat === eg.cat ? ' selected' : '') + '>' + cat + '</option>';
-        }).join('');
         return '<div class="job-card" style="margin-bottom:14px;">' +
             '<div class="job-num">#' + (i+1) + '</div>' +
             '<div class="job-f"><div class="rev-label">Descripción</div>' +
@@ -1528,7 +1526,7 @@ function renderizarEgresosJobs() {
             '<div class="job-f"><div class="rev-label">Monto (Gs.)</div>' +
             '<input class="big-input rev-input" id="ebmonto-'+i+'" type="number" value="'+eg.monto+'" style="font-size:.82rem;padding:8px 10px;" oninput="_egBulkParsed['+i+'].monto=parseInt(this.value)||0"/></div></div>' +
             '<div class="job-f"><div class="rev-label">Categoría</div>' +
-            '<select class="eg-select" id="ebcat-'+i+'" onchange="_egBulkParsed['+i+'].cat=this.value">' + opts + '</select></div>' +
+            '<input class="big-input rev-input" id="ebcat-'+i+'" list="eg-cats-list" value="'+eg.cat+'" style="font-size:.85rem;padding:8px 12px;" oninput="_egBulkParsed['+i+'].cat=this.value"/></div>' +
             '</div>';
     }).join('');
 }
