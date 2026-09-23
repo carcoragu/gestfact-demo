@@ -937,9 +937,30 @@ function actualizarChapaMismatch() {
     }
 }
 
-// ─── Detección de monto en texto libre ───
+// ─── Detección y extracción de monto en texto libre ───
 function tieneMonto(texto) {
     return /\b\d{1,3}\.\d{3}\b|\b\d{5,}\b/.test(texto);
+}
+function extraerMonto(texto) {
+    var matches = (texto || '').match(/\b\d{1,3}(?:\.\d{3})+\b/g) || [];
+    if (!matches.length) return 0;
+    return Math.max.apply(null, matches.map(function(m){ return parseInt(m.replace(/\./g,''),10); }));
+}
+
+// ─── Push orden a GestFact (fire-and-forget, sin auth) ───
+function pushOrdenAD(cliente, patente, fecha, servicio) {
+    var id     = 'AD-' + Date.now();
+    var monto  = extraerMonto(servicio);
+    var params = new URLSearchParams({
+        action:   'saveOrdenAD',
+        id:       id,
+        cliente:  cliente,
+        patente:  patente,
+        fecha:    fecha,
+        servicio: servicio,
+        monto:    String(monto)
+    });
+    fetch(GF_API + '?' + params.toString()).catch(function(){});
 }
 
 // ─── Envío — copia fiel del texto de Miguel ───
@@ -982,6 +1003,9 @@ function enviarIsabSoft() {
     const [y, m, d] = fecha.split('-');
     const texto = `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
+
+    pushOrdenAD(clienteFinal, chapa, fecha, servicio);
+    toast('✓ Guardado en GestFact');
     window.open(url, '_blank');
 }
 
@@ -1213,6 +1237,12 @@ function enviarBulk() {
         return;
     }
     montoAvisadoBulk = false;
+
+    // Push cada trabajo a GestFact
+    parsedJobs.forEach(function(j) {
+        pushOrdenAD(j.cliente, j.chapa, j.fechaVal, j.servicio);
+    });
+    toast('✓ ' + parsedJobs.length + ' trabajo' + (parsedJobs.length !== 1 ? 's' : '') + ' guardados en GestFact');
 
     // Generar mensaje: copia fiel del texto original + encabezado cliente
     const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
