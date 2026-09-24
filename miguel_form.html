@@ -454,11 +454,11 @@
 <div class="screen" id="s4">
     <div class="progress"><div class="progress-bar" style="width:60%"></div></div>
     <div class="question">¿Qué trabajo se hizo?</div>
-    <div class="hint">Escribí tal cual lo tenés anotado — varias líneas si hace falta</div>
+    <div class="hint">1ª línea: chapa vehículo fecha — luego los servicios y montos</div>
     <div class="mic-wrap" style="align-items:flex-start;">
         <textarea class="big-input bulk-ta" id="servicio"
-                  placeholder="Amortiguadores trasero 2&#10;Filtro aceite 1&#10;Filtro aire 45.000&#10;Mano de obra 290.000"
-                  style="min-height:130px;text-align:left;font-size:1rem;padding:14px 56px 14px 16px;line-height:1.6;resize:vertical;"></textarea>
+                  placeholder="AASL204 toyota vitz 31/07/26&#10;Amortiguadores trasero 2&#10;Mano de obra 290.000"
+                  style="min-height:220px;text-align:left;font-size:1rem;padding:14px 56px 14px 16px;line-height:1.6;resize:vertical;"></textarea>
         <button class="btn-mic" id="mic4" onclick="activarMic('servicio','mic4')" title="Hablar"
                 style="top:12px;transform:none;">🎤</button>
     </div>
@@ -499,6 +499,14 @@
             <div class="rev-label">Chapa</div>
             <input class="big-input rev-input" id="rev-chapa" type="text" maxlength="10"
                    autocorrect="off" autocapitalize="characters" spellcheck="false">
+        </div>
+
+        <!-- Vehículo -->
+        <div style="width:100%">
+            <div class="rev-label">Vehículo</div>
+            <input class="big-input rev-input" id="rev-vehiculo" type="text"
+                   placeholder="toyota vitz, ford ranger..." autocomplete="off" spellcheck="false"
+                   style="font-size:0.95rem;">
         </div>
 
         <!-- Fecha -->
@@ -685,7 +693,7 @@ const WA_ISASOFT = "595981153477";
 const GF_API     = "https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec";
 
 // ─── Estado ───
-const datos = { cliente: '', chapa: '', fecha: '', servicio: '' };
+const datos = { cliente: '', chapa: '', fecha: '', servicio: '', vehiculo: '' };
 
 // ─── Fecha de hoy (Paraguay) ───
 (function() {
@@ -855,6 +863,28 @@ function activarMic(inputId, btnId, modo, onResult) {
     rec.start();
 }
 
+// ─── Parser primera línea: CHAPA vehiculo fecha ───
+function parsearPrimerLineaServicio(texto) {
+    var lineas = texto.split(/\n/);
+    var primera = lineas[0].trim();
+    var mFecha = primera.match(/\b(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\s*$/);
+    if (!mFecha) return null;
+    var fechaStr = mFecha[1];
+    var sinFecha = primera.slice(0, primera.lastIndexOf(fechaStr)).trim();
+    var partes = sinFecha.split(/\s+/);
+    if (!partes.length || !partes[0]) return null;
+    var chapa = partes[0].toUpperCase().replace(/\s/g,'');
+    if (NO_CHAPA_RE.test(chapa)) return null;
+    if (!/^[A-Z]{2,5}\d{2,4}$/.test(chapa) && !/^\d{2,4}[A-Z]{2,5}$/.test(chapa)) return null;
+    var vehiculo = partes.slice(1).join(' ');
+    var pf = fechaStr.split('/');
+    var dd = pf[0].padStart(2,'0'), mm = pf[1].padStart(2,'0');
+    var yy = pf[2] || String(new Date().getFullYear());
+    if (yy.length === 2) yy = '20' + yy;
+    return { chapa: chapa, vehiculo: vehiculo, fecha: yy+'-'+mm+'-'+dd,
+             servicio: lineas.slice(1).join('\n').trim() };
+}
+
 // ─── Navegación entre pantallas ───
 function ir(n) {
     if (n > 1) {
@@ -866,7 +896,24 @@ function ir(n) {
     }
     if (n > 2 && !validarInput('chapa',    datos, 'chapa'))    return;
     if (n > 3 && !validarInput('fecha',    datos, 'fecha'))    return;
-    if (n > 4 && !validarInput('servicio', datos, 'servicio')) return;
+    if (n > 4) {
+        const elS = document.getElementById('servicio');
+        const valS = elS.value.trim();
+        if (!valS) {
+            elS.classList.add('error');
+            setTimeout(() => elS.classList.remove('error'), 800);
+            toast('⚠️ Este campo es obligatorio'); return;
+        }
+        const parsedS = parsearPrimerLineaServicio(valS);
+        if (parsedS) {
+            if (parsedS.chapa)   datos.chapa    = parsedS.chapa;
+            datos.vehiculo = parsedS.vehiculo || '';
+            if (parsedS.fecha)   datos.fecha    = parsedS.fecha;
+            datos.servicio = parsedS.servicio || valS;
+        } else {
+            datos.servicio = valS;
+        }
+    }
     if (n > 5 && !validarNumero())                             return;
 
     if (n === 6) armarResumen();
@@ -904,6 +951,7 @@ function validarNumero() {
 function armarResumen() {
     document.getElementById('rev-cliente').value  = datos.cliente;
     document.getElementById('rev-chapa').value    = datos.chapa.toUpperCase();
+    document.getElementById('rev-vehiculo').value = datos.vehiculo || '';
     document.getElementById('rev-fecha').value    = datos.fecha;
     document.getElementById('rev-servicio').value = datos.servicio;
     actualizarChapaMismatch();
@@ -976,7 +1024,8 @@ function _sincItem(item) {
     var params = new URLSearchParams({
         action: 'saveOrdenAD', id: item.id,
         cliente: item.cliente, patente: item.patente,
-        fecha: item.fecha, servicio: item.servicio, monto: item.monto
+        fecha: item.fecha, servicio: item.servicio,
+        vehiculo: item.vehiculo || '', monto: item.monto
     });
     return fetch(GF_API + '?' + params.toString())
         .then(function(r) { return r.json(); })
@@ -995,11 +1044,12 @@ window.addEventListener('online', sincronizarColaOrdenes);
 setTimeout(sincronizarColaOrdenes, 1500);
 
 // ─── Push orden a GestFact (con cola offline) ───
-function pushOrdenAD(cliente, patente, fecha, servicio) {
+function pushOrdenAD(cliente, patente, fecha, servicio, vehiculo) {
     var item = {
         id: 'AD-' + Date.now(),
         cliente: cliente, patente: patente,
         fecha: fecha, servicio: servicio,
+        vehiculo: vehiculo || '',
         monto: String(extraerMonto(servicio))
     };
     _encolarOrden(item);
@@ -1014,7 +1064,8 @@ function enviarIsabSoft() {
     const fecha    = document.getElementById('rev-fecha').value;
     const servicio = document.getElementById('rev-servicio').value.trim();
 
-    const clienteFinal = document.getElementById('rev-cliente').value.trim().toUpperCase();
+    const clienteFinal  = document.getElementById('rev-cliente').value.trim().toUpperCase();
+    const vehiculoFinal = document.getElementById('rev-vehiculo').value.trim();
     if (!clienteFinal) {
         document.getElementById('rev-cliente').classList.add('error');
         setTimeout(() => document.getElementById('rev-cliente').classList.remove('error'), 800);
@@ -1062,7 +1113,7 @@ function enviarIsabSoft() {
     const texto = `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
 
-    pushOrdenAD(clienteFinal, chapa, fecha, servicio).then(function(ok) {
+    pushOrdenAD(clienteFinal, chapa, fecha, servicio, vehiculoFinal).then(function(ok) {
         toast(ok ? '✓ Guardado en GestFact' : '⏳ Sin conexión — se enviará cuando vuelva internet');
     });
     window.open(url, '_blank');
@@ -1485,7 +1536,7 @@ async function checkActivacionURL() {
 
 // ─── Reiniciar ───
 function reiniciar() {
-    datos.cliente = ''; datos.chapa = ''; datos.servicio = '';
+    datos.cliente = ''; datos.chapa = ''; datos.servicio = ''; datos.vehiculo = '';
     document.getElementById('clienteInput').value = '';
     document.getElementById('chapa').value    = '';
     document.getElementById('servicio').value = '';
