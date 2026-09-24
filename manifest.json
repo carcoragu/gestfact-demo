@@ -1,6 +1,7 @@
 ﻿{
   "name": "IsabSoft GestFact",
   "short_name": "GestFact",
+  "id": "/gestfact-demo/",
   "description": "Sistema de Taller y Facturacion SET DNIT — IsabSoft",
   "start_url": "/gestfact-demo/",
   "scope": "/gestfact-demo/",

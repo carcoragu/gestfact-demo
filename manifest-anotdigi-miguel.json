@@ -1,9 +1,10 @@
 {
   "name": "AnotDigi — Miguel Acuña",
   "short_name": "AnotDigi",
+  "id": "/gestfact-demo/miguel_form.html",
   "description": "Registro de trabajos del taller",
   "start_url": "/gestfact-demo/miguel_form.html",
-  "scope": "/gestfact-demo/",
+  "scope": "/gestfact-demo/miguel_form.html",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
