@@ -1029,14 +1029,14 @@ function _sincItem(item) {
     });
     return fetch(GF_API + '?' + params.toString())
         .then(function(r) { return r.json(); })
-        .then(function(d) { if (d.ok) _desencolarOrden(item.id); return d.ok === true; })
-        .catch(function() { return false; });
+        .then(function(d) { if (d.ok) _desencolarOrden(item.id); return d; })
+        .catch(function() { return { ok: false }; });
 }
 function sincronizarColaOrdenes() {
     var cola = _getColaOrdenes();
     if (!cola.length) return;
     Promise.all(cola.map(_sincItem)).then(function(res) {
-        var n = res.filter(Boolean).length;
+        var n = res.filter(function(d){ return d && d.ok && !d.duplicado; }).length;
         if (n > 0) toast('✓ ' + n + ' trabajo' + (n !== 1 ? 's' : '') + ' sincronizado' + (n !== 1 ? 's' : '') + ' con GestFact');
     });
 }
@@ -1126,8 +1126,10 @@ function enviarIsabSoft() {
         : `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
 
-    pushOrdenAD(clienteFinal, chapa, fecha, servicio, vehiculoFinal).then(function(ok) {
-        toast(ok ? '✓ Guardado en GestFact' : '⏳ Sin conexión — se enviará cuando vuelva internet');
+    pushOrdenAD(clienteFinal, chapa, fecha, servicio, vehiculoFinal).then(function(d) {
+        if (!d || !d.ok)      toast('⏳ Sin conexión — se enviará cuando vuelva internet');
+        else if (d.duplicado) toast('⚠️ Ya registrado hoy — no se guardó de nuevo');
+        else                  toast('✓ Guardado en GestFact');
     });
     window.open(url, '_blank');
 }
@@ -1369,10 +1371,13 @@ function enviarBulk() {
     Promise.all(parsedJobs.map(function(j) {
         return pushOrdenAD(j.cliente, j.chapa, j.fechaVal, j.servicio);
     })).then(function(res) {
-        var ok = res.every(Boolean);
-        toast(ok
-            ? '✓ ' + _n + ' trabajo' + (_n !== 1 ? 's' : '') + ' guardados en GestFact'
-            : '⏳ Sin conexión — se enviarán cuando vuelva internet');
+        var sinConexion = res.some(function(d){ return !d || !d.ok; });
+        if (sinConexion) { toast('⏳ Sin conexión — se enviarán cuando vuelva internet'); return; }
+        var guardados  = res.filter(function(d){ return !d.duplicado; }).length;
+        var duplicados = res.filter(function(d){ return d.duplicado; }).length;
+        var msg = guardados  > 0 ? '✓ ' + guardados  + ' trabajo' + (guardados  !== 1 ? 's' : '') + ' guardados en GestFact' : '';
+        if (duplicados > 0) msg += (msg ? ' — ' : '') + '⚠️ ' + duplicados + ' ya registrado' + (duplicados !== 1 ? 's' : '') + ' hoy';
+        toast(msg);
     });
 
     // Generar mensaje: copia fiel del texto original + encabezado cliente
