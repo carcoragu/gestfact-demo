@@ -401,6 +401,11 @@
             Pegar lista
             <span class="modo-sub">Varios trabajos de una vez</span>
         </button>
+        <button class="modo-btn" id="btnEgresos" onclick="irEgresos()" style="display:none">
+            <span class="modo-icon">💸</span>
+            Egresos
+            <span class="modo-sub">Registrar gastos del taller</span>
+        </button>
     </div>
     <button onclick="mostrarScreen('sinfo')" style="margin-top:18px;background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.8rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;">
         ¿Cómo funciona AnotDigi?
@@ -715,6 +720,33 @@
         <div id="spVolver" style="display:none;margin-top:12px;">
             <button class="btn-back" style="width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
         </div>
+    </div>
+</div>
+
+<!-- EGRESOS: Cargar bulk -->
+<div class="screen" id="se1">
+    <div class="question" style="font-size:1.2rem;margin-bottom:6px;">Cargar egresos</div>
+    <div class="hint" style="margin-bottom:18px;">Una línea por gasto: <code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;font-size:0.8rem;">DD/MM descripción monto</code></div>
+    <textarea class="bulk-ta" id="egresosInput" placeholder="03/09 Aceite motor 5W30 180.000&#10;03/09 Filtro aceite HF111 45.000&#10;04/09 Repuesto freno trasero 320.000"></textarea>
+    <button class="btn-next" style="margin-top:18px;" onclick="guardarEgresosBulk()">Guardar →</button>
+    <button class="btn-back" onclick="mostrarScreen('s0')">← Atrás</button>
+</div>
+
+<!-- EGRESOS: Lista -->
+<div class="screen" id="se2">
+    <div class="jobs-wrap">
+        <div style="text-align:center;margin-bottom:20px;">
+            <div class="question" style="font-size:1.1rem;margin-bottom:4px;">💸 Egresos</div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+            <button onclick="mostrarScreen('se1')" style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.35);color:#4ade80;border-radius:8px;padding:6px 14px;font-size:0.8rem;font-weight:700;cursor:pointer;">+ Agregar</button>
+        </div>
+        <div id="egresosLista"></div>
+        <div style="margin-top:16px;padding:14px 16px;background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.25);border-radius:12px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:0.85rem;color:rgba(255,255,255,0.6);">Total egresos</span>
+            <span id="egresosTotal" style="font-size:1.1rem;font-weight:800;color:#f85149;">Gs. 0</span>
+        </div>
+        <button class="btn-back" style="margin-top:18px;width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
     </div>
 </div>
 
@@ -2431,23 +2463,28 @@ function promoActualizarBanner() {
     const subEl  = document.getElementById('promoSubText');
     const lblEl  = document.getElementById('promoBannerLabel');
 
+    if (numEl) numEl.style.display = '';
+    if (subEl) subEl.style.display = '';
+
     const btnRenovar = document.getElementById('btnRenovar');
     let mostrarRenovar = false;
 
     if (esPlan) {
         const PLAN_LABELS = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
         lblEl.textContent = `Plan ${PLAN_LABELS[plan] || plan} activo`;
-        numEl.textContent = dias;
         if (dias <= 3) {
+            numEl.textContent = dias;
             banner.classList.add('promo-urgent');
             subEl.textContent = '⚠️ Vence pronto — contactá a IsabSoft';
             mostrarRenovar = true;
         } else if (dias <= 7) {
+            numEl.textContent = dias;
             banner.classList.add('promo-warning');
             subEl.textContent = 'días restantes — renovar pronto';
             mostrarRenovar = true;
         } else {
-            subEl.textContent = 'días restantes';
+            numEl.style.display = 'none';
+            subEl.style.display = 'none';
         }
     } else if (activo) {
         lblEl.textContent = 'Período de prueba';
@@ -2655,6 +2692,7 @@ async function checkActivacionURL() {
 
     promoIniciar();
     promoActualizarBanner();
+    actualizarBtnEgresos();
     if (!promoActivo()) {
         renderizarPlanes(false);
         mostrarScreen('sp');
@@ -2690,6 +2728,95 @@ function toast(msg) {
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ─── Egresos (Plan Full) ───
+const EGKEY = 'egresos_anotdigi';
+
+function actualizarBtnEgresos() {
+    const p = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    const btn = document.getElementById('btnEgresos');
+    if (btn) btn.style.display = p === 'FULL' ? '' : 'none';
+}
+
+function irEgresos() {
+    if (!promoActivo()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    const p = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    if (p !== 'FULL') { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    renderEgresosAnotdigi();
+    mostrarScreen('se2');
+}
+
+function parsearEgresos(texto) {
+    const lineas = texto.trim().split('\n').map(l => l.trim()).filter(l => l);
+    const ok = [], err = [];
+    const anoActual = new Date().getFullYear();
+    lineas.forEach(linea => {
+        const m = linea.match(/^(\d{1,2}\/\d{1,2})\s+(.+?)\s+(\d[\d.]+)$/);
+        if (m) {
+            const [dd, mm] = m[1].split('/');
+            const fechaISO = `${anoActual}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}`;
+            ok.push({
+                id: 'EG-' + Date.now() + '-' + Math.random().toString(36).slice(2,5),
+                fecha: fechaISO,
+                descripcion: m[2].trim(),
+                monto: parseInt(m[3].replace(/\./g, ''), 10)
+            });
+        } else {
+            err.push(linea);
+        }
+    });
+    return { ok, err };
+}
+
+function guardarEgresosBulk() {
+    const ta = document.getElementById('egresosInput');
+    const texto = (ta ? ta.value : '').trim();
+    if (!texto) { toast('Escribí al menos un egreso'); return; }
+    const { ok, err } = parsearEgresos(texto);
+    if (!ok.length) { toast('⚠️ No pude leer ningún egreso. Formato: DD/MM descripción monto'); return; }
+    const existentes = JSON.parse(localStorage.getItem(EGKEY) || '[]');
+    localStorage.setItem(EGKEY, JSON.stringify([...ok, ...existentes]));
+    if (ta) ta.value = '';
+    const ignoradas = err.length ? ` (${err.length} línea${err.length !== 1 ? 's' : ''} ignorada${err.length !== 1 ? 's' : ''})` : '';
+    toast(`✅ ${ok.length} egreso${ok.length !== 1 ? 's' : ''} guardado${ok.length !== 1 ? 's' : ''}${ignoradas}`);
+    renderEgresosAnotdigi();
+    mostrarScreen('se2');
+}
+
+function eliminarEgresoAnotdigi(id) {
+    if (!confirm('¿Eliminar este egreso?')) return;
+    const lista = JSON.parse(localStorage.getItem(EGKEY) || '[]').filter(e => e.id !== id);
+    localStorage.setItem(EGKEY, JSON.stringify(lista));
+    renderEgresosAnotdigi();
+}
+
+function renderEgresosAnotdigi() {
+    const lista = JSON.parse(localStorage.getItem(EGKEY) || '[]');
+    const cont = document.getElementById('egresosLista');
+    const totEl = document.getElementById('egresosTotal');
+    if (!cont) return;
+    if (!lista.length) {
+        cont.innerHTML = '<div style="color:rgba(255,255,255,0.35);font-size:0.85rem;text-align:center;padding:24px 0;">No hay egresos registrados</div>';
+        if (totEl) totEl.textContent = 'Gs. 0';
+        return;
+    }
+    const total = lista.reduce((s, e) => s + (e.monto || 0), 0);
+    cont.innerHTML = lista.map(e => {
+        const [y, m, d] = (e.fecha || '').split('-');
+        const fDis = (d && m) ? `${d}/${m}` : (e.fecha || '');
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;margin-bottom:8px;">
+            <div>
+                <div style="font-size:0.88rem;color:rgba(255,255,255,0.85);">${e.descripcion}</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:2px;">${fDis}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:0.9rem;font-weight:700;color:#f85149;">Gs. ${Number(e.monto).toLocaleString('es-PY')}</span>
+                <button onclick="eliminarEgresoAnotdigi('${e.id}')" style="background:none;border:none;color:rgba(248,81,73,0.5);font-size:1rem;cursor:pointer;padding:2px 4px;">✕</button>
+            </div>
+        </div>`;
+    }).join('');
+    if (totEl) totEl.textContent = 'Gs. ' + total.toLocaleString('es-PY');
 }
 
 // Enter avanza al siguiente paso

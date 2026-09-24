@@ -1086,7 +1086,7 @@ const NO_CHAPA_RE = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDAN
 
 function extraerChapaDeTexto(texto) {
     for (const linea of texto.split('\n')) {
-        const m = linea.trim().match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
+        const m = linea.trim().match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4}(?![0-9.]))/i);
         if (m && !NO_CHAPA_RE.test(m[1].trim())) {
             return (m[1] + m[2]).toUpperCase().replace(/\s/g, '');
         }
@@ -1376,7 +1376,9 @@ function mostrarScreen(id) {
 }
 
 // ─── Parser ───
+var _lineasDudosas = 0;
 function parsearBloques(texto) {
+    _lineasDudosas = 0;
     const jobs = [];
     // Normalizar unicode de WhatsApp y separadores de línea
     const textoLimpio = texto
@@ -1392,7 +1394,7 @@ function parsearBloques(texto) {
         if (!b.length) return;
 
         const primera = b[0];
-        const chapaM  = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4}(?!\.))/i);
+        const chapaM  = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4}(?![0-9.]))/i);
         if (!chapaM || NO_CHAPA_RE.test(chapaM[1].trim())) return;
 
         const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
@@ -1428,10 +1430,12 @@ function parsearBloques(texto) {
 
     lineas.forEach(linea => {
         const t = linea.trim();
-        if (/^[A-Z]{2,5}\s?[A-Z]?\s?\d{2,4}(?!\.)/i.test(t) && bloque.length) {
+        const _cm = t.match(/^([A-Z]{2,5})\s?[A-Z]?\s?\d{2,4}(?![0-9.])/i);
+        if (_cm && !NO_CHAPA_RE.test(_cm[1]) && bloque.length) {
             procesarBloque(bloque);
             bloque = [t];
         } else {
+            if (_cm && NO_CHAPA_RE.test(_cm[1])) _lineasDudosas++;
             bloque.push(t);
         }
     });
@@ -1457,6 +1461,7 @@ function procesarBulk() {
 
     parsedJobs = parsearBloques(texto);
     if (!parsedJobs.length) { toast('⚠️ No se encontraron trabajos — verificá el formato'); return; }
+    if (_lineasDudosas > 0) setTimeout(() => toast('⚠️ ' + _lineasDudosas + ' línea' + (_lineasDudosas > 1 ? 's' : '') + ' dudosa' + (_lineasDudosas > 1 ? 's' : '') + ' ignorada' + (_lineasDudosas > 1 ? 's' : '') + ' — verificá la lista'), 600);
 
     // Pre-llenar cliente y monto en todos los trabajos
     parsedJobs.forEach(j => { j.cliente = cliente; j.monto = extraerMonto(j.servicio); });
