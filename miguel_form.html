@@ -1120,7 +1120,7 @@ function extraerMonto(texto) {
     var todos = conPuntos.map(function(m){ return parseInt(m.replace(/\./g,''),10); })
                 .concat(sinPuntos.map(function(m){ return parseInt(m,10); }));
     if (!todos.length) return 0;
-    return Math.max.apply(null, todos);
+    return todos.reduce(function(a,b){ return a+b; }, 0);
 }
 
 // ─── Cola offline — Órdenes pendientes de sync ───
