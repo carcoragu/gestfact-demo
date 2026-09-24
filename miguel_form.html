@@ -1425,7 +1425,7 @@ function renderizarJobs() {
                 <div class="rev-label" style="color:rgba(255,255,255,0.4);">Cliente <span style="color:#f87171">*</span></div>
                 <div class="mic-wrap">
                     <input class="big-input rev-input" id="jcli-${i}" list="clientes-list"
-                           placeholder="Elegí o escribí el cliente" autocomplete="off" spellcheck="false"
+                           placeholder="Elegí o escribí el cliente" spellcheck="false"
                            value="${j.cliente}"
                            oninput="this.value=this.value.toUpperCase(); parsedJobs[${i}].cliente=this.value.trim(); this.classList.remove('error'); document.getElementById('jcard-${i}').classList.remove('sin-cliente');">
                     <button class="btn-mic" id="jmic-${i}" onclick="activarMicBulk(${i})">🎤</button>
