@@ -947,20 +947,53 @@ function extraerMonto(texto) {
     return Math.max.apply(null, matches.map(function(m){ return parseInt(m.replace(/\./g,''),10); }));
 }
 
-// ─── Push orden a GestFact (fire-and-forget, sin auth) ───
-function pushOrdenAD(cliente, patente, fecha, servicio) {
-    var id     = 'AD-' + Date.now();
-    var monto  = extraerMonto(servicio);
+// ─── Cola offline — Órdenes pendientes de sync ───
+function _getColaOrdenes() {
+    try { return JSON.parse(localStorage.getItem('anotdigi_cola') || '[]'); } catch(e) { return []; }
+}
+function _saveColaOrdenes(cola) {
+    try { localStorage.setItem('anotdigi_cola', JSON.stringify(cola)); } catch(e) {}
+}
+function _encolarOrden(item) {
+    var cola = _getColaOrdenes().filter(function(x) { return x.id !== item.id; });
+    cola.push(item);
+    _saveColaOrdenes(cola);
+}
+function _desencolarOrden(id) {
+    _saveColaOrdenes(_getColaOrdenes().filter(function(x) { return x.id !== id; }));
+}
+function _sincItem(item) {
     var params = new URLSearchParams({
-        action:   'saveOrdenAD',
-        id:       id,
-        cliente:  cliente,
-        patente:  patente,
-        fecha:    fecha,
-        servicio: servicio,
-        monto:    String(monto)
+        action: 'saveOrdenAD', id: item.id,
+        cliente: item.cliente, patente: item.patente,
+        fecha: item.fecha, servicio: item.servicio, monto: item.monto
     });
-    fetch(GF_API + '?' + params.toString()).catch(function(){});
+    return fetch(GF_API + '?' + params.toString())
+        .then(function(r) { return r.json(); })
+        .then(function(d) { if (d.ok) _desencolarOrden(item.id); return d.ok === true; })
+        .catch(function() { return false; });
+}
+function sincronizarColaOrdenes() {
+    var cola = _getColaOrdenes();
+    if (!cola.length) return;
+    Promise.all(cola.map(_sincItem)).then(function(res) {
+        var n = res.filter(Boolean).length;
+        if (n > 0) toast('✓ ' + n + ' trabajo' + (n !== 1 ? 's' : '') + ' sincronizado' + (n !== 1 ? 's' : '') + ' con GestFact');
+    });
+}
+window.addEventListener('online', sincronizarColaOrdenes);
+setTimeout(sincronizarColaOrdenes, 1500);
+
+// ─── Push orden a GestFact (con cola offline) ───
+function pushOrdenAD(cliente, patente, fecha, servicio) {
+    var item = {
+        id: 'AD-' + Date.now(),
+        cliente: cliente, patente: patente,
+        fecha: fecha, servicio: servicio,
+        monto: String(extraerMonto(servicio))
+    };
+    _encolarOrden(item);
+    return _sincItem(item);
 }
 
 // ─── Envío — copia fiel del texto de Miguel ───
@@ -1004,8 +1037,9 @@ function enviarIsabSoft() {
     const texto = `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
 
-    pushOrdenAD(clienteFinal, chapa, fecha, servicio);
-    toast('✓ Guardado en GestFact');
+    pushOrdenAD(clienteFinal, chapa, fecha, servicio).then(function(ok) {
+        toast(ok ? '✓ Guardado en GestFact' : '⏳ Sin conexión — se enviará cuando vuelva internet');
+    });
     window.open(url, '_blank');
 }
 
@@ -1239,10 +1273,15 @@ function enviarBulk() {
     montoAvisadoBulk = false;
 
     // Push cada trabajo a GestFact
-    parsedJobs.forEach(function(j) {
-        pushOrdenAD(j.cliente, j.chapa, j.fechaVal, j.servicio);
+    var _n = parsedJobs.length;
+    Promise.all(parsedJobs.map(function(j) {
+        return pushOrdenAD(j.cliente, j.chapa, j.fechaVal, j.servicio);
+    })).then(function(res) {
+        var ok = res.every(Boolean);
+        toast(ok
+            ? '✓ ' + _n + ' trabajo' + (_n !== 1 ? 's' : '') + ' guardados en GestFact'
+            : '⏳ Sin conexión — se enviarán cuando vuelva internet');
     });
-    toast('✓ ' + parsedJobs.length + ' trabajo' + (parsedJobs.length !== 1 ? 's' : '') + ' guardados en GestFact');
 
     // Generar mensaje: copia fiel del texto original + encabezado cliente
     const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
