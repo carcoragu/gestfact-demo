@@ -446,6 +446,41 @@
             <span class="modo-sub">Ingresos, egresos y ganancia</span>
         </button>
     </div>
+    <div style="width:100%;margin-top:18px;text-align:center;">
+        <button onclick="mostrarScreen('sh')" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.78rem;cursor:pointer;text-decoration:underline;padding:4px;">¿Cómo funciona AnotDigi?</button>
+    </div>
+</div>
+
+<!-- AYUDA -->
+<div class="screen" id="sh">
+    <div class="question" style="font-size:1.15rem;margin-bottom:6px;">¿Cómo funciona AnotDigi?</div>
+    <div style="width:100%;display:flex;flex-direction:column;gap:16px;margin-top:16px;text-align:left;">
+        <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:14px 16px;">
+            <div style="font-weight:700;margin-bottom:6px;">✏️ Uno por uno</div>
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);line-height:1.6;">Para 1 trabajo. El sistema te pide cliente, chapa, fecha y servicio paso a paso. Podés usar el micrófono en cada campo.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:14px 16px;">
+            <div style="font-weight:700;margin-bottom:6px;">📋 Pegar lista</div>
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);line-height:1.6;">Para varios trabajos de una vez. Escribís o pegás así:</div>
+            <pre style="margin:8px 0 0;background:rgba(0,0,0,0.3);border-radius:8px;padding:10px;font-size:0.75rem;color:#4ade80;line-height:1.7;overflow-x:auto;">AAZX033 toyota ractis 05/10
+Frenos 180.000
+Amortiguador 1
+Mano de obra 300.000
+
+AASL204 toyota vitz 06/10
+Torreta 2
+Mano de obra 170.000</pre>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:14px 16px;">
+            <div style="font-weight:700;margin-bottom:6px;">💡 El monto se calcula solo</div>
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);line-height:1.6;"><span style="font-family:monospace;background:rgba(255,255,255,0.08);padding:1px 6px;border-radius:4px;">filtro 4 450000</span> = 4 × Gs. 450.000 = <strong style="color:#fff;">Gs. 1.800.000</strong><br>El total del trabajo es la suma de todos los servicios con precio.</div>
+        </div>
+        <div id="sh-full-tip" style="display:none;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:12px;padding:14px 16px;">
+            <div style="font-weight:700;margin-bottom:6px;color:#4ade80;">✅ Plan Full activo</div>
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);line-height:1.6;">Tus trabajos se graban directo en GestFact — sin enviar mensaje a IsabSoft. Si no hay internet, se guardan y se sincronizan solos cuando vuelve la señal.</div>
+        </div>
+    </div>
+    <button class="btn-back" onclick="mostrarScreen('s0')" style="margin-top:24px;">← Volver</button>
 </div>
 
 <!-- PASO 1: Cliente -->
@@ -554,10 +589,18 @@
             <div class="rev-label">Trabajo</div>
             <div class="mic-wrap" style="align-items:flex-start;">
                 <textarea class="big-input rev-input" id="rev-servicio"
-                          style="min-height:100px;text-align:left;font-size:0.95rem;padding:12px 56px 12px 14px;line-height:1.6;resize:vertical;"></textarea>
+                          style="min-height:100px;text-align:left;font-size:0.95rem;padding:12px 56px 12px 14px;line-height:1.6;resize:vertical;"
+                          oninput="actualizarMontoWizard()"></textarea>
                 <button class="btn-mic" id="mic6" onclick="activarMic('rev-servicio','mic6')" title="Hablar"
                         style="top:12px;transform:none;">🎤</button>
             </div>
+        </div>
+
+        <!-- Monto calculado -->
+        <div style="width:100%">
+            <div class="rev-label">💰 Monto <span style="font-size:0.7rem;font-weight:400;color:rgba(255,255,255,0.3);">(calculado — tocá para editar)</span></div>
+            <input class="big-input rev-input" id="rev-monto" type="number" inputmode="numeric" placeholder="0"
+                   style="font-size:1.05rem;">
         </div>
 
     </div>
@@ -1020,8 +1063,16 @@ function armarResumen() {
     document.getElementById('rev-vehiculo').value = datos.vehiculo || '';
     document.getElementById('rev-fecha').value    = datos.fecha;
     document.getElementById('rev-servicio').value = datos.servicio;
+    actualizarMontoWizard();
     actualizarChapaMismatch();
     actualizarDupeWarnWizard();
+}
+function actualizarMontoWizard() {
+    var el = document.getElementById('rev-monto');
+    if (!el) return;
+    var m = extraerMonto(document.getElementById('rev-servicio').value);
+    el.value = m;
+    el.style.borderColor = m === 0 ? '#fbbf24' : '';
 }
 
 const NO_CHAPA_RE = /^(MANO|CAMBIO|PASTILLA|BUJE|TORRETA|RULEMAN|CHAPISTA|CARDANCITO|RECTIF|AMORTIGUADOR|FRENO|ACEITE|FILTRO|RADIADOR|BOMBA|CABLE|GOMA|ROTULA|RETEN|SELLADO|AIRBAG|CORREA|TENSOR|POLEA|TAPON|VALVULA|DISCO|ZAPATA|CILINDRO|TERMINAL|CAPSULA|PERNO|TUERCA|GRASA|FLUIDO|LIQUIDO|TOTAL|FOLIO|RECAMBIO|REPUESTO|COSTO|LABOR|PAGO|SALDO|RESTO|DATO|NOTA)$/i;
@@ -1110,13 +1161,13 @@ window.addEventListener('online', sincronizarColaOrdenes);
 setTimeout(sincronizarColaOrdenes, 1500);
 
 // ─── Push orden a GestFact (con cola offline) ───
-function pushOrdenAD(cliente, patente, fecha, servicio, vehiculo) {
+function pushOrdenAD(cliente, patente, fecha, servicio, vehiculo, montoOverride) {
     var item = {
         id: 'AD-' + Date.now(),
         cliente: cliente, patente: patente,
         fecha: fecha, servicio: servicio,
         vehiculo: vehiculo || '',
-        monto: String(extraerMonto(servicio))
+        monto: String(montoOverride !== undefined && montoOverride !== null ? montoOverride : extraerMonto(servicio))
     };
     _encolarOrden(item);
     return _sincItem(item);
@@ -1192,7 +1243,8 @@ function enviarIsabSoft() {
         : `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
 
-    pushOrdenAD(clienteFinal, chapa, fecha, servicio, vehiculoFinal).then(function(d) {
+    var montoWiz = parseFloat(document.getElementById('rev-monto')?.value || '0') || 0;
+    pushOrdenAD(clienteFinal, chapa, fecha, servicio, vehiculoFinal, montoWiz).then(function(d) {
         if (!d || !d.ok)      toast('⏳ Sin conexión — se enviará cuando vuelva internet');
         else if (d.duplicado) toast('⚠️ Ya registrado hoy — no se guardó de nuevo');
         else                  toast('✓ Guardado en GestFact');
@@ -1326,8 +1378,8 @@ function procesarBulk() {
     parsedJobs = parsearBloques(texto);
     if (!parsedJobs.length) { toast('⚠️ No se encontraron trabajos — verificá el formato'); return; }
 
-    // Pre-llenar cliente en todos los trabajos
-    parsedJobs.forEach(j => j.cliente = cliente);
+    // Pre-llenar cliente y monto en todos los trabajos
+    parsedJobs.forEach(j => { j.cliente = cliente; j.monto = extraerMonto(j.servicio); });
 
     renderizarJobs();
     mostrarScreen('sb2');
@@ -1378,6 +1430,13 @@ function renderizarJobs() {
                     <button class="btn-mic" id="jmic-${i}" onclick="activarMicBulk(${i})">🎤</button>
                 </div>
             </div>
+            <div class="job-f">
+                <div class="rev-label" style="color:rgba(255,255,255,0.4);">💰 Monto <span style="font-size:0.7rem;font-weight:400;">(tocá para editar)</span></div>
+                <input class="big-input rev-input" id="jmonto-${i}" type="number" inputmode="numeric"
+                       value="${j.monto}" placeholder="0"
+                       style="font-size:1.05rem;${j.monto === 0 ? 'border-color:#fbbf24;' : ''}"
+                       oninput="parsedJobs[${i}].monto=parseFloat(this.value)||0; this.style.borderColor=parseFloat(this.value)||0 ? '' : '#fbbf24';">
+            </div>
         </div>
         `;
     }).join('');
@@ -1391,6 +1450,7 @@ function enviarBulk() {
         j.fechaVal = document.getElementById(`jfecha-${i}`)?.value  || j.fechaVal;
         j.servicio = (document.getElementById(`jserv-${i}`)?.value || j.servicio).trim();
         j.cliente  = (document.getElementById(`jcli-${i}`)?.value   || '').trim().toUpperCase();
+        j.monto    = parseFloat(document.getElementById(`jmonto-${i}`)?.value || '0') || 0;
     });
 
     // Validar chapas vacías — bloqueo duro
@@ -1435,7 +1495,7 @@ function enviarBulk() {
     // Push cada trabajo a GestFact
     var _n = parsedJobs.length;
     Promise.all(parsedJobs.map(function(j) {
-        return pushOrdenAD(j.cliente, j.chapa, j.fechaVal, j.servicio);
+        return pushOrdenAD(j.cliente, j.chapa, j.fechaVal, j.servicio, undefined, j.monto);
     })).then(function(res) {
         var sinConexion = res.some(function(d){ return !d || !d.ok; });
         if (sinConexion) { toast('⏳ Sin conexión — se enviarán cuando vuelva internet'); return; }
@@ -1527,6 +1587,8 @@ function promoActualizarBanner() {
     if (egBtn)  egBtn.style.display  = esPlanFull() ? 'block' : 'none';
     const resBtn = document.getElementById('btnResumenWrap');
     if (resBtn) resBtn.style.display = esPlanFull() ? 'block' : 'none';
+    const shFull = document.getElementById('sh-full-tip');
+    if (shFull) shFull.style.display = esPlanFull() ? 'block' : 'none';
 
     if (esPlan) {
         lblEl.textContent = `Plan ${plan} activo`;
