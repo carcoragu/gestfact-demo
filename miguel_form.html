@@ -1057,7 +1057,8 @@ function pushOrdenAD(cliente, patente, fecha, servicio, vehiculo) {
 }
 
 // ─── Envío — copia fiel del texto de Miguel ───
-let montoAvisadoWizard = false;
+let montoAvisadoWizard    = false;
+let vehiculoAvisadoWizard = false;
 
 function enviarIsabSoft() {
     const chapa    = document.getElementById('rev-chapa').value.trim().toUpperCase();
@@ -1109,8 +1110,20 @@ function enviarIsabSoft() {
     }
     montoAvisadoWizard = false;
 
+    if (!vehiculoFinal && !vehiculoAvisadoWizard) {
+        vehiculoAvisadoWizard = true;
+        const elV = document.getElementById('rev-vehiculo');
+        elV.classList.add('error'); setTimeout(() => elV.classList.remove('error'), 1500);
+        elV.scrollIntoView({behavior:'smooth', block:'center'});
+        toast('⚠️ Vehículo vacío — tocá Enviar de nuevo para confirmar');
+        return;
+    }
+    vehiculoAvisadoWizard = false;
+
     const [y, m, d] = fecha.split('-');
-    const texto = `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
+    const texto = vehiculoFinal
+        ? `${chapa} ${vehiculoFinal} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`
+        : `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
 
     pushOrdenAD(clienteFinal, chapa, fecha, servicio, vehiculoFinal).then(function(ok) {
@@ -1122,6 +1135,9 @@ function enviarIsabSoft() {
 // Reset flag y re-check duplicado si corrige campos en revisión
 document.getElementById('rev-servicio').addEventListener('input', function() {
     montoAvisadoWizard = false;
+});
+document.getElementById('rev-vehiculo').addEventListener('input', function() {
+    vehiculoAvisadoWizard = false;
 });
 document.getElementById('rev-chapa').addEventListener('input', function() {
     actualizarChapaMismatch();
