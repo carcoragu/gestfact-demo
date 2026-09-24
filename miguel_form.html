@@ -360,6 +360,32 @@
         /* Form nuevo egreso — inputs left-aligned */
         #se-nuevo .big-input { text-align:left; font-size:1rem; }
 
+        /* Resumen (Plan FULL) */
+        #sr { position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:0;background:#1a1a2e;flex-direction:column;align-items:center; }
+        @media (min-width:640px) {
+            #sr { padding:48px 20px 60px;background:radial-gradient(ellipse at 18% 28%,rgba(30,136,229,.10) 0%,transparent 55%),radial-gradient(ellipse at 82% 72%,rgba(74,222,128,.07) 0%,transparent 55%),#1a1a2e; }
+        }
+        .sr-mes-nav { display:flex;align-items:center;justify-content:center;gap:16px;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.08); }
+        .sr-mes-btn { background:rgba(255,255,255,0.08);border:none;border-radius:8px;width:36px;height:36px;color:#fff;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+        .sr-mes-lbl { font-size:1rem;font-weight:700;color:#fff;min-width:130px;text-align:center; }
+        .sr-cards   { display:flex;flex-direction:column;gap:12px;padding:20px; }
+        .sr-card    { border-radius:14px;padding:20px;text-align:center; }
+        .sr-card.ing { background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25); }
+        .sr-card.egr { background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.25); }
+        .sr-card.gan { padding:24px; }
+        .sr-card.gan.pos { background:rgba(74,222,128,0.12);border:2px solid rgba(74,222,128,0.5); }
+        .sr-card.gan.neg { background:rgba(248,81,73,0.12);border:2px solid rgba(248,81,73,0.5); }
+        .sr-lbl { font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px; }
+        .sr-card.ing .sr-lbl { color:#4ade80; }
+        .sr-card.egr .sr-lbl { color:#f85149; }
+        .sr-card.gan .sr-lbl { color:rgba(255,255,255,0.5); }
+        .sr-val { font-size:1.9rem;font-weight:800;line-height:1; }
+        .sr-card.ing .sr-val { color:#4ade80; }
+        .sr-card.egr .sr-val { color:#f85149; }
+        .sr-card.gan.pos .sr-val { color:#4ade80; }
+        .sr-card.gan.neg .sr-val { color:#f85149; }
+        .sr-sub { font-size:.75rem;color:rgba(255,255,255,0.4);margin-top:6px; }
+
         /* Egresos desktop — card centrada */
         @media (min-width: 640px) {
             #se,#se-nuevo,#se-bulk,#se-bulk-rev {
@@ -411,6 +437,13 @@
             <span class="modo-icon">💸</span>
             Egresos
             <span class="modo-sub">Registrar gastos del taller</span>
+        </button>
+    </div>
+    <div id="btnResumenWrap" style="display:none;width:100%;margin-top:10px;">
+        <button class="modo-btn" style="width:100%;" onclick="irResumen()">
+            <span class="modo-icon">📊</span>
+            Resumen del mes
+            <span class="modo-sub">Ingresos, egresos y ganancia</span>
         </button>
     </div>
 </div>
@@ -674,6 +707,37 @@
       </div>
       <button class="btn-next" onclick="guardarEgreso_ad()">Guardar Egreso</button>
       <button class="btn-back" onclick="mostrarScreen('se')">← Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESUMEN -->
+<div class="screen" id="sr">
+  <div class="eg-inner">
+    <div class="eg-topbar">
+      <button class="eg-btn-icon" onclick="mostrarScreen('s0')">&#8249;</button>
+      <span class="eg-title">📊 Resumen</span>
+    </div>
+    <div class="sr-mes-nav">
+      <button class="sr-mes-btn" onclick="srNavegar(-1)">&#8249;</button>
+      <span class="sr-mes-lbl" id="sr-mes-lbl"></span>
+      <button class="sr-mes-btn" onclick="srNavegar(1)">&#8250;</button>
+    </div>
+    <div class="sr-cards">
+      <div class="sr-card ing">
+        <div class="sr-lbl">Ingresos</div>
+        <div class="sr-val" id="sr-ingresos">…</div>
+        <div class="sr-sub" id="sr-ingresos-sub"></div>
+      </div>
+      <div class="sr-card egr">
+        <div class="sr-lbl">Egresos</div>
+        <div class="sr-val" id="sr-egresos">…</div>
+        <div class="sr-sub" id="sr-egresos-sub"></div>
+      </div>
+      <div class="sr-card gan pos" id="sr-gan-card">
+        <div class="sr-lbl">Ganancia del mes</div>
+        <div class="sr-val" id="sr-ganancia">…</div>
+      </div>
     </div>
   </div>
 </div>
@@ -1459,8 +1523,10 @@ function promoActualizarBanner() {
     const subEl  = document.getElementById('promoSubText');
     const lblEl  = document.getElementById('promoBannerLabel');
 
-    const egBtn = document.getElementById('btnEgresoWrap');
-    if (egBtn) egBtn.style.display = esPlanFull() ? 'block' : 'none';
+    const egBtn  = document.getElementById('btnEgresoWrap');
+    if (egBtn)  egBtn.style.display  = esPlanFull() ? 'block' : 'none';
+    const resBtn = document.getElementById('btnResumenWrap');
+    if (resBtn) resBtn.style.display = esPlanFull() ? 'block' : 'none';
 
     if (esPlan) {
         lblEl.textContent = `Plan ${plan} activo`;
@@ -1811,6 +1877,73 @@ function guardarEgresosBulk() {
     toast('✓ ' + count + ' egresos guardados');
 }
 
+
+// ═══════════════════════════════════════════════════════
+//  RESUMEN (Plan FULL)
+// ═══════════════════════════════════════════════════════
+var srMes = '';
+
+function _mesPY() {
+    var now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Asuncion' }));
+    return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+}
+function _mesLabel(ym) {
+    var meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    var p = ym.split('-');
+    return meses[parseInt(p[1],10)-1] + ' ' + p[0];
+}
+function _egResMes(ym) {
+    var total = 0, cant = 0;
+    egresos_ad.forEach(function(e) {
+        if ((e.fecha || '').split('T')[0].substring(0,7) === ym) { total += Number(e.monto)||0; cant++; }
+    });
+    return { total: total, cant: cant };
+}
+
+function irResumen() {
+    if (!esPlanFull()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    srMes = _mesPY();
+    mostrarScreen('sr');
+    cargarResumen();
+}
+function srNavegar(delta) {
+    var p = srMes.split('-');
+    var y = parseInt(p[0]), m = parseInt(p[1]);
+    m += delta;
+    if (m > 12) { m = 1; y++; }
+    if (m < 1)  { m = 12; y--; }
+    srMes = y + '-' + String(m).padStart(2,'0');
+    cargarResumen();
+}
+function cargarResumen() {
+    document.getElementById('sr-mes-lbl').textContent = _mesLabel(srMes);
+    var eg = _egResMes(srMes);
+    document.getElementById('sr-egresos').textContent     = 'Gs. ' + fmtGs_ad(eg.total);
+    document.getElementById('sr-egresos-sub').textContent = eg.cant + ' gasto' + (eg.cant !== 1 ? 's' : '');
+    var ingEl    = document.getElementById('sr-ingresos');
+    var ingSubEl = document.getElementById('sr-ingresos-sub');
+    var ganEl    = document.getElementById('sr-ganancia');
+    var ganCard  = document.getElementById('sr-gan-card');
+    ingEl.textContent    = '…';
+    ingSubEl.textContent = 'cargando';
+    ganEl.textContent    = '…';
+    fetch(GF_API + '?action=getResumenAD&mes=' + srMes)
+        .then(function(r){ return r.json(); })
+        .then(function(d) {
+            if (!d.ok) throw new Error('error');
+            var ing = d.ingresos || 0, cant = d.cant || 0;
+            ingEl.textContent    = 'Gs. ' + fmtGs_ad(ing);
+            ingSubEl.textContent = cant + ' trabajo' + (cant !== 1 ? 's' : '');
+            var gan = ing - eg.total;
+            ganEl.textContent = (gan < 0 ? '-' : '') + 'Gs. ' + fmtGs_ad(Math.abs(gan));
+            ganCard.className = 'sr-card gan ' + (gan >= 0 ? 'pos' : 'neg');
+        })
+        .catch(function() {
+            ingEl.textContent    = 'Sin conexión';
+            ingSubEl.textContent = 'revisá internet';
+            ganEl.textContent    = '—';
+        });
+}
 
 // Enter avanza al siguiente paso (no en textarea)
 document.addEventListener('keydown', function(e) {
