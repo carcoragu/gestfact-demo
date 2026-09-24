@@ -372,7 +372,7 @@
         .sr-card    { border-radius:14px;padding:20px;text-align:center; }
         .sr-card.ing { background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25); }
         .sr-card.egr { background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.25); }
-        .sr-card.gan { padding:24px; }
+        .sr-card.gan { padding:24px; cursor:pointer; user-select:none; }
         .sr-card.gan.pos { background:rgba(74,222,128,0.12);border:2px solid rgba(74,222,128,0.5); }
         .sr-card.gan.neg { background:rgba(248,81,73,0.12);border:2px solid rgba(248,81,73,0.5); }
         .sr-lbl { font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px; }
@@ -734,9 +734,9 @@
         <div class="sr-val" id="sr-egresos">…</div>
         <div class="sr-sub" id="sr-egresos-sub"></div>
       </div>
-      <div class="sr-card gan pos" id="sr-gan-card">
-        <div class="sr-lbl">Ganancia del mes</div>
-        <div class="sr-val" id="sr-ganancia">…</div>
+      <div class="sr-card gan pos" id="sr-gan-card" onclick="toggleGanancia()">
+        <div class="sr-lbl">Ganancia del mes <span id="sr-lock-icon">🔒</span></div>
+        <div class="sr-val" id="sr-ganancia" style="letter-spacing:4px;">• • •</div>
       </div>
     </div>
   </div>
@@ -1915,6 +1915,23 @@ function srNavegar(delta) {
     srMes = y + '-' + String(m).padStart(2,'0');
     cargarResumen();
 }
+var _gananciaReal = null;
+var _gananciaVis  = false;
+function toggleGanancia() {
+    if (_gananciaReal === null) return;
+    _gananciaVis = !_gananciaVis;
+    var ganEl  = document.getElementById('sr-ganancia');
+    var lockEl = document.getElementById('sr-lock-icon');
+    if (_gananciaVis) {
+        ganEl.style.letterSpacing = '';
+        ganEl.textContent = (_gananciaReal < 0 ? '-' : '') + 'Gs. ' + fmtGs_ad(Math.abs(_gananciaReal));
+        lockEl.textContent = '🔓';
+    } else {
+        ganEl.style.letterSpacing = '4px';
+        ganEl.textContent = '• • •';
+        lockEl.textContent = '🔒';
+    }
+}
 function cargarResumen() {
     document.getElementById('sr-mes-lbl').textContent = _mesLabel(srMes);
     var ingEl    = document.getElementById('sr-ingresos');
@@ -1939,15 +1956,19 @@ function cargarResumen() {
             egrEl.textContent    = 'Gs. ' + fmtGs_ad(egr);
             egrSubEl.textContent = cantEgr + ' gasto' + (cantEgr !== 1 ? 's' : '');
             var gan = ing - egr;
-            ganEl.textContent = (gan < 0 ? '-' : '') + 'Gs. ' + fmtGs_ad(Math.abs(gan));
+            _gananciaReal = gan; _gananciaVis = false;
+            ganEl.style.letterSpacing = '4px';
+            ganEl.textContent = '• • •';
+            document.getElementById('sr-lock-icon').textContent = '🔒';
             ganCard.className = 'sr-card gan ' + (gan >= 0 ? 'pos' : 'neg');
         })
         .catch(function() {
+            _gananciaReal = null;
             ingEl.textContent    = 'Sin conexión';
             ingSubEl.textContent = 'revisá internet';
             egrEl.textContent    = '—';
             egrSubEl.textContent = '';
-            ganEl.textContent    = '—';
+            ganEl.style.letterSpacing = ''; ganEl.textContent = '—';
         });
 }
 
