@@ -1022,9 +1022,24 @@ function enviarIsabSoft() {
         return;
     }
     addClienteToList(clienteFinal);
-    if (!chapa)    { toast('⚠️ La chapa está vacía'); return; }
-    if (!fecha)    { toast('⚠️ La fecha está vacía'); return; }
-    if (!servicio) { toast('⚠️ El trabajo está vacío'); return; }
+    if (!chapa) {
+        const elC = document.getElementById('rev-chapa');
+        elC.classList.add('error'); setTimeout(() => elC.classList.remove('error'), 800);
+        elC.scrollIntoView({behavior:'smooth', block:'center'});
+        toast('⚠️ La chapa está vacía'); return;
+    }
+    if (!fecha) {
+        const elF = document.getElementById('rev-fecha');
+        elF.classList.add('error'); setTimeout(() => elF.classList.remove('error'), 800);
+        elF.scrollIntoView({behavior:'smooth', block:'center'});
+        toast('⚠️ La fecha está vacía'); return;
+    }
+    if (!servicio) {
+        const elS = document.getElementById('rev-servicio');
+        elS.classList.add('error'); setTimeout(() => elS.classList.remove('error'), 800);
+        elS.scrollIntoView({behavior:'smooth', block:'center'});
+        toast('⚠️ El trabajo está vacío'); return;
+    }
 
     // Chapa mismatch — bloqueo duro (el usuario debe corregir uno de los dos)
     const chapaTexto = extraerChapaDeTexto(servicio);
