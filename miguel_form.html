@@ -1917,30 +1917,36 @@ function srNavegar(delta) {
 }
 function cargarResumen() {
     document.getElementById('sr-mes-lbl').textContent = _mesLabel(srMes);
-    var eg = _egResMes(srMes);
-    document.getElementById('sr-egresos').textContent     = 'Gs. ' + fmtGs_ad(eg.total);
-    document.getElementById('sr-egresos-sub').textContent = eg.cant + ' gasto' + (eg.cant !== 1 ? 's' : '');
     var ingEl    = document.getElementById('sr-ingresos');
     var ingSubEl = document.getElementById('sr-ingresos-sub');
+    var egrEl    = document.getElementById('sr-egresos');
+    var egrSubEl = document.getElementById('sr-egresos-sub');
     var ganEl    = document.getElementById('sr-ganancia');
     var ganCard  = document.getElementById('sr-gan-card');
     ingEl.textContent    = '…';
     ingSubEl.textContent = 'cargando';
+    egrEl.textContent    = '…';
+    egrSubEl.textContent = 'cargando';
     ganEl.textContent    = '…';
     fetch(GF_API + '?action=getResumenAD&mes=' + srMes)
         .then(function(r){ return r.json(); })
         .then(function(d) {
             if (!d.ok) throw new Error('error');
-            var ing = d.ingresos || 0, cant = d.cant || 0;
+            var ing  = d.ingresos  || 0, cantIng = d.cant       || 0;
+            var egr  = d.egresos   || 0, cantEgr = d.cantEgresos|| 0;
             ingEl.textContent    = 'Gs. ' + fmtGs_ad(ing);
-            ingSubEl.textContent = cant + ' trabajo' + (cant !== 1 ? 's' : '');
-            var gan = ing - eg.total;
+            ingSubEl.textContent = cantIng + ' trabajo' + (cantIng !== 1 ? 's' : '');
+            egrEl.textContent    = 'Gs. ' + fmtGs_ad(egr);
+            egrSubEl.textContent = cantEgr + ' gasto' + (cantEgr !== 1 ? 's' : '');
+            var gan = ing - egr;
             ganEl.textContent = (gan < 0 ? '-' : '') + 'Gs. ' + fmtGs_ad(Math.abs(gan));
             ganCard.className = 'sr-card gan ' + (gan >= 0 ? 'pos' : 'neg');
         })
         .catch(function() {
             ingEl.textContent    = 'Sin conexión';
             ingSubEl.textContent = 'revisá internet';
+            egrEl.textContent    = '—';
+            egrSubEl.textContent = '';
             ganEl.textContent    = '—';
         });
 }
