@@ -447,7 +447,13 @@
             <span class="modo-sub">Ingresos, egresos y ganancia</span>
         </button>
     </div>
-    <div style="width:100%;margin-top:18px;text-align:center;">
+    <div id="cnt-mes-wrap" style="display:none;width:100%;margin-top:14px;text-align:center;">
+        <div id="cnt-mes" style="font-size:0.75rem;font-weight:600;letter-spacing:.3px;"></div>
+        <div id="cnt-barra-wrap" style="margin:6px auto 0;max-width:220px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;">
+            <div id="cnt-barra" style="height:100%;width:0%;border-radius:2px;transition:width .4s;"></div>
+        </div>
+    </div>
+    <div style="width:100%;margin-top:14px;text-align:center;">
         <button onclick="mostrarScreen('sh')" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.78rem;cursor:pointer;text-decoration:underline;padding:4px;">¿Cómo funciona AnotDigi?</button>
     </div>
 </div>
@@ -1178,6 +1184,72 @@ function pushOrdenAD(cliente, patente, fecha, servicio, vehiculo, montoOverride)
 let montoAvisadoWizard    = false;
 let vehiculoAvisadoWizard = false;
 
+// ─── Límite mensual por plan ───────────────────────────────
+function _mesKey() {
+    var n = new Date();
+    return 'anotdigi_cnt_' + n.getFullYear() + '_' + (n.getMonth()+1);
+}
+function getContadorMes() {
+    return parseInt(localStorage.getItem(_mesKey()) || '0', 10);
+}
+function incrementarContador(n) {
+    localStorage.setItem(_mesKey(), String(getContadorMes() + (n || 1)));
+    actualizarContadorUI();
+}
+function getLimitePlan() {
+    var p = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    if (p === 'PREMIUM')  return 999999;
+    if (p === 'FULL')     return 100;
+    if (p === 'COMPLETO') return 50;
+    return 20;
+}
+function getPlanSiguiente() {
+    var p = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    if (p === 'FULL')     return { nombre:'Premium',  desc:'servicios ilimitados',     precio:'Gs. 250.000/mes' };
+    if (p === 'COMPLETO') return { nombre:'Full',     desc:'hasta 100 servicios/mes',  precio:'Gs. 150.000/mes' };
+    return                       { nombre:'Completo', desc:'hasta 50 servicios/mes',   precio:'Gs. 100.000/mes' };
+}
+function actualizarContadorUI() {
+    var lim  = getLimitePlan();
+    var cnt  = getContadorMes();
+    var wrap = document.getElementById('cnt-mes-wrap');
+    var el   = document.getElementById('cnt-mes');
+    var bar  = document.getElementById('cnt-barra');
+    if (!el || !wrap) return;
+    if (lim >= 999999) { wrap.style.display = 'none'; return; }
+    wrap.style.display = '';
+    var pct   = Math.min(cnt / lim, 1);
+    var color = pct >= 1 ? '#f87171' : pct >= 0.8 ? '#fbbf24' : 'rgba(255,255,255,0.4)';
+    el.style.color    = color;
+    el.textContent    = cnt + ' / ' + lim + ' servicios este mes';
+    bar.style.width   = Math.round(pct * 100) + '%';
+    bar.style.background = color;
+}
+function mostrarModalLimite(actual, lim, intentando) {
+    var sig = getPlanSiguiente();
+    var txt = 'Tenés <strong>' + actual + ' de ' + lim + '</strong> servicios este mes.';
+    if (intentando && intentando > 1) txt += '<br>Intentás agregar <strong>' + intentando + ' más</strong>.';
+    document.getElementById('modal-limite-txt').innerHTML = txt;
+    document.getElementById('modal-limite-plan').innerHTML =
+        '📲 <strong>Plan ' + sig.nombre + '</strong> — ' + sig.desc +
+        '<br><span style="color:rgba(255,255,255,0.45);">' + sig.precio + ' · Consultá con IsabSoft</span>';
+    document.getElementById('modal-limite').style.display = 'flex';
+}
+function verificarLimiteMes(cantidad) {
+    var lim    = getLimitePlan();
+    if (lim >= 999999) return true;
+    var actual = getContadorMes();
+    if (actual >= lim || actual + cantidad > lim) {
+        mostrarModalLimite(actual, lim, cantidad > 1 ? cantidad : null);
+        return false;
+    }
+    if (actual < Math.floor(lim * 0.8) && actual + cantidad >= Math.floor(lim * 0.8)) {
+        toast('⚠️ Vas por ' + (actual + cantidad) + ' de ' + lim + ' servicios este mes');
+    }
+    return true;
+}
+// ────────────────────────────────────────────────────────────
+
 function enviarIsabSoft() {
     const chapa    = document.getElementById('rev-chapa').value.trim().toUpperCase();
     const fecha    = document.getElementById('rev-fecha').value;
@@ -1244,11 +1316,13 @@ function enviarIsabSoft() {
         : `${chapa} | ${d}/${m} | ${clienteFinal}\n\n${servicio}`;
     const url = `https://wa.me/${WA_ISASOFT}?text=${encodeURIComponent(texto)}`;
 
+    if (!verificarLimiteMes(1)) return;
+
     var montoWiz = parseFloat(document.getElementById('rev-monto')?.value || '0') || 0;
     pushOrdenAD(clienteFinal, chapa, fecha, servicio, vehiculoFinal, montoWiz).then(function(d) {
         if (!d || !d.ok)      toast('⏳ Sin conexión — se enviará cuando vuelva internet');
         else if (d.duplicado) toast('⚠️ Ya registrado hoy — no se guardó de nuevo');
-        else                  toast('✓ Guardado en GestFact');
+        else { toast('✓ Guardado en GestFact'); incrementarContador(1); }
     });
     window.open(url, '_blank');
 }
@@ -1500,6 +1574,9 @@ function enviarBulk() {
     }
     montoAvisadoBulk = false;
 
+    // Verificar límite mensual antes de enviar
+    if (!verificarLimiteMes(parsedJobs.length)) return;
+
     // Push cada trabajo a GestFact
     var _n = parsedJobs.length;
     Promise.all(parsedJobs.map(function(j) {
@@ -1509,6 +1586,7 @@ function enviarBulk() {
         if (sinConexion) { toast('⏳ Sin conexión — se enviarán cuando vuelva internet'); return; }
         var guardados  = res.filter(function(d){ return !d.duplicado; }).length;
         var duplicados = res.filter(function(d){ return d.duplicado; }).length;
+        if (guardados > 0) incrementarContador(guardados);
         var msg = guardados  > 0 ? '✓ ' + guardados  + ' trabajo' + (guardados  !== 1 ? 's' : '') + ' guardados en GestFact' : '';
         if (duplicados > 0) msg += (msg ? ' — ' : '') + '⚠️ ' + duplicados + ' ya registrado' + (duplicados !== 1 ? 's' : '') + ' hoy';
         toast(msg);
@@ -1595,6 +1673,7 @@ function promoActualizarBanner() {
     if (egBtn)  egBtn.style.display  = esPlanFull() ? 'block' : 'none';
     const resBtn = document.getElementById('btnResumenWrap');
     if (resBtn) resBtn.style.display = esPlanFull() ? 'block' : 'none';
+    actualizarContadorUI();
     const shFull = document.getElementById('sh-full-tip');
     if (shFull) shFull.style.display = esPlanFull() ? 'block' : 'none';
 
@@ -2049,5 +2128,15 @@ document.addEventListener('keydown', function(e) {
     if (paso < 6) ir(paso + 1);
 });
 </script>
+
+<!-- Modal límite mensual -->
+<div id="modal-limite" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,22,40,0.97);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;">
+    <div style="font-size:2.2rem;margin-bottom:14px;">⛔</div>
+    <div style="font-size:1.1rem;font-weight:700;color:#f87171;margin-bottom:12px;">Límite del mes alcanzado</div>
+    <div id="modal-limite-txt" style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:20px;max-width:320px;"></div>
+    <div style="font-size:0.8rem;color:#60a5fa;font-weight:600;margin-bottom:8px;letter-spacing:.5px;">PARA SEGUIR CARGANDO</div>
+    <div id="modal-limite-plan" style="font-size:0.88rem;color:#e6edf3;margin-bottom:24px;background:rgba(30,136,229,0.12);border:1px solid rgba(30,136,229,0.35);border-radius:14px;padding:14px 20px;max-width:300px;line-height:1.7;"></div>
+    <button onclick="document.getElementById('modal-limite').style.display='none'" style="background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);border-radius:8px;padding:9px 24px;font-size:0.82rem;cursor:pointer;">Cerrar</button>
+</div>
 </body>
 </html>
