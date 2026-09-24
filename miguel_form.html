@@ -849,7 +849,7 @@ async function fetchClientesSheet() {
                 if (c) clientes.add(c);
                 const chapa = cols[3].trim().toUpperCase().replace(/\s/g, '');
                 const fecha = normalizarFecha(cols[4].trim());
-                if (chapa && fecha) registrosGF.push({ chapa, fecha });
+                if (chapa && fecha) registrosGF.push({ chapa, fecha, cliente: c });
             }
         });
         loadClientes([...clientes]);
@@ -859,9 +859,9 @@ async function fetchClientesSheet() {
 }
 
 function esDuplicado(chapa, fechaISO) {
-    if (!chapa || !fechaISO || !registrosGF.length) return false;
+    if (!chapa || !fechaISO || !registrosGF.length) return null;
     const f = normalizarFecha(fechaISO);
-    return registrosGF.some(r => r.chapa === chapa && r.fecha === f);
+    return registrosGF.find(r => r.chapa === chapa && r.fecha === f) || null;
 }
 
 function addClienteToList(c) {
@@ -1392,7 +1392,7 @@ function renderizarJobs() {
         const dupe = esDuplicado(j.chapa, j.fechaVal);
         const dupeHtml = dupe
             ? `<div style="font-size:0.75rem;color:#fbbf24;margin-bottom:10px;padding:6px 10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.4);">
-                   ⚠️ Ya existe en GestFact — verificá si es otro trabajo
+                   ⚠️ Ya existe en GestFact (${dupe.cliente}) — verificá si es otro trabajo
                </div>`
             : '';
         return `
