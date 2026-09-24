@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Registro de Trabajo</title>
+    <meta name="theme-color" content="#1a1a2e"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="AnotDigi"/>
+    <link rel="manifest" href="/gestfact-demo/manifest-anotdigi-miguel.json"/>
+    <title>AnotDigi — Miguel Acuña</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1474,6 +1479,40 @@ function reiniciar() {
 
     mostrarScreen('s0');
 }
+
+// ─── PWA — Service Worker + Install ───
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+        return Promise.all(regs.map(function(r) { return r.unregister(); }));
+    }).then(function() {
+        navigator.serviceWorker.register('/gestfact-demo/sw.js', { updateViaCache: 'none' }).catch(function(){});
+    });
+}
+(function() {
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    var isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    var isSafari = isIOS && /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS|OPiOS|EdgiOS/.test(navigator.userAgent) && !navigator.userAgent.match(/FBAN|FBAV|Instagram|WhatsApp/i);
+    if (isIOS && !isStandalone && isSafari) {
+        var tip = document.createElement('div');
+        tip.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1e3a5f;border-top:1px solid #1e88e5;padding:12px 16px;font-size:.8rem;color:#8b949e;line-height:1.8;z-index:999;text-align:left;';
+        tip.innerHTML = '📲 <strong style="color:#1e88e5">Instalar en iPhone:</strong> tocá <strong style="color:#e6edf3">Compartir (□↑)</strong> → <strong style="color:#e6edf3">"Agregar a pantalla de inicio"</strong>';
+        document.body.appendChild(tip);
+        setTimeout(function() { tip.style.display = 'none'; }, 8000);
+    }
+    var _prompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        _prompt = e;
+        var btn = document.createElement('button');
+        btn.textContent = '📲 Instalar app';
+        btn.style.cssText = 'position:fixed;bottom:16px;right:16px;background:#1e88e5;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:.85rem;font-weight:700;cursor:pointer;z-index:999;box-shadow:0 2px 12px rgba(0,0,0,.4);';
+        btn.onclick = function() {
+            _prompt.prompt();
+            _prompt.userChoice.then(function() { btn.remove(); _prompt = null; });
+        };
+        document.body.appendChild(btn);
+    });
+})();
 
 // ─── Toast ───
 function toast(msg) {
