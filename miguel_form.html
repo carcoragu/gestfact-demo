@@ -645,7 +645,7 @@ Mano de obra 170.000</pre>
 <div class="screen" id="sb2">
     <div class="jobs-wrap">
         <div style="text-align:center;margin-bottom:20px;">
-            <div class="question" style="font-size:1.15rem;">Verificá los trabajos</div>
+            <div class="question" style="font-size:1.15rem;">Verificá los trabajos <span id="jobs-count" style="font-size:0.85rem;color:rgba(255,255,255,0.4);font-weight:400;"></span></div>
             <div class="hint" style="margin-top:6px;">El WhatsApp enviará tu texto original — esto es solo para verificar</div>
         </div>
         <div id="jobsContainer"></div>
@@ -1304,7 +1304,12 @@ function mostrarScreen(id) {
 // ─── Parser ───
 function parsearBloques(texto) {
     const jobs = [];
-    const lineas = texto.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    // Normalizar unicode de WhatsApp y separadores de línea
+    const textoLimpio = texto
+        .replace(/ /g, ' ')           // non-breaking space → space
+        .replace(/[​-‍﻿­]/g, '') // zero-width, soft-hyphen
+        .replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const lineas = textoLimpio.split('\n');
     let bloque = [];
 
     function procesarBloque(b) {
@@ -1313,7 +1318,7 @@ function parsearBloques(texto) {
         if (!b.length) return;
 
         const primera = b[0];
-        const chapaM  = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4})/i);
+        const chapaM  = primera.match(/^([A-Z]{2,5})\s?([A-Z]?\s?\d{2,4}(?!\.))/i);
         if (!chapaM || NO_CHAPA_RE.test(chapaM[1].trim())) return;
 
         const chapa = (chapaM[1] + chapaM[2]).toUpperCase().replace(/\s/g, '');
@@ -1349,7 +1354,7 @@ function parsearBloques(texto) {
 
     lineas.forEach(linea => {
         const t = linea.trim();
-        if (/^[A-Z]{2,5}\s?[A-Z]?\s?\d{2,4}/i.test(t) && bloque.length) {
+        if (/^[A-Z]{2,5}\s?[A-Z]?\s?\d{2,4}(?!\.)/i.test(t) && bloque.length) {
             procesarBloque(bloque);
             bloque = [t];
         } else {
@@ -1387,6 +1392,8 @@ function procesarBulk() {
 }
 
 function renderizarJobs() {
+    const cnt = document.getElementById('jobs-count');
+    if (cnt) cnt.textContent = `(${parsedJobs.length})`;
     const c = document.getElementById('jobsContainer');
     c.innerHTML = parsedJobs.map((j, i) => {
         const dupe = esDuplicado(j.chapa, j.fechaVal);
