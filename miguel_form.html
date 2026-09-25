@@ -1596,22 +1596,22 @@ function enviarBulk() {
     // Push en lotes de 5 para no saturar Apps Script
     (async function() {
         var LOTE = 5, todos = [], total = parsedJobs.length;
-        toast('⏳ Enviando ' + total + ' trabajo' + (total !== 1 ? 's' : '') + '...');
+        toastFijo('⏳ Procesando datos... 0 / ' + total);
         for (var i = 0; i < total; i += LOTE) {
             var res = await Promise.all(parsedJobs.slice(i, i + LOTE).map(function(j) {
                 return pushOrdenAD(j.cliente, j.chapa, j.fechaVal, j.servicio, undefined, j.monto);
             }));
             todos = todos.concat(res);
-            if (i + LOTE < total) toast('⏳ Enviando... ' + Math.min(i + LOTE, total) + ' / ' + total);
+            toastFijo('⏳ Procesando datos... ' + Math.min(i + LOTE, total) + ' / ' + total);
         }
         var sinConexion = todos.filter(function(d){ return !d || !d.ok; }).length;
         var guardados   = todos.filter(function(d){ return d && d.ok && !d.duplicado; }).length;
         var duplicados  = todos.filter(function(d){ return d && d.duplicado; }).length;
         if (guardados > 0) incrementarContador(guardados);
-        var msg = guardados > 0 ? '✓ ' + guardados + ' trabajo' + (guardados !== 1 ? 's' : '') + ' guardados en GestFact' : '';
-        if (duplicados > 0) msg += (msg ? ' — ' : '') + '⚠️ ' + duplicados + ' ya registrado' + (duplicados !== 1 ? 's' : '') + ' hoy';
-        if (sinConexion > 0) msg += (msg ? ' — ' : '') + '⏳ ' + sinConexion + ' en cola';
-        if (msg) toast(msg);
+        var msg = '✓ Proceso concluido — ' + guardados + ' registro' + (guardados !== 1 ? 's' : '') + ' guardado' + (guardados !== 1 ? 's' : '');
+        if (duplicados > 0) msg += ' — ⚠️ ' + duplicados + ' ya registrado' + (duplicados !== 1 ? 's' : '');
+        if (sinConexion > 0) msg += ' — ⏳ ' + sinConexion + ' en cola';
+        toast(msg, 4000);
     })();
 
     // Generar mensaje: copia fiel del texto original + encabezado cliente
@@ -1843,11 +1843,19 @@ if ('serviceWorker' in navigator) {
 })();
 
 // ─── Toast ───
-function toast(msg) {
+var _toastTimer = null;
+function toast(msg, ms) {
     const t = document.getElementById('toast');
+    if (_toastTimer) { clearTimeout(_toastTimer); _toastTimer = null; }
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2400);
+    _toastTimer = setTimeout(() => t.classList.remove('show'), ms || 2400);
+}
+function toastFijo(msg) {
+    const t = document.getElementById('toast');
+    if (_toastTimer) { clearTimeout(_toastTimer); _toastTimer = null; }
+    t.textContent = msg;
+    t.classList.add('show');
 }
 
 // ═══════════════════════════════════════════════════════
