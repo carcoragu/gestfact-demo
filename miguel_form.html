@@ -1159,10 +1159,15 @@ function _sincItem(item) {
 function sincronizarColaOrdenes() {
     var cola = _getColaOrdenes();
     if (!cola.length) return;
-    Promise.all(cola.map(_sincItem)).then(function(res) {
-        var n = res.filter(function(d){ return d && d.ok && !d.duplicado; }).length;
+    (async function() {
+        var LOTE = 5, todos = [];
+        for (var i = 0; i < cola.length; i += LOTE) {
+            var res = await Promise.all(cola.slice(i, i + LOTE).map(_sincItem));
+            todos = todos.concat(res);
+        }
+        var n = todos.filter(function(d){ return d && d.ok && !d.duplicado; }).length;
         if (n > 0) toast('✓ ' + n + ' trabajo' + (n !== 1 ? 's' : '') + ' sincronizado' + (n !== 1 ? 's' : '') + ' con GestFact');
-    });
+    })();
 }
 window.addEventListener('online', sincronizarColaOrdenes);
 setTimeout(sincronizarColaOrdenes, 1500);
@@ -1418,11 +1423,17 @@ function parsearBloques(texto) {
             ms.forEach(mm => { montoTotal += parseInt(mm[1] + mm[2]); });
         });
 
-        // Servicio: líneas 1+ sin notas de gestión
+        // Servicio: líneas 1+ sin notas de gestión ni líneas junk
         const notas = /falta cargar|hasta ac[aá] cargado|hasta aca|falta|cargado/i;
+        const tienePrecio = /\d{4,}/;
         const serv = b.slice(1)
             .map(l => l.trim())
-            .filter(l => l && !notas.test(l))
+            .filter(l => {
+                if (!l || notas.test(l)) return false;
+                if (/^-{2,}$/.test(l)) { _lineasDudosas++; return false; }       // separador ---
+                if (l.length > 60 && !tienePrecio.test(l)) { _lineasDudosas++; return false; } // encabezado largo sin precio
+                return true;
+            })
             .join(' / ');
 
         jobs.push({ chapa, fechaVal, fechaDis, servicio: serv, monto: montoTotal > 0 ? String(montoTotal) : '', cliente: '' });
@@ -1461,7 +1472,7 @@ function procesarBulk() {
 
     parsedJobs = parsearBloques(texto);
     if (!parsedJobs.length) { toast('⚠️ No se encontraron trabajos — verificá el formato'); return; }
-    if (_lineasDudosas > 0) setTimeout(() => toast('⚠️ ' + _lineasDudosas + ' línea' + (_lineasDudosas > 1 ? 's' : '') + ' dudosa' + (_lineasDudosas > 1 ? 's' : '') + ' ignorada' + (_lineasDudosas > 1 ? 's' : '') + ' — verificá la lista'), 600);
+    if (_lineasDudosas > 0) setTimeout(() => toast('⚠️ ' + _lineasDudosas + ' línea' + (_lineasDudosas > 1 ? 's' : '') + ' no reconocida' + (_lineasDudosas > 1 ? 's' : '') + ' — pegá solo chapa y servicios'), 600);
 
     // Pre-llenar cliente y monto en todos los trabajos
     parsedJobs.forEach(j => { j.cliente = cliente; j.monto = extraerMonto(j.servicio); });
@@ -1582,20 +1593,26 @@ function enviarBulk() {
     // Verificar límite mensual antes de enviar
     if (!verificarLimiteMes(parsedJobs.length)) return;
 
-    // Push cada trabajo a GestFact
-    var _n = parsedJobs.length;
-    Promise.all(parsedJobs.map(function(j) {
-        return pushOrdenAD(j.cliente, j.chapa, j.fechaVal, j.servicio, undefined, j.monto);
-    })).then(function(res) {
-        var sinConexion = res.some(function(d){ return !d || !d.ok; });
-        if (sinConexion) { toast('⏳ Sin conexión — se enviarán cuando vuelva internet'); return; }
-        var guardados  = res.filter(function(d){ return !d.duplicado; }).length;
-        var duplicados = res.filter(function(d){ return d.duplicado; }).length;
+    // Push en lotes de 5 para no saturar Apps Script
+    (async function() {
+        var LOTE = 5, todos = [], total = parsedJobs.length;
+        toast('⏳ Enviando ' + total + ' trabajo' + (total !== 1 ? 's' : '') + '...');
+        for (var i = 0; i < total; i += LOTE) {
+            var res = await Promise.all(parsedJobs.slice(i, i + LOTE).map(function(j) {
+                return pushOrdenAD(j.cliente, j.chapa, j.fechaVal, j.servicio, undefined, j.monto);
+            }));
+            todos = todos.concat(res);
+            if (i + LOTE < total) toast('⏳ Enviando... ' + Math.min(i + LOTE, total) + ' / ' + total);
+        }
+        var sinConexion = todos.filter(function(d){ return !d || !d.ok; }).length;
+        var guardados   = todos.filter(function(d){ return d && d.ok && !d.duplicado; }).length;
+        var duplicados  = todos.filter(function(d){ return d && d.duplicado; }).length;
         if (guardados > 0) incrementarContador(guardados);
-        var msg = guardados  > 0 ? '✓ ' + guardados  + ' trabajo' + (guardados  !== 1 ? 's' : '') + ' guardados en GestFact' : '';
+        var msg = guardados > 0 ? '✓ ' + guardados + ' trabajo' + (guardados !== 1 ? 's' : '') + ' guardados en GestFact' : '';
         if (duplicados > 0) msg += (msg ? ' — ' : '') + '⚠️ ' + duplicados + ' ya registrado' + (duplicados !== 1 ? 's' : '') + ' hoy';
-        toast(msg);
-    });
+        if (sinConexion > 0) msg += (msg ? ' — ' : '') + '⏳ ' + sinConexion + ' en cola';
+        if (msg) toast(msg);
+    })();
 
     // Generar mensaje: copia fiel del texto original + encabezado cliente
     const texto = `${cliente} — ${parsedJobs.length} trabajo${parsedJobs.length !== 1 ? 's' : ''}\n\n${textoOriginal}`;
