@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparativa Software para Talleres — Fer Gauto</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial, sans-serif; font-size: 12px; background: #eef2f7; color: #222; }
+
+.reporte {
+  width: 210mm;
+  margin: 10mm auto;
+  background: #fff;
+  border: 2px solid #1a4070;
+  padding: 8mm 10mm 12mm;
+}
+
+/* ── ENCABEZADO ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #1a4070;
+  padding-bottom: 5mm;
+  margin-bottom: 6mm;
+}
+.marca { font-size: 20px; font-weight: bold; color: #1a4070; letter-spacing: 2px; }
+.sub   { font-size: 9px; color: #666; margin-top: 2px; }
+.doc-info { text-align: right; }
+.doc-titulo { font-size: 13px; font-weight: bold; color: #1a4070; }
+.doc-para   { font-size: 10px; color: #444; margin-top: 3px; }
+.doc-fecha  { font-size: 9px; color: #888; margin-top: 2px; }
+
+/* ── AVISO SUPERIOR ── */
+.aviso {
+  background: #fff8e1;
+  border-left: 4px solid #f59e0b;
+  padding: 3mm 4mm;
+  margin-bottom: 6mm;
+  font-size: 10px;
+  color: #555;
+  border-radius: 0 4px 4px 0;
+}
+.aviso strong { color: #b45309; }
+
+/* ── SECCIÓN ── */
+.seccion-titulo {
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+  background: #1a4070;
+  padding: 2mm 4mm;
+  margin-bottom: 4mm;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+
+/* ── TARJETA PROVEEDOR ── */
+.proveedores { display: flex; flex-direction: column; gap: 5mm; margin-bottom: 7mm; }
+
+.card {
+  border: 1.5px solid #c8d4e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f4f7fb;
+  padding: 3mm 4mm;
+  border-bottom: 1px solid #c8d4e8;
+}
+.card-nombre   { font-size: 13px; font-weight: bold; color: #1a4070; }
+.card-pais     { font-size: 9px; color: #666; margin-top: 1px; }
+.card-precio   {
+  background: #1a4070;
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2mm 4mm;
+  border-radius: 4px;
+  text-align: right;
+  white-space: nowrap;
+}
+.card-precio small { display: block; font-size: 8px; font-weight: normal; color: #9db8d8; }
+
+.card-body { display: flex; gap: 0; }
+
+.col-pros, .col-cons, .col-dolor {
+  flex: 1;
+  padding: 3mm 4mm;
+  font-size: 10px;
+  line-height: 1.6;
+  border-right: 1px solid #e8ecf2;
+}
+.col-pros  { background: #f9fffe; }
+.col-cons  { background: #fff9f9; }
+.col-dolor { background: #fffbf0; border-right: none; }
+
+.col-label {
+  font-size: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2mm;
+  padding-bottom: 1mm;
+  border-bottom: 1px solid #e0e6ee;
+}
+.col-pros .col-label  { color: #059669; border-color: #a7f3d0; }
+.col-cons .col-label  { color: #dc2626; border-color: #fca5a5; }
+.col-dolor .col-label { color: #d97706; border-color: #fde68a; }
+
+.col-pros  li::before { content: "✓ "; color: #059669; font-weight: bold; }
+.col-cons  li::before { content: "✗ "; color: #dc2626; font-weight: bold; }
+.col-dolor li::before { content: "⚠ "; color: #d97706; }
+
+ul { list-style: none; padding: 0; }
+ul li { margin-bottom: 1mm; }
+
+/* ── TARJETA ISABSOFT (DESTACADA) ── */
+.card-isabsoft {
+  border: 2.5px solid #1a4070;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.badge-recomendado {
+  position: absolute;
+  top: 0; right: 12mm;
+  background: #16a34a;
+  color: #fff;
+  font-size: 8px;
+  font-weight: bold;
+  padding: 1.5mm 5mm;
+  letter-spacing: 0.5px;
+  border-radius: 0 0 5px 5px;
+}
+.card-isabsoft .card-header {
+  background: #e8f0fc;
+  border-bottom: 2px solid #1a4070;
+}
+.card-isabsoft .card-nombre { font-size: 14px; color: #1a4070; }
+.card-isabsoft .card-precio { background: #16a34a; }
+
+.card-isabsoft .col-pros  { background: #f0fdf4; }
+.card-isabsoft .col-cons  { background: #f9fafb; }
+.card-isabsoft .col-dolor { background: #f0fdf4; }
+
+/* ── TABLA RESUMEN ── */
+.tabla-comp { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 7mm; }
+.tabla-comp thead th {
+  background: #1a4070;
+  color: #fff;
+  padding: 2.5mm 2mm;
+  font-size: 9px;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+}
+.tabla-comp thead th:first-child { text-align: left; }
+.tabla-comp tbody tr td {
+  padding: 2mm 2mm;
+  border-bottom: 1px solid #e8ecf2;
+  text-align: center;
+  vertical-align: middle;
+}
+.tabla-comp tbody tr td:first-child { text-align: left; font-weight: bold; color: #1a4070; }
+.tabla-comp tbody tr:nth-child(even) { background: #f4f7fb; }
+.tabla-comp tbody tr:last-child { background: #e8f0fc; }
+.tabla-comp tbody tr:last-child td { font-weight: bold; color: #1a4070; border-bottom: 2px solid #1a4070; }
+.si  { color: #16a34a; font-weight: bold; font-size: 12px; }
+.no  { color: #dc2626; font-size: 12px; }
+.par { color: #d97706; font-size: 10px; }
+
+/* ── CONCLUSIÓN ── */
+.conclusion {
+  background: #e8f0fc;
+  border: 2px solid #1a4070;
+  border-radius: 6px;
+  padding: 4mm 5mm;
+  margin-bottom: 5mm;
+}
+.conclusion h3 { color: #1a4070; font-size: 11px; margin-bottom: 2mm; }
+.conclusion p  { font-size: 10px; line-height: 1.7; color: #333; }
+.conclusion strong { color: #1a4070; }
+
+/* ── LEGAL ── */
+.legal {
+  border-top: 1px solid #c8d4e8;
+  padding-top: 3mm;
+  font-size: 7.5px;
+  color: #999;
+  text-align: center;
+  line-height: 1.5;
+}
+
+@media print {
+  body { background: #fff; }
+  .reporte { margin: 0; border: none; width: 100%; }
+  @page { margin: 10mm; size: A4 portrait; }
+}
+</style>
+</head>
+<body>
+<div class="reporte">
+
+  <!-- ENCABEZADO -->
+  <div class="header">
+    <div>
+      <div class="marca">IsabSoft</div>
+      <div class="sub">Software de Gestión para Talleres &amp; Comercios &mdash; Paraguay</div>
+    </div>
+    <div class="doc-info">
+      <div class="doc-titulo">COMPARATIVA DE SOFTWARE</div>
+      <div class="doc-para">Preparado para: <strong>Fer Gauto</strong> &mdash; Taller Mecánico</div>
+      <div class="doc-fecha">Septiembre 2026 &mdash; Uso interno / confidencial</div>
+    </div>
+  </div>
+
+  <!-- AVISO -->
+  <div class="aviso">
+    <strong>¿Por qué este documento?</strong> Sabemos que investigar opciones lleva tiempo. Este resumen muestra los 5 perfiles típicos del mercado de software para talleres (2 regionales + 3 locales) con rangos de precios, ventajas y dolores frecuentes, para que puedas comparar con información concreta sin tener que buscar vos mismo.
+  </div>
+
+  <!-- ════════════ SECCIÓN 1: PROVEEDORES SUDAMERICANOS ════════════ -->
+  <div class="seccion-titulo">🌎 Proveedores Sudamericanos</div>
+  <div class="proveedores">
+
+    <!-- REGIONAL ARGENTINA -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-nombre">Software Regional</div>
+          <div class="card-pais">🇦🇷 Argentina &mdash; Perfil típico: software web para talleres mecánicos</div>
+        </div>
+        <div class="card-precio">
+          USD 45 – 80 / mes
+          <small>~ Gs. 340.000 – 600.000</small>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="col-pros">
+          <div class="col-label">Beneficios</div>
+          <ul>
+            <li>Historial completo del vehículo</li>
+            <li>Órdenes de trabajo digitales</li>
+            <li>Stock de repuestos integrado</li>
+            <li>Facturación electrónica (AFIP AR)</li>
+            <li>App móvil disponible</li>
+            <li>Reportes de rentabilidad</li>
+          </ul>
+        </div>
+        <div class="col-cons">
+          <div class="col-label">Limitaciones</div>
+          <ul>
+            <li>Precio en dólares = costo variable</li>
+            <li>Soporte en horario Argentina</li>
+            <li>No compatible con SET/SIFEN PY</li>
+            <li>Contrato mínimo 6 meses</li>
+            <li>Interfaz compleja, curva de aprendizaje</li>
+          </ul>
+        </div>
+        <div class="col-dolor">
+          <div class="col-label">Dolores frecuentes</div>
+          <ul>
+            <li>"El precio sube cada vez que sube el dólar"</li>
+            <li>"Tardaron 3 días en responderme"</li>
+            <li>"No puedo usarlo si se va la internet"</li>
+            <li>"La migración de datos fue un caos"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGIONAL BRASIL -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-nombre">Software Regional</div>
+          <div class="card-pais">🇧🇷 Brasil &mdash; Perfil típico: sistema de gestión para talleres mecánicos</div>
+        </div>
+        <div class="card-precio">
+          USD 35 – 60 / mes
+          <small>~ Gs. 262.000 – 450.000</small>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="col-pros">
+          <div class="col-label">Beneficios</div>
+          <ul>
+            <li>Orden de servicio con fotos</li>
+            <li>Control de repuestos (stock)</li>
+            <li>Agenda de turnos</li>
+            <li>Envío de presupuesto por WhatsApp</li>
+            <li>Panel de estadísticas</li>
+            <li>Nube, sin instalación</li>
+          </ul>
+        </div>
+        <div class="col-cons">
+          <div class="col-label">Limitaciones</div>
+          <ul>
+            <li>Interfaz en portugués (sin español completo)</li>
+            <li>Precios en USD, cobro con tarjeta</li>
+            <li>Sin soporte local en Paraguay</li>
+            <li>Requiere internet permanente</li>
+            <li>No emite documentos válidos SET</li>
+          </ul>
+        </div>
+        <div class="col-dolor">
+          <div class="col-label">Dolores frecuentes</div>
+          <ul>
+            <li>"El soporte responde por email en 2 días"</li>
+            <li>"Algunos menús todavía en portugués"</li>
+            <li>"Si no tenés tarjeta internacional, no podés pagar"</li>
+            <li>"Nada integrado con impresoras locales PY"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sudamericanos -->
+
+  <!-- ════════════ SECCIÓN 2: PROVEEDORES PARAGUAY ════════════ -->
+  <div class="seccion-titulo">🇵🇾 Proveedores Locales Paraguay</div>
+  <div class="proveedores">
+
+    <!-- GENERICO LOCAL -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-nombre">Sistema Genérico Local</div>
+          <div class="card-pais">🇵🇾 Paraguay &mdash; Perfil típico: sistema administrativo genérico adaptado a talleres</div>
+        </div>
+        <div class="card-precio">
+          Gs. 200.000 – 250.000 / mes
+          <small>o pago único Gs. 1.500.000</small>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="col-pros">
+          <div class="col-label">Beneficios</div>
+          <ul>
+            <li>Facturación local (timbrado DNIT)</li>
+            <li>Control de clientes y vehículos</li>
+            <li>Registro de servicios básico</li>
+            <li>Soporte local en Asunción</li>
+            <li>Funciona sin internet</li>
+          </ul>
+        </div>
+        <div class="col-cons">
+          <div class="col-label">Limitaciones</div>
+          <ul>
+            <li>Diseñado para comercios, no talleres</li>
+            <li>Sin historial por chapa/vehículo real</li>
+            <li>Sin fotos de ingreso/egreso</li>
+            <li>Actualizaciones muy lentas (1×/año)</li>
+            <li>Sin app móvil ni acceso web</li>
+          </ul>
+        </div>
+        <div class="col-dolor">
+          <div class="col-label">Dolores frecuentes</div>
+          <ul>
+            <li>"Lo adapté yo mismo con Excel al lado"</li>
+            <li>"No puedo ver el historial rápido de un cliente"</li>
+            <li>"Si se rompe la PC, perdí todo"</li>
+            <li>"Tardó 2 meses en arreglar un bug"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESKTOP TALLER -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-nombre">Software Desktop Taller</div>
+          <div class="card-pais">🇵🇾 Paraguay &mdash; Perfil típico: software de escritorio para talleres medianos</div>
+        </div>
+        <div class="card-precio">
+          Gs. 300.000 / mes
+          <small>+ instalación Gs. 400.000</small>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="col-pros">
+          <div class="col-label">Beneficios</div>
+          <ul>
+            <li>Módulo taller específico</li>
+            <li>Presupuestos y órdenes de trabajo</li>
+            <li>Control de caja básico</li>
+            <li>Timbrado electrónico (módulo extra pago)</li>
+            <li>Instalado localmente, sin cloud</li>
+          </ul>
+        </div>
+        <div class="col-cons">
+          <div class="col-label">Limitaciones</div>
+          <ul>
+            <li>Solo para 1 PC (licencia single)</li>
+            <li>Sin acceso remoto ni desde celular</li>
+            <li>Reportes limitados, sin exportar</li>
+            <li>FE como módulo extra, costo aprox. Gs.150.000</li>
+            <li>Soporte solo presencial o WhatsApp</li>
+          </ul>
+        </div>
+        <div class="col-dolor">
+          <div class="col-label">Dolores frecuentes</div>
+          <ul>
+            <li>"Si salgo del taller, no veo nada"</li>
+            <li>"Me cobran por cada actualización"</li>
+            <li>"Solo funciona en 1 computadora"</li>
+            <li>"El soporte a veces tarda varios días"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXCEL / CUADERNOS -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-nombre">Excel / Cuaderno físico</div>
+          <div class="card-pais">🇵🇾 Paraguay &mdash; Solución más usada en talleres chicos (sin sistema)</div>
+        </div>
+        <div class="card-precio">
+          "Gratis"
+          <small>costo oculto: tiempo + errores</small>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="col-pros">
+          <div class="col-label">Beneficios</div>
+          <ul>
+            <li>Sin costo mensual</li>
+            <li>Flexible, cada uno lo adapta</li>
+            <li>Familiar para todos</li>
+            <li>Funciona sin internet</li>
+          </ul>
+        </div>
+        <div class="col-cons">
+          <div class="col-label">Limitaciones</div>
+          <ul>
+            <li>Sin historial organizado por chapa</li>
+            <li>Sin presupuestos formales</li>
+            <li>Fácil de perder o dañar</li>
+            <li>Sin cobros ni cuentas pendientes</li>
+            <li>Sin reportes mensuales</li>
+          </ul>
+        </div>
+        <div class="col-dolor">
+          <div class="col-label">Dolores frecuentes</div>
+          <ul>
+            <li>"No sé cuánto cobré este mes"</li>
+            <li>"El cliente dice que pagó y yo no lo anoté"</li>
+            <li>"Se borró el Excel y perdí el historial"</li>
+            <li>"Cada mes es un caos de papeles"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /paraguay -->
+
+  <!-- ════════════ SECCIÓN 3: ISABSOFT / GESTFACT ════════════ -->
+  <div class="seccion-titulo">IsabSoft / GestFact — Paraguay</div>
+  <div class="proveedores">
+
+    <div class="card card-isabsoft">
+      <div class="card-header">
+        <div>
+          <div class="card-nombre">IsabSoft — GestFact Taller</div>
+          <div class="card-pais">🇵🇾 Paraguay &mdash; Sistema diseñado específicamente para talleres mecánicos locales</div>
+        </div>
+        <div class="card-precio">
+          Gs. 350.000 / mes
+          <small>instalación Gs. 200.000 (única vez)</small>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="col-pros">
+          <div class="col-label">Beneficios clave</div>
+          <ul>
+            <li>Funciona en cualquier navegador: Windows, Mac, Linux</li>
+            <li>Historial completo por chapa y cliente</li>
+            <li>Presupuestos PDF con envío por WhatsApp</li>
+            <li>Orden de trabajo (pendiente / en proceso / listo)</li>
+            <li>Control de cobros y deudas pendientes</li>
+            <li>Stock con escáner código de barras — descuento automático</li>
+            <li>Fotos de ingreso/egreso del vehículo (Plan Mensual)</li>
+            <li>Factura autoimpresor con logo del taller (Plan Mensual)</li>
+            <li>Precio fijo en guaraníes, sin sorpresas en USD</li>
+            <li>Soporte mismo día por WhatsApp</li>
+            <li>Actualizaciones incluidas sin costo extra</li>
+          </ul>
+        </div>
+        <div class="col-cons">
+          <div class="col-label">Dolores / Limitaciones</div>
+          <ul>
+            <li>Módulo IA (carga conversacional): Gs.400.000/mes adicional</li>
+            <li>Factura Electrónica SET (SIFEN): cotización aparte</li>
+            <li>Contingencia local (Access) solo en Windows</li>
+          </ul>
+        </div>
+        <div class="col-dolor">
+          <div class="col-label">Dolores que elimina</div>
+          <ul>
+            <li>"¿Cuánto gané este mes?" → panel en 1 click</li>
+            <li>"¿Este cliente debe algo?" → visible en 2 seg</li>
+            <li>"¿Qué le hice al auto la vez pasada?" → historial</li>
+            <li>"El cliente dice que ya pagó" → registro con fecha</li>
+            <li>"No sé si el presupuesto fue aceptado" → estado guardado</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /isabsoft -->
+
+  <!-- ════════════ TABLA COMPARATIVA ════════════ -->
+  <div class="seccion-titulo">📊 Tabla Comparativa Rápida</div>
+  <table class="tabla-comp">
+    <thead>
+      <tr>
+        <th style="width:22%;text-align:left;">Función</th>
+        <th style="width:13%">Regional<br><small>🇦🇷 típico</small></th>
+        <th style="width:13%">Regional<br><small>🇧🇷 típico</small></th>
+        <th style="width:13%">Genérico<br><small>🇵🇾 local</small></th>
+        <th style="width:13%">Desktop<br><small>🇵🇾 taller</small></th>
+        <th style="width:13%">Excel<br><small>🇵🇾</small></th>
+        <th style="width:13%;background:#e8f0fc;color:#1a4070;">GestFact<br><small>🇵🇾 IsabSoft</small></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Historial por chapa</td>
+        <td class="si">✓</td><td class="si">✓</td><td class="no">✗</td>
+        <td class="par">Parcial</td><td class="no">✗</td><td class="si">✓</td>
+      </tr>
+      <tr>
+        <td>Presupuestos impresos</td>
+        <td class="si">✓</td><td class="si">✓</td><td class="par">Parcial</td>
+        <td class="si">✓</td><td class="no">✗</td><td class="si">✓</td>
+      </tr>
+      <tr>
+        <td>Control cobros / deudas</td>
+        <td class="si">✓</td><td class="si">✓</td><td class="no">✗</td>
+        <td class="par">Básico</td><td class="no">✗</td><td class="si">✓</td>
+      </tr>
+      <tr>
+        <td>Fotos entrada/salida</td>
+        <td class="no">✗</td><td class="si">✓</td><td class="no">✗</td>
+        <td class="no">✗</td><td class="no">✗</td><td class="si">✓</td>
+      </tr>
+      <tr>
+        <td>Stock de repuestos</td>
+        <td class="si">✓</td><td class="si">✓</td><td class="no">✗</td>
+        <td class="no">✗</td><td class="no">✗</td><td class="si">✓ módulo</td>
+      </tr>
+      <tr>
+        <td>Factura Electrónica DNIT</td>
+        <td class="no">✗ (AFIP AR)</td><td class="no">✗ (NF BR)</td><td class="par">Extra pago</td>
+        <td class="par">Extra pago</td><td class="no">✗</td><td class="par">Cotizable</td>
+      </tr>
+      <tr>
+        <td>Precio en guaraníes fijo</td>
+        <td class="no">✗ USD</td><td class="no">✗ USD</td><td class="si">✓</td>
+        <td class="si">✓</td><td class="si">—</td><td class="si">✓</td>
+      </tr>
+      <tr>
+        <td>Soporte local Paraguay</td>
+        <td class="no">✗</td><td class="no">✗</td><td class="par">Presencial</td>
+        <td class="par">WA lento</td><td class="no">✗</td><td class="si">✓ WhatsApp</td>
+      </tr>
+      <tr>
+        <td>Funciona en Mac / Linux</td>
+        <td class="si">✓</td><td class="si">✓</td><td class="no">✗</td>
+        <td class="no">✗</td><td class="si">✓</td><td class="si">✓ web</td>
+      </tr>
+      <tr>
+        <td>App móvil / carga desde celular</td>
+        <td class="par">App básica</td><td class="si">✓ app</td><td class="no">✗</td>
+        <td class="no">✗</td><td class="no">✗</td><td class="si">✓ AnotDigi incluido</td>
+      </tr>
+      <tr>
+        <td>Funciona sin internet</td>
+        <td class="no">✗</td><td class="no">✗</td><td class="si">✓</td>
+        <td class="si">✓</td><td class="si">✓</td><td class="par">Parcial</td>
+      </tr>
+      <tr>
+        <td>Costo mensual aprox.</td>
+        <td>Gs.340.000–600.000</td><td>Gs.262.000–450.000</td><td>Gs.200.000–250.000</td>
+        <td>Gs.300.000</td><td>—</td><td><strong>Gs.350.000</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- LEGAL -->
+  <div class="legal">
+    Los perfiles de mercado presentados son categorías representativas del mercado regional — no corresponden a empresas específicas. Precios y características son rangos estimados a septiembre 2026 y pueden variar. &mdash; IsabSoft &bull; isabsofthard@gmail.com
+  </div>
+
+</div>
+</body>
+</html>
