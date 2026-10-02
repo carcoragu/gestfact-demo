@@ -1,0 +1,1755 @@
+﻿{
+    "ultima_actualizacion": "2026-08-04",
+    "cola": [
+        {
+            "id": "JESUS-13072026-ERP",
+            "nombre": "Jesus Marmolejo — ERP",
+            "telefono": "+595976585313",
+            "fecha": "2026-07-13",
+            "hora": "09:00",
+            "mensaje": "Jesús, buen día. Estuve revisando el sistema que me mandaste en octubre — la interfaz con el tablero de tareas, los estados, los responsables. Ahora lo entiendo bien.\n\nLovable es bueno para visualizar, pero lo que construye es frágil y no escala. Yo puedo tomar tu prototipo y construirlo robusto — con base de datos real, acceso móvil, integración con tus sistemas.\n\n¿Eso sigue siendo lo que querés construir o evolucionó la idea?",
+            "estado": "programado",
+            "nota": "9 meses sin respuesta al prototipo Lovable. Este mensaje aborda directamente el ERP. Alto valor potencial."
+        },
+        {
+            "id": "IVAN-13072026-CIERRE",
+            "nombre": "Ivan Nuñez — Seguros",
+            "telefono": "+595971330442",
+            "fecha": "2026-07-13",
+            "hora": "09:30",
+            "mensaje": "Ivan, buen día. Una pregunta rápida — ¿hoy llevás los vencimientos de pólizas en Excel, cuaderno, o tenés algún sistema?\n\nTe pregunto porque armamos algo específico para corredores que corre desde el celular. El plan de entrada arranca en Gs. 100.000/mes.\n\n¿Te interesa verlo?",
+            "estado": "programado",
+            "nota": "Sobre-mensajeado. Precio era la barrera (Gs. 350k). Ahora ofrecemos Gs. 100k de entrada. Pregunta de rubro primero, precio al final."
+        },
+        {
+            "id": "GUSTAVO-13072026-CIERRE",
+            "nombre": "Gustavo Fabián Reyes",
+            "telefono": "+595981766053",
+            "fecha": "2026-07-13",
+            "hora": "10:00",
+            "mensaje": "Gustavo, buen día. Soy Carlos de IsabSoft. El sistema está instalado en tus 3 equipos desde enero y acordamos 3 cuotas de Gs. 700.000.\n\nNecesito saber si regularizamos el pago o cerramos el servicio. Sin problema en cualquiera de los dos casos, pero necesito una respuesta esta semana.",
+            "estado": "programado",
+            "nota": "NUNCA PAGÓ. Sistema instalado ene/26. Aprobó 3×700k el 03/01/26. Llamada 19/06 no atendió. Mensaje de cierre definitivo."
+        },
+        {
+            "id": "GIOVANNI-16072026-FOLLOWUP",
+            "nombre": "Giovanni — Taller Automotriz",
+            "telefono": "+595961309822",
+            "fecha": "2026-07-16",
+            "hora": "09:00",
+            "mensaje": "Buen día Giovanni, ¿cómo estás? Te escribo para saber si hay alguna novedad de tu parte. Tengo disponible esta semana para mostrarte el sistema en 10 minutos si querés coordinar.",
+            "estado": "programado",
+            "nota": "Respondió interés 10/06. Follow-ups 11/06 y 15/06 sin respuesta. Mensaje enviado 09/07. Este es el último follow-up."
+        },
+        {
+            "id": "DAVID-16072026-FOLLOWUP",
+            "nombre": "David Alfonzo — Motormat",
+            "telefono": "+595976957120",
+            "fecha": "2026-07-16",
+            "hora": "09:30",
+            "mensaje": "Buen día David, ¿cómo estás? Quería saber si pudiste evaluar la propuesta. La instalación es Gs. 200.000 y Gs. 350.000/mes todo incluido.\n\n¿Sigue en agenda o lo dejamos para más adelante?",
+            "estado": "programado",
+            "nota": "Dijo 'para más adelante' el 19/06. Re-engagement enviado 09/07. Follow-up 16/07."
+        },
+        {
+            "id": "EDUARDO-16072026-FOLLOWUP",
+            "nombre": "Eduardo — Taller",
+            "telefono": "+595982199600",
+            "fecha": "2026-07-16",
+            "hora": "10:00",
+            "mensaje": "Buen día, soy Carlos de IsabSoft. Pasé personalmente en junio. Quería saber si el sistema para taller sigue siendo algo que te interesa o lo dejamos para más adelante.\n\nSin apuro, solo para saber si seguimos en contacto.",
+            "estado": "programado",
+            "nota": "Contacto presencial jun/26. Nunca respondió. Mensaje cierre enviado 09/07. Si no responde → cerrar definitivamente."
+        },
+        {
+            "id": "CLIENTETALLER-16072026-FOLLOWUP",
+            "nombre": "Cliente Taller",
+            "telefono": "+595986340084",
+            "fecha": "2026-07-16",
+            "hora": "10:30",
+            "mensaje": "Buen día, ¿cómo están? Quería retomar el tema del sistema para el taller. Si el papá puede revisar una demo esta semana, coordinamos en 15 minutos cuando les quede bien.\n\nQuedo atento.",
+            "estado": "programado",
+            "nota": "Inbound feb/26. Papá es decisor, nunca tuvo contacto directo. Mensaje enviado 09/07. Si no responde → cerrar hasta oct/26."
+        },
+        {
+            "id": "RODRIGO-14072026-DEMO",
+            "nombre": "Rodrigo Sarubbi — INGEMON",
+            "telefono": "+595981884743",
+            "fecha": "2026-07-14",
+            "hora": "10:00",
+            "mensaje": "Rodrigo, buen día. Sé que hace tiempo que te vengo escribiendo sobre el sistema para INGEMON.\n\nEsta vez tengo algo concreto: la demo funcionando, podés probarla ahora mismo desde el celular 👇\n\n👉 carcoragu.github.io/alquiler-demo/\n\nFlota, contratos, alertas de devolución y seguros — todo en vivo.\n\nSin compromiso, solo para que lo veas.",
+            "estado": "programado",
+            "nota": "Demo FleetControl lista. Primer mensaje con app real. Rodrigo nunca respondió a planes-rodrigo (27/05). Esta vez va con link interactivo. Si no responde → cerrar definitivamente."
+        },
+        {
+            "id": "CLIDER-14072026-TABLA",
+            "nombre": "Clider Schussmuller (CS Consultoría)",
+            "telefono": "+595981376388",
+            "fecha": "2026-07-14",
+            "hora": "09:00",
+            "mensaje": "Clider, buen lunes! ¿Pudiste mandarme la tabla nueva? Cuando estés listo arrancamos.",
+            "estado": "programado",
+            "nota": "11/07 respondió 'a full estoy aguantame que'. Tabla nueva pendiente. Si envía antes del lunes, cancelar este follow-up y proceder con carga + cobro saldo Gs.750k."
+        },
+        {
+            "id": "JIMMY-18072026-FOLLOWUP",
+            "nombre": "Jimmy Gómez",
+            "telefono": "+595981777327",
+            "fecha": "2026-07-18",
+            "hora": "10:00",
+            "mensaje": "Hola Jimmy, ¿cómo estás? Solo quería saber si pudiste ver mi mensaje de la semana pasada — si es el precio lo que frenó la decisión, tenemos una propuesta más simple que te puedo pasar.",
+            "estado": "programado",
+            "nota": "11/07 se preguntó si era el precio o tenía dudas. Si responde antes del 18/07, cancelar este. Si no responde → proponer Gs. 200k arranque + Gs. 400k/mes todo incluido (Wix absorbido)."
+        },
+        {
+            "id": "MIGUEL-02062026-0830-ACTUALIZACIONES",
+            "nombre": "Miguel Acuña",
+            "telefono": "+595961807675",
+            "fecha": "2026-05-30",
+            "hora": "noche",
+            "mensaje": "Buen día Miguel! Le cuento que desde la última vez que hablamos le agregamos varias mejoras al sistema:\n\n✅ El presupuesto en PDF quedó con el número correcto y la fecha actualizada\n✅ El WhatsApp ya no manda caracteres raros\n✅ Al editar una orden, los botones se activan solo cuando modificás algo\n✅ Si un cliente tiene varios vehículos, los ve separados con el historial de cada uno\n✅ Módulo nuevo de Egresos: para registrar los gastos del taller (repuestos, combustible, salarios, etc.)\n✅ En Gestión ahora ve Ingresos, Egresos y el Balance del período\n\n¿Cuándo tiene unos 15 minutos para que le muestre todo en vivo? Lo coordinamos cuando le venga bien.",
+            "estado": "enviado",
+            "nota": "Enviado 30/05/2026 noche. Esperando respuesta para coordinar demo 15 min."
+        },
+        {
+            "id": "MIGUEL-NUEVA-ORDEN-01062026",
+            "nombre": "Miguel Acuña",
+            "telefono": "+595981153477",
+            "fecha": "2026-06-02",
+            "hora": "09:00",
+            "mensaje": "Miguel, buenas! Le cuento que actualizamos el sistema hoy con una mejora que me comentó:\n\nAntes, al crear una nueva orden desde el perfil de un cliente, aparecía \"Carlos Sanchez\" en vez del cliente que tenía abierto. Eso ya está corregido ✅\n\n*Cómo crear una orden para un cliente existente:*\n\n1️⃣ Entrá al sistema con su contraseña\n2️⃣ Tocá *Clientes* en el menú\n3️⃣ Buscá y tocá el nombre del cliente\n4️⃣ Dentro del perfil, tocá el botón *\"+ Nueva Orden\"*\n5️⃣ Ya aparece el cliente pre-cargado — tocá *\"Nuevo Vehículo\"* y completá los datos del vehículo\n6️⃣ Completá el servicio y el monto\n7️⃣ Tocá *Guardar* ✅\n\nLa orden queda registrada en el historial del cliente automáticamente.\n\nCualquier duda me avisa, Miguel!",
+            "estado": "enviado",
+            "nota": "Enviado 02/06 mañana. Miguel respondió muy bien. Pendiente: respuesta Access/Sheets enviada por la tarde 02/06."
+        },
+        {
+            "id": "MIGUEL-02062026-0900-CONTRATO",
+            "nombre": "Miguel Acuña",
+            "telefono": "+595981153477",
+            "fecha": "2026-06-03",
+            "hora": "09:00",
+            "mensaje": "Miguel, buenas. Te comparto el resumen de tu plan:\n\n📋 *Plan Estándar con Móvil — IsabSoft GestFact*\n— Inversión total: Gs. 2.900.000\n— Cuota 1 (instalación): Gs. 200.000 ✅ (pagado 26/05)\n— Mantenimiento mensual: Gs. 150.000\n— Soporte por WhatsApp incluido\n— Mejoras y correcciones del sistema incluidas\n\n📅 *Calendario de pagos:*\n— Junio 2026: Gs. 350.000 (cuota 2 Gs.200k + mant. Gs.150k)\n— Julio 2026: Gs. 350.000 (cuota 3)\n— Agosto 2026: Gs. 350.000 (cuota 4)\n— Septiembre 2026: Gs. 350.000 (cuota 5)\n— Octubre 2026: Gs. 350.000 (cuota 6)\n— Noviembre 2026: Gs. 350.000 (cuota 7)\n— Diciembre 2026: Gs. 350.000 (cuota 8)\n— Enero 2027: Gs. 350.000 (cuota 9)\n— Febrero 2027: Gs. 350.000 (cuota 10)\n— Marzo 2027: Gs. 350.000 (cuota 11)\n— Abril 2027: Gs. 350.000 (cuota 12)\n— Mayo 2027: Gs. 350.000 (cuota 13)\n— Junio 2027: Gs. 450.000 (última cuota Gs.300k + mant. Gs.150k)\n\n✅ Desde julio 2027: solo mantenimiento Gs. 150.000/mes\n\nCualquier consulta me avisás 👍",
+            "estado": "enviado",
+            "nota": "Miguel respondió muy bien 02/06. Contrato enviado 03/06 09:00."
+        },
+        {
+            "id": "JESUS-02062026-0900",
+            "nombre": "Jesus Marmolejo",
+            "telefono": "+595976585313",
+            "fecha": "2026-06-02",
+            "hora": "13:11",
+            "mensaje": "Jesus, una pregunta. En octubre me mandaste el detalle completo — los 7 módulos, los roles de usuario, la app móvil con geolocalización. ¿Eso sigue siendo lo que querés construir, o cambiaron las prioridades desde entonces?",
+            "estado": "enviado",
+            "nota": "Enviado 02/06 13:11. Sin respuesta aún. Si responde con interés, retomar spec completo."
+        },
+        {
+            "id": "ALCIDES-25052026-0900",
+            "nombre": "Alcides Fernández",
+            "telefono": "+595983670608",
+            "fecha": "2026-06-01",
+            "hora": "09:00",
+            "mensaje": "Buen dia Alcides, una pregunta rapida — ¿en su campo maneja inseminacion propia o trabaja con servicio externo?",
+            "estado": "enviado",
+            "nota": "Enviado 01/06/2026 mañana. Sin respuesta."
+        },
+        {
+            "id": "ALCIDES-05062026-FOLLOWUP",
+            "nombre": "Alcides Fernández",
+            "telefono": "+595983670608",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Alcides, por si no llegó mi mensaje — ¿maneja la inseminación propia o con servicio externo? Le pregunto porque el módulo que tenemos registra cada servicio, fecha, vaca y resultado directo desde el campo.\n\nSi gusta puede verlo acá: carcoragu.github.io/IsabSoftAgroSoft/",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Follow-up con link AgroSoft."
+        },
+        {
+            "id": "KAREN-25052026-0900",
+            "nombre": "Karen Ortellado",
+            "telefono": "+595981797880",
+            "fecha": "2026-06-01",
+            "hora": "09:00",
+            "mensaje": "Karen, ¿cómo andás? Quería saber si quedó alguna duda del sistema tras la demo.",
+            "estado": "enviado",
+            "nota": "Enviado 01/06/2026 mañana. Sin respuesta."
+        },
+        {
+            "id": "KAREN-05062026-FOLLOWUP",
+            "nombre": "Karen Ortellado",
+            "telefono": "+595981797880",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Karen, ¿pudiste probar el sistema? Si hay algo que quieras ver adaptado a tu manejo con Tru-Test, me avisás y lo vemos.\n\nEl link si querés verlo de nuevo: carcoragu.github.io/IsabSoftAgroSoft/",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Follow-up con link AgroSoft + referencia Tru-Test."
+        },
+        {
+            "id": "NATO-26052026-0900",
+            "nombre": "Nato",
+            "telefono": "+595985462841",
+            "fecha": "2026-06-01",
+            "hora": "09:00",
+            "mensaje": "Nato, sin apuro — cuando tengas un momento me avisas y coordinamos. El sistema sigue disponible para tu operacion de cria y engorde.",
+            "estado": "enviado",
+            "nota": "Enviado 01/06/2026 mañana. Sin respuesta."
+        },
+        {
+            "id": "NATO-06062026-FOLLOWUP",
+            "nombre": "Nato",
+            "telefono": "+595985462841",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Nato, sin apuro. Cuando quieran lo vemos en el campo — 10 minutos para mostrarle cómo encaja con la operación de cría y engorde.\n\nEl sistema: carcoragu.github.io/IsabSoftAgroSoft/",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Follow-up con link AgroSoft."
+        },
+        {
+            "id": "JIMMY-27052026-0900",
+            "nombre": "Jimmy Gómez",
+            "telefono": "+595981777327",
+            "fecha": "2026-06-01",
+            "hora": "09:00",
+            "mensaje": "Jimmy, ¿pudiste entrar a la tienda? Solo para saber si te dio una idea de como quedaría la tuya.",
+            "estado": "enviado",
+            "nota": "Enviado 01/06/2026 mañana. Sin respuesta aún."
+        },
+        {
+            "id": "EULOGIO-27052026-0900",
+            "nombre": "Eulogio",
+            "telefono": "+595986491067",
+            "fecha": "2026-06-01",
+            "hora": "09:00",
+            "mensaje": "Don Eulogio, ¿pudo entrar al sistema? Me quedo con la duda si le pareció útil para su operación.",
+            "estado": "enviado",
+            "nota": "Enviado 01/06/2026 mañana. Sin respuesta."
+        },
+        {
+            "id": "EULOGIO-05062026-FOLLOWUP",
+            "nombre": "Eulogio",
+            "telefono": "+595986491067",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Don Eulogio, ¿pudo entrar al sistema? Si gusta esta semana le muestro el módulo de inseminación en 10 minutos — para que vea si encaja con su operación.\n\nEl link: carcoragu.github.io/IsabSoftAgroSoft/",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Follow-up con link AgroSoft + oferta demo inseminación."
+        },
+        {
+            "id": "GCR-MOTORS",
+            "nombre": "GCR Motors",
+            "telefono": "+595974388777",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Buen día — ¿tuvo oportunidad de ver el sistema? Sin apuro, cuando tenga 10 minutos lo vemos sobre la marcha, no necesita preparar nada.\n\nEl link sigue disponible: carcoragu.github.io/gestfact-demo/",
+            "estado": "enviado",
+            "nota": "Audio 28/05: interés real, ahorrando el monto. Mensaje original 29/05. Follow-up 08/06/2026 enviado con link demo."
+        },
+        {
+            "id": "GUSTAVO-27052026-0900",
+            "nombre": "Gustavo Fabián Reyes",
+            "telefono": "+595981766053",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Gus, sé que andás con mil cosas. La instalación la hago yo en 20 minutos — vos no tenés que hacer nada. Me avisás un rato libre cualquier día de esta semana y arrancamos.",
+            "estado": "enviado",
+            "nota": "Respondió 01/06 10:23. Precio enviado 01/06 12:14. Silencio post-precio. Follow-up 08/06/2026 enfocado en facilidad."
+        },
+        {
+            "id": "ENCISO-27052026-0900",
+            "nombre": "Enrique Enciso",
+            "telefono": "+595971233644",
+            "fecha": "2026-06-01",
+            "hora": "09:00",
+            "mensaje": "Enrique, ¿pudiste ver mi mensaje? Cuando tengas un momento me avisas.",
+            "estado": "enviado",
+            "nota": "Enviado 01/06/2026 mañana. Sin respuesta."
+        },
+        {
+            "id": "ENCISO-06062026-FOLLOWUP",
+            "nombre": "Enrique Enciso",
+            "telefono": "+595971233644",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Enrique, con el Mundial arrancando el 11 de junio — ¿arrancamos con la app de estadísticas? El timing sería perfecto para tenerla lista antes del torneo.",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Ángulo Mundial — app de estadísticas."
+        },
+        {
+            "id": "CHESS-TALLER-06062026-FOLLOWUP",
+            "nombre": "Taller Chess",
+            "telefono": "sin numero WhatsApp — solo Messenger",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Hola, ¿cómo van? ¿Pudieron ver el sistema? Si tienen un momento esta semana lo muestro en 10 minutos, sin compromiso.\n\nEl link para ver mientras tanto: carcoragu.github.io/gestfact-demo/",
+            "estado": "enviado",
+            "nota": "Messenger. Enviado 08/06/2026 con link demo taller."
+        },
+        {
+            "id": "CBTEC-NORA-09062026-SET",
+            "nombre": "Nora (Contadora CBTEC)",
+            "telefono": "+595982993774",
+            "fecha": "2026-06-09",
+            "hora": "ahora",
+            "mensaje": "Buenas Lic. Nora, recibido. Estamos coordinando con el Sr. Cristian para habilitar los archivos de mayo. En cuanto quede definido le aviso. Gracias.",
+            "estado": "enviado",
+            "nota": "CBTEC_Cod_30. Nora pidió archivos mayo 09/06. Respondido: coordinando con Cristian. Esperando que Cristian elija opción cobro."
+        },
+        {
+            "id": "CBTEC-NORA-11062026-RG90",
+            "nombre": "Nora (Contadora CBTEC)",
+            "telefono": "+595982993774",
+            "fecha": "2026-06-11",
+            "hora": "ahora",
+            "mensaje": "Lic. Nora, buen día. Tiene razón — el formato para Marangatu es el requerido por la normativa. Estamos coordinando con el Sr. Cristian para activar esa parte. En cuanto él confirme, le envío los archivos de mayo de inmediato. Gracias por su paciencia.",
+            "estado": "enviado",
+            "nota": "Nora cuestionó RG 90 — preguntó si el abono mensual incluye el formato SET. Respondido profesionalmente sin discutir. Presión interna útil: ella explicará a Cristian la necesidad legal."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-09062026-OPCIONES",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "via Lalo o directo",
+            "fecha": "2026-06-09",
+            "hora": "ahora",
+            "mensaje": "Cristian, buen día. Te escribo porque la Lic. Nora está solicitando los archivos de mayo para la presentación del IVA — como te había comentado, tenemos todo listo, solo estábamos esperando tu confirmación para activar.\n\nTe planteo dos opciones para que elijas la que te venga mejor:\n\nOpción 1 — Sin pago único: Pasamos el abono de Gs. 185.000 a Gs. 215.000 quincenal. El servicio completo con TXT/ZIP queda activo desde ahora.\n\nOpción 2 — Pago único: Gs. 800.000 por el módulo de presentación SET/IVA, tal como habíamos hablado. A partir de ahí los archivos TXT/ZIP quedan incluidos en tu abono mensual normal.\n\nCualquiera de las dos funciona para mí. ¿Cuál te viene mejor?",
+            "estado": "enviado",
+            "nota": "Enviado 09/06/2026. Dos opciones: 215k quincenal O 800k único. Nora presiona internamente por los archivos de mayo. Seguimiento si no responde en 3-4 días (13/06)."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-PAGO-09062026",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "via Lalo o directo",
+            "fecha": "2026-06-09",
+            "hora": "ahora",
+            "mensaje": "Cristian, recibido el pago de Gs. 185.000 — gracias! Eso cubre el sistema de gestión del taller (presupuestos, clientes, vehículos) y el libro de ventas para la contadora.\n\nCuando puedas, me avisás sobre las opciones que te mandé hoy para activar los archivos de la SET — la Lic. Nora está esperando los de mayo. Sin apuro, pero así coordinamos.",
+            "estado": "enviado",
+            "nota": "Cristian pagó Gs.185.000 quincenal 09/06. Confirmado recibo + referenciadas opciones SET pendientes (215k o 800k). Abono cubre solo sistema PC, sin TXT/ZIP SET."
+        },
+        {
+            "id": "GUSTAVO-11062026-GASTOSFIJOS",
+            "nombre": "Gustavo Fabián Reyes",
+            "telefono": "+595981766053",
+            "fecha": "2026-06-16",
+            "hora": "ahora",
+            "mensaje": "Buen día Gustavo, retomo el contacto. Muchos dueños de imprenta saben cuánto les entra pero no cuánto les sale exactamente cada mes. Con el sistema que ya tenes instalado podemos agregar el control de gastos fijos — salarios, alquiler, ANDE, servicios — y ver la ganancia real. ¿Te interesa que lo vemos?",
+            "estado": "enviado",
+            "nota": "Enviado 16/06/2026. Ángulo gastos fijos. Saldo pendiente Gs.1.350.000 + Gs.250k/mes. Esperando respuesta."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-13062026-FOLLOWUP",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-06-15",
+            "hora": "10:00",
+            "mensaje": "Cristian, ¿pudiste hablar con Nora? Quedo atento para activar.",
+            "estado": "enviado",
+            "nota": "CBTEC_Cod_30. Enviado 15/06 mañana. Luego escaló: Nora dijo vto cerca, Cristian mostró mensaje 200k, amenazó con irse."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-15062026-200K",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-06-15",
+            "hora": "12:56",
+            "mensaje": "Cristian, tienen razón en el fondo del tema.\n\nLo que pasó es que a principios de año hubo cambios en el sistema de Marangatu, y por eso estuvimos adaptando y entregando los archivos .TXT y .ZIP desde enero hasta abril. La contadora los recibía sin inconvenientes en ese período, y fue por ese trabajo de adaptación que surgió el adicional.\n\nPara no complicar más el tema, lo dejamos en Gs. 200.000 quincenal como te habíamos ofrecido desde el inicio — eso incluye todo el módulo SET con los archivos para presentación del IVA. Lo activamos hoy mismo y le envío los archivos de mayo a Nora enseguida.\n\n¿Confirmás?",
+            "estado": "confirmado",
+            "nota": "CBTEC_Cod_30. Cristian confirmó 15/06: 'Y 15 nomás ya te debo entonces' (185k+15k=200k). Acuerdo: 200k quincenal desde este período. Abono anterior 185k ya saldado. Enviar TXT+ZIP mayo a Nora (+595982993774) el 16/06."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-16062026-FOLLOWUP",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-06-16",
+            "hora": "09:00",
+            "mensaje": "Cristian, buen día. Quedo atento a tu confirmación de ayer para activar el módulo y enviarle los archivos a Nora hoy.",
+            "estado": "cancelado",
+            "nota": "CBTEC_Cod_30. Cancelado — Cristian ya confirmó 200k el 15/06. No enviar."
+        },
+        {
+            "id": "CBTEC-NORA-16062026-TXTZIPAMAYO",
+            "nombre": "Nora (Contadora CBTEC)",
+            "telefono": "+595982993774",
+            "fecha": "2026-06-16",
+            "hora": "09:00",
+            "mensaje": "Buenas Lic. Nora, buen día. Coordinamos con el Sr. Cristian — le envío los archivos de mayo para la presentación del IVA. 📎",
+            "estado": "enviado",
+            "nota": "CBTEC_Cod_30. Archivos TXT+ZIP mayo enviados a Nora 16/06 mañana. Cristian pidió activar después de noche de escalada emocional — volvió calmado y confirmó pago de 15k diferencia."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-16062026-ARCHIVOS",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-06-16",
+            "hora": "17:01",
+            "mensaje": "Cristian, ya le enviamos los archivos de mayo a la Lic. Nora. Cualquier consulta de ella la atendemos de inmediato. ✅",
+            "estado": "enviado",
+            "nota": "CBTEC_Cod_30. Confirmación de entrega de archivos TXT+ZIP mayo a Nora. Enviado 16/06 17:01."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-17062026-15K-FOLLOWUP",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-06-17",
+            "hora": "12:00",
+            "mensaje": "Cristian, ¿pudiste hacer la transferencia de los 15k? Sin apuro, solo para tenerlo registrado. ✅",
+            "estado": "enviado",
+            "nota": "CBTEC_Cod_30. Enviado manualmente 17/06 ~12:13. Los 15k no llegaron el 16/06. Pendiente: si paga → confirmar recibo + enviar resumen servicios 185k vs 200k."
+        },
+        {
+            "id": "FLYER-TALLER-17062026-1942",
+            "nombre": "📢 Flyer — WA Status / Facebook",
+            "telefono": "—",
+            "fecha": "2026-06-17",
+            "hora": "19:42",
+            "mensaje": "Flyer taller mecánico publicado en WhatsApp Status y Facebook.",
+            "estado": "enviado",
+            "nota": "Publicado 17/06 19:42 — horario pico. Rubro taller. Prospects activos: GCR, Giovanni, Dima, Sanabria, Eduardo, David Motormat, Daniel Abatte."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-16062026-15K",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-06-16",
+            "hora": "al recibir pago",
+            "mensaje": "Recibido Cristian, gracias ✅ — te anoto que el próximo quincenal son 200.000 directo.",
+            "estado": "pendiente",
+            "nota": "CBTEC_Cod_30. Al recibir los 15k → enviar este mensaje + inmediatamente después el resumen de servicios 185k vs 200k. El pago es la confirmación implícita del nuevo monto."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-SERVICIOS-200K",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-06-16",
+            "hora": "al recibir pago — enviar después del mensaje de confirmación",
+            "mensaje": "Cristian, te paso un resumen de lo que cubre tu plan:\n\nGs. 185.000 quincenal cubría:\n✔ Sistema completo del taller — presupuestos, clientes, vehículos, órdenes\n✔ Libro de ventas CSV/XLS para Nora\n✔ Soporte y actualizaciones\n\nGs. 200.000 quincenal cubre todo eso más:\n✔ Módulo SET/Marangatu — archivos TXT+ZIP para presentación del IVA cada mes\n✔ Inventario del taller\n✔ Las dos notebooks activas — la de Lalo y la tuya\n\nCualquier duda me avisás. ✅",
+            "estado": "pendiente",
+            "nota": "CBTEC_Cod_30. Enviar DESPUÉS de confirmar recibo del pago 15k. No enviar antes — el pago cierra el debate, el resumen informa sin fricción."
+        },
+        {
+            "id": "LSAUTOCENTRO-10062026",
+            "nombre": "LS Autocentro",
+            "telefono": "+595973549820",
+            "fecha": "2026-06-10",
+            "hora": "ahora",
+            "mensaje": "LS Autocentro, una pregunta — el stock de repuestos y neumáticos, ¿lo manejan en Excel, cuaderno, o tienen algo armado?",
+            "estado": "enviado",
+            "nota": "Nuevo ángulo 10/06 — calificación stock. Mensajes anteriores sin respuesta."
+        },
+        {
+            "id": "JORGE-MUNDIAL-02062026",
+            "nombre": "Jorge (Purificador) — Agua Hunza",
+            "telefono": "+595985581265",
+            "fecha": "2026-06-02",
+            "hora": "13:15",
+            "mensaje": "Sr. Jorge, buen día.\n\nLe escribo porque el Mundial arranca el 11 de junio y negocios como Agua Hunza van a tener una ventana de oro — las búsquedas de agua purificada, hidratación y productos premium se disparan durante el torneo.\n\nSi Agua Hunza tiene presencia digital lista para esa fecha, puede captar clientes nuevos que de otro modo van a la competencia.\n\n¿Le parece si conversamos esta semana sobre algo concreto y accesible para aprovechar el Mundial?",
+            "estado": "enviado",
+            "nota": "Enviado 02/06 13:15. Re-engagement Mundial. Jorge dio visto 09/06 sin respuesta de texto."
+        },
+        {
+            "id": "CLIENTETALLER-10062026-CUOTAS",
+            "nombre": "Cliente Taller (hija + papá decisor)",
+            "telefono": "+595986340084",
+            "fecha": "2026-06-10",
+            "hora": "10:44",
+            "mensaje": "Buen día. Hace unos meses te pasé el sistema a Gs. 2.900.000 de inversión única — entiendo que puede ser un monto fuerte para arrancar.\n\nHoy tenemos una modalidad diferente, y además el sistema mejoró:\n\n— Instalación: Gs. 200.000 (una sola vez)\n— Cuota del sistema: Gs. 200.000/mes\n— Mantenimiento: Gs. 150.000/mes — incluye soporte por WhatsApp, actualizaciones, copia de seguridad y funcionamiento continuo\n\nTotal mensual: Gs. 350.000\n\nY lo que antes no tenías: ahora el sistema también funciona desde el celular 📱 — podés registrar órdenes, ver clientes y presupuestos desde donde estés, sin abrir la PC.\n\n¿Le comentás a tu papá esta opción?",
+            "estado": "enviado",
+            "nota": "Demo hecha 10/02/26. Propuesta anterior: Gs.2.900.000 pago único — sin respuesta 4 meses. Re-engagement 10/06 con nueva modalidad: cuotas + móvil incluido (antes solo PC). Seguimiento si no responde en 5-7 días."
+        },
+        {
+            "id": "JORGE-BESTINVESTMENT-10062026",
+            "nombre": "Jorge (Purificador) — Agua Hunza / Best Investment",
+            "telefono": "+595985581265",
+            "fecha": "2026-06-10",
+            "hora": "ahora",
+            "mensaje": "Sr. Jorge, buen día. Le respondo lo que me consultó ayer:\n\nLa página bestinvestmentparaguay.com está hecha en WordPress, que usa PHP. Funciona así: cuando alguien abre la página, el servidor ejecuta el código PHP, consulta la base de datos con todo el contenido, y lo convierte en HTML — que es el lenguaje que entienden todos los navegadores. O sea, el visitante ve una página web normal, pero por detrás PHP y WordPress están generando todo en ese momento.\n\nSobre los idiomas: WordPress no traduce solo. Si alguien la abre desde Alemania, ve la página tal como está escrita. Para que detecte el país y muestre otro idioma, hay que agregar un plugin de traducción — eso no viene de base.\n\nYa tengo el análisis técnico completo de la página. ¿Le armo la propuesta formal para que Bernardo la pueda evaluar esta semana?",
+            "estado": "enviado",
+            "nota": "Jorge llamó 09/06 preguntando tecnología e idiomas de bestinvestmentparaguay.com. Respondido 10/06 con explicación WordPress+PHP+HTML y oferta propuesta para Bernardo. Esperando respuesta."
+        },
+        {
+            "id": "JORGE-BESTINVESTMENT-11062026-CALIFICACION",
+            "nombre": "Jorge (Purificador) — Agua Hunza / Best Investment",
+            "telefono": "+595985581265",
+            "fecha": "2026-06-11",
+            "hora": "ahora",
+            "mensaje": "Jorge, genial — armamos la propuesta. Antes de pasártela necesito 3 datos rápidos para que quede exacta para Bernardo:\n\n1. ¿Qué idiomas quieren en el sitio? ¿Español + inglés, o también alemán?\n2. ¿Tienen fotos o video del equipo / oficina para usar en el sitio?\n3. La campaña del Mundial — ¿apunta a inversores del exterior, paraguayos, o los dos?\n\nCon eso te mando algo concreto.",
+            "estado": "enviado",
+            "nota": "Jorge respondió 11/06 '¿Cuál sería la propuesta? ¿cómo hacemos?'. Enviadas 3 preguntas calificadoras para armar propuesta a medida. Estrategia: hacerlo responder con datos → propuesta personalizada → decisión sin necesidad de llamada."
+        },
+        {
+            "id": "JORGE-BESTINVESTMENT-14062026-FOLLOWUP",
+            "nombre": "Jorge (Purificador) — Agua Hunza / Best Investment",
+            "telefono": "+595985581265",
+            "fecha": "2026-06-14",
+            "hora": "10:00",
+            "mensaje": "Sr. Jorge, buen día. ¿Pudo conseguir los datos? (idiomas, fotos/video del equipo, y si el foco es inversores del exterior o paraguayos). Con eso le armo la propuesta en el día.",
+            "estado": "pendiente",
+            "nota": "Seguimiento si Jorge no respondió las 3 preguntas de calificación del 11/06."
+        },
+        {
+            "id": "DAVID-MOTORMAT-10062026-OBJECION",
+            "nombre": "David Alfonzo Olmedo (Motormat)",
+            "telefono": "+595976957120",
+            "fecha": "2026-06-10",
+            "hora": "ahora",
+            "mensaje": "David, te pregunto directo — ¿qué frenó la decisión? Si es algo del sistema lo vemos, si es el monto lo acomodamos.",
+            "estado": "enviado",
+            "nota": "Demo hecha 03/06, opciones pago enviadas. Sin respuesta. Abre objeción real."
+        },
+        {
+            "id": "JESUS-10062026-IA",
+            "nombre": "Jesus Marmolejo",
+            "telefono": "+595976585313",
+            "fecha": "2026-06-10",
+            "hora": "ahora",
+            "mensaje": "Jesus, ¿cómo andan los negocios? Tengo algo nuevo en IA para automatizar seguimientos de clientes — 2 minutos y te cuento.",
+            "estado": "enviado",
+            "nota": "8 días sin respuesta al ERP spec. Nuevo ángulo IA — tech-savvy, mencionó Lovable."
+        },
+        {
+            "id": "CLIDER-10062026-MUNDIAL",
+            "nombre": "Clider Schussmuller (CS Consultoría)",
+            "telefono": "+595981376388",
+            "fecha": "2026-06-10",
+            "hora": "ahora",
+            "mensaje": "Clider, el Mundial arranca mañana — ¿ya tenés eventos confirmados? Te pregunto porque si necesitás algo armado rápido para esta semana puedo ayudarte.",
+            "estado": "enviado",
+            "nota": "8 días sin respuesta al mensaje Mundial 02/06. Urgencia real: Mundial empieza 11/06."
+        },
+        {
+            "id": "RODRIGO-10062026-CALIFICACION",
+            "nombre": "Rodrigo Sarubbi (INGEMON)",
+            "telefono": "+595981884743",
+            "fecha": "2026-06-10",
+            "hora": "ahora",
+            "mensaje": "Rodrigo, una pregunta concreta — ¿hoy cómo sabés qué vehículos están alquilados y cuáles están disponibles en este momento?",
+            "estado": "enviado",
+            "nota": "2 años silencio. Calificación operativa específica alquiler de vehículos. Rompe patrón genérico."
+        },
+        {
+            "id": "GIOVANNI-11062026-DEMO",
+            "nombre": "Giovanni (Taller Automotriz)",
+            "telefono": "+595961309822",
+            "fecha": "2026-06-11",
+            "hora": "10:30",
+            "mensaje": "Giovanni, perfecto! Te paso el link para que lo veas mientras tanto:\n👉 carcoragu.github.io/gestfact-demo/\n\nCuando tengas 10 minutos lo vemos en vivo y te muestro cómo quedaría para tu taller. ¿Esta semana te viene bien?",
+            "estado": "enviado",
+            "nota": "Respondió 10/06 'Qué tal vamos a probar 👌'. Demo + link enviados 11/06. Esperando que confirme horario demo."
+        },
+        {
+            "id": "GIOVANNI-10062026-PRIMER-CONTACTO",
+            "nombre": "Giovanni (Taller Automotriz)",
+            "telefono": "+595961309822",
+            "fecha": "2026-06-10",
+            "hora": "ahora",
+            "mensaje": "Giovanni, buen día. Tengo un sistema para talleres automotrices — se puede ver en el celular sin instalar nada. ¿Le paso el link para que lo vea cuando tenga un momento?",
+            "estado": "enviado",
+            "nota": "Primer contacto 10/06/2026. Giovanni_Cod_28_28. Taller automotriz."
+        },
+        {
+            "id": "GANADERO-11062026-DEMO",
+            "nombre": "Ganadero (Ped Soft)",
+            "telefono": "+595985673022",
+            "fecha": "2026-06-11",
+            "hora": "11:00",
+            "mensaje": "Perfecto! Te paso el link para que lo veas mientras tanto:\n👉 carcoragu.github.io/IsabSoftAgroSoft/\n\n¿Cuándo tenés 10 minutos? Lo vemos desde el celular sin instalar nada.",
+            "estado": "enviado",
+            "nota": "Respondió 10/06 'Okei' a propuesta de demo. Link AgroSoft + demo enviados 11/06. Esperando que confirme horario."
+        },
+        {
+            "id": "GANADERO-10062026-REENGANCHE",
+            "nombre": "Ganadero (Ped Soft)",
+            "telefono": "+595985673022",
+            "fecha": "2026-06-10",
+            "hora": "ahora",
+            "mensaje": "Buen día. En mayo estuviste consultando por el sistema ganadero — ¿querés ver una demo esta semana? Son 10 minutos desde el celular.",
+            "estado": "enviado",
+            "nota": "Contacto vía Facebook 14/05. Interés real, pidió planes 15/05. Sin seguimiento 26 días. Re-engagement 10/06. Ganadero_Cod_29_29."
+        },
+        {
+            "id": "DAVID-MOTORMAT-27052026-0900",
+            "nombre": "David Alfonzo Olmedo (Motormat)",
+            "telefono": "+595976957120",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "David, ¿cómo andás? Quedamos en coordinar la demo esta semana — ¿cuándo tenés un hueco de 10-15 minutos?\n\nEl link por si querés ir viendo mientras: carcoragu.github.io/gestfact-demo/",
+            "estado": "enviado",
+            "nota": "Respondió 01/06 'Súper interesante'. Follow-up 08/06/2026 — coordinar demo. Link demo incluido."
+        },
+        {
+            "id": "SANABRIA-27052026-0900",
+            "nombre": "Taller Sanabria",
+            "telefono": "+595976753697",
+            "fecha": "2026-06-01",
+            "hora": "09:00",
+            "mensaje": "Don Sanabria, ¿pudo hablar con su agente sobre el sistema? Cuando quieran los atiendo a los dos en 10 minutos.",
+            "estado": "enviado",
+            "nota": "Enviado 01/06/2026 mañana. Sin respuesta."
+        },
+        {
+            "id": "SANABRIA-05062026-FOLLOWUP",
+            "nombre": "Taller Sanabria",
+            "telefono": "+595976753697",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Don Sanabria, ¿pudo hablar con su agente? Si quiere coordinamos los tres en 15 minutos esta semana, sin apuro.\n\nEl sistema para ver mientras tanto: carcoragu.github.io/gestfact-demo/",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Follow-up con link demo taller."
+        },
+        {
+            "id": "OSCAR-ACUNA-06062026-FOLLOWUP",
+            "nombre": "Oscar Acuña (Taller)",
+            "telefono": "solo Messenger",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Oscar, ¿pudiste ver el sistema? Si tenés 10 minutos esta semana lo vemos juntos.\n\nEl link: carcoragu.github.io/gestfact-demo/",
+            "estado": "enviado",
+            "nota": "Messenger. Enviado 08/06/2026. Dio VISTO a las 14:53 sin respuesta."
+        },
+        {
+            "id": "OSCAR-ACUNA-11062026-CALIFICACION",
+            "nombre": "Oscar Acuña (Taller)",
+            "telefono": "solo Messenger",
+            "fecha": "2026-06-11",
+            "hora": "10:00",
+            "mensaje": "Oscar, una pregunta — ¿hoy llevás el historial de los clientes y vehículos en papel o tenés algo armado?\n\nY por cierto, ¿tenés WhatsApp? Te paso info del sistema por ahí más cómodo 👍",
+            "estado": "pendiente",
+            "nota": "Messenger. Visto 08/06 sin respuesta. Pregunta calificación + solicitud WA permission-based."
+        },
+        {
+            "id": "PEDRO-27052026-0900",
+            "nombre": "Pedro José Fernández (Taller)",
+            "telefono": "+595992547312",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Pedro, ¿pudiste entrar al sistema? Si querés coordinamos la demo esta semana, sin apuro.\n\nEl link: carcoragu.github.io/gestfact-demo/",
+            "estado": "enviado",
+            "nota": "Demo original agendada 05/06 no se coordinó. Follow-up 08/06/2026 con link demo."
+        },
+        {
+            "id": "DIMA-05062026-FOLLOWUP",
+            "nombre": "Taller Dima",
+            "telefono": "+595981577775",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Dima, ¿pudiste entrar al sistema? Solo para saber si te dio una idea de lo que haría en tu taller.\n\nEl link por si necesitás: carcoragu.github.io/gestfact-demo/",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Follow-up con link demo taller."
+        },
+        {
+            "id": "IVAN-02062026-0900",
+            "nombre": "Ivan Nuñez",
+            "telefono": "+595971330442",
+            "fecha": "2026-06-01",
+            "hora": "09:00",
+            "mensaje": "Ivan, una pregunta rapida — ¿hoy llevas el control de vencimientos de tus polizas en Excel o en cuaderno?",
+            "estado": "enviado",
+            "nota": "Enviado 01/06/2026 mañana. Sin respuesta. Reset — no mencionar precio."
+        },
+        {
+            "id": "RODRIGO-27052026-0900",
+            "nombre": "Rodrigo Sarubbi (INGEMON)",
+            "telefono": "+595981884743",
+            "fecha": "2026-06-01",
+            "hora": "09:00",
+            "mensaje": "Rodrigo, ¿pudiste ver la propuesta? Quedo atento si tenés alguna duda sobre los planes.",
+            "estado": "enviado",
+            "nota": "Enviado 01/06/2026 mañana. Sin respuesta aún."
+        },
+        {
+            "id": "BERNI-05062026-0900",
+            "nombre": "Jose Berni",
+            "telefono": "+595991852582",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Berni, ¿cómo andás? ¿Pudiste probar el sistema en alguna compra del campo esta semana?\n\nEl link por si necesitás: carcoragu.github.io/IsabSoftAgroSoft/",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Cliente ganadero activo. Link AgroSoft incluido. No presionar por cobro."
+        },
+        {
+            "id": "SSG-02062026-0900",
+            "nombre": "S.S.G.",
+            "telefono": "+595981220528",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Hola! ¿Pudo entrar al sistema? Si quiere esta semana le muestro el módulo de hacienda en 10 minutos — sin compromiso.\n\nEl link: carcoragu.github.io/IsabSoftAgroSoft/",
+            "estado": "enviado",
+            "nota": "Respondió 01/06 'Dale dale perfecto'. Follow-up 08/06/2026 con link AgroSoft."
+        },
+        {
+            "id": "BRAULIO-15062026-0900",
+            "nombre": "Braulio Catalán",
+            "telefono": "+595983435561",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Braulio, ¿cómo andás? ¿Se acomodaron con lo que estaban enfocando?",
+            "estado": "enviado",
+            "nota": "Enviado 18/06/2026. Check-in casual sin mencionar app. Esperando respuesta."
+        },
+        {
+            "id": "VERTICAL-02062026-0900",
+            "nombre": "Vertical Reformas y Construcciones",
+            "telefono": "+595993284383",
+            "fecha": "2026-06-02",
+            "hora": "13:20",
+            "mensaje": "Buen día! Gracias por compartir su contacto.\n\nLe paso el sistema para que lo vea desde el celular cuando tenga un momento:\n👉 carcoragu.github.io/gestfact-demo/\n\nEs una demo real — puede ver cómo se cargan presupuestos, clientes y el seguimiento de cada obra. Sin instalar nada.\n\nCuando quiera lo vemos juntos en 10 minutos y le muestro cómo quedaría para Vertical Reformas. Sin compromiso.",
+            "estado": "enviado",
+            "nota": "Primer WA enviado 02/06 13:20. Sin respuesta."
+        },
+        {
+            "id": "VERTICAL-06062026-0900",
+            "nombre": "Vertical Reformas y Construcciones",
+            "telefono": "+595993284383",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Buen día! Le dejo el link del sistema para que lo vea cuando pueda: carcoragu.github.io/gestfact-demo/\n\nEs una demo real — puede ver presupuestos, clientes y seguimiento de obras desde el celular. Si le interesa coordinamos una presentación sin costo.\n\nQuedamos a disposición.",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Último intento esta semana."
+        },
+        {
+            "id": "CVMECANICA-REENGANCHE-01082026",
+            "nombre": "CV Mecanica",
+            "telefono": "+595984175577",
+            "fecha": "2026-08-04",
+            "hora": "09:00",
+            "mensaje": "Hola, buen día. Hace un tiempo le escribí sobre nuestro sistema para talleres y respetamos su decisión.\n\nSolo quería consultar — ¿le molestaría recibir de vez en cuando novedades útiles para el taller? Cero presión, si prefiere no recibir nada lo entendemos perfectamente.",
+            "estado": "programado",
+            "nota": "Descartado 01/06/2026 — respondió 'No gracias'. Re-engagement permission-based 01/08/2026."
+        },
+        {
+            "id": "EDUARDO-TALLER-01062026-1630",
+            "nombre": "Taller Eduardo",
+            "telefono": "+595982199600",
+            "fecha": "2026-06-01",
+            "hora": "16:30",
+            "mensaje": "Sr. Eduardo, buen día. Soy Carlos de IsabSoft — pasé hoy por el taller y tuve el gusto de saludarle.\n\nLe comparto el sistema para que lo vea cuando pueda:\n👉 carcoragu.github.io/gestfact-demo/\n\nEs la demo real del sistema — puede ver cómo se registran clientes, vehículos, órdenes de trabajo y facturación. Funciona desde el celular, sin instalar nada.\n\nCuando quiera lo vemos juntos en 10 minutos y le muestro cómo quedaría para su taller. Sin compromiso.",
+            "estado": "enviado",
+            "nota": "Contacto presencial 01/06/2026. Usa Excel. Enviado 16:30."
+        },
+        {
+            "id": "EDUARDO-TALLER-FOLLOWUP-04062026",
+            "nombre": "Taller Eduardo",
+            "telefono": "+595982199600",
+            "fecha": "2026-06-08",
+            "hora": "09:00",
+            "mensaje": "Sr. Eduardo, buen día. ¿Pudo ver el sistema? Le pregunto porque si quiere lo coordinamos esta semana una revisión rápida de 10 minutos — así ve cómo quedaría para su taller específicamente.\n\nEl link: carcoragu.github.io/gestfact-demo/",
+            "estado": "enviado",
+            "nota": "Enviado 08/06/2026. Follow-up con link demo taller."
+        },
+        {
+            "id": "CLIDER-MUNDIAL-02062026",
+            "nombre": "Clider Schussmuller (CS Consultoría)",
+            "telefono": "+595981376388",
+            "fecha": "2026-06-02",
+            "hora": "13:25",
+            "mensaje": "Clider! buen día, ¿cómo estás?\n\nTe escribo porque el Mundial 2026 arranca el 11 de junio — y con tu negocio de eventos, esta es la temporada de oro del año.\n\nWatch parties, eventos temáticos, transmisiones en vivo… la demanda explota en 10 días. Los negocios que tienen presencia digital lista captan clientes antes de que empiece el torneo.\n\n¿Tenés algo planeado para el Mundial con eventos? Si querés, esta semana podemos ver algo rápido y concreto para que aproveches la temporada. 🏆",
+            "estado": "enviado",
+            "nota": "Enviado 02/06 13:25. Re-engagement Mundial. Sin respuesta aún."
+        },
+        {
+            "id": "NATO-15062026-FOLLOWUP",
+            "nombre": "Nato",
+            "telefono": "+595985462841",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Nato, ¿cómo estás? Quedé pendiente de escribirte. ¿Tuviste oportunidad de ver el sistema? Quedo disponible si querés que lo veamos juntos.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "EULOGIO-15062026-FOLLOWUP",
+            "nombre": "Eulogio",
+            "telefono": "+595986491067",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Eulogio, ¿cómo estás? Quedé pendiente de escribirte. ¿Tuviste oportunidad de ver el sistema? Quedo disponible si querés que lo veamos juntos.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "KAREN-ORTELLADO-15062026-FOLLOWUP",
+            "nombre": "Karen Ortellado",
+            "telefono": "+595981797880",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Karen, ¿cómo estás? Quedé pendiente de escribirte. ¿Tuviste oportunidad de ver el sistema? Quedo disponible si querés que lo veamos juntos.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "ALCIDES-FERNANDEZ-15062026-FOLLOWUP",
+            "nombre": "Alcides Fernández",
+            "telefono": "+595983670608",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Alcides, ¿cómo estás? Quedé pendiente de escribirte. ¿Tuviste oportunidad de ver el sistema? Quedo disponible si querés que lo veamos juntos.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "CLIDER-15062026-FOLLOWUP",
+            "nombre": "Clider Schussmuller",
+            "telefono": "+595981376388",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Clider, buen día. ¿Hubo alguna resolución de lo pendiente? Quedo disponible cuando tengas un momento.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Saldo Gs.1.500.000 pendiente. Mensajes ya preparados en WA."
+        },
+        {
+            "id": "BERNI-JOSE-15062026-FOLLOWUP",
+            "nombre": "Jose Berni",
+            "telefono": "+595991852582",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Berni, ¿cómo está? Quedé pendiente de escribirle. ¿Tuviste oportunidad de revisar algo del sistema? Quedo disponible cuando pueda.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). AgroSoft. Mensajes ya preparados en WA."
+        },
+        {
+            "id": "JIMMY-GOMEZ-15062026-FOLLOWUP",
+            "nombre": "Jimmy Gómez",
+            "telefono": "+595981777327",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Jimmy, ¿hubo alguna resolución? Quedo disponible sin apuro.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "SSG-15062026-FOLLOWUP",
+            "nombre": "S.S.G.",
+            "telefono": "+595981220528",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día, ¿cómo estás? Quedé pendiente de escribirte. ¿Tuviste oportunidad de ver el sistema? Quedo disponible sin apuro.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "VERTICAL-REFORMAS-15062026-FOLLOWUP",
+            "nombre": "Vertical Reformas",
+            "telefono": "+595993284383",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día, ¿cómo están? Quedé pendiente de escribirles. ¿Pudieron ver el sistema? Quedo disponible si quieren que lo vemos juntos en 10 minutos.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "DAVID-MOTORMAT-15062026-FOLLOWUP",
+            "nombre": "David Alfonzo — Motormat",
+            "telefono": "+595976957120",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "David, buen día. ¿Pudiste revisar la propuesta? Quedo disponible cuando tengas un momento para cerrar.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Demo en llamada 03/06 — interés confirmado. Gs.200k+350k/mes. Mensajes ya preparados en WA."
+        },
+        {
+            "id": "DIMA-TALLER-15062026-FOLLOWUP",
+            "nombre": "Taller Dima",
+            "telefono": "+595981577775",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día, ¿cómo están? Quedé pendiente de escribirles. ¿Pudieron ver el sistema? Quedo disponible cuando quieran.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "GCR-MOTORS-15062026-FOLLOWUP",
+            "nombre": "GCR Motors",
+            "telefono": "+595974388777",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día, ¿cómo están? Quedé pendiente de escribirles. ¿Pudieron ver el sistema? Quedo disponible cuando quieran.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Lead caliente 2 años. Plan Premium Gs.200k+400k/mes. Mensajes ya preparados en WA."
+        },
+        {
+            "id": "SANABRIA-TALLER-15062026-FOLLOWUP",
+            "nombre": "Taller Sanabria",
+            "telefono": "+595976753697",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día, ¿cómo están? Quedé pendiente de escribirles. ¿Pudieron ver el sistema? Quedo disponible cuando quieran.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "EDUARDO-TALLER-15062026-FOLLOWUP",
+            "nombre": "Taller Eduardo",
+            "telefono": "+595982199600",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Sr. Eduardo, buen día. ¿Pudo ver el sistema? Quedo disponible cuando quiera coordinamos esa revisión rápida de 10 minutos.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Contacto presencial 01/06. Mensajes ya preparados en WA."
+        },
+        {
+            "id": "PEDRO-FERNANDEZ-15062026-FOLLOWUP",
+            "nombre": "Pedro Fernández",
+            "telefono": "+595992547312",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Pedro, ¿cómo estás? Quedé pendiente de escribirte. ¿Tuviste oportunidad de ver el sistema? Quedo disponible sin apuro.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "GUSTAVO-REYES-15062026-FOLLOWUP",
+            "nombre": "Gustavo Fabián Reyes",
+            "telefono": "+595981766053",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Gustavo, ¿cómo estás? Quedé pendiente de escribirte. ¿Tuviste oportunidad de ver el sistema? Quedo disponible cuando tengas un momento.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Paso 1/4 en progreso. Mensajes ya preparados en WA."
+        },
+        {
+            "id": "JORGE-AGUAHUNZA-15062026-FOLLOWUP",
+            "nombre": "Jorge — Agua Hunza Paraguay",
+            "telefono": "+595985581265",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Jorge, buen día. ¿Hubo alguna novedad con la propuesta? Quedo disponible cuando tengan resolución de su parte.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Web corporativa Gs.7M pendiente gerencia. Mensajes ya preparados en WA."
+        },
+        {
+            "id": "ENRIQUE-ENCISO-15062026-FOLLOWUP",
+            "nombre": "Enrique Enciso",
+            "telefono": "+595971233644",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Enrique, ¿cómo estás? Quedé pendiente de escribirte. ¿Tuviste oportunidad de ver el sistema? Quedo disponible sin apuro.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "GANADERO-PEDSOFT-15062026-FOLLOWUP",
+            "nombre": "Ganadero (Ped Soft)",
+            "telefono": "+595985673022",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día, ¿cómo están? Quedé pendiente de escribirles. ¿Tuvieron oportunidad de ver el sistema? Quedo disponible cuando quieran.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "GIOVANNI-TALLER-15062026-FOLLOWUP",
+            "nombre": "Giovanni — Taller Automotriz",
+            "telefono": "+595961309822",
+            "fecha": "2026-06-15",
+            "hora": "09:00",
+            "mensaje": "Buen día Giovanni, ¿cómo estás? Quedé pendiente de escribirte. ¿Tuviste oportunidad de ver el sistema? Quedo disponible si querés que lo veamos juntos en 10 minutos.",
+            "estado": "programado",
+            "nota": "Reprogramado de 13/06 → 15/06 (sábado sin atención). Mensajes ya preparados en WA."
+        },
+        {
+            "id": "DANIEL-ABATTE-18062026-RESET",
+            "nombre": "Daniel Abatte — Taller",
+            "telefono": "+595981420695",
+            "fecha": "2026-06-18",
+            "hora": "10:00",
+            "mensaje": "Daniel, una pregunta — ¿hoy cómo registrás los trabajos del taller, tenés algo armado o lo manejás de memoria?",
+            "estado": "enviado",
+            "nota": "Enviado 18/06/2026. Reset con pregunta operativa. Si responde → ofrecer demo móvil + PC."
+        },
+        {
+            "id": "CLIDER-16062026-ACTIVACION",
+            "nombre": "Clider Schussmuller (CS Consultoría)",
+            "telefono": "+595981376388",
+            "fecha": "2026-06-16",
+            "hora": "22:09",
+            "mensaje": "Clider! Buenas noches.\n\nEl sistema está activo con tu base de datos completa — la consulta por filtros funciona.\n\n📋 Resumen de tu inversión hasta hoy:\n- Sistema valorado en Gs. 8.700.000\n- Ya abonaste Gs. 600.000 en octubre 2025\n- Saldo real pendiente: Gs. 8.100.000\n\nPara cerrar y dejarlo 100% listo para presentar, te propongo activarlo con Gs. 1.500.000 — muy por debajo del saldo pendiente.\n\nLo que falta para que puedas presentarlo a las compañías:\n\n🌐 Dominio propio (csca.com.py o similar)\n🔒 Sistema de seguridad en la descarga del Excel — control por usuario, sin eso cualquiera descarga sin pagar\n\nEso es exactamente lo que cubre la activación de Gs. 1.500.000.\n\nUna pregunta: cuando decís 'tabla nueva modificada', ¿tenés una versión actualizada de tu base de datos para cargar? Si es así, mandámela esta semana.\n\nSi confirmás el pago antes del 24, llegás con todo listo para la presentación.",
+            "estado": "enviado",
+            "nota": "Clider escribió desde Bahamas (congreso fútbol playa). Vuelve 24/06. Necesita presentar tabla nueva modificada a fines de junio. Primera vez que preguntó voluntariamente cuánto pagar. Recordatorio de inversión incluido: 8.7M total, 600k pagados oct/25, saldo 8.1M, oferta activación 1.5M. Falta: dominio propio + seguridad descarga Excel."
+        },
+        {
+            "id": "JORGE-AGUAHUNZA-18062026-ACTUALIZACION",
+            "nombre": "Jorge — Agua Hunza Paraguay",
+            "telefono": "+595985581265",
+            "fecha": "2026-06-18",
+            "hora": "09:00",
+            "mensaje": "Jorge, sí podemos actualizar y modificar la página.\n\nUna aclaración importante: hoy nosotros no tenemos acceso al panel de la página actual — eso lo tiene quien la construyó. Hay dos caminos:\n\nSi ustedes tienen acceso al panel: nos lo comparten y actualizamos directamente lo que necesiten.\n\nSi no tienen acceso: no hay problema — ya tenemos un diseño nuevo de Agua Hunza Paraguay listo y desarrollado. Ustedes solo redirigen el dominio aquahunzaparaguay.com al sitio nuevo y queda activo.\n\nEl desarrollo es Gs. 1.500.000 e incluye diseño, contenido, WhatsApp integrado, seguridad HTTPS y SEO básico.\n— 50% al inicio: Gs. 750.000\n— 50% a la entrega: Gs. 750.000\n\nA partir de la entrega, el mantenimiento mensual es Gs. 150.000/mes — cubre soporte por WhatsApp, cambios básicos, backup y funcionamiento continuo del sitio.\n\nPara saber qué camino tomamos y arrancar: ¿qué es lo que quieren cambiar o mejorar de la página actual?",
+            "estado": "programado",
+            "nota": "Jorge preguntó 17/06 si podemos actualizar aquahunzaparaguay.com. Página analizada: completa, hecha por Pi, email footer incorrecto (contacto@aguasuper.com). Demo GitHub ya construida. Dos opciones: acceso panel O reconstrucción. Gs.1.500.000 pago único + Gs.150.000/mes mantenimiento."
+        },
+        {
+            "id": "CBTEC-CRISTIAN-30062026-VERIFICAR-MONTO",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-06-30",
+            "hora": "09:00",
+            "mensaje": "VERIFICAR antes de enviar:\n\nSi pago Gs. 200.000: Cristian, recibido los 200.000. Gracias - nos vemos en el proximo quincenal.\n\nSi pago Gs. 185.000: Cristian, el acuerdo fue de 200.000 quincenal desde este periodo. Podrias completar los 15k cuando puedas?",
+            "estado": "programado",
+            "nota": "CBTEC_Cod_30. Verificar monto pago quincenal: 200k = acuerdo confirmado, 185k = falta diferencia. Los 15k del período anterior tampoco llegaron al 17/06. No perseguir los 15k anteriores — foco en confirmar que el próximo sea 200k."
+        },
+        {
+            "id": "CLIDER-24062026-FOLLOWUP",
+            "nombre": "Clider Schussmuller (CS Consultoría)",
+            "telefono": "+595981376388",
+            "fecha": "2026-06-24",
+            "hora": "10:00",
+            "mensaje": "Clider, bienvenido de vuelta! ¿Llegaste bien? Quedo atento para coordinar la activación del sistema esta semana — así llegás con todo listo para la presentación de fin de mes.",
+            "estado": "programado",
+            "nota": "Clider vuelve de Bahamas el 24/06. Enviar si no confirmó pago antes del 24. Deadline presentación: fin de junio. Activación: Gs.1.500.000."
+        },
+        {
+            "id": "GUSTAVO-10072026-1800-CIERRE",
+            "nombre": "Gustavo Fabián Reyes",
+            "telefono": "+595981766053",
+            "fecha": "2026-07-10",
+            "hora": "18:00",
+            "mensaje": "Gus, la promo ya venció. Voy a dejar el sistema tal como está hasta que decidas activarlo. Cuando estés listo me avisás — no te voy a estar escribiendo más. Un abrazo 🤝",
+            "estado": "programado",
+            "nota": "Enviar SOLO si no respondió al mensaje del mediodía (promo 700k + paso a paso + móvil). Sistema instalado 6 meses sin pagar."
+        },
+        {
+            "id": "GUSTAVO-11072026-0900-LLAMADA",
+            "nombre": "Gustavo Fabián Reyes",
+            "telefono": "+595981766053",
+            "fecha": "2026-07-11",
+            "hora": "09:00",
+            "mensaje": "LLAMADA DIRECTA +595981766053 — Script: '¿Arrancamos con los 700k esta semana o lo dejamos por ahora?' — esperar respuesta, no hablar más. Si da fecha → OK. Si evade → mensaje de cierre.",
+            "estado": "programado",
+            "nota": "Gustavo responde más al teléfono que al WA. Llamar si no respondió ayer. Sistema instalado 6 meses sin pagar."
+        },
+        {
+            "id": "CLIMAR-11072026-0900-FOLLOWUP",
+            "nombre": "Climar",
+            "telefono": "pendiente confirmar",
+            "fecha": "2026-07-11",
+            "hora": "09:00",
+            "mensaje": "Climar, buen día. ¿Todo bien con la instalación? ¿Pudo descargar RustDesk?",
+            "estado": "programado",
+            "nota": "Si no confirmó pago Gs.500k ni respondió ayer. Propuesta acordada: Gs.500k hoy + Gs.400k/mes desde 10/08. Lead muy caliente."
+        },
+        {
+            "id": "JESUS-13072026-0900-LOVABLE",
+            "nombre": "Jesus Marmolejo",
+            "telefono": "+595976585313",
+            "fecha": "2026-07-13",
+            "hora": "09:00",
+            "mensaje": "Jesús, buen día. Estuve revisando el sistema que me mandaste en octubre — la interfaz con el tablero de tareas, los estados, los responsables. Ahora lo entiendo bien.\n\nLovable es bueno para visualizar, pero lo que construye es frágil y no escala. Yo puedo tomar tu prototipo y construirlo robusto — con base de datos real, acceso móvil, integración con tus sistemas — usando IA de desarrollo más potente.\n\n¿Eso sigue siendo lo que querés construir o evolucionó la idea?",
+            "estado": "programado",
+            "nota": "Jesus construyó prototipo ERP en Lovable oct/25, lleva 9 meses preguntando si Carlos lo vio. Primera vez que se reconoce el Lovable explícitamente. Lunes 13/07 09:00."
+        },
+        {
+            "id": "IVAN-13072026-0900-CIERRE",
+            "nombre": "Ivan Nuñez",
+            "telefono": "+595971330442",
+            "fecha": "2026-07-13",
+            "hora": "09:00",
+            "mensaje": "Ivan, sé que el precio mensual era lo que no cerraba. Te propongo arrancar con un plan mínimo a Gs. 100.000/mes — control básico de vencimientos y clientes desde el celular. ¿Te sirve o lo cerramos por ahora?",
+            "estado": "programado",
+            "nota": "137 días sin respuesta. Precio fue la única barrera declarada (feb/26). Último intento con precio reducido. Si no responde en 7 días → cerrar definitivamente."
+        },
+        {
+            "id": "CLIENTETALLER-16072026-FOLLOWUP",
+            "nombre": "Cliente Taller (hija + papá decisor)",
+            "telefono": "+595986340084",
+            "fecha": "2026-07-16",
+            "hora": "09:00",
+            "mensaje": "Buen día. ¿Pudo ver el sistema con su papá? Quedo disponible para mostrarle en 10 minutos cuando quieran.",
+            "estado": "programado",
+            "nota": "Mensaje enviado 09/07 invitando al papá directamente. Si no responde al 16/07 → cerrar hasta oct/26."
+        },
+        {
+            "id": "GIOVANNI-16072026-FOLLOWUP",
+            "nombre": "Giovanni (Taller Automotriz)",
+            "telefono": "+595961309822",
+            "fecha": "2026-07-16",
+            "hora": "09:00",
+            "mensaje": "Giovanni, buen día. ¿Cómo andás? ¿Pudiste ver el sistema? Cuando tengas un hueco lo vemos en 10 minutos.",
+            "estado": "programado",
+            "nota": "Mensaje enviado 09/07. Follow-up 16/07 si no respondió."
+        },
+        {
+            "id": "DAVID-MOTORMAT-16072026-FOLLOWUP",
+            "nombre": "David Alfonzo — Motormat",
+            "telefono": "+595976957120",
+            "fecha": "2026-07-16",
+            "hora": "09:00",
+            "mensaje": "David, buen día. ¿Cómo andás? ¿Pudiste revisar la propuesta? Sigo disponible cuando quieras arrancar.",
+            "estado": "programado",
+            "nota": "Dijo 'para más adelante' el 19/06. Re-engagement enviado 09/07 (Gs.200k+350k). Follow-up 16/07 si no respondió."
+        },
+        {
+            "id": "EDUARDO-TALLER-16072026-CIERRE",
+            "nombre": "Taller Eduardo (al lado Abogada Sandra)",
+            "telefono": "+595982199600",
+            "fecha": "2026-07-16",
+            "hora": "09:00",
+            "mensaje": "Sr. Eduardo, le escribo para cerrar el seguimiento. Si en algún momento lo necesita, quedo disponible.",
+            "estado": "programado",
+            "nota": "Nunca respondió ningún mensaje. Cierre enviado 09/07. Si no responde al 16/07 → cerrar definitivamente."
+        },
+        {
+            "id": "RODRIGO-16072026-CIERRE-DEFINITIVO",
+            "nombre": "Rodrigo Sarubbi (INGEMON)",
+            "telefono": "+595981884743",
+            "fecha": "2026-07-16",
+            "hora": "09:00",
+            "mensaje": "Rodrigo, entiendo que no es el momento. Cierro el seguimiento por ahora — cuando quiera retomar, acá estoy.",
+            "estado": "programado",
+            "nota": "Mensaje sí/no enviado 09/07. Si no responde al 16/07 → CERRAR DEFINITIVAMENTE. No volver a contactar."
+        },
+        {
+            "id": "KERS-14072026-FOLLOWUP",
+            "nombre": "Kers Automotive",
+            "telefono": "+595993586117",
+            "fecha": "2026-07-14",
+            "hora": "09:30",
+            "mensaje": "Buen lunes! Soy Carlos de IsabSoft. Vi que nos escribieron el sábado. ¿Tienen un momento para ver una demo rápida del sistema para el taller? Solo 10 minutos y lo ven funcionando en vivo.",
+            "estado": "programado",
+            "nota": "Inbound 11/07 vía promo WA. Respondió automático (bot). Pasado al lunes 14/07 por falta de tiempo el sábado. Taller mecánico — Kers_Cod_33_33."
+        },
+        {
+            "id": "MIGUEL-14072026-CONDICIONES",
+            "nombre": "Miguel Acuña",
+            "telefono": "+595961807675",
+            "fecha": "2026-07-14",
+            "hora": "10:30",
+            "mensaje": "Miguel, buen día. Le paso un resumen de las condiciones de su plan para tenerlo por escrito:\n\n📋 *Plan GestFact — PCM Taller Mecánico*\n✅ Sistema instalado y funcionando desde mayo 2026\n✅ Acceso desde celular y PC incluido\n✅ Soporte por WhatsApp incluido\n✅ Actualizaciones y mejoras incluidas\n\n💳 *Pagos:*\n— Instalación: Gs. 200.000 ✅ (pagado 26/05)\n— Mensual: Gs. 350.000 — se cobra el 26 de cada mes\n— Duración: 14 cuotas (hasta jun 2027), luego Gs. 150.000/mes mantenimiento\n\n📌 *Condiciones:*\n— Cancelación con 15 días de aviso previo\n— El sistema y los datos son suyos — si en algún momento decide no continuar, le entregamos todo\n— Ante cualquier problema, soporte inmediato por WhatsApp\n\nQuedo a disposición para cualquier consulta. 👍",
+            "estado": "programado",
+            "nota": "Condiciones básicas del servicio — enviadas por escrito para respaldo de ambas partes."
+        },
+        {
+            "id": "MIGUEL-15072026-RESUMEN-PLAN",
+            "nombre": "Miguel Acuña",
+            "telefono": "+595961807675",
+            "fecha": "2026-07-15",
+            "hora": "09:00",
+            "mensaje": "Miguel, buenas ¿Cómo estás?! 👋\n\nTe cuento que tu sistema está completo y listo. Te paso el detalle de todo lo que tiene:\n\n📱 *En el celular:*\n✅ Clientes y vehículos guardados\n✅ Órdenes de trabajo y presupuestos\n✅ Envío de presupuestos por WhatsApp\n✅ PDF listo para imprimir\n✅ Gestión, Reportes por estado (Pendientes / Cerrados / Cobrados)\n✅ Ingresos, egresos y balance del período\n✅ App instalable en el celular\n\n💻 *En la PC:*\n✅ Historial completo sincronizado con el celular\n✅ Gestión de presupuestos con filtros y estados\n✅ Cambios de datos en celular se reflejan en PC y viceversa\n✅ Informes por cliente y vehículo\n✅ PDF y Envío por WhatsApp automático desde la PC, Presupuesto e Historial\n✅ Su notebook está lista — cuando pueda pasar a retirarla 👍\n\n🎁 *Bonus incluido este mes:*\nCarga asistida sin costo — le ayudamos a ingresar sus clientes, vehículos y órdenes. Lo extendemos un mes más sin cargo.\n\n📋 *Condiciones de su plan:*\n— Mensual: Gs. 350.000 — se cobra el 26 de cada mes\n— Cancelación con 15 días de aviso previo\n— Sus datos son suyos siempre — si decide no continuar, le entregamos el historial completo en Excel\n— El sistema funcional queda activo hasta el vencimiento del período\n— Soporte remoto y por WhatsApp incluido siempre\n\n💡 *Módulos adicionales disponibles — opcionales:*\n📸 Fotos de kilometraje — registra la foto del km del vehículo al ingresar al taller, queda adjunta al historial como respaldo para vos y el cliente\n💰 Precio de costo por ítem — registrás tu costo interno por cada trabajo o repuesto y el sistema calcula tu ganancia automáticamente (no visible al cliente)\n🖨️ Facturación autoimpresor SET — emitís facturas válidas directamente desde el sistema\n📒 Libro de Ventas y Compras — registro contable listo para presentar al contador\n📊 Ingresos, Egresos y Flujo de Caja en PC — control completo desde el programa de escritorio\n\nSi te interesa alguno lo cotizamos sin compromiso 👍\n\n¿Me confirmás el Plan con un *\"Confirmado\"*? 👍",
+            "estado": "programado",
+            "nota": "Resumen completo del plan + módulos adicionales opcionales. Pedir confirmación escrita del cliente."
+        },
+        {
+            "id": "MIGUEL-19072026-AVISO-COBRO",
+            "nombre": "Miguel Acuña",
+            "telefono": "+595961807675",
+            "fecha": "2026-07-19",
+            "hora": "10:00",
+            "mensaje": "Miguel, buen día. Le recuerdo que el domingo 26 vence la cuota del mes — Gs. 350.000. Cuando pueda me avisa. Gracias!",
+            "estado": "programado",
+            "nota": "Aviso una semana antes del cobro. Cuota 3 — vence 26/07/2026."
+        },
+        {
+            "id": "MIGUEL-26072026-COBRO",
+            "nombre": "Miguel Acuña",
+            "telefono": "+595961807675",
+            "fecha": "2026-07-26",
+            "hora": "09:00",
+            "mensaje": "Miguel, buen día. Hoy vence la cuota de julio — Gs. 350.000. Cuando pueda me avisa. Gracias!",
+            "estado": "programado",
+            "nota": "Cobro mensual Gs.350k. Cuota 3 de 14. Vence 26/07/2026."
+        },
+        {
+            "id": "CBTEC-14082026-COBRO",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-08-14",
+            "hora": "16:15",
+            "mensaje": "Cristian, buenas tardes. Pasando para avisar que ya entramos en la quincena — cuando puedas me hacés llegar los Gs. 200.000. Gracias!",
+            "estado": "programado",
+            "nota": "Cobro quincenal día 14 agosto a las 16:15."
+        },
+        {
+            "id": "CBTEC-28082026-COBRO",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-08-28",
+            "hora": "16:15",
+            "mensaje": "Cristian, buenas tardes. Pasando para avisar que cerramos el mes — cuando puedas me hacés llegar los Gs. 200.000. Gracias!",
+            "estado": "programado",
+            "nota": "Cobro quincenal último viernes agosto a las 16:15."
+        },
+        {
+            "id": "CLIMAR-03082026-AVISO-COBRO",
+            "nombre": "Climar Sr. Marcos",
+            "telefono": "+595984821707",
+            "fecha": "2026-08-04",
+            "hora": "10:00",
+            "mensaje": "Buen día. Le recuerdo que el lunes 10 vence la primera cuota mensual — Gs. 400.000. Cuando pueda me avisa. Gracias!",
+            "estado": "programado",
+            "nota": "Aviso una semana antes del primer cobro mensual. Gs.400k/mes × 12 meses desde 10/08."
+        },
+        {
+            "id": "CLIMAR-10082026-COBRO",
+            "nombre": "Climar Sr. Marcos",
+            "telefono": "+595984821707",
+            "fecha": "2026-08-11",
+            "hora": "09:00",
+            "mensaje": "Buen día. Hoy vence la primera cuota mensual — Gs. 400.000. Cuando pueda me avisa. Gracias!",
+            "estado": "programado",
+            "nota": "Primer cobro mensual Gs.400k. Cuota 1 de 12. Instalación Gs.500k cobrada 10/07/2026."
+        },
+        {
+            "id": "CLIMAR-14072026-1500-FOLLOWUP",
+            "nombre": "Climar Sr. Marcos",
+            "telefono": "+595984821707",
+            "fecha": "2026-07-14",
+            "hora": "15:00",
+            "mensaje": "Marcos, buenas tardes! 👋\n\nSolo quería confirmar si recibiste el mensaje anterior con el resumen del sistema y los módulos adicionales.\n\nEstamos listos para arrancar el desarrollo esta semana y llegar a la entrega del *21/07* según lo acordado 🚀\n\n¿Nos confirmás?",
+            "estado": "programado",
+            "nota": "Seguimiento si no responde al mensaje de resumen plan + adicional PC Gs.500k. Cliente caliente — mover rápido."
+        },
+        {
+            "id": "BERNI-24072026-FOLLOWUP",
+            "nombre": "Jose Berni",
+            "telefono": "+595991852582",
+            "fecha": "2026-07-24",
+            "hora": "09:00",
+            "mensaje": "Berni, ¿cómo te fue con la reunión? ¿Pudiste hablar con tu suegro sobre retomar el sistema?",
+            "estado": "programado",
+            "nota": "Respondió 10/07 tras 4 meses silencio, reunión con suegro ese día. Si no responde al 24/07 → cerrar definitivamente."
+        },
+        {
+            "id": "GCR-16072026-FOLLOWUP",
+            "nombre": "GCR Motors",
+            "telefono": "+595974388777",
+            "fecha": "2026-07-16",
+            "hora": "11:00",
+            "mensaje": "Buen día, ¿cómo están? Le escribo para saber si pudo ver la propuesta del sistema para el taller — instalación sin costo y Gs. 400.000/mes con todo incluido: presupuestos, clientes, vehículos, WhatsApp IA y facturación.\n\n¿Tiene un momento esta semana para verlo en 10 minutos?",
+            "estado": "programado",
+            "nota": "Mensaje enviado 10/07 con promo instalación gratis + Gs.400k/mes todo incluido. Sin respuesta. Follow-up 16/07."
+        },
+        {
+            "id": "JORGE-14072026-FOLLOWUP",
+            "nombre": "Jorge — Agua Hunza Paraguay",
+            "telefono": "+595985581265",
+            "fecha": "2026-07-14",
+            "hora": "11:00",
+            "mensaje": "Sr. Jorge, buen día. Quedo atento a la lista de cambios que necesita en la web. Cuando la tenga me la envía y arrancamos.",
+            "estado": "programado",
+            "nota": "Respondió 10/07 pidiendo cambios en la web. Carlos respondió 'desde Gs.200k según necesidad'. Esperando lista de cambios de Jorge."
+        },
+        {
+            "id": "CBTEC-14072026-COBRO",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-07-14",
+            "hora": "16:15",
+            "mensaje": "Cristian, buenas tardes. Pasando para avisar que ya entramos en la quincena — cuando puedas me hacés llegar los Gs. 200.000. Gracias!",
+            "estado": "programado",
+            "nota": "Cobro quincenal día 14 a las 16:15. Último pago Gs.215k el 27/06."
+        },
+        {
+            "id": "CBTEC-31072026-COBRO",
+            "nombre": "Cristian Britos (CBTEC)",
+            "telefono": "+595981981091",
+            "fecha": "2026-07-31",
+            "hora": "16:15",
+            "mensaje": "Cristian, buenas tardes. Pasando para avisar que cerramos el mes — cuando puedas me hacés llegar los Gs. 200.000. Gracias!",
+            "estado": "programado",
+            "nota": "Cobro quincenal último viernes del mes a las 16:15."
+        },
+        {
+            "id": "KAREN-13072026-AMISTAT",
+            "nombre": "Karen Ortellado",
+            "telefono": "+595981797880",
+            "fecha": "2026-07-13",
+            "hora": "11:00",
+            "mensaje": "Karen, buen día. Esta semana activamos un productor nuevo con el sistema — hacienda y registro de campo desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si querés verlo: carcoragu.github.io/IsabSoftAgroSoft/\n\nCuando tengas 10 minutos lo vemos en vivo, sin compromiso.",
+            "estado": "programado",
+            "nota": "Ganadería Tru-Test. Múltiples msgs junio sin respuesta. Mes de la Amistad — instalación gratis + link AgroSoft."
+        },
+        {
+            "id": "ALCIDES-13072026-AMISTAT",
+            "nombre": "Alcides Fernández",
+            "telefono": "+595983670608",
+            "fecha": "2026-07-13",
+            "hora": "11:15",
+            "mensaje": "Alcides, buen día. Esta semana activamos un productor nuevo con el sistema — módulo de inseminación y seguimiento de hacienda desde el campo.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si quiere verlo: carcoragu.github.io/IsabSoftAgroSoft/\n\nCuando quiera lo vemos en 10 minutos, sin compromiso.",
+            "estado": "programado",
+            "nota": "Ganadería/inseminación. Múltiples msgs junio sin respuesta. Mes de la Amistad — instalación gratis + link AgroSoft."
+        },
+        {
+            "id": "NATO-13072026-AMISTAT",
+            "nombre": "Nato",
+            "telefono": "+595985462841",
+            "fecha": "2026-07-13",
+            "hora": "11:30",
+            "mensaje": "Nato, buen día. Esta semana activamos un productor nuevo con el sistema — registro de hacienda y seguimiento de cría desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si querés verlo: carcoragu.github.io/IsabSoftAgroSoft/\n\nCuando tengas 10 minutos lo vemos en vivo, sin compromiso.",
+            "estado": "programado",
+            "nota": "Ganadería cría y engorde. Múltiples msgs junio sin respuesta. Mes de la Amistad — instalación gratis + link AgroSoft."
+        },
+        {
+            "id": "EULOGIO-13072026-AMISTAT",
+            "nombre": "Eulogio",
+            "telefono": "+595986491067",
+            "fecha": "2026-07-13",
+            "hora": "11:45",
+            "mensaje": "Don Eulogio, buen día. Esta semana activamos un productor nuevo con el sistema — módulo de inseminación y hacienda desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si quiere verlo: carcoragu.github.io/IsabSoftAgroSoft/\n\nCuando tenga 10 minutos lo vemos, sin compromiso.",
+            "estado": "programado",
+            "nota": "Ganadería inseminación. Múltiples msgs junio sin respuesta. Mes de la Amistad — instalación gratis + link AgroSoft."
+        },
+        {
+            "id": "SSG-13072026-AMISTAT",
+            "nombre": "S.S.G.",
+            "telefono": "+595981220528",
+            "fecha": "2026-07-13",
+            "hora": "12:00",
+            "mensaje": "Buen día. Esta semana activamos un productor nuevo con el sistema — hacienda y gestión de campo desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si querés verlo: carcoragu.github.io/IsabSoftAgroSoft/\n\nCuando quieras lo vemos en 10 minutos, sin compromiso.",
+            "estado": "programado",
+            "nota": "Ganadería. Dijo 'dale dale perfecto' 01/06, luego silencio. Mes de la Amistad — instalación gratis + link AgroSoft."
+        },
+        {
+            "id": "GANADERO-13072026-AMISTAT",
+            "nombre": "Ganadero (Ped Soft)",
+            "telefono": "+595985673022",
+            "fecha": "2026-07-13",
+            "hora": "12:15",
+            "mensaje": "Buen día. Esta semana activamos un productor nuevo con el sistema — hacienda y seguimiento de campo desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si querés verlo: carcoragu.github.io/IsabSoftAgroSoft/\n\nCuando quieras lo vemos en 10 minutos, sin compromiso.",
+            "estado": "programado",
+            "nota": "Ganadería. Dijo 'Okei' 01/06 a demo AgroSoft, luego silencio. Mes de la Amistad — instalación gratis + link AgroSoft."
+        },
+        {
+            "id": "SANABRIA-14072026-AMISTAT",
+            "nombre": "Taller Sanabria",
+            "telefono": "+595976753697",
+            "fecha": "2026-07-14",
+            "hora": "11:30",
+            "mensaje": "Don Sanabria, buen día. Esta semana activamos un taller nuevo con el sistema — presupuestos, clientes y vehículos desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si quiere verlo: carcoragu.github.io/gestfact-demo/\n\nCuando tenga 10 minutos lo vemos en vivo, sin compromiso.",
+            "estado": "programado",
+            "nota": "Taller mecánico. Múltiples msgs junio sin respuesta. Mes de la Amistad — instalación gratis + link GestFact."
+        },
+        {
+            "id": "OSCAR-14072026-AMISTAT",
+            "nombre": "Oscar Acuña (Taller)",
+            "telefono": "solo Messenger",
+            "fecha": "2026-07-14",
+            "hora": "11:45",
+            "mensaje": "Oscar, buen día. Esta semana activamos un taller nuevo con el sistema — presupuestos, clientes y vehículos desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si querés verlo: carcoragu.github.io/gestfact-demo/\n\nCuando tengas 10 minutos lo vemos, sin compromiso.",
+            "estado": "programado",
+            "nota": "Taller mecánico. Solo Messenger. Visto 08/06 sin respuesta. Mes de la Amistad — instalación gratis + link GestFact."
+        },
+        {
+            "id": "PEDRO-14072026-AMISTAT",
+            "nombre": "Pedro José Fernández",
+            "telefono": "+595992547312",
+            "fecha": "2026-07-14",
+            "hora": "12:00",
+            "mensaje": "Pedro, buen día. Esta semana activamos un taller nuevo con el sistema — presupuestos, clientes y vehículos desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si querés verlo: carcoragu.github.io/gestfact-demo/\n\nCuando tengas 10 minutos lo vemos en vivo, sin compromiso.",
+            "estado": "programado",
+            "nota": "Taller mecánico completo. Múltiples msgs junio sin respuesta. Mes de la Amistad — instalación gratis + link GestFact."
+        },
+        {
+            "id": "DIMA-14072026-AMISTAT",
+            "nombre": "Taller Dima",
+            "telefono": "+595981577775",
+            "fecha": "2026-07-14",
+            "hora": "12:15",
+            "mensaje": "Buen día, ¿cómo están? Esta semana activamos un taller nuevo con el sistema — presupuestos, clientes y vehículos desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si quieren verlo: carcoragu.github.io/gestfact-demo/\n\nCuando tengan 10 minutos lo vemos en vivo, sin compromiso.",
+            "estado": "programado",
+            "nota": "Taller mecánico. Múltiples msgs junio sin respuesta. Mes de la Amistad — instalación gratis + link GestFact."
+        },
+        {
+            "id": "CHESS-14072026-AMISTAT",
+            "nombre": "Taller Chess",
+            "telefono": "solo Messenger",
+            "fecha": "2026-07-14",
+            "hora": "12:30",
+            "mensaje": "Buen día, ¿cómo van? Esta semana activamos un taller nuevo con el sistema — presupuestos, clientes y vehículos desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si quieren verlo: carcoragu.github.io/gestfact-demo/\n\nCuando tengan 10 minutos lo vemos en vivo, sin compromiso.",
+            "estado": "programado",
+            "nota": "Taller mecánico. Solo Messenger. Múltiples msgs junio sin respuesta. Mes de la Amistad — instalación gratis + link GestFact."
+        },
+        {
+            "id": "LSAUTO-14072026-AMISTAT",
+            "nombre": "LS Autocentro",
+            "telefono": "+595973549820",
+            "fecha": "2026-07-14",
+            "hora": "12:45",
+            "mensaje": "Buen día, ¿cómo están? Esta semana activamos un taller nuevo con el sistema — presupuestos, clientes, stock de repuestos y vehículos desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si quieren verlo: carcoragu.github.io/gestfact-demo/\n\nCuando tengan 10 minutos lo vemos en vivo, sin compromiso.",
+            "estado": "programado",
+            "nota": "Taller + repuestos + neumáticos. Último msg 10/06 calificación stock sin respuesta. Mes de la Amistad — instalación gratis + link GestFact."
+        },
+        {
+            "id": "VERTICAL-16072026-AMISTAT",
+            "nombre": "Vertical Reformas y Construcciones",
+            "telefono": "+595993284383",
+            "fecha": "2026-07-16",
+            "hora": "11:00",
+            "mensaje": "Buen día. Esta semana activamos un cliente nuevo con el sistema — presupuestos, clientes y seguimiento de proyectos desde el celular.\n\nPor el Mes de la Amistad la instalación es sin costo — arrancás con Gs. 350.000/mes.\n\nPor si quieren verlo: carcoragu.github.io/gestfact-demo/\n\nCuando tengan 10 minutos lo vemos en vivo, sin compromiso.",
+            "estado": "programado",
+            "nota": "Construcción y reformas. Msgs junio sin respuesta. Mes de la Amistad — instalación gratis + link GestFact."
+        },
+        {
+            "id": "ENCISO-16072026-AMISTAT",
+            "nombre": "Enrique Enciso",
+            "telefono": "+595971233644",
+            "fecha": "2026-07-16",
+            "hora": "11:15",
+            "mensaje": "Enrique, buen día. Esta semana arrancamos un desarrollo nuevo con un cliente. Por el Mes de la Amistad tenemos condiciones especiales para proyectos nuevos.\n\n¿Sigue en pie la app de estadísticas? Si querés retomamos esta semana.",
+            "estado": "programado",
+            "nota": "App estadísticas fútbol — desarrollo a medida. Múltiples msgs junio sin respuesta. Mes de la Amistad — condiciones especiales generales."
+        },
+        {
+            "id": "CLIDER-28072026-0900-CARLOS-RAMIREZ",
+            "nombre": "Clider Schussmuller",
+            "telefono": "+595981376388",
+            "fecha": "2026-07-28",
+            "hora": "09:00",
+            "mensaje": "Buenos días Clider! Te comento que Carlos Ramírez ya puede ingresar con cramirez@yacyreta.com.py desde acá:\n👉 https://carcoragu.wixsite.com/csconase\n\nLa primera vez le va a pedir que cree su contraseña.\n\nPor otro lado, quería aclararte algo sobre lo que hablamos de la marca Yacyretá — la personalización visual va incluida en el plan, sin costo. Lo que sí vamos a necesitar ver aparte cuando llegue el momento es el tema de los accesos para los 100 usuarios, porque eso es otro volumen y requiere un plan específico. Cuando quieras lo conversamos.\n\nSobre el dominio, consulté con Martín — me confirma que está en auditorías hasta el jueves. En cuanto esté libre coordino con él para el redirect. Te aviso 💪",
+            "estado": "programado",
+            "nota": "Mensaje integrado 28/07: (1) acceso Carlos Ramírez, (2) replanteo marca agua — personalización visual incluida, 100 usuarios es Plan Empresarial aparte, (3) update Martín en auditorías hasta jueves 30/07. Esperar respuesta de Clider — si muestra frustración con Martín → ofrecer que IsabSoft resuelve el frontend."
+        },
+        {
+            "id": "LUIS-27072026-1400-PRIMER-CONTACTO",
+            "nombre": "Luis González",
+            "telefono": "+595974214312",
+            "fecha": "2026-07-27",
+            "hora": "14:00",
+            "mensaje": "Luis, buenas! Le escribo de IsabSoft.\n\nTenemos un sistema para chapería y pintura — fotos de entrada del vehículo, presupuesto por WhatsApp y ficha completa de cada cliente.\n\nLa parte de las fotos es muy útil: queda registrado el estado del auto antes de ingresar, por si después hay algún reclamo del cliente.\n\n¿Le muestro cómo funciona en 10 minutos? Demo disponible en:\n👉 carcoragu.github.io/gestfact-demo/ (clave: demo2026)\n\nEste mes tenemos instalación sin costo 💪",
+            "estado": "programado",
+            "nota": "Primer contacto. Chapería y pintura. Cod_36. GestFact aplica bien — fotos entrada/salida clave para reclamos. Promo Mes Amistad julio: instalación sin costo."
+        },
+        {
+            "id": "LUIS-01082026-0900-FOLLOWUP",
+            "nombre": "Luis González",
+            "telefono": "+595974214312",
+            "fecha": "2026-08-04",
+            "hora": "09:00",
+            "mensaje": "Luis, buen día! Le escribo nuevamente de IsabSoft. ¿Pudo ver la demo del sistema para chapería? Si tiene alguna duda o quiere que le muestre en 10 minutos cómo funciona, con gusto lo coordinamos. Saludos!",
+            "estado": "programado",
+            "nota": "Follow-up si no respondió al primer contacto del 27/07. Chapería y pintura Cod_36."
+        },
+        {
+            "id": "OLIMPERO-28072026-0900-FOLLOWUP",
+            "nombre": "Olimpero",
+            "telefono": "+595986331322",
+            "fecha": "2026-07-28",
+            "hora": "09:00",
+            "mensaje": "Buen día! ¿Pudo ver el sistema? Si quiere le muestro cómo quedaría para su taller en 10 minutos — a la hora que le quede cómodo hoy o mañana. 🔧",
+            "estado": "programado",
+            "nota": "Inbound 27/07. Respondió 'Sí, quiero más info'. Demo + promo enviada 16:47. Follow-up mañana 28/07. Taller mecánico. Cod_37."
+        },
+        {
+            "id": "MARTIN-01082026-0900-FOLLOWUP",
+            "nombre": "Martín (dominio Clider)",
+            "telefono": "+595971388585",
+            "fecha": "2026-08-04",
+            "hora": "09:00",
+            "mensaje": "Martín, cómo le fue con las auditorías? Espero que todo salió bien. Cuando pueda nos coordinamos para el cotizador del csca.com.py 🙌",
+            "estado": "programado",
+            "nota": "Auditorías ISO terminan jueves 30/07. Follow-up viernes 01/08. Pendiente: conectar cotizador csca.com.py al backend (Apps Script). Si Martín no puede avanzar → ofrecer a Clider que IsabSoft lo resuelve."
+        },
+        {
+            "id": "MIGUEL-29072026-0900-COBRO-FU",
+            "nombre": "Miguel Acuña",
+            "telefono": "+595961807675",
+            "fecha": "2026-07-29",
+            "hora": "09:00",
+            "mensaje": "Miguel, buen día. ¿Pudo ver mi mensaje de ayer sobre la cuota de julio? Gs. 350.000 — cuando le sea posible me avisa. Gracias!",
+            "estado": "programado",
+            "nota": "Cobro julio vencido 26/07. Recordatorio enviado 28/07 18:00 sin respuesta. Follow-up suave 29/07."
+        },
+        {
+            "id": "GIOVANNI-31072026-HORARIO",
+            "nombre": "Giovanni — Taller Automotriz",
+            "telefono": "+595961309822",
+            "fecha": "2026-07-31",
+            "hora": "09:00",
+            "mensaje": "Giovanni, buen día. Propongo algo concreto: ¿el lunes 03/08 o martes 04/08 a las 10h te quedaría bien para los 10 minutos de demo? Elegís el que mejor te venga.",
+            "estado": "programado",
+            "nota": "Último intento — proponer horario específico en lugar de pregunta abierta. Si no responde → cerrar definitivamente. Cod_28."
+        },
+        {
+            "id": "AGUATERIA-31072026-FOLLOWUP",
+            "nombre": "Aguatería (proveedor agua Carlos)",
+            "telefono": "sin número WA aún",
+            "fecha": "2026-07-31",
+            "hora": "10:00",
+            "mensaje": "VERIFICAR NÚMERO antes de enviar.\nBuen día, le escribo de IsabSoft — hablamos hace dos semanas cuando fui a pagar la factura de agua. ¿Pudo ver la propuesta del autoimpresor? Así no depende más del talonario impreso.",
+            "estado": "pendiente",
+            "nota": "Primer contacto presencial 17/07. Dolor: se quedó sin facturas impresas. OBTENER NÚMERO DE WHATSAPP antes de enviar. Verificar en próxima visita."
+        },
+        {
+            "id": "DAVID-MOTORMAT-04082026-CIERRE",
+            "nombre": "David Alfonzo — Motormat",
+            "telefono": "+595976957120",
+            "fecha": "2026-08-04",
+            "hora": "09:00",
+            "mensaje": "David, entiendo que no es el momento. Cierro el seguimiento por ahora — cuando quieras retomar el tema del sistema para el taller, acá estoy.",
+            "estado": "programado",
+            "nota": "Demo 03/06 interés confirmado. 3 follow-ups sin respuesta (09/07, 16/07, 04/08). Cierre definitivo. Propuesta Gs.200k+350k/mes."
+        },
+        {
+            "id": "GCR-04082026-REACTIVA",
+            "nombre": "GCR Motors",
+            "telefono": "+595974388777",
+            "fecha": "2026-08-04",
+            "hora": "10:00",
+            "mensaje": "Buen día, soy Carlos. La última vez que hablamos me dijo 'jakure' — que cuando tuviera un hueco me iba a avisar. ¿Apareció ese hueco?",
+            "estado": "programado",
+            "nota": "Lead caliente 2 años. Dijo 'jakure' mayo/26. Follow-up 16/07 sin respuesta. Ángulo personal — recordar su propio compromiso. NO proponer horario fijo. Si responde → demo 'sobre la marcha'. Si no → cerrar."
+        },
+        {
+            "id": "GUSTAVO-REYES-22082026-EGRESOS",
+            "nombre": "Gustavo Fabián Reyes",
+            "telefono": "+595981766053",
+            "fecha": "2026-08-25",
+            "hora": "09:00",
+            "mensaje": "Gustavo, buen día. Activamos el módulo de egresos para imprenta — salarios, alquiler, ANDE, hosting — y muestra el balance real del mes automático. Como ya lo tenés instalado, solo habría que activarlo. ¿Te interesa verlo?",
+            "estado": "programado",
+            "nota": "PAUSA TOTAL hasta 22/08. NO enviar nada antes. Ángulo módulo egresos — valor sin mencionar cobro. Sistema 6 meses instalado sin pagar. Llama más fácil que WA."
+        },
+        {
+            "id": "CLIENTETALLER-01102026-REACTIVACION",
+            "nombre": "Cliente Taller (hija + papá decisor)",
+            "telefono": "+595986340084",
+            "fecha": "2026-10-01",
+            "hora": "09:00",
+            "mensaje": "Buen día. Hace unos meses les presentamos el sistema para taller — por si el papá quiere verlo en 10 minutos cuando tenga un momento, el link sigue disponible: carcoragu.github.io/gestfact-demo/ (clave: demo2026). Sin compromiso.",
+            "estado": "programado",
+            "nota": "En pausa desde 16/07/2026. Retomar 01/10/2026 — 90 días. Papá es el decisor, nunca tuvo contacto directo con Carlos. Ofrecer demo directamente a él."
+        },
+        {
+            "id": "CLIMAR-30072026-1030-FOLLOWUP",
+            "nombre": "Climar Sr. Marcos",
+            "telefono": "+595984821707",
+            "fecha": "2026-07-30",
+            "hora": "10:30",
+            "mensaje": "Marcos, buen día. ¿Le viene bien esta mañana o lo dejamos para la tarde?",
+            "estado": "pendiente",
+            "nota": "RustDesk propuesto 30/07 09:00. Si no responde antes de las 10:30 → enviar este. Deploy MDE+_be pendiente. No mencionar el conflicto anterior."
+        },
+        {
+            "id": "HECTOR-30072026-CIERRE",
+            "nombre": "Hector — Taller Mecánico",
+            "telefono": "+595986400027",
+            "fecha": "2026-07-30",
+            "hora": "09:00",
+            "mensaje": "Héctor, entiendo que el precio puede ser un limitante cuando uno está arrancando. No te molesto más — cuando el taller esté en marcha y quieras retomar el tema, acá estoy.",
+            "estado": "enviado",
+            "nota": "4 mensajes sin respuesta (19/07, 21/07, 23/07, 24/07). Precio bajado a Gs.250k sin acuerdo. Cierre respetuoso — NO enviar más follow-ups si no responde."
+        },
+        {
+            "id": "OSCAR-LOPEZ-30072026-FOLLOWUP",
+            "nombre": "Oscar López — Taller Mecánico",
+            "telefono": "+595985846623",
+            "fecha": "2026-07-30",
+            "hora": "09:00",
+            "mensaje": "Oscar, buen día! ¿Pudo ver la demo del sistema? Si quiere le muestro en 15 minutos cómo quedaría para su taller — ¿hoy o mañana le viene bien?",
+            "estado": "enviado",
+            "nota": "Inbound 22/07. Pidió demo activamente, enviada ese día. 7 días sin respuesta. Si no responde → 31/07 con urgencia promo."
+        },
+        {
+            "id": "FER-GAUTO-30072026-DEMO",
+            "nombre": "Fer Gauto — Taller Mecánico",
+            "telefono": "+595994153119",
+            "fecha": "2026-07-30",
+            "hora": "11:00",
+            "mensaje": "Fer, buen día! ¿Le viene bien la demo a las 10h hoy? Si no puede esta mañana, decime qué horario le queda mejor y lo coordino.",
+            "estado": "enviado",
+            "nota": "Demo propuesta 30/07 10h. Si no confirma antes de las 11h → enviar este recordatorio. Promo instalación gratis vence 31/07."
+        },
+        {
+            "id": "FER-GAUTO-30072026-RECORDATORIO-1900",
+            "nombre": "Fer Gauto — Taller Mecánico",
+            "telefono": "+595994153119",
+            "fecha": "2026-07-30",
+            "hora": "18:45",
+            "mensaje": "⏰ RECORDATORIO: Demo con Fer Gauto en 15 minutos — 19:00 hs. Confirmó OK. Propuesta: Gs.350k/mes instalación gratis promo julio (vence mañana 31/07). Tener lista la demo de taller.",
+            "estado": "pendiente",
+            "nota": "Recordatorio interno — demo confirmada 19:00 hoy 30/07."
+        },
+        {
+            "id": "VICTOR-ROJAS-30072026-FOLLOWUP",
+            "nombre": "Victor Rojas — Despensa",
+            "telefono": "+595992282065",
+            "fecha": "2026-07-30",
+            "hora": "09:00",
+            "mensaje": "Victor, buen día. ¿Pudo ver la cotización del sistema para la despensa? Si tiene alguna duda o quiere que le muestre en 15 minutos cómo quedaría, avíseme.",
+            "estado": "enviado",
+            "nota": "Cotización Gs.3.500.000 contado enviada 28/07. Pregunta printer USB/BT sin respuesta. Soft follow-up — no presionar."
+        },
+        {
+            "id": "BEA-BENITEZ-31072026-PROMO",
+            "nombre": "Bea Benitez — Taller Mecánico",
+            "telefono": "+595987395640",
+            "fecha": "2026-07-31",
+            "hora": "09:30",
+            "mensaje": "Bea, buen día! Solo para avisarte que la instalación sin costo vence hoy. Si querés coordinar los 15 minutos de demo antes de que cierre, hoy mismo lo hacemos.",
+            "estado": "programado",
+            "nota": "Inbound 24/07 Facebook. Follow-up 29/07 sin respuesta. Promo vence 31/07 — urgencia real. Si no responde → cerrar."
+        },
+        {
+            "id": "OLIMPERO-31072026-PROMOVENCE",
+            "nombre": "Olimpero — Casa de Repuestos",
+            "telefono": "+595986331322",
+            "fecha": "2026-07-31",
+            "hora": "09:00",
+            "mensaje": "Hola! Solo para avisarle que la promoción de instalación sin costo vence hoy. Si le interesa arrancar, hoy mismo coordinamos todo. Si no es el momento, igual me avisa y no hay problema.",
+            "estado": "programado",
+            "nota": "Demo exitosa 29/07, dijo 'dejame pensar'. Promo instalación gratis vence 31/07 — urgencia real. No presionar, solo recordar."
+        },
+        {
+            "id": "DANIEL-ABATTE-29072026-REACTIVACION",
+            "nombre": "Daniel Abatte — Taller",
+            "telefono": "+595981420695",
+            "fecha": "2026-07-29",
+            "hora": "09:30",
+            "mensaje": "Daniel, buen día. ¿Esta semana te viene bien para los 10 minutos de demo del sistema? El martes 29 o miércoles 30 a las 10h me quedaría perfecto.\n\nPor si querés ir viendo mientras tanto: carcoragu.github.io/gestfact-demo/ (clave: demo2026) 👍",
+            "estado": "programado",
+            "nota": "Inbound 21/03. Pidió demo 25/03 pero nunca confirmó horario. Sobre-mensajeado (10+ msgs). Reset 18/06 sin respuesta. Proponer horario concreto — no preguntar si le interesa. Si no responde → cerrar."
+        },
+        {
+            "id": "FER-GAUTO-31072026-PROPUESTA-COORDINACION",
+            "para": "Carlos → Fer Gauto +595994153119",
+            "fecha": "2026-07-31",
+            "hora": "09:00",
+            "canal": "whatsapp",
+            "mensaje": "Fer, buenas! Tengo lista la propuesta con todo lo que conversamos anoche. ¿Le parece que se la envío ahora o prefiere que lo coordine para un horario en que pueda revisarla tranquilo y si tiene dudas lo vemos por videollamada?",
+            "estado": "programado",
+            "nota": "Propuesta lista en https://carcoragu.github.io/gestfact-demo/taller-fer-gauto.html — esperar confirmación de horario antes de enviar el link. Fer se inclinó por Plan Pago Único Gs.3.500.000. Demo hecha 30/07 19:00 por videollamada."
+        },
+        {
+            "id": "CLIMAR-04082026-FOLLOWUP-IMPRESORA",
+            "nombre": "Climar — Sr. Marcos",
+            "telefono": "+595984821707",
+            "fecha": "2026-08-04",
+            "hora": "09:00",
+            "mensaje": "Sr. Marcos, buen día. ¿Tiene un momento esta semana para coordinar la impresora?",
+            "estado": "cancelado",
+            "nota": "Mensaje del 29/07 sigue en 2 tildes grises. Si lunes sigue gris → llamar directo al +595 984 821707. Si responde → hacerle 2 preguntas de Oscar: 1) ¿Cuántas páginas imprimen por mes? 2) ¿La impresora va en oficina separada o en el taller mismo? Opciones: Brother L1652W Gs.1.410.255 (sin ADF) o L2660DW Gs.1.758.240 (con ADF ✅ recomendada). Total ~Gs.1.958.240 con Oscar+Bolt. IsabSoft Gs.0 regalo. Límite: instalar antes del 15/08 para que Marcos pague tranquilo el 25/08."
+        },
+        {
+            "id": "FER-GAUTO-01082026-FOLLOWUP-SABADO",
+            "nombre": "Fer Gauto — Taller Mecánico",
+            "telefono": "+595994153119",
+            "fecha": "2026-08-01",
+            "hora": "09:00",
+            "mensaje": "Fer, buen día. Ayer no nos pudimos conectar — la promo instalación gratis venció ayer, pero si le interesa avanzar esta semana lo podemos hablar tranquilo. ¿Cuándo tiene 15 minutos para ver la propuesta juntos?",
+            "estado": "programado",
+            "nota": "Demo 30/07 exitosa. Propuesta enviada 31/07. Vio el mensaje 10:05 pero no respondió. Llamada 19:00 no se concretó. Promo venció 31/07 — interés genuino, retomar sin presión. Plan principal Gs.3.500.000 Pago Único, fallback Gs.2.500.000 si objeta precio."
+        },
+        {
+            "id": "CLIMAR-MARCOS-03082026-1500-RUSTDESK",
+            "nombre": "Climar Sr. Marcos",
+            "telefono": "+595984821707",
+            "fecha": "2026-08-03",
+            "hora": "15:00",
+            "mensaje": "Sr. Marcos, buen día. ¿Le viene bien esta tarde para la conexión rápida por RustDesk? No le toma más de 20 minutos y dejamos el sistema al 100%.",
+            "estado": "cancelado",
+            "nota": "Enviar SOLO si no respondió al mensaje de las 09:19. Marcos leyó (visto) pero no respondió. Objetivo: confirmar horario RustDesk Plan A (Marca/Modelo/Año + buscador repuestos). NO mencionar impresora ni precio — esperar que él retome ese tema."
+        },
+        {
+            "id": "CLIMAR-MARCOS-04082026-0900-RUSTDESK",
+            "nombre": "Climar Sr. Marcos",
+            "telefono": "+595984821707",
+            "fecha": "2026-08-04",
+            "hora": "09:00",
+            "mensaje": "Sr. Marcos, buen día. ¿Le viene bien esta mañana para la conexión por RustDesk? Termino la actualización en 20 minutos y queda todo listo.",
+            "estado": "programado",
+            "nota": "Follow-up mañana si no confirmó hoy. Prioridad: instalar Plan A (Marca/Modelo/Año + buscador). Impresora: si Marcos retoma el tema, corregir traslado de Gs.50k a Gs.100k y confirmar total Gs.1.660.255 + entrega 24hs Microlider."
+        },
+        {
+            "id": "MARCELO-CLIMAR-04082026-0730-TIMBRADO-RECHAZO",
+            "nombre": "Marcelo Hermosilla — Contador Climar",
+            "telefono": "+595994284255",
+            "fecha": "2026-08-04",
+            "hora": "07:30",
+            "mensaje": "Marcelo, buen día. Antes de que llame a SET, quería comentarle algo. IsabSoft estaba en proceso de regularización tributaria — hoy presentamos las declaraciones que estaban pendientes (IRP-RSP 2024/2025 y Registro Anual de Comprobantes 2024/2025). Queda pendiente un pago de IVA que estamos gestionando.\n\nEs probable que el rechazo esté relacionado con eso. Una vez regularizado el RUC completamente, usted puede volver a presentar la solicitud sin inconvenientes. Le aviso en cuanto esté todo en orden. Disculpe los inconvenientes y gracias por su comprensión.",
+            "estado": "programado",
+            "nota": "Enviar ANTES que Marcelo llame a SET (que abre 08:30). DNIT rechazó timbrado autoimpresor Climar — causa probable: RUC IsabSoft tenía declaraciones faltantes + deuda IVA. Declaraciones presentadas 03/08 ✅. Falta pagar IVA Gs.3.097.925."
+        },
+        {
+            "id": "MARCELO-CLIMAR-10082026-FOLLOWUP",
+            "nombre": "Marcelo Hermosilla — Contador Climar",
+            "telefono": "+595994284255",
+            "fecha": "2026-08-10",
+            "hora": "09:00",
+            "mensaje": "Marcelo, buen día. ¿Pudo averiguar el motivo del rechazo del timbrado? Quedo atento para corregir lo que sea necesario de nuestra parte.",
+            "estado": "programado",
+            "nota": "Seguimiento tras rechazo timbrado. Declaraciones IsabSoft presentadas 03/08. Pago IVA en gestión. Esperando confirmación motivo oficial de SET."
+        },
+        {
+            "id": "OSCAR-03082026-1700-EPSON-TM-U220",
+            "nombre": "Oscar — Técnico",
+            "telefono": "pendiente confirmar",
+            "fecha": "2026-08-03",
+            "hora": "17:00",
+            "mensaje": "Oscar, ¿pudiste ver mi mensaje? ¿Podés conseguir la Epson TM-U220? ¿Cuánto quedaría con instalación a domicilio? Necesito el dato esta tarde — le prometí el presupuesto a un cliente para esta noche.",
+            "estado": "programado",
+            "nota": "⚠️ URGENTE — Cesar Ruben (Cod_41) espera presupuesto esta noche. Mensaje enviado a Oscar esta mañana sin respuesta. Recordatorio a las 17:00. Sin dato de Oscar → enviar solo opción ZKTeco Gs.684k con instalación."
+        },
+        {
+            "id": "CESAR-RUBEN-04082026-PRESUPUESTO",
+            "nombre": "Cesar Ruben",
+            "telefono": "+595981658370",
+            "fecha": "2026-08-04",
+            "hora": "09:00",
+            "mensaje": "PENDIENTE INTERNAS: (1) Oscar confirme precio Epson TM-U220 con instalación. (2) Cesar envíe ubicación. Con esos dos datos armar presupuesto final y enviar.",
+            "estado": "pendiente",
+            "nota": "Cod_41. Inbound 03/08 Facebook. Quiere 80mm USB. Dos opciones: ZKTeco ZKP8003 Gs.684k y Epson TM-U220 (precio pendiente Oscar). Cesar avisado que estamos consultando con técnico."
+        },
+        {
+            "id": "CESAR-RUBEN-05082026-FOLLOWUP",
+            "nombre": "Cesar Ruben",
+            "telefono": "+595981658370",
+            "fecha": "2026-08-05",
+            "hora": "09:00",
+            "mensaje": "Cesar, buen día. ¿Pudo ver mi mensaje de ayer? Quedamos en enviarle el presupuesto con las opciones de impresora — necesitamos su dirección para incluir la instalación. Cuando pueda me la envía. 👍",
+            "estado": "programado",
+            "nota": "Follow-up si no respondió con ubicación. Cod_41."
+        },
+        {
+            "id": "CBTEC-01082026-COBRO-SABADO",
+            "nombre": "CBTEC — Lalo (Cristian Britos)",
+            "telefono": "+595981981091",
+            "fecha": "2026-08-01",
+            "hora": "09:30",
+            "mensaje": "Lalo, buen día. Le recuerdo el abono quincenal de Gs. 200.000 que quedó pendiente del viernes. Cuando pueda coordinar la transferencia, gracias 🙏",
+            "estado": "programado",
+            "nota": "Cobro viernes 31/07 16:15 enviado a Lalo y Cristian — sin respuesta ni pago confirmado al cierre del día. Patrón habitual: pagan viernes. Si no pagaron → recordatorio sábado mañana."
+        },
+        {
+            "id": "FER-GAUTO-06082026-FOLLOWUP-3CUOTAS",
+            "nombre": "Fer Gauto - Taller Mecánico",
+            "telefono": "+595994153119",
+            "fecha": "2026-08-06",
+            "hora": "10:00",
+            "mensaje": "Fer, ¿pudo ver la propuesta de las 3 cuotas? Cualquier duda me cuenta.",
+            "estado": "programado",
+            "nota": "Dejó en visto el mensaje de 3 cuotas Gs.1.170.000 enviado 03/08. Dijo no apurado y viendo otras opciones. No presionar. Si rechaza 3 cuotas ofrecer Plan Mensual Gs.350k/mes. Cod_38."
+        },
+        {
+            "id": "FER-GAUTO-30092026-COMPARATIVA",
+            "nombre": "Fer Gauto - Taller Mecánico",
+            "telefono": "+595994153119",
+            "fecha": "2026-09-30",
+            "hora": "15:16",
+            "mensaje": "Fer, buenas. De acuerdo a lo que hablamos el sabado sobre los demas proveedores, te paso un resumen comparando los sistemas del mercado para talleres: qué incluyen, cuánto cuestan, qué le falta a cada uno. No te digo qué elegir, miralo vos y sacás tus conclusiones.\n\n¿Te envío asi tenes a mano?",
+            "estado": "enviado",
+            "nota": "Mensaje enviado 30/09 15:16. Solo pidió permiso para comparativa (no mencionó propuesta actualizada ni AnotDigi). Si responde 'sí' → recuperar con: 'Acá van los dos. También actualicé tu propuesta — incluí AnotDigi sin costo extra.' + ambos links. Si no responde → llamada jueves 01/10 10:00."
+        },
+        {
+            "id": "FER-GAUTO-01102026-LLAMADA",
+            "nombre": "Fer Gauto - Taller Mecánico",
+            "telefono": "+595994153119",
+            "fecha": "2026-10-01",
+            "hora": "10:00",
+            "mensaje": "📞 LLAMAR a Fer Gauto +595994153119 — no respondió al mensaje del 30/09. Preguntar si pudo ver el mensaje. Si atiende: ofrecer enviarle la comparativa ahora mismo. Ya atendió llamada el 26/09 — sigue siendo accesible por teléfono.",
+            "estado": "realizado",
+            "nota": "01/10 18:10 — llamó, Fer atendió pero estaba manejando. Envió ambos links (propuesta + comparativa) por WA. Intentó llamar 19:15 pero no pudo dar con él. Seguimiento viernes 02/10."
+        },
+        {
+            "id": "FER-GAUTO-02102026-MENSAJE",
+            "nombre": "Fer Gauto - Taller Mecánico",
+            "telefono": "+595994153119",
+            "fecha": "2026-10-02",
+            "hora": "09:00",
+            "mensaje": "Fer, buenos días. ¿Pudiste ver la propuesta? Cualquier duda me avisás, estoy disponible hoy.",
+            "estado": "programado",
+            "nota": "Primer contacto del día. Si responde → atender. Si no responde → llamada 18:00. Propuesta válida hasta 15/10."
+        },
+        {
+            "id": "FER-GAUTO-02102026-LLAMADA",
+            "nombre": "Fer Gauto - Taller Mecánico",
+            "telefono": "+595994153119",
+            "fecha": "2026-10-02",
+            "hora": "18:00",
+            "mensaje": "📞 LLAMAR a Fer Gauto +595994153119 — si no respondió al mensaje de las 09:00. Preguntar si pudo ver la propuesta. Guión cierre: '¿Qué necesitás para arrancar? ¿Te mando el número de cuenta y coordinamos el primer pago?' Carta reservada: instalación gratis si duda.",
+            "estado": "programado",
+            "nota": "Solo ejecutar si Fer no respondió al mensaje de 09:00. Mismo horario que funcionó en la demo (19:00). Propuesta válida hasta 15/10. Cod_38."
+        }
+    ]
+}
