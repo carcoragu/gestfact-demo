@@ -1,0 +1,17 @@
+{
+  "name": "AnotDigi — Fer Gauto",
+  "short_name": "AnotDigi",
+  "id": "/gestfact-demo/fer_gauto_form.html",
+  "description": "Registro de trabajos del taller",
+  "start_url": "/gestfact-demo/fer_gauto_form.html",
+  "scope": "/gestfact-demo/fer_gauto_form.html",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "icons": [
+    { "src": "logo-anotdigi.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "logo-anotdigi.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
