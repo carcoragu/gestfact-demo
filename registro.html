@@ -1757,6 +1757,7 @@ function parsearBloques(texto) {
         if (/\bsin\s+cargo\b/i.test(b.join(' '))) montoTotal = 0;
 
         // Detectar cliente por tarjeta: línea 2 sin dígitos, 2-5 palabras, no es descripción de servicio
+        const notas         = /^(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca|falta|cargado|cobrado|pendiente|verificar)$/i;
         const SVC_KW = /^(cambio|pastillas?|aceite|frenos?|amortiguador(es)?|correa|filtro|revisi[oó]n|revisar|lavado|afina|alineaci|balanceo|pintura|chaper[ií]a|reparaci|instalaci|coloca|diagn[oó]stico|escaneo|tensor|disco|embrague|radiador|bater[ií]a|llanta|neum[aá]tico|limpieza|perno|tuerca|buje|r[oó]tula|mano|ajuste|mantenimiento|servicio|inspecci|torreta|bobinas?|rectificaci|culata|compresor|inyector|carburador|termostato|caja|diferencial|transmisi|suspensi|direcci|cluth|clutch|lado|delantero|trasero|superior|inferior)/i;
         const lineas2 = b.slice(1).map(l => l.trim()).filter(l => l);
         let clienteCard = '';
@@ -1772,7 +1773,6 @@ function parsearBloques(texto) {
         }
 
         // Servicio: líneas 1+ sin notas, sin monto puro, sin "monto + estado"
-        const notas         = /^(falta\s+cargar|hasta\s+ac[aá]\s+cargado|hasta\s+aca|falta|cargado|cobrado|pendiente|verificar)$/i;
         const esMontoRe     = /^\d{1,3}(\.\d{3})+$/;
         const esMontoEstado = /^\d{1,3}(\.\d{3})+\s+(cobrado|pendiente|verificar)$/i;
         const serv = b.slice(1)
