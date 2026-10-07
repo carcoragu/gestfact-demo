@@ -667,14 +667,20 @@ Mano de obra 170.000</pre>
 <!-- PLANES -->
 <div class="screen" id="sp">
     <div class="planes-wrap">
-        <div style="text-align:center;margin-bottom:22px;">
-            <div class="question" style="font-size:1.15rem;">Elegí tu plan</div>
-            <div class="hint" style="margin-top:6px;" id="spHint">Continuá usando AnotDigi</div>
+        <div style="text-align:center;margin-bottom:28px;">
+            <div class="question" style="font-size:1.15rem;">AnotDigi</div>
+            <div class="hint" style="margin-top:6px;">Incluido en tu plan GestFact</div>
         </div>
-        <div id="planCards"></div>
-        <div id="spVolver" style="display:none;margin-top:6px;">
-            <button class="btn-back" style="width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
+        <div style="background:rgba(255,255,255,0.06);border-radius:14px;padding:22px 20px;text-align:center;margin-bottom:20px;">
+            <div style="font-size:2rem;margin-bottom:12px;">📲</div>
+            <div style="font-weight:700;font-size:1rem;color:#fff;margin-bottom:8px;">Tu acceso venció</div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.55);line-height:1.6;">AnotDigi está incluido en tu plan GestFact.<br>Para reactivarlo contactá a IsabSoft.</div>
         </div>
+        <a href="https://wa.me/595981153477?text=Hola%20IsabSoft%2C%20quiero%20reactivar%20AnotDigi" target="_blank"
+           style="display:block;width:100%;padding:14px;background:#25D366;color:#fff;font-weight:700;font-size:0.95rem;border-radius:12px;text-align:center;text-decoration:none;margin-bottom:12px;">
+            💬 Contactar IsabSoft por WhatsApp
+        </a>
+        <div style="text-align:center;color:rgba(255,255,255,0.3);font-size:0.78rem;">0981 153 477</div>
     </div>
 </div>
 
@@ -1703,10 +1709,16 @@ function promoActualizarBanner() {
     const shFull = document.getElementById('sh-full-tip');
     if (shFull) shFull.style.display = esPlanFull() ? 'block' : 'none';
 
+    const PLAN_LABELS = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
     if (esPlan) {
-        lblEl.textContent = `Plan ${plan} activo`;
-        numEl.textContent = dias;
-        subEl.textContent = 'días restantes';
+        lblEl.textContent = `Plan ${PLAN_LABELS[plan] || plan} activo`;
+        if (dias <= 7) {
+            numEl.textContent = dias;
+            subEl.textContent = 'días restantes';
+        } else {
+            numEl.style.display = 'none';
+            subEl.style.display = 'none';
+        }
     } else if (activo) {
         lblEl.textContent = 'Período de prueba';
         numEl.textContent = dias;
