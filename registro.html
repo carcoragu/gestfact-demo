@@ -899,7 +899,7 @@ function buildItemsStr(servicio, montoTotal) {
         const cMatch = desc.match(/\s+(\d{1,2})$/);
         if (cMatch) { cant = parseInt(cMatch[1], 10); desc = desc.slice(0, -cMatch[0].length).trim(); }
         return `${desc.toUpperCase()}~${cant}~${monto}~${monto}`;
-    }).join('|');
+    }).join('||');
 }
 
 async function autoCargarEnGF(jobs, clienteGlobal, estadoPago) {
@@ -940,7 +940,8 @@ async function autoCargarEnGF(jobs, clienteGlobal, estadoPago) {
             + '&fecha='       + encodeURIComponent(j.fechaVal || '')
             + '&items='       + encodeURIComponent(items)
             + '&estado_pres=' + encodeURIComponent(estadoPres)
-            + '&cobrado='     + cobrado;
+            + '&cobrado='     + cobrado
+            + '&origen=anotdigi';
         try {
             const resp = await fetchConTimeout(url);
             let data;
