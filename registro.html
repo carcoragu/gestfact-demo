@@ -906,11 +906,11 @@ async function autoCargarEnGF(jobs, clienteGlobal, estadoPago) {
     const cobrado    = estadoPago === 'cobrado' ? '1' : '0';
     const estadoPres = estadoPago === 'cobrado' ? 'Cobrado' : estadoPago === 'verificar' ? 'Verificar' : 'Pendiente';
 
-    // 1. Crear fichas de clientes nuevos (sin duplicar por nombre)
+    // 1. Crear/actualizar fichas de clientes (upsert por nombre — no duplica)
     const nuevos = new Set();
     jobs.forEach(j => {
         const c = ((j.cliente || clienteGlobal || '')).toUpperCase().trim();
-        if (c && esClienteNuevo(c) && !nuevos.has(c)) nuevos.add(c);
+        if (c && !nuevos.has(c)) nuevos.add(c);
     });
     for (const nombre of nuevos) {
         const job = jobs.find(j => ((j.cliente || clienteGlobal || '')).toUpperCase().trim() === nombre);
