@@ -1802,6 +1802,16 @@ async function checkActivacionURL() {
 // ─── Init promo ───
 (async function() {
     await checkActivacionURL();
+    if (!localStorage.getItem('anotdigi_plan') || !localStorage.getItem('anotdigi_expiry')) {
+        try {
+            const r = await fetch(GF_API + '?action=getPlan');
+            const d = await r.json();
+            if (d.ok && d.plan && d.expiry) {
+                localStorage.setItem('anotdigi_plan',   d.plan.toUpperCase());
+                localStorage.setItem('anotdigi_expiry', d.expiry);
+            }
+        } catch(e) {}
+    }
     promoIniciar();
     promoActualizarBanner();
     if (!promoActivo()) {
