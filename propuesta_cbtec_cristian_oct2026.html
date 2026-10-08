@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GestFact CBTEC — Propuesta Actualizada Octubre 2026</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f1f5f9; color: #1e293b; }
+
+    /* ── HEADER ── */
+    .header { background: linear-gradient(135deg, #1a56db 0%, #0f3460 100%); color: white; padding: 32px 20px 28px; text-align: center; }
+    .header-badge { background: rgba(255,255,255,0.18); display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 14px; }
+    .header h1 { font-size: 26px; font-weight: 800; margin-bottom: 6px; line-height: 1.2; }
+    .header p { font-size: 14px; opacity: 0.85; }
+    .header-date { font-size: 11px; opacity: 0.65; margin-top: 8px; }
+
+    /* ── STATS ── */
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); background: #0f3460; }
+    .stat { padding: 18px 8px; text-align: center; border-right: 1px solid rgba(255,255,255,0.1); }
+    .stat:last-child { border-right: none; }
+    .stat-number { font-size: 28px; font-weight: 800; color: #60a5fa; display: block; }
+    .stat-label { font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ── LAYOUT ── */
+    .section { padding: 24px 16px; }
+    .section-title { font-size: 17px; font-weight: 700; color: #1e293b; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .divider { height: 8px; background: #f1f5f9; }
+
+    /* ── SUMMARY + TOGGLE ── */
+    .summary-line { font-size: 13px; color: #475569; background: #f8fafc; border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; line-height: 1.6; border-left: 3px solid #1a56db; }
+    .summary-line strong { color: #1e293b; }
+    .toggle-detail { background: none; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 14px; font-size: 12px; color: #64748b; cursor: pointer; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-family: inherit; }
+    .toggle-detail:active { background: #f8fafc; }
+    .toggle-detail.open { color: #1a56db; border-color: #bfdbfe; background: #eff6ff; }
+    .toggle-arrow { transition: transform 0.25s; font-size: 11px; }
+    .toggle-arrow.open { transform: rotate(180deg); }
+    .section-detail { display: none; margin-top: 10px; }
+    .section-detail.open { display: block; }
+
+    /* ── CARDS ── */
+    .card { background: white; border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .card-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #374151; }
+    .card-success { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .card-highlight { background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%); border: 1px solid #bfdbfe; }
+    .card-warning { background: #fffbeb; border: 1px solid #fde68a; }
+
+    /* ── FEATURE LIST ── */
+    .feature-list { list-style: none; }
+    .feature-list li { padding: 9px 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.4; }
+    .feature-list li:last-child { border-bottom: none; }
+    .check { color: #16a34a; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── TIMELINE ── */
+    .timeline { list-style: none; padding: 0; }
+    .timeline li { display: flex; gap: 14px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+    .timeline li:last-child { border-bottom: none; }
+    .tl-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+    .tl-done { background: #16a34a; }
+    .tl-soon { background: #f59e0b; }
+    .tl-future { background: transparent; border: 2px solid #94a3b8; }
+    .tl-content strong { display: block; font-size: 14px; color: #1e293b; margin-bottom: 2px; }
+    .tl-content span { font-size: 13px; color: #6b7280; line-height: 1.4; display: block; }
+
+    /* ── COMPARISON TABLE ── */
+    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 14px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; background: white; min-width: 460px; }
+    thead th { padding: 13px 10px; text-align: center; font-size: 12px; font-weight: 700; background: #1e293b; color: white; }
+    thead th:first-child { text-align: left; padding-left: 14px; background: #0f172a; }
+    thead th.hl { background: #1a56db; }
+    td { padding: 10px 8px; text-align: center; font-size: 13px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    td.row-label { text-align: left; font-weight: 500; color: #374151; background: #f8fafc; padding-left: 14px; font-size: 13px; }
+    td.hl-col { background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+
+    /* ── FOOTNOTES ── */
+    .footnotes { margin-top: 10px; padding: 12px 14px; background: white; border-radius: 12px; font-size: 12px; color: #6b7280; line-height: 1.7; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+
+    /* ── RISK ITEMS ── */
+    .risk-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .risk-item:last-child { border-bottom: none; }
+    .risk-icon { font-size: 20px; flex-shrink: 0; }
+    .risk-text strong { display: block; font-size: 14px; color: #b45309; margin-bottom: 2px; }
+    .risk-text span { font-size: 13px; color: #6b7280; line-height: 1.4; }
+
+    /* ── ACCORDION ── */
+    .accordion { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 10px; }
+    .acc-header { padding: 15px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; user-select: none; gap: 8px; }
+    .acc-header:active { background: #f8fafc; }
+    .acc-arrow { transition: transform 0.25s; font-size: 12px; color: #94a3b8; flex-shrink: 0; }
+    .acc-arrow.open { transform: rotate(180deg); }
+    .acc-body { padding: 0 14px 14px; display: none; font-size: 14px; color: #374151; line-height: 1.6; }
+    .acc-body.open { display: block; }
+    .acc-note { margin-top: 8px; padding: 8px 12px; background: #f8fafc; border-radius: 8px; font-size: 13px; color: #6b7280; }
+
+    /* ── PRICE BLOCK ── */
+    .price-block { background: linear-gradient(135deg, #1a56db 0%, #0f3460 100%); color: white; border-radius: 18px; padding: 28px 20px; text-align: center; margin: 0 0 20px; }
+    .price-pretitle { font-size: 12px; opacity: 0.75; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .price-main { font-size: 42px; font-weight: 800; line-height: 1; margin: 4px 0; }
+    .price-sub { font-size: 14px; opacity: 0.8; margin-bottom: 6px; }
+    .price-detail { font-size: 13px; opacity: 0.85; margin-bottom: 14px; }
+    .price-tag { display: inline-block; background: rgba(255,255,255,0.18); padding: 6px 18px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+    /* ── INCLUDED GRID ── */
+    .inc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .inc-item { background: white; border-radius: 12px; padding: 14px 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    .inc-icon { font-size: 24px; display: block; margin-bottom: 5px; }
+    .inc-text { font-size: 12px; color: #374151; line-height: 1.35; font-weight: 500; }
+
+    /* ── CTA ── */
+    .cta-block { background: white; margin: 0 16px 32px; border-radius: 18px; padding: 26px 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .cta-block h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .cta-block p { font-size: 14px; color: #6b7280; margin-bottom: 18px; line-height: 1.55; }
+    .btn-wa { display: block; background: #25d366; color: white; padding: 15px 24px; border-radius: 14px; font-size: 15px; font-weight: 700; text-decoration: none; margin-bottom: 10px; }
+    .btn-back { display: block; background: #f1f5f9; color: #64748b; padding: 12px 24px; border-radius: 14px; font-size: 14px; text-decoration: none; }
+
+    /* ── FOOTER ── */
+    .footer { background: #1e293b; color: rgba(255,255,255,0.55); text-align: center; padding: 22px 16px; font-size: 12px; line-height: 1.8; }
+    .footer strong { color: rgba(255,255,255,0.9); }
+
+    /* ── HIGHLIGHT BOX ── */
+    .highlight-box { background: #1a56db; color: white; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+    .highlight-box p { font-size: 14px; line-height: 1.5; }
+    .highlight-box strong { font-weight: 700; }
+
+    @media (max-width: 360px) {
+      .stats { grid-template-columns: 1fr; }
+      .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+      .inc-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
+<div class="header">
+  <div class="header-badge">GestFact · CBTEC</div>
+  <h1>Propuesta actualizada<br>para Cristian</h1>
+  <p>Taller Electrónico Automotriz CBTEC</p>
+  <div class="header-date">Octubre 2026 · IsabSoft Soluciones Oportunas</div>
+</div>
+
+<!-- ═══════════════════════════════ STATS ═══════════════════════════════ -->
+<div class="stats">
+  <div class="stat">
+    <span class="stat-number">4.355+</span>
+    <span class="stat-label">Presupuestos</span>
+  </div>
+  <div class="stat">
+    <span class="stat-number">214+</span>
+    <span class="stat-label">Facturas</span>
+  </div>
+  <div class="stat">
+    <span class="stat-number">3+</span>
+    <span class="stat-label">Años juntos</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═════════════════════════ HISTORIAL INVERSIÓN ═════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span>🤝</span> Tu historial con GestFact</div>
+
+  <div class="summary-line">
+    <strong>3.5 años activo · 2 equipos instalados</strong><br>
+    Presupuestos, facturación, Libro Ventas + TXT/ZIP — todo funcionando hoy.
+  </div>
+
+  <button class="toggle-detail" onclick="toggleDetail(this)">
+    Ver detalle <span class="toggle-arrow">▼</span>
+  </button>
+
+  <div class="section-detail">
+    <div class="card" style="background:white; border-left: 4px solid #1a56db;">
+      <div style="font-size:13px; color:#374151; line-height:1.7;">
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f1f5f9;">
+          <span>Sistema de Presupuestos (desde may/2023)</span>
+          <span style="color:#64748b; white-space:nowrap;">3.5 años activo</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f1f5f9;">
+          <span>Instalación PC escritorio (taller)</span>
+          <span style="color:#64748b; white-space:nowrap;">1er equipo</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f1f5f9;">
+          <span>Instalación PC Dell (ago/2024)</span>
+          <span style="color:#64748b; white-space:nowrap;">2do equipo</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f1f5f9;">
+          <span>Módulo Facturación + Libro Ventas + Anulación (nov/2025)</span>
+          <span style="color:#64748b; white-space:nowrap;">Gs. 800.000</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f1f5f9;">
+          <span>Instalación notebook (dic/2025)</span>
+          <span style="color:#64748b; white-space:nowrap;">Gs. 350.000</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f1f5f9;">
+          <span>TXT/ZIP Marangatú para Nora (desde ene/2026)</span>
+          <span style="color:#64748b; white-space:nowrap;">incluido</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0 4px; font-weight:700; color:#1e293b; border-top:2px solid #e2e8f0; margin-top:2px;">
+          <span>Actualmente instalado en 2 equipos</span>
+          <span style="color:#1a56db;">todo activo ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-highlight" style="margin-top:0;">
+      <p style="font-size:13px; color:#374151; line-height:1.55;">
+        Con más de 3 años trabajando juntos, GestFact conoce el flujo de CBTEC — el timbrado, los clientes, los vehículos, el formato que necesita Nora. Eso no se replica en otro sistema. Esta propuesta es para que sigamos creciendo juntos.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═════════════════════════ LO QUE TENÉS HOY ═════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span>📋</span> Lo que ya tenés funcionando</div>
+
+  <div class="summary-line">
+    <strong>5 módulos activos hoy:</strong><br>
+    Presupuestos · Autoimpresor · Libro Ventas + TXT/ZIP · Fichas · Asistencia mensual incluida
+  </div>
+
+  <button class="toggle-detail" onclick="toggleDetail(this)">
+    Ver detalle <span class="toggle-arrow">▼</span>
+  </button>
+
+  <div class="section-detail">
+    <div class="card card-success">
+      <ul class="feature-list">
+        <li>
+          <span class="check">✓</span>
+          <div><strong>Sistema de Presupuestos</strong><br><small style="color:#6b7280">4.355+ órdenes registradas con clientes y vehículos</small></div>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <div><strong>Autoimpresor — Facturación completa</strong><br><small style="color:#6b7280">Facturas timbradas SET, anulación, refacturación</small></div>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <div><strong>Libro de Ventas + TXT/ZIP Marangatú</strong><br><small style="color:#6b7280">Archivo para Nora generado automáticamente cada mes</small></div>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <div><strong>Ficha de Clientes y Vehículos</strong><br><small style="color:#6b7280">Historial completo por chapa y propietario</small></div>
+        </li>
+        <li>
+          <span class="check">✓</span>
+          <div><strong>Asistencia personal mensual — incluida</strong><br><small style="color:#6b7280">Sin costo extra. Sin tickets. Carlos atiende directo.</small></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ LO QUE VIENE ═══════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span>🚀</span> Lo que viene — sin costo adicional</div>
+
+  <div class="summary-line">
+    <strong>Factura Electrónica SIFEN en noviembre 2026</strong><br>
+    Precio Gs. 200.000 congelado hasta octubre 2027 — FE incluida en ese precio.
+  </div>
+
+  <button class="toggle-detail" onclick="toggleDetail(this)">
+    Ver detalle <span class="toggle-arrow">▼</span>
+  </button>
+
+  <div class="section-detail">
+    <ul class="timeline">
+      <li>
+        <div class="tl-dot tl-done"></div>
+        <div class="tl-content">
+          <strong>Hoy — Todo activo ✓</strong>
+          <span>Presupuestos, facturas, libro SET, asistencia mensual</span>
+        </div>
+      </li>
+      <li>
+        <div class="tl-dot tl-soon"></div>
+        <div class="tl-content">
+          <strong>Noviembre 2026 — Factura Electrónica SIFEN 🔜</strong>
+          <span>Integrado en GestFact. Generás FE desde el mismo sistema que usás hoy. Sin migrar datos, sin aprender otro software.</span>
+        </div>
+      </li>
+      <li>
+        <div class="tl-dot tl-future"></div>
+        <div class="tl-content">
+          <strong>Hasta Octubre 2027 — Precio garantizado</strong>
+          <span>Gs. 200.000 quincenal. Sin ajuste por 12 meses, aunque se active la Factura Electrónica.</span>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Carga Asistida -->
+    <div class="card card-highlight" style="margin-top:16px">
+      <div class="card-title">📤 Mientras tanto: Factura Virtual + Carga Asistida</div>
+      <p style="font-size:14px; color:#374151; line-height:1.5; margin-bottom:12px">
+        Si ya hay empresas que te piden factura electrónica, no perdés esa venta. Mientras activo FE en GestFact, habilitamos <strong>Factura Virtual</strong> en tu Marangatú — es gratuita, válida ante el SET, y cargo las facturas que necesités usando tu acceso directamente.
+      </p>
+      <ul class="feature-list">
+        <li><span class="check">✓</span><span style="font-size:13px">Factura electrónica válida ante SET — <strong>disponible ya</strong></span></li>
+        <li><span class="check">✓</span><span style="font-size:13px">Gratis — sin costo adicional al SET</span></li>
+        <li><span class="check">✓</span><span style="font-size:13px">Carlos carga por vos — incluido en tu abono</span></li>
+        <li><span class="check">✓</span><span style="font-size:13px">En noviembre pasa a ser automático desde GestFact (SIFEN completo)</span></li>
+      </ul>
+      <div style="margin-top:10px; padding:8px 12px; background:rgba(255,255,255,0.6); border-radius:8px; font-size:12px; color:#374151;">
+        <strong>Diferencia:</strong> Factura Virtual = comprobante electrónico SET válido, carga manual. No reemplaza el SIFEN DE que algunas empresas con ERP (como Protek) requieren automáticamente — eso lo cubre GestFact FE desde noviembre.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═════════════════════════════ COMPARATIVA ═════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span>🔍</span> Comparativa de mercado</div>
+
+  <div class="summary-line">
+    <strong>Solo GestFact combina todo:</strong><br>
+    Taller · FE · TXT/ZIP automático · Funciona offline · Historial CBTEC · Precio congelado
+  </div>
+
+  <button class="toggle-detail" onclick="toggleDetail(this)">
+    Ver detalle <span class="toggle-arrow">▼</span>
+  </button>
+
+  <div class="section-detail">
+    <p style="font-size:13px; color:#6b7280; margin-bottom:14px">Sistemas disponibles en Paraguay para talleres — analizado para CBTEC</p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Función</th>
+            <th class="hl">GestFact</th>
+            <th>TracertSystem</th>
+            <th>e-Kuatia'i</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">Gestión de taller</td>
+            <td class="hl-col">✅</td>
+            <td>✅ ¹</td>
+            <td>❌</td>
+          </tr>
+          <tr>
+            <td class="row-label">Factura Electrónica</td>
+            <td class="hl-col">🔜 Nov/26</td>
+            <td>✅</td>
+            <td>✅ manual</td>
+          </tr>
+          <tr>
+            <td class="row-label">TXT/ZIP Marangatú</td>
+            <td class="hl-col">✅ automático</td>
+            <td>❓ sin info</td>
+            <td>❌ manual</td>
+          </tr>
+          <tr>
+            <td class="row-label">Tu historial CBTEC</td>
+            <td class="hl-col">✅ completo</td>
+            <td>❌ cero</td>
+            <td>❌ cero</td>
+          </tr>
+          <tr>
+            <td class="row-label">Asistencia personal mensual</td>
+            <td class="hl-col">✅ incluida</td>
+            <td>⚠️ soporte genérico</td>
+            <td>❌ sin soporte</td>
+          </tr>
+          <tr>
+            <td class="row-label">Sistema sin internet</td>
+            <td class="hl-col">✅ siempre disponible</td>
+            <td>❌ todo en la nube ¹</td>
+            <td>❌</td>
+          </tr>
+          <tr>
+            <td class="row-label">Facturar sin internet</td>
+            <td class="hl-col">✅ contingencia ⁴</td>
+            <td>❌ imposible</td>
+            <td>❌</td>
+          </tr>
+          <tr>
+            <td class="row-label">Precio mensual</td>
+            <td class="hl-col">Gs. 400.000 ²</td>
+            <td>Gs. 90.000–265.000 ³</td>
+            <td>Gratis</td>
+          </tr>
+          <tr>
+            <td class="row-label">Precio congelado</td>
+            <td class="hl-col">✅ hasta Oct/27</td>
+            <td>❌ sin garantía</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="row-label">Reseñas en Paraguay</td>
+            <td class="hl-col">⭐ Google</td>
+            <td>❌ sin reseñas</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footnotes">
+      ¹ TracertSystem es 100% en la nube — sin internet: no podés presupuestar, buscar historial ni facturar. Todo se detiene.<br>
+      ² Gs. 200.000 quincenal = Gs. 400.000 al mes. Precio fijo hasta octubre 2027.<br>
+      ³ El rango Gs. 90.000–265.000 es solo el módulo FE. El módulo de taller es aparte o por integración API.<br>
+      ⁴ Modo contingencia SIFEN (Manual Técnico v150): GestFact genera el comprobante electrónico localmente sin internet y lo sincroniza al DNIT dentro de 72 horas cuando se restaura la conexión. Lalo entrega el KUDE al cliente igual.<br>
+      <span style="color:#94a3b8">BillPy: solo FE, sin taller — Gs. 79.000/mes.</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ ¿QUÉ PERDÉS? ═══════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span>⚠️</span> ¿Qué perdés si cambiás de sistema?</div>
+
+  <div class="summary-line">
+    <strong>4.355 presupuestos · 214 facturas · TXT/ZIP de Nora</strong><br>
+    Todo desaparece o pasa a ser manual. Ningún otro sistema los importa.
+  </div>
+
+  <button class="toggle-detail" onclick="toggleDetail(this)">
+    Ver detalle <span class="toggle-arrow">▼</span>
+  </button>
+
+  <div class="section-detail">
+    <div class="card card-warning">
+      <div class="risk-item">
+        <div class="risk-icon">📁</div>
+        <div class="risk-text">
+          <strong>4.355+ presupuestos — perdés todo</strong>
+          <span>Historial de clientes, vehículos y trabajos desde 2023. Ningún otro sistema los importa.</span>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-icon">🧾</div>
+        <div class="risk-text">
+          <strong>214+ facturas emitidas — cero en otro sistema</strong>
+          <span>Registro completo de ventas con timbrado SET. En otro sistema arrancás de cero.</span>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-icon">📊</div>
+        <div class="risk-text">
+          <strong>TXT/ZIP — Nora carga todo manual</strong>
+          <span>Si el otro sistema no genera el archivo para Marangatú, Nora tiene que hacerlo factura por factura. Eso cuesta tiempo y plata de contadora.</span>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-icon">⏱️</div>
+        <div class="risk-text">
+          <strong>Semanas de reinstalación y aprendizaje</strong>
+          <span>Instalación + capacitación + migración = tiempo de Lalo y Cristian parado o dividido.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════ DIFERENCIAL ══════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span>💡</span> El diferencial real de GestFact</div>
+
+  <div class="summary-line">
+    <strong>7 ventajas que ningún otro proveedor combina:</strong><br>
+    Soporte directo · TXT/ZIP · Sistema propio CBTEC · FE sin migrar · Sin internet funciona · Protek y FE explicado · Autoimpresor no desaparece
+  </div>
+
+  <button class="toggle-detail" onclick="toggleDetail(this)">
+    Ver detalle <span class="toggle-arrow">▼</span>
+  </button>
+
+  <div class="section-detail">
+    <div class="accordion">
+      <div class="acc-header" onclick="toggle(this)">
+        <span>📞 Asistencia personal, no un call center</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        Cuando Lalo llama, atiende Carlos directamente. Sin abrir tickets, sin esperar que "el equipo técnico" responda en 48 horas. Tres años trabajando juntos significa que ya conocemos tu flujo — no hace falta explicar nada desde cero.
+        <div class="acc-note">TracertSystem: "soporte 24/7 por ingenieros certificados" — genérico, sin conocer CBTEC ni el flujo de Nora.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="toggle(this)">
+        <span>📊 TXT/ZIP para Nora — ningún otro lo genera</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        El archivo TXT/ZIP que Nora carga en Marangatú cada mes lo genera GestFact automáticamente con un clic. TracertSystem no confirma este formato en su web. e-Kuatia'i requiere que Nora ingrese cada factura de forma manual.
+        <div class="acc-note">Cambiar de sistema = Nora hace el Libro de Ventas manual en Marangatú. Ese tiempo de contadora tiene costo.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="toggle(this)">
+        <span>🏗️ Sistema construido para CBTEC</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        GestFact fue adaptado al flujo de trabajo de CBTEC — taller electrónico automotriz. Los presupuestos, la facturación autoimpresor y el Libro SET están configurados para cómo trabaja Lalo, no para un taller genérico de cualquier país.
+        <div class="acc-note">TracertSystem es un sistema cloud genérico — no conoce CBTEC, su timbrado ni su flujo con la contadora.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="toggle(this)">
+        <span>⚡ FE en noviembre — sin migrar nada</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        La Factura Electrónica SIFEN se va a integrar directamente en el GestFact que ya usás. No instalás un sistema nuevo, no aprendés otra pantalla, no migrás datos. Seguís en el mismo sistema y simplemente aparece el botón de FE.
+        <div class="acc-note">Si cambiás ahora para tener FE hoy, dentro de 4 semanas la tenés en GestFact de todas formas — y perdiste todo el historial.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="toggle(this)">
+        <span>🏢 ¿Por qué empresas como Protek te piden FE?</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        No es una ley que te obligue a vos directamente — es un tema operativo de ellos. Las empresas grandes procesan sus compras con sistemas ERP que leen el Documento Electrónico (DE) automáticamente: IVA deducido al instante, sin carga manual, sin error de tipeo. Una factura papel de autoimpresor la tienen que ingresar a mano en su sistema. Con FE, CBTEC deja de ser "el proveedor que genera trabajo extra" y pasa a ser compatible con su circuito automático.
+        <div class="acc-note">También es defensa ante auditoría: el DE tiene sellado digital del SIFEN — indiscutible ante la DNIT. La factura papel también es válida, pero el DE es el estándar que los equipos de auditoría de empresas grandes prefieren.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="toggle(this)">
+        <span>🔌 ¿Qué pasa si se va el internet mientras Lalo está facturando?</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        GestFact corre directamente en la PC de Lalo — no depende de un servidor externo. El taller, los presupuestos y el historial funcionan siempre, con o sin internet. Para la Factura Electrónica (desde noviembre), el SIFEN tiene modo contingencia oficial: GestFact genera el comprobante electrónico localmente, Lalo imprime y entrega al cliente, y el sistema sincroniza al DNIT dentro de las 72 horas cuando vuelve la conexión. El comprobante es válido desde que se emite.
+        <div class="acc-note">Con TracertSystem: si se corta el internet o cae su servidor, el sistema completo se detiene — sin presupuesto, sin historial, sin factura. Es el riesgo de depender de un sistema 100% en la nube.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="toggle(this)">
+        <span>🖨️ ¿El autoimpresor desaparece cuando activás FE?</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        No de forma inmediata. Durante la fase voluntaria los dos sistemas conviven. El autoimpresor se elimina solo cuando la DNIT designa tu RUC en un grupo obligatorio (RG N° 52/2026). Hasta esa fecha, seguís con ambos. Cuando llegue el módulo FE de GestFact en noviembre, tampoco desaparece de golpe — los sistemas conviven hasta tu fecha obligatoria. Y una vez activada la FE, el modo contingencia del SIFEN cubre los cortes de internet: GestFact genera el comprobante localmente y sincroniza al DNIT en hasta 72 horas. Lalo siempre puede facturar, con o sin internet.
+        <div class="acc-note">TracertSystem es 100% nube: si se va el internet, no podés presupuestar ni facturar — el sistema entero se detiene. GestFact corre en la PC de Lalo; el internet afecta solo la sincronización FE, no el sistema.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ PRECIOS ═══════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span>💰</span> Tus precios — sin sorpresas</div>
+
+  <div class="summary-line">
+    <strong>Hoy: Gs. 200.000 quincenal — congelado hasta oct/2027</strong><br>
+    Desde oct/2027: Gs. 225.000 quincenal con FE activa + AnotDigi incluidos.
+  </div>
+
+  <button class="toggle-detail" onclick="toggleDetail(this)">
+    Ver detalle <span class="toggle-arrow">▼</span>
+  </button>
+
+  <div class="section-detail">
+    <!-- PRECIO ACTUAL -->
+    <div class="price-block">
+      <div class="price-pretitle">Hoy — hasta Octubre 2027</div>
+      <div class="price-main">Gs. 200.000</div>
+      <div class="price-sub">quincenal · Gs. 400.000 al mes</div>
+      <div class="price-detail">Taller completo + TXT/ZIP + FE desde noviembre + asistencia</div>
+      <div class="price-tag">🔒 Congelado 12 meses — ya acordado</div>
+    </div>
+
+    <!-- PRECIO 2027 -->
+    <div style="background: white; border-radius: 18px; padding: 20px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); border: 2px solid #e2e8f0;">
+      <div style="text-align:center; margin-bottom:14px;">
+        <span style="font-size:11px; background:#f1f5f9; color:#64748b; padding:3px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:1px; font-weight:600;">A partir de Octubre 2027</span>
+      </div>
+      <div style="text-align:center; margin-bottom:4px;">
+        <span style="font-size:40px; font-weight:800; color:#1a56db; line-height:1;">Gs. 225.000</span>
+      </div>
+      <div style="text-align:center; font-size:14px; color:#64748b; margin-bottom:16px;">quincenal · Gs. 450.000 al mes</div>
+
+      <div style="font-size:13px; font-weight:600; color:#374151; margin-bottom:8px;">¿Qué suma esos Gs. 25.000 extra?</div>
+      <ul class="feature-list" style="margin-bottom:14px;">
+        <li><span class="check">✓</span><div><strong>Factura Electrónica SIFEN activa</strong><br><small style="color:#6b7280">BillPy cobra Gs. 79.000/mes solo por esto — acá va incluida.</small></div></li>
+        <li><span class="check">✓</span><div><strong>AnotDigi Básico incluido</strong><br><small style="color:#6b7280">Lalo anota trabajos por WhatsApp → entran solos al sistema. Sin PC, sin formulario.</small></div></li>
+        <li><span class="check">✓</span><div><strong>Todo lo que tenés hoy — sin cambios</strong><br><small style="color:#6b7280">Presupuestos, facturas, TXT/ZIP, asistencia mensual.</small></div></li>
+      </ul>
+
+      <!-- Comparativa de valor -->
+      <div style="background:#f8fafc; border-radius:12px; padding:12px; font-size:12px; color:#374151;">
+        <div style="font-weight:700; margin-bottom:8px; color:#1e293b;">¿Qué costarían los mismos servicios por separado?</div>
+        <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
+          <span>Taller + soporte (hoy)</span>
+          <span style="color:#64748b">Gs. 400.000</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
+          <span>FE aparte (BillPy mínimo)</span>
+          <span style="color:#64748b">+ Gs. 79.000</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
+          <span>AnotDigi Básico aparte</span>
+          <span style="color:#64748b">+ Gs. 50.000</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:7px 0 3px; border-top:2px solid #cbd5e1; margin-top:2px;">
+          <span style="font-weight:700; color:#dc2626;">Total si pagás por separado</span>
+          <span style="font-weight:700; color:#dc2626;">Gs. 529.000</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:5px 0;">
+          <span style="font-weight:700; color:#16a34a;">Con GestFact (Oct/27)</span>
+          <span style="font-weight:700; color:#16a34a;">Gs. 450.000 ✓</span>
+        </div>
+        <div style="text-align:right; font-size:11px; color:#6b7280; margin-top:4px;">Ahorro: Gs. 79.000/mes vs. pagar todo por separado</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════ CTA ═══════════════════════════════ -->
+<div class="cta-block">
+  <h3>¿Tenés propuesta de otro proveedor?</h3>
+  <p>Enviame. Analizo y te digo exactamente qué cubre, qué no cubre, y qué te cobran aparte. Sin compromiso — para que Cristian decida con toda la info.</p>
+  <a href="https://wa.me/595981153477?text=Hola%20Carlos%2C%20te%20env%C3%ADo%20la%20propuesta%20del%20otro%20proveedor%20para%20que%20analices." class="btn-wa">💬 Enviar propuesta por WhatsApp</a>
+  <a href="#" class="btn-back" onclick="window.history.back(); return false;">↩ Volver</a>
+</div>
+
+<!-- ══════════════════════════════ FOOTER ══════════════════════════════ -->
+<div class="footer">
+  <strong>IsabSoft Soluciones Oportunas</strong><br>
+  Carlos Coronel · (0981) 153.477 · carcoragu@gmail.com<br>
+  <span style="font-size:11px">Propuesta personalizada · Octubre 2026 · CBTEC RUC 4116977-8</span>
+</div>
+
+<script>
+  function toggle(header) {
+    var arrow = header.querySelector('.acc-arrow');
+    var body  = header.nextElementSibling;
+    var wasOpen = body.classList.contains('open');
+
+    // cerrar todos los acordeones internos
+    document.querySelectorAll('.acc-body').forEach(function(b)  { b.classList.remove('open'); });
+    document.querySelectorAll('.acc-arrow').forEach(function(a) { a.classList.remove('open'); });
+
+    // abrir el clickeado si estaba cerrado
+    if (!wasOpen) {
+      body.classList.add('open');
+      arrow.classList.add('open');
+      setTimeout(function() {
+        header.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
+  }
+
+  function toggleDetail(btn) {
+    var arrow  = btn.querySelector('.toggle-arrow');
+    var detail = btn.nextElementSibling;
+    var wasOpen = detail.classList.contains('open');
+
+    detail.classList.toggle('open');
+    btn.classList.toggle('open');
+    arrow.classList.toggle('open');
+    btn.childNodes[0].textContent = wasOpen ? 'Ver detalle ' : 'Ocultar detalle ';
+  }
+</script>
+
+</body>
+</html>
