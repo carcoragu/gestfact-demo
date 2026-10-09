@@ -822,6 +822,36 @@
       <div style="border-top:1px solid #ddd6fe; padding-top:12px; margin-top:4px;">
         <div style="font-size:12px; font-weight:700; color:#6d28d9; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">💼 Tus opciones si querés cambiar de plan</div>
 
+        <!-- Opción 0: Plan Semestral -->
+        <div style="border:1px solid #a5f3fc; border-radius:10px; padding:10px; margin-bottom:8px; background:#f0fdfe;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div>
+              <span style="font-size:13px; font-weight:700; color:#0e7490;">📆 Plan Semestral — 6 meses contado</span><br>
+              <span style="font-size:11px; color:#0891b2;">Pagás 6 meses juntos, ahorrás 1 quincena entera</span>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size:13px; color:#dc2626; text-decoration:line-through;">Gs. 2.400.000</span><br>
+              <span style="font-size:10px; color:#0e7490;">6 meses precio normal</span>
+            </div>
+          </div>
+          <div style="font-size:12px; color:#374151; border-top:1px dashed #a5f3fc; padding-top:8px; margin-bottom:6px;">
+            <div style="display:flex; justify-content:space-between; padding:5px 8px; background:#cffafe; border-radius:6px; align-items:center;">
+              <div>
+                <span style="font-weight:700; color:#0e7490;">Contado</span><br>
+                <span style="font-size:10px; color:#0e7490;">= Gs. 366.000/mes efectivo</span>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:16px; font-weight:800; color:#0e7490;">Gs. 2.200.000</span><br>
+                <span style="font-size:10px; color:#0e7490; font-weight:700;">ahorrás Gs. 200.000</span>
+              </div>
+            </div>
+          </div>
+          <ul style="font-size:11px; color:#374151; list-style:none; padding:0; margin:0;">
+            <li style="padding:1px 0;">✓ Todo el sistema + soporte Carlos + actualizaciones DNIT + SIFEN</li>
+            <li style="padding:1px 0; color:#0e7490;">✓ FE incluida desde noviembre — sin costo extra</li>
+          </ul>
+        </div>
+
         <!-- Opción 1: Plan Anual -->
         <div style="border:2px solid #86efac; border-radius:10px; padding:10px; margin-bottom:8px; background:#f0fdf4;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -888,6 +918,88 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONDICIONES LEGALES ════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span>⚖️</span> Condiciones del servicio</div>
+
+  <div class="summary-line">
+    <strong>Resumen:</strong> El software es de IsabSoft. Los datos son de CBTEC. El abono quincenal incluye uso, soporte y actualizaciones normativas SET/DNIT.<br>
+    <span style="font-size:12px; color:#64748b;">Vigente desde el acuerdo de octubre 2026 — RUC CBTEC: 4116977-8</span>
+  </div>
+
+  <button class="toggle-detail" onclick="toggleDetail(this)">
+    Ver condiciones completas <span class="toggle-arrow">▼</span>
+  </button>
+
+  <div class="section-detail">
+    <div class="card" style="font-size:13px; color:#374151; line-height:1.7;">
+
+      <!-- 1. Licencia de uso -->
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">1. Licencia de uso del software</div>
+        <p>GestFact es propiedad intelectual de IsabSoft (Carlos Coronel) bajo la Ley 1328/1998 de Derechos de Autor de la República del Paraguay. El abono quincenal otorga a CBTEC (Cristian Britos, RUC 4116977-8) una <strong>licencia de uso no exclusiva</strong> del sistema. CBTEC no adquiere el código fuente ni la propiedad del software.</p>
+      </div>
+
+      <!-- 2. Datos -->
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">2. Propiedad de los datos de CBTEC</div>
+        <p>Todos los datos generados en el sistema (presupuestos, fichas de clientes, vehículos, facturas, historial) son <strong>propiedad exclusiva de CBTEC</strong>. IsabSoft puede exportarlos en formato estándar (MDB, CSV, XLS) a pedido en cualquier momento, sin costo adicional.</p>
+      </div>
+
+      <!-- 3. Alcance del abono -->
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">3. Qué incluye el abono quincenal</div>
+        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:4px;">
+          <li>✓ Acceso y uso del sistema GestFact en los equipos habilitados de CBTEC</li>
+          <li>✓ Soporte técnico por WhatsApp y sesión remota (RustDesk) con Carlos</li>
+          <li>✓ Actualizaciones por cambios normativos SET/DNIT (formatos TXT/ZIP, SIFEN, timbrado)</li>
+          <li>✓ Corrección de errores (bugs) del sistema</li>
+          <li>✓ Módulo Factura Electrónica SIFEN — incluido desde la activación en noviembre 2026</li>
+          <li style="color:#64748b;">✗ <em>No incluye</em> el middleware de transmisión SIFEN (BillPy/MiFactu) — servicio de tercero, CBTEC paga directamente</li>
+          <li style="color:#64748b;">✗ <em>No incluye</em> trámites presenciales ante SET/DNIT (Certificado F1, inscripción emisor electrónico)</li>
+        </ul>
+      </div>
+
+      <!-- 4. Middleware FE -->
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">4. Middleware de transmisión FE (BillPy / MiFactu)</div>
+        <p>El middleware es un servicio externo e independiente de IsabSoft. Carlos coordina la configuración e integración, pero las caídas, interrupciones o cambios de precio del middleware son responsabilidad del proveedor elegido. GestFact incluye modo contingencia SIFEN para operar sin middleware durante cortes.</p>
+      </div>
+
+      <!-- 5. Terminación -->
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">5. Terminación del servicio</div>
+        <p>Cualquiera de las partes puede finalizar el acuerdo con <strong>15 días de aviso previo</strong> por WhatsApp. Al terminar, IsabSoft entrega la exportación completa de datos de CBTEC sin costo adicional. Cuotas ya abonadas no son reembolsables.</p>
+      </div>
+
+      <!-- 6. Confidencialidad -->
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">6. Confidencialidad</div>
+        <p>IsabSoft no comparte, vende ni transfiere los datos de CBTEC a terceros. Los archivos TXT/ZIP y CSV son preparados exclusivamente para Nora (contadora de CBTEC) y los organismos SET/DNIT que correspondan.</p>
+      </div>
+
+      <!-- 7. Responsabilidad limitada -->
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">7. Responsabilidad limitada</div>
+        <p>IsabSoft no es responsable por daños derivados de caídas del servicio SIFEN, cambios normativos no previstos por el DNIT, problemas de hardware del cliente, interrupciones de internet o del middleware de terceros.</p>
+      </div>
+
+      <!-- 8. Jurisdicción -->
+      <div>
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">8. Jurisdicción</div>
+        <p>Este acuerdo se rige por las leyes de la <strong>República del Paraguay</strong>, en particular la Ley N° 1328/1998 de Derechos de Autor y Derechos Conexos. Cualquier controversia se resolverá en los tribunales competentes de la República del Paraguay.</p>
+      </div>
+
+      <div style="margin-top:14px; padding:8px 12px; background:#f8fafc; border-radius:8px; font-size:11px; color:#64748b; border-left:3px solid #e2e8f0;">
+        IsabSoft Soluciones Oportunas · Carlos Coronel · carcoragu@gmail.com · (0981) 153.477 · Octubre 2026
+      </div>
+
+    </div>
   </div>
 </div>
 
