@@ -265,7 +265,7 @@
 
   <div class="summary-line">
     <strong>Factura Electrónica SIFEN en noviembre 2026</strong><br>
-    Precio Gs. 200.000 congelado hasta octubre 2027 — FE incluida en ese precio.
+    FE incluida desde noviembre 2026 — Gs. 200.000 quincenal hasta oct/2027, luego Gs. 250.000 desde nov/2027.
   </div>
 
   <button class="toggle-detail" onclick="toggleDetail(this)">
@@ -292,7 +292,7 @@
         <div class="tl-dot tl-future"></div>
         <div class="tl-content">
           <strong>Hasta Octubre 2027 — Precio garantizado</strong>
-          <span>Gs. 200.000 quincenal. Sin ajuste por 12 meses, aunque se active la Factura Electrónica.</span>
+          <span>Gs. 200.000 quincenal con FE incluida. Sin ajuste hasta oct/2027 — desde nov/2027: Gs. 250.000.</span>
         </div>
       </li>
     </ul>
@@ -465,7 +465,7 @@
 
     <div class="footnotes">
       ¹ TracertSystem es 100% en la nube — sin internet: no podés presupuestar, buscar historial ni facturar. Todo se detiene.<br>
-      ² Gs. 200.000 quincenal = Gs. 400.000 al mes. Precio fijo hasta octubre 2027.<br>
+      ² Gs. 200.000 quincenal = Gs. 400.000 al mes. Precio fijo hasta oct/2027 — desde nov/2027: Gs. 250.000 quincenal.<br>
       ³ El rango Gs. 90.000–265.000 es solo el módulo FE. El módulo de taller es aparte o por integración API.<br>
       ⁴ Modo contingencia SIFEN (Manual Técnico v150): GestFact genera el comprobante electrónico localmente sin internet y lo sincroniza al DNIT dentro de 72 horas cuando se restaura la conexión. Lalo entrega el KUDE al cliente igual.<br>
       <span style="color:#94a3b8">BillPy: solo FE, sin taller — Gs. 79.000/mes.</span>
@@ -636,8 +636,8 @@
   <div class="section-title"><span>💰</span> Tus precios — sin sorpresas</div>
 
   <div class="summary-line">
-    <strong>Hoy: Gs. 200.000 quincenal — congelado hasta oct/2027</strong><br>
-    Desde oct/2027: Gs. 225.000 quincenal con FE activa + AnotDigi incluidos.
+    <strong>Hoy: Gs. 200.000 quincenal — FE incluida desde noviembre</strong><br>
+    Desde nov/2027: Gs. 250.000 quincenal con FE activa + AnotDigi incluidos.
   </div>
 
   <button class="toggle-detail" onclick="toggleDetail(this)">
@@ -657,14 +657,14 @@
     <!-- PRECIO 2027 -->
     <div style="background: white; border-radius: 18px; padding: 20px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); border: 2px solid #e2e8f0;">
       <div style="text-align:center; margin-bottom:14px;">
-        <span style="font-size:11px; background:#f1f5f9; color:#64748b; padding:3px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:1px; font-weight:600;">A partir de Octubre 2027</span>
+        <span style="font-size:11px; background:#f1f5f9; color:#64748b; padding:3px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:1px; font-weight:600;">A partir de Noviembre 2027</span>
       </div>
       <div style="text-align:center; margin-bottom:4px;">
-        <span style="font-size:40px; font-weight:800; color:#1a56db; line-height:1;">Gs. 225.000</span>
+        <span style="font-size:40px; font-weight:800; color:#1a56db; line-height:1;">Gs. 250.000</span>
       </div>
-      <div style="text-align:center; font-size:14px; color:#64748b; margin-bottom:16px;">quincenal · Gs. 450.000 al mes</div>
+      <div style="text-align:center; font-size:14px; color:#64748b; margin-bottom:16px;">quincenal · Gs. 500.000 al mes</div>
 
-      <div style="font-size:13px; font-weight:600; color:#374151; margin-bottom:8px;">¿Qué suma esos Gs. 25.000 extra?</div>
+      <div style="font-size:13px; font-weight:600; color:#374151; margin-bottom:8px;">¿Qué incluye desde nov/2027?</div>
       <ul class="feature-list" style="margin-bottom:14px;">
         <li><span class="check">✓</span><div><strong>Factura Electrónica SIFEN activa</strong><br><small style="color:#6b7280">BillPy cobra Gs. 79.000/mes solo por esto — acá va incluida.</small></div></li>
         <li><span class="check">✓</span><div><strong>AnotDigi Básico incluido</strong><br><small style="color:#6b7280">Lalo anota trabajos por WhatsApp → entran solos al sistema. Sin PC, sin formulario.</small></div></li>
@@ -691,10 +691,10 @@
           <span style="font-weight:700; color:#dc2626;">Gs. 529.000</span>
         </div>
         <div style="display:flex; justify-content:space-between; padding:5px 0;">
-          <span style="font-weight:700; color:#16a34a;">Con GestFact (Oct/27)</span>
-          <span style="font-weight:700; color:#16a34a;">Gs. 450.000 ✓</span>
+          <span style="font-weight:700; color:#16a34a;">Con GestFact (Nov/27)</span>
+          <span style="font-weight:700; color:#16a34a;">Gs. 500.000 ✓</span>
         </div>
-        <div style="text-align:right; font-size:11px; color:#6b7280; margin-top:4px;">Ahorro: Gs. 79.000/mes vs. pagar todo por separado</div>
+        <div style="text-align:right; font-size:11px; color:#6b7280; margin-top:4px;">Ahorro: Gs. 29.000/mes vs. pagar todo por separado</div>
       </div>
     </div>
 
@@ -764,25 +764,7 @@
       <div style="border-top:1px solid #ddd6fe; padding-top:12px; margin-top:4px;">
         <div style="font-size:12px; font-weight:700; color:#6d28d9; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">💼 Tus opciones si querés cambiar de plan</div>
 
-        <!-- Opción 1: 225k quincenal ya -->
-        <div style="border:1px solid #bfdbfe; border-radius:10px; padding:10px; margin-bottom:8px; background:#eff6ff;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <div>
-              <span style="font-size:13px; font-weight:700; color:#1a56db;">📦 Plan completo desde ya</span><br>
-              <span style="font-size:11px; color:#1e40af;">FE activa + AnotDigi incluidos — sin esperar oct/2027</span>
-            </div>
-            <div style="text-align:right;">
-              <span style="font-size:16px; font-weight:800; color:#1a56db;">Gs. 225.000</span><br>
-              <span style="font-size:10px; color:#1e40af;">quincenal · Gs. 450.000/mes</span>
-            </div>
-          </div>
-          <ul style="font-size:11px; color:#374151; list-style:none; padding:0; margin:0;">
-            <li style="padding:1px 0;">✓ Todo lo actual + FE IsabFE + AnotDigi desde el primer día</li>
-            <li style="padding:1px 0; color:#6b7280;">→ Mismo precio que entrará en oct/2027 — pero lo activás hoy</li>
-          </ul>
-        </div>
-
-        <!-- Opción 2: Plan Anual -->
+        <!-- Opción 1: Plan Anual -->
         <div style="border:2px solid #86efac; border-radius:10px; padding:10px; margin-bottom:8px; background:#f0fdf4;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <div>
@@ -803,16 +785,6 @@
               <div style="text-align:right;">
                 <span style="font-size:16px; font-weight:800; color:#15803d;">Gs. 4.200.000</span><br>
                 <span style="font-size:10px; color:#15803d; font-weight:700;">ahorrás Gs. 600.000/año</span>
-              </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding:5px 8px; background:#f0fdf4; border:1px solid #86efac; border-radius:6px; align-items:center;">
-              <div>
-                <span style="font-weight:600; color:#374151;">En cuotas</span><br>
-                <span style="font-size:10px; color:#6b7280;">4 cuotas trimestrales de Gs. 1.125.000</span>
-              </div>
-              <div style="text-align:right;">
-                <span style="font-size:14px; font-weight:700; color:#374151;">Gs. 4.500.000</span><br>
-                <span style="font-size:10px; color:#15803d; font-weight:600;">ahorrás Gs. 300.000/año</span>
               </div>
             </div>
           </div>
