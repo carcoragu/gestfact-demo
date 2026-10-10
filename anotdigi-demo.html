@@ -456,8 +456,10 @@
     <div style="width:100%;margin-top:14px;text-align:center;">
         <button onclick="mostrarScreen('sh')" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.78rem;cursor:pointer;text-decoration:underline;padding:4px;">¿Cómo funciona AnotDigi?</button>
     </div>
-    <div style="width:100%;margin-top:22px;text-align:center;opacity:0.30;">
-        <img src="/gestfact-demo/logo.png" style="height:28px;filter:brightness(0) invert(1);" alt="IsabSoft">
+    <div style="width:100%;margin-top:22px;text-align:center;">
+        <div style="display:inline-block;background:rgba(255,255,255,0.12);border-radius:10px;padding:6px 14px;">
+            <img src="/gestfact-demo/logo.png" style="height:22px;display:block;" alt="IsabSoft">
+        </div>
     </div>
 </div>
 
@@ -851,6 +853,7 @@ function normalizarFecha(f) {
 }
 
 async function fetchClientesSheet() {
+    if (GF_API === "DEMO_MODE") return;
     try {
         const res = await fetch(GF_API + '?action=syncExportOrdenes');
         const csv = await res.text();
@@ -1801,7 +1804,7 @@ async function checkActivacionURL() {
 // ─── Init promo ───
 (async function() {
     await checkActivacionURL();
-    try {
+    if (GF_API !== "DEMO_MODE") try {
         const r = await fetch(GF_API + '?action=getPlan');
         const d = await r.json();
         if (d.ok && d.plan && d.expiry) {
