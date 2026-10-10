@@ -181,24 +181,10 @@
   @media screen {
     .page-wrap { max-width: 820px; margin: 0 auto; background: white; box-shadow: 0 0 40px rgba(0,0,0,0.15); }
   }
-
-  /* ── SLIDES ── */
-  .slide-page { display: none; min-height: 100vh; padding-bottom: 72px; }
-  .slide-page.active { display: block; }
-  .slide-nav-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 820px; background: white; border-top: 1px solid #e2e8f0; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 200; box-shadow: 0 -2px 12px rgba(0,0,0,0.1); }
-  .btn-slide { background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; padding: 10px 18px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
-  .btn-slide:disabled { opacity: 0.25; cursor: default; }
-  .btn-slide.next { background: #1a56db; color: white; border-color: #1a56db; }
-  .slide-dots { display: flex; gap: 7px; align-items: center; flex-direction: column; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: #cbd5e1; cursor: pointer; transition: all 0.2s; }
-  .dot.active { background: #1a56db; transform: scale(1.4); }
-  .slide-count { font-size: 10px; color: #94a3b8; }
-  @media print { .slide-page { display: block !important; padding-bottom: 0 !important; } .slide-nav-bar { display: none !important; } }
   </style>
 </head>
 <body>
 <div class="page-wrap">
-<div class="slide-page active" id="sp1">
 
 <!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
 <div class="header">
@@ -304,15 +290,6 @@
 
 <div class="divider"></div>
 
-<!-- CTA slide 1 -->
-<div style="padding:0 16px 24px;">
-  <button onclick="slideNext()" style="width:100%;background:#1a56db;color:white;border:none;border-radius:16px;padding:18px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;animation:nudge-btn 1.8s ease-in-out 0.5s 3;">
-    Ver propuesta completa &nbsp;→
-  </button>
-  <div style="text-align:center;font-size:11px;color:#94a3b8;margin-top:8px;">Deslizá o tocá para navegar entre secciones</div>
-</div>
-
-</div><div class="slide-page" id="sp2">
 <!-- ═════════════════════════ LO QUE TENÉS HOY ═════════════════════════ -->
 <div class="section">
   <div class="section-title"><span>📋</span> Lo que ya tenés funcionando</div>
@@ -360,7 +337,6 @@
 
 <div class="divider"></div>
 
-</div><div class="slide-page" id="sp3">
 <!-- ═══════════════════════════ LO QUE VIENE ═══════════════════════════ -->
 <div class="section">
   <div class="section-title"><span>🚀</span> Lo que viene — sin costo adicional</div>
@@ -545,7 +521,6 @@
 
 <div class="divider"></div>
 
-</div><div class="slide-page" id="sp4">
 <!-- ═════════════════════════════ COMPARATIVA ═════════════════════════════ -->
 <div class="section">
   <div class="section-title"><span>🔍</span> Comparativa de mercado</div>
@@ -820,7 +795,6 @@
 
 <div class="divider"></div>
 
-</div><div class="slide-page" id="sp5">
 <!-- ═══════════════════════════ PRECIOS ═══════════════════════════ -->
 <div class="section">
   <div class="section-title"><span>💰</span> Tus precios — sin sorpresas</div>
@@ -1069,7 +1043,6 @@
 
 <div class="divider"></div>
 
-</div><div class="slide-page" id="sp6">
 <!-- ═══════════════════ CLIENTE EXCLUSIVO ═══════════════════ -->
 <div class="section">
   <div class="section-title"><span>🥇</span> Tu ventaja como cliente exclusivo</div>
@@ -1187,7 +1160,6 @@
 
 <div class="divider"></div>
 
-</div><div class="slide-page" id="sp7">
 <!-- ═══════════════════════════════ CTA ═══════════════════════════════ -->
 <div class="cta-block">
   <h3>¿Tenés propuesta de otro proveedor?</h3>
@@ -1248,54 +1220,7 @@
   }
 </script>
 
-<!-- SLIDE NAV -->
-<div class="slide-nav-bar" id="slideNavBar">
-  <button class="btn-slide" id="btnPrev" onclick="slidePrev()" disabled>← Anterior</button>
-  <div class="slide-dots">
-    <div id="slideDots" style="display:flex;gap:7px;"></div>
-    <div class="slide-count" id="slideCount">1 / 7</div>
-  </div>
-  <button class="btn-slide next" id="btnNext" onclick="slideNext()">Siguiente →</button>
-</div>
-
-</div></div><!-- /page-wrap -->
-
-<script>
-(function(){
-  var cur = 1, tot = 7;
-  var nombres = ['','Lo que tenés','Lo que viene','Comparativa','Precios','Exclusivo','Demos y cierre'];
-  var dotsEl = document.getElementById('slideDots');
-  for(var i=1;i<=tot;i++){
-    var d = document.createElement('div');
-    d.className = 'dot' + (i===1?' active':'');
-    d.setAttribute('data-n', i);
-    d.onclick = (function(n){ return function(){ slideTo(n); }; })(i);
-    dotsEl.appendChild(d);
-  }
-  function slideTo(n){
-    if(n<1||n>tot) return;
-    document.getElementById('sp'+cur).classList.remove('active');
-    document.getElementById('sp'+n).classList.add('active');
-    document.querySelectorAll('.dot').forEach(function(d,i){ d.classList.toggle('active', i+1===n); });
-    var bp = document.getElementById('btnPrev');
-    var bn = document.getElementById('btnNext');
-    bp.disabled = n===1;
-    bn.disabled = n===tot;
-    bp.innerHTML = n>1 ? '← '+nombres[n-1] : '← Anterior';
-    bn.innerHTML = n<tot ? nombres[n]+' →' : 'Ver demos →';
-    document.getElementById('slideCount').textContent = n+' / '+tot;
-    cur = n;
-    window.scrollTo(0,0);
-  }
-  slideTo(1);
-  window.slidePrev = function(){ slideTo(cur-1); };
-  window.slideNext = function(){ slideTo(cur+1); };
-  var tx=0;
-  document.addEventListener('touchstart',function(e){ tx=e.touches[0].clientX; });
-  document.addEventListener('touchend',function(e){ var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50) slideTo(cur+(dx<0?1:-1)); });
-})();
-</script>
-
+</div><!-- /page-wrap -->
 </body>
 </html>
 
