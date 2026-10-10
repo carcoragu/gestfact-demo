@@ -304,6 +304,14 @@
 
 <div class="divider"></div>
 
+<!-- CTA slide 1 -->
+<div style="padding:0 16px 24px;">
+  <button onclick="slideNext()" style="width:100%;background:#1a56db;color:white;border:none;border-radius:16px;padding:18px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;animation:nudge-btn 1.8s ease-in-out 0.5s 3;">
+    Ver propuesta completa &nbsp;→
+  </button>
+  <div style="text-align:center;font-size:11px;color:#94a3b8;margin-top:8px;">Deslizá o tocá para navegar entre secciones</div>
+</div>
+
 </div><div class="slide-page" id="sp2">
 <!-- ═════════════════════════ LO QUE TENÉS HOY ═════════════════════════ -->
 <div class="section">
@@ -1255,6 +1263,7 @@
 <script>
 (function(){
   var cur = 1, tot = 7;
+  var nombres = ['','Lo que tenés','Lo que viene','Comparativa','Precios','Exclusivo','Demos y cierre'];
   var dotsEl = document.getElementById('slideDots');
   for(var i=1;i<=tot;i++){
     var d = document.createElement('div');
@@ -1268,15 +1277,19 @@
     document.getElementById('sp'+cur).classList.remove('active');
     document.getElementById('sp'+n).classList.add('active');
     document.querySelectorAll('.dot').forEach(function(d,i){ d.classList.toggle('active', i+1===n); });
-    document.getElementById('btnPrev').disabled = n===1;
-    document.getElementById('btnNext').disabled = n===tot;
+    var bp = document.getElementById('btnPrev');
+    var bn = document.getElementById('btnNext');
+    bp.disabled = n===1;
+    bn.disabled = n===tot;
+    bp.innerHTML = n>1 ? '← '+nombres[n-1] : '← Anterior';
+    bn.innerHTML = n<tot ? nombres[n]+' →' : 'Ver demos →';
     document.getElementById('slideCount').textContent = n+' / '+tot;
     cur = n;
     window.scrollTo(0,0);
   }
+  slideTo(1);
   window.slidePrev = function(){ slideTo(cur-1); };
   window.slideNext = function(){ slideTo(cur+1); };
-  // Swipe
   var tx=0;
   document.addEventListener('touchstart',function(e){ tx=e.touches[0].clientX; });
   document.addEventListener('touchend',function(e){ var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50) slideTo(cur+(dx<0?1:-1)); });
