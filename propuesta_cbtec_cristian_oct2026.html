@@ -129,62 +129,9 @@
       .inc-grid { grid-template-columns: 1fr; }
     }
   @keyframes nudge-btn{0%,100%{transform:scale(1)}40%{transform:scale(1.03)}60%{transform:scale(0.98)}}
-
-  /* ── A4 PRINT ── */
-  @page { size: A4; margin: 14mm 16mm; }
-
-  @media print {
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    body { background: white !important; font-size: 12px; }
-
-    /* mostrar todas las secciones colapsadas */
-    .section-detail { display: block !important; }
-    .acc-body { display: block !important; }
-
-    /* ocultar elementos interactivos */
-    .toggle-detail { display: none !important; }
-    .btn-wa, .btn-back { display: none !important; }
-    .cta-block { display: none !important; }
-    .toggle-arrow { display: none !important; }
-
-    /* control saltos de página */
-    .card { page-break-inside: avoid; break-inside: avoid; }
-    .section { page-break-inside: avoid; break-inside: avoid; padding: 12px 0 !important; }
-    .divider { height: 3px !important; background: #e2e8f0 !important; }
-    h2, .section-title { page-break-after: avoid; break-after: avoid; }
-
-    /* eliminar sombras y simplificar bordes */
-    .card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
-    .table-wrapper { box-shadow: none !important; }
-    .footnotes { box-shadow: none !important; }
-    .accordion { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
-
-    /* reducir tamaños para que entre bien en A4 */
-    .header { padding: 20px 16px 16px !important; }
-    .header h1 { font-size: 18px !important; }
-    .header p { font-size: 12px !important; }
-    .stat-number { font-size: 20px !important; }
-    .price-main { font-size: 30px !important; }
-    .price-block { padding: 18px 14px !important; }
-    .section-title { font-size: 14px !important; }
-    .feature-list li { font-size: 12px !important; padding: 6px 0 !important; }
-    .tl-content strong { font-size: 12px !important; }
-    .tl-content span { font-size: 11px !important; }
-    table { font-size: 11px !important; min-width: unset !important; }
-    td, thead th { padding: 7px 6px !important; }
-
-    /* ocultar CTA y footer de navegación */
-    .footer { display: none !important; }
-  }
-
-  /* ── VISTA WEB ESTILO A4 ── */
-  @media screen {
-    .page-wrap { max-width: 820px; margin: 0 auto; background: white; box-shadow: 0 0 40px rgba(0,0,0,0.15); }
-  }
   </style>
 </head>
 <body>
-<div class="page-wrap">
 
 <!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
 <div class="header">
@@ -209,7 +156,7 @@
   </div>
   <h1 style="font-size:23px; font-weight:800; margin-bottom:8px; line-height:1.2;">Software GestFact &nbsp;|&nbsp; Plan de Servicio</h1>
   <div style="background:rgba(255,255,255,0.13); border-radius:10px; padding:9px 16px; display:inline-block; margin:8px auto 10px; font-size:12px; line-height:1.6;">
-    🔒 <strong>Nueva versi&oacute;n completa</strong> &nbsp;&middot;&nbsp; <strong>Gs. 200.000 quincenal</strong> &mdash; congelado hasta oct/2027 &nbsp;&middot;&nbsp; desde nov/2027: <strong>Gs. 220.000</strong>
+    🔒 <strong>Nueva versi&oacute;n completa</strong> &nbsp;&middot;&nbsp; <strong>Gs. 225.000 quincenal</strong> &mdash; congelado hasta oct/2027 &nbsp;&middot;&nbsp; desde nov/2027: <strong>Gs. 240.000</strong>
   </div>
   <div style="width:36px; height:2px; background:rgba(255,255,255,0.4); margin:0 auto 12px;"></div><p style="font-size:13px; font-weight:600; margin-bottom:3px;">Cristian Britos &middot; Mec&aacute;nica Automotriz Multimarcas</p><p style="font-size:11px; opacity:0.65;">RUC 4116977-8 &middot; Actividad Econ&oacute;mica: Mantenimiento y reparaci&oacute;n mec&aacute;nica de veh&iacute;culos</p>
   <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.15); display:flex; justify-content:center; gap:14px; font-size:10px; opacity:0.65; flex-wrap:wrap;"><span>&#128197; Octubre 2026</span><span style="opacity:0.4;">|</span><span>Carlos Coronel &middot; (0981) 153.477</span></div>
@@ -342,8 +289,8 @@
   <div class="section-title"><span>🚀</span> Lo que viene — sin costo adicional</div>
 
   <div class="summary-line">
-    <strong>(FE) Factura Electrónica SIFEN en noviembre 2026</strong><br>
-    FE incluida desde noviembre 2026 — Gs. 200.000 quincenal <span style="font-size:11px;background:rgba(255,255,255,0.2);border-radius:10px;padding:1px 7px;">IVA incl.</span> hasta oct/2027, luego Gs. 220.000 desde nov/2027.
+    <strong>Factura Electrónica SIFEN en noviembre 2026</strong><br>
+    FE incluida — gesti&oacute;n completa IsabSoft — Gs. 225.000 quincenal <span style="font-size:11px;background:rgba(255,255,255,0.2);border-radius:10px;padding:1px 7px;">IVA incl.</span> hasta oct/2027, luego Gs. 240.000 desde nov/2027.
   </div>
 
   <button class="toggle-detail" onclick="toggleDetail(this)">
@@ -377,7 +324,7 @@
         <div class="tl-dot tl-future"></div>
         <div class="tl-content">
           <strong>Hasta Octubre 2027 — Precio garantizado</strong>
-          <span>Gs. 200.000 quincenal con FE incluida. Sin ajuste hasta oct/2027 — desde nov/2027: Gs. 220.000.</span>
+          <span>Gs. 225.000 quincenal con FE incluida. Sin ajuste hasta oct/2027 — desde nov/2027: Gs. 240.000.</span>
         </div>
       </li>
     </ul>
@@ -391,7 +338,7 @@
       <ul class="feature-list">
         <li><span class="check">✓</span><span style="font-size:13px">Factura electrónica válida ante SET — <strong>disponible ya</strong></span></li>
         <li><span class="check">✓</span><span style="font-size:13px">Gratis — sin costo adicional al SET</span></li>
-        <li><span class="check">✓</span><span style="font-size:13px">Carlos o personal de CBTEC carga — incluido en tu abono</span></li>
+        <li><span class="check">✓</span><span style="font-size:13px">Carlos carga por vos — incluido en tu abono</span></li>
         <li><span class="check">✓</span><span style="font-size:13px">En noviembre pasa a ser automático desde GestFact (SIFEN completo)</span></li>
       </ul>
       <div style="margin-top:10px; padding:8px 12px; background:rgba(255,255,255,0.6); border-radius:8px; font-size:12px; color:#374151;">
@@ -415,8 +362,8 @@
           <span style="font-weight:600; white-space:nowrap;">~Gs. 75.000 × 2</span>
         </div>
         <div style="display:flex; justify-content:space-between; padding:7px 0;">
-          <span>Transmisión SIFEN (incluida en tu plan)</span>
-          <span style="font-weight:600; white-space:nowrap; color:#16a34a;">Gs. 0/mes</span>
+          <span>Middleware FE mensual (BillPy, pagás directo a ellos)</span>
+          <span style="font-weight:600; white-space:nowrap;">Gs. 79.000/mes</span>
         </div>
       </div>
       <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:14px; padding:16px 14px; margin-bottom:14px;">
@@ -424,7 +371,7 @@
   <ul class="timeline">
     <li><div class="tl-dot tl-soon"></div><div class="tl-content"><strong>Semana 12/10 &rarr; Marangatú + F1 (vos)</strong><span>Inscripci&oacute;n emisor electr&oacute;nico en Marangatú &mdash; Carlos te ayuda por RustDesk (30 min, gratis). Despu&eacute;s: Certificado F1 en SET presencialmente (~Gs. 75.000 &times; 2).</span></div></li>
     <li><div class="tl-dot tl-soon"></div><div class="tl-content"><strong>Semana 19/10 &rarr; Sesi&oacute;n t&eacute;cnica con Carlos (1 hora)</strong><span>Con timbrado y F1 listos, Carlos activa FE en GestFact. El m&oacute;dulo ya est&aacute; desarrollado &mdash; solo falta conectar con tus datos.</span></div></li>
-    <li><div class="tl-dot tl-soon"></div><div class="tl-content"><strong>Semana 26/10 &rarr; Pruebas finales</strong><span>Facturas de prueba. Validaci&oacute;n con Nora. 2 o 3 d&iacute;as.</span></div></li>
+    <li><div class="tl-dot tl-soon"></div><div class="tl-content"><strong>Semana 26/10 &rarr; Pruebas finales</strong><span>Facturas de prueba con BillPy o MiFactu. Validaci&oacute;n con Nora. 2 o 3 d&iacute;as.</span></div></li>
     <li><div class="tl-dot tl-done"></div><div class="tl-content"><strong>Noviembre &rarr; FE activa en producci&oacute;n &#9989;</strong><span>CBTEC emite facturas electr&oacute;nicas. Las empresas que las piden ya pueden recibirlas autom&aacute;ticamente.</span></div></li>
   </ul>
   <div style="margin-top:10px; padding:8px 12px; background:#dcfce7; border-radius:8px; font-size:12px; color:#15803d;"><strong>&#9888;&#65039; Si los tr&aacute;mites se dejan para &uacute;ltima semana de octubre &rarr; FE se pasa a diciembre.</strong> La activaci&oacute;n de FE en noviembre est&aacute; sujeta a que los tr&aacute;mites SET (F1 + Marangatú) se completen en las fechas indicadas. El cuello de botella sos vos con el F1 presencial en la SET &mdash; Carlos ya tiene todo listo de su lado.</div>
@@ -446,16 +393,20 @@
       <div style="font-size:13px; color:#374151; border-top:1px solid #bfdbfe; padding-top:12px;">
         <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#64748b; margin-bottom:8px;">Costo total con FE activa</div>
         <div style="display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #e0e7ff;">
-          <span>Plan GestFact — taller + autoimpresor + módulo FE + soporte Carlos</span>
-          <span style="font-weight:600; white-space:nowrap; color:#1a56db;">Gs. 400.000/mes</span>
+          <span>Plan GestFact — taller + autoimpresor + m&oacute;dulo FE + soporte Carlos</span>
+          <span style="font-weight:600; white-space:nowrap; color:#1a56db;">Gs. 450.000/mes</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #e0e7ff;">
+          <span>Infraestructura SIFEN — gesti&oacute;n completa IsabSoft (sin proveedor externo)</span>
+          <span style="font-weight:600; white-space:nowrap; color:#16a34a;">Gs. 0/mes extra ✓</span>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 8px; background:rgba(26,86,219,0.07); border-radius:6px; margin-top:6px;">
           <span style="font-weight:700;">Total mensual con FE activa</span>
-          <span style="font-weight:800; color:#1a56db; font-size:15px;">Gs. 400.000/mes</span>
+          <span style="font-weight:800; color:#1a56db; font-size:15px;">Gs. 450.000/mes</span>
         </div>
       </div>
       <div style="margin-top:10px; padding:8px 12px; background:rgba(255,255,255,0.7); border-radius:8px; font-size:12px; color:#374151;">
-        <strong>Sin costo extra:</strong> La transmisión de tus facturas al SIFEN está incluida en el plan — no pagás a ningún servicio externo. Solo los Gs. 400.000/mes de siempre.
+        <strong>Soporte incluido:</strong> La asistencia personalizada de Carlos ya est&aacute; en los Gs. 450.000/mes. La infraestructura SIFEN est&aacute; gestionada por IsabSoft — vos no ves ning&uacute;n proveedor externo ni pag&aacute;s nada adicional.
       </div>
     </div>
 
@@ -592,7 +543,7 @@
           </tr>
           <tr>
             <td class="row-label">Precio mensual</td>
-            <td class="hl-col">Gs. 400.000 ²</td>
+            <td class="hl-col">Gs. 450.000 ²</td>
             <td>Gs. 90.000–265.000 ³</td>
             <td>Gratis</td>
           </tr>
@@ -618,22 +569,24 @@
       </tr>
     </thead>
     <tbody>
-      <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">TracertSystem</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Taller + FE (nube)</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Gs. 90.000 &ndash; 265.000</td></tr>
-      <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">AutoSoft Taller</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Solo taller (sin FE)</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Gs. 123.000 &ndash; 247.000</td></tr>
-      <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">BillPy</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Solo FE</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Gs. 79.000 &ndash; 299.000</td></tr>
-      <tr style="background:#eff6ff;"><td style="padding:10px 12px; font-weight:700; color:#1d4ed8; border-bottom:1px solid #dbeafe;">GestFact hoy (CBTEC)</td><td style="padding:10px 8px; text-align:center; font-weight:600; color:#1d4ed8; border-bottom:1px solid #dbeafe;">Taller + FE + TXT/ZIP + soporte personal</td><td style="padding:10px 8px; text-align:center; font-weight:700; color:#1d4ed8; border-bottom:1px solid #dbeafe;">Gs. 400.000</td></tr>
-      <tr style="background:#f0fdf4;"><td style="padding:10px 12px; font-weight:700; color:#15803d;">GestFact nov/2027 <span style="background:#dcfce7; color:#15803d; font-size:10px; padding:1px 6px; border-radius:10px; font-weight:700;">-12%</span></td><td style="padding:10px 8px; text-align:center; font-weight:600; color:#15803d;">Todo anterior + m&oacute;vil + AnotDigi opcional</td><td style="padding:10px 8px; text-align:center; font-weight:700; color:#15803d;"><s style="opacity:0.4; font-weight:400;">Gs. 500.000</s> <strong>Gs. 440.000</strong></td></tr>
+      <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">Sistema taller local paraguayo con FE ⁵</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Taller + FE (desktop)</td><td style="padding:9px 8px; text-align:center; color:#dc2626; font-weight:700; border-bottom:1px solid #f1f5f9;">Gs. 700.000 + Gs. 5.000.000 entrada</td></tr>
+      <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">Sistema taller internacional (nube) ⁶</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Taller nube + FE aparte</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Gs. 223.000 &ndash; 347.000 <span style="font-size:10px; color:#dc2626;">(sin SIFEN PY)</span></td></tr>
+      <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">TracertSystem</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">FE nube (precio no publicado)</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Gs. 90.000 &ndash; 265.000 ³</td></tr>
+      <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">BillPy / Sifende</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Solo FE — sin sistema taller</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Gs. 79.000 &ndash; 100.000</td></tr>
+      <tr style="background:#eff6ff;"><td style="padding:10px 12px; font-weight:700; color:#1d4ed8; border-bottom:1px solid #dbeafe;">GestFact Plan A (CBTEC)</td><td style="padding:10px 8px; text-align:center; font-weight:600; color:#1d4ed8; border-bottom:1px solid #dbeafe;">Taller + FE + TXT/ZIP + soporte personal + offline</td><td style="padding:10px 8px; text-align:center; font-weight:700; color:#1d4ed8; border-bottom:1px solid #dbeafe;">Gs. 450.000 ²</td></tr>
+      <tr style="background:#f0fdf4;"><td style="padding:10px 12px; font-weight:700; color:#15803d;">GestFact Plan C nov/2027</td><td style="padding:10px 8px; text-align:center; font-weight:600; color:#15803d;">Todo + m&oacute;vil + AnotDigi incluidos</td><td style="padding:10px 8px; text-align:center; font-weight:700; color:#15803d;"><s style="opacity:0.4; font-weight:400;">Gs. 550.000</s> <strong>Gs. 480.000</strong></td></tr>
     </tbody>
   </table>
   </div>
 </div>
 <div class="footnotes">
-      ¹ TracertSystem: sistema en la nube según información disponible en su sitio web (oct/2026) — verificar con el proveedor antes de decidir.<br>
-      ² Gs. 200.000 quincenal = Gs. 400.000 al mes. Precio fijo hasta oct/2027 — precio congelado Gs. 200.000 quincenal hasta oct/2027 — desde nov/2027: Gs. 220.000.<br>
-      ³ El rango Gs. 90.000–265.000 es solo el módulo FE. El módulo de taller es aparte o por integración API.<br>
-      ⁴ Autoimpresor: 100% offline e ilimitado — no depende de internet ni del DNIT. Si el DNIT tiene problemas o se cae el sistema SET, Lalo sigue facturando con el Autoimpresor sin ninguna interrupción. FE (desde nov/2026): modo contingencia SIFEN (Manual Técnico v150) — si se corta internet, GestFact genera el comprobante localmente y sincroniza al DNIT en hasta 72 horas cuando se restaura la conexión. Lalo entrega el KUDE al cliente igual.<br>
-      <span style="color:#94a3b8">BillPy: solo FE, sin taller — Gs. 79.000/mes.</span><br>
-      <span style="color:#94a3b8; font-size:11px;">* Precios de competidores obtenidos de sitios públicos — oct/2026. Verificar con cada proveedor antes de decidir.</span>
+      ¹ TracertSystem es 100% en la nube — sin internet: no podés presupuestar, buscar historial ni facturar. Todo se detiene.<br>
+      ² Gs. 225.000 quincenal = Gs. 450.000 al mes. Precio fidelidad (3 a&ntilde;os cliente) congelado hasta oct/2027 — desde nov/2027: Gs. 240.000. Precio lista nuevo cliente: Gs. 500.000/mes.<br>
+      ³ Precio TracertSystem no publicado — rango estimado de mercado FE Paraguay.<br>
+      ⁴ Sistemas internacionales en nube (ej. AutoSoft): FE solo disponible para México (CFDI) — NO incluye SIFEN Paraguay. Requiere contratar Sifende PRO aparte (+Gs. 100.000/mes). 100% dependiente de internet — sin conexión: sin sistema, sin historial, sin factura. Sin soporte local Paraguay.<br>
+      ⁵ Sistema paraguayo desktop con FE: Gs. 480.000/mes taller + Gs. 220.000/mes FE = Gs. 700.000/mes total. Instalación: Gs. 1.500.000 + FE: Gs. 3.500.000 = Gs. 5.000.000 de entrada. Fuente: precios publicados en su sitio web oficial oct/2026.<br>
+      ⁶ Autoimpresor: 100% offline e ilimitado — no depende de internet ni del DNIT. Si el DNIT tiene problemas o se cae el sistema SET, Lalo sigue facturando con el Autoimpresor sin ninguna interrupción. FE (desde nov/2026): modo contingencia SIFEN (Manual Técnico v150) — si se corta internet, GestFact genera el comprobante localmente y sincroniza al DNIT en hasta 72 horas cuando se restaura la conexión. Lalo entrega el KUDE al cliente igual.<br>
+      <span style="color:#94a3b8">BillPy: solo FE, sin taller — Gs. 79.000/mes.</span>
     </div>
   </div>
 </div>
@@ -777,7 +730,7 @@
       <div class="acc-body">
         <strong>Hoy (antes de tu fecha obligatoria DNIT):</strong> si la Factura Electrónica falla o el internet se corta, el autoimpresor se activa automáticamente. Las facturas en papel timbrado siguen siendo 100% válidas ante el SET. GestFact tiene los dos sistemas activos en paralelo — Lalo elige cuál usar o el sistema lo hace solo.<br><br>
         <strong>Cuando DNIT te asigne fecha obligatoria (RG N° 52/2026):</strong> el autoimpresor pierde validez ese día. Pero el SIFEN tiene un modo contingencia oficial: GestFact genera el comprobante electrónico localmente sin internet, Lalo lo entrega al cliente, y el sistema sincroniza al DNIT en hasta 72 horas. El comprobante es válido desde que se emite.
-        <div class="acc-note">Base legal: Resolución normativa DNIT vigente (verificar número actualizado en set.gov.py) + Manual Técnico SIFEN v150. Durante la fase voluntaria, autoimpresor y FE coexisten — ninguno invalida al otro. TracertSystem no tiene esta cobertura: si su servidor o tu internet falla, no podés facturar de ninguna forma.</div>
+        <div class="acc-note">Base legal: RG DNIT N° 52/2026 + Manual Técnico SIFEN v150. Durante la fase voluntaria, autoimpresor y FE coexisten — ninguno invalida al otro. TracertSystem no tiene esta cobertura: si su servidor o tu internet falla, no podés facturar de ninguna forma.</div>
       </div>
     </div>
 
@@ -801,8 +754,85 @@
   <div class="section-title"><span>💰</span> Tus precios — sin sorpresas</div>
 
   <div class="summary-line">
-    <strong>Hoy: Gs. 200.000 quincenal — FE incluida desde noviembre</strong><br>
-    Precio congelado <strong style="color:#16a34a;">Gs. 200.000</strong> quincenal hasta oct/2027 — desde nov/2027: <strong>Gs. 220.000</strong><br>con FE activa + acceso m&oacute;vil GestFact incluido. AnotDigi opcional.
+    <strong>Precio fidelidad (3 a&ntilde;os): Gs. 225.000 quincenal — FE + gesti&oacute;n completa IsabSoft</strong><br>
+    Congelado <strong style="color:#16a34a;">Gs. 225.000</strong> quincenal hasta oct/2027 — desde nov/2027: <strong>Gs. 240.000</strong><br>Precio lista nuevo cliente: Gs. 500.000/mes. Pod&eacute;s agregar GestFact M&oacute;vil y AnotDigi — ver planes abajo.
+  </div>
+
+  <!-- ── PLAN CHOOSER ── -->
+  <div style="margin-bottom:14px;">
+    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#64748b; margin-bottom:10px; text-align:center;">Eleg&iacute; tu plan</div>
+
+    <div style="border:2px solid #e2e8f0; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:white;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span style="font-size:13px; font-weight:700; color:#374151;">Plan A &mdash; GestFact + FE</span>
+        <span style="font-size:16px; font-weight:800; color:#1a56db;">Gs. 450.000/mes</span>
+      </div>
+      <div style="font-size:12px; color:#6b7280;">GestFact taller · Autoimpresor · TXT/ZIP · FE SIFEN · Asistencia mensual</div>
+    </div>
+
+    <div style="border:2px solid #bfdbfe; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#eff6ff;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span style="font-size:13px; font-weight:700; color:#1d4ed8;">Plan B &mdash; + GestFact M&oacute;vil</span>
+        <span style="font-size:16px; font-weight:800; color:#1a56db;">Gs. 500.000/mes</span>
+      </div>
+      <div style="font-size:12px; color:#1d4ed8;">Todo Plan A + acceso desde celular y navegador</div>
+    </div>
+
+    <div style="border:2px solid #7c3aed; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:linear-gradient(135deg,#faf5ff,#eff6ff); position:relative; margin-top:14px;">
+      <div style="position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:#7c3aed; color:white; font-size:10px; font-weight:700; padding:3px 14px; border-radius:20px; white-space:nowrap;">&#11088; M&Aacute;S CONVENIENTE</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span style="font-size:13px; font-weight:700; color:#6d28d9;">Plan C &mdash; FULL</span>
+        <span style="font-size:16px; font-weight:800; color:#6d28d9;">Gs. 550.000/mes</span>
+      </div>
+      <div style="font-size:12px; color:#6d28d9;">Todo Plan B + AnotDigi &mdash; Lalo anota trabajos desde el taller, entran solos a GestFact</div>
+      <div style="margin-top:8px; font-size:11px; background:rgba(124,58,237,0.1); border-radius:6px; padding:5px 9px; color:#6d28d9; line-height:1.5;">
+        FE sola en otro proveedor: Gs. 100k&ndash;265k/mes <em>sin sistema de taller</em><br>
+        Plan C: taller + FE + m&oacute;vil + AnotDigi todo integrado en uno
+      </div>
+    </div>
+    <div style="font-size:11px; color:#94a3b8; text-align:center; margin-top:8px;">Todos los planes incluyen FE gesti&oacute;n completa IsabSoft &mdash; sin proveedor externo</div>
+  </div>
+
+  <!-- ── PREPAGO ── -->
+  <div style="background:#f8fafc; border-radius:14px; padding:14px; margin-bottom:14px; border:1px solid #e2e8f0;">
+    <div style="font-size:12px; font-weight:700; color:#1e293b; margin-bottom:4px; text-align:center;">&#128176; Pago al contado &mdash; descuento garantizado</div>
+    <div style="font-size:11px; color:#64748b; margin-bottom:12px; text-align:center;">Inflaci&oacute;n Paraguay 2026: 3.5% &mdash; descuento ajustado para que no perd&aacute;s valor</div>
+
+    <table style="width:100%; font-size:12px; border-collapse:collapse; overflow:hidden;">
+      <thead>
+        <tr style="background:#1a56db; color:white;">
+          <th style="padding:8px; text-align:left; border-radius:6px 0 0 0;">Plan</th>
+          <th style="padding:8px; text-align:center;">6 meses<br><span style="font-weight:400; font-size:10px;">desc. 8%</span></th>
+          <th style="padding:8px; text-align:center;">12 meses<br><span style="font-weight:400; font-size:10px;">desc. 12%</span></th>
+          <th style="padding:8px; text-align:center; border-radius:0 6px 0 0;">18 meses<br><span style="font-weight:400; font-size:10px;">desc. 15%</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #e2e8f0; background:white;">
+          <td style="padding:8px; font-weight:600; color:#374151;">A &mdash; 450k</td>
+          <td style="padding:8px; text-align:center; color:#1a56db; font-weight:700;">Gs. 2.484.000</td>
+          <td style="padding:8px; text-align:center; color:#1a56db; font-weight:700;">Gs. 4.752.000</td>
+          <td style="padding:8px; text-align:center; color:#1a56db; font-weight:700;">Gs. 6.885.000</td>
+        </tr>
+        <tr style="border-bottom:1px solid #e2e8f0; background:#f0f9ff;">
+          <td style="padding:8px; font-weight:600; color:#1d4ed8;">B &mdash; 500k</td>
+          <td style="padding:8px; text-align:center; color:#1a56db; font-weight:700;">Gs. 2.760.000</td>
+          <td style="padding:8px; text-align:center; color:#1a56db; font-weight:700;">Gs. 5.280.000</td>
+          <td style="padding:8px; text-align:center; color:#1a56db; font-weight:700;">Gs. 7.650.000</td>
+        </tr>
+        <tr style="background:linear-gradient(135deg,#faf5ff,#eff6ff);">
+          <td style="padding:8px; font-weight:700; color:#6d28d9;">C FULL &#11088;</td>
+          <td style="padding:8px; text-align:center; color:#6d28d9; font-weight:800;">Gs. 3.036.000</td>
+          <td style="padding:8px; text-align:center; color:#6d28d9; font-weight:800;">Gs. 5.808.000 &#9733;</td>
+          <td style="padding:8px; text-align:center; color:#6d28d9; font-weight:800;">Gs. 8.415.000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:10px; padding:9px 12px; background:#fefce8; border:1px solid #fef08a; border-radius:8px; font-size:11px; color:#713f12; line-height:1.5;">
+      <strong>&#9733; Mejor opci&oacute;n:</strong> Plan C &middot; 12 meses = <strong>Gs. 5.808.000</strong> &mdash; ahorrás Gs. 792.000 vs. pago mensual.<br>
+      Cubre noviembre 2026 &mdash; octubre 2027 completo al precio congelado. FE activa desde el primer d&iacute;a.
+    </div>
   </div>
 
   <button class="toggle-detail" onclick="toggleDetail(this)">
@@ -812,11 +842,11 @@
   <div class="section-detail">
     <!-- PRECIO ACTUAL -->
     <div class="price-block">
-      <div class="price-pretitle">Hoy — hasta Octubre 2027</div>
-      <div class="price-main">Gs. 200.000</div>
-      <div class="price-sub">quincenal · Gs. 400.000 al mes · <strong style="color:#86efac;">IVA incluido</strong></div>
-      <div class="price-detail">Taller completo + TXT/ZIP + FE desde noviembre + asistencia<br><span style="font-size:11px; color:#16a34a;">✓ Actualizaciones DNIT/SIFEN incluidas — sin costo adicional</span></div>
-      <div class="price-tag">🔒 Congelado 12 meses</div>
+      <div class="price-pretitle">Precio fidelidad (3 a&ntilde;os) — hasta Octubre 2027</div>
+      <div class="price-main">Gs. 225.000</div>
+      <div class="price-sub">quincenal · Gs. 450.000 al mes</div>
+      <div class="price-detail">Taller completo + TXT/ZIP + FE desde noviembre + asistencia<br><span style="font-size:11px; color:#16a34a;">✓ FE gesti&oacute;n completa IsabSoft — sin proveedor externo — sin costo adicional</span></div>
+      <div class="price-tag">🔒 Congelado hasta oct/2027 · Nuevo cliente: Gs. 500.000/mes</div>
     </div>
 
     <!-- PRECIO 2027 -->
@@ -825,9 +855,9 @@
         <span style="font-size:11px; background:#f1f5f9; color:#64748b; padding:3px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:1px; font-weight:600;">A partir de Noviembre 2027</span>
       </div>
       <div style="text-align:center; margin-bottom:4px;">
-        <span style="font-size:40px; font-weight:800; color:#1a56db; line-height:1;">Gs. 220.000</span>
+        <span style="font-size:40px; font-weight:800; color:#1a56db; line-height:1;">Gs. 240.000</span>
       </div>
-      <div style="text-align:center; font-size:14px; color:#64748b; margin-bottom:16px;">quincenal · Gs. 440.000 al mes</div>
+      <div style="text-align:center; font-size:14px; color:#64748b; margin-bottom:16px;">quincenal · Gs. 480.000 al mes</div>
 
       <div style="font-size:13px; font-weight:600; color:#374151; margin-bottom:8px;">¿Qué incluye desde nov/2027?</div>
       <ul class="feature-list" style="margin-bottom:14px;">
@@ -841,12 +871,12 @@
       <div style="background:#f8fafc; border-radius:12px; padding:12px; font-size:12px; color:#374151;">
         <div style="font-weight:700; margin-bottom:8px; color:#1e293b;">¿Qué costarían los mismos servicios por separado?</div>
         <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
-          <span>Taller + soporte (hoy)</span>
-          <span style="color:#64748b">Gs. 400.000</span>
+          <span>Taller + soporte (Plan A nov/2027)</span>
+          <span style="color:#64748b">Gs. 480.000</span>
         </div>
         <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
-          <span>FE aparte (BillPy mínimo)</span>
-          <span style="color:#64748b">+ Gs. 79.000</span>
+          <span>FE aparte (valor mercado Sifende PRO)</span>
+          <span style="color:#64748b">+ Gs. 100.000</span>
         </div>
         <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
           <span>GestFact Móvil aparte</span>
@@ -857,14 +887,14 @@
           <span style="color:#64748b">+ Gs. 150.000</span>
         </div>
         <div style="display:flex; justify-content:space-between; padding:7px 0 3px; border-top:2px solid #cbd5e1; margin-top:2px;">
-          <span style="font-weight:700; color:#dc2626;">Total si pagás por separado</span>
-          <span style="font-weight:700; color:#dc2626;">Gs. 669.000</span>
+          <span style="font-weight:700; color:#dc2626;">Total si pag&aacute;s por separado</span>
+          <span style="font-weight:700; color:#dc2626;">Gs. 770.000</span>
         </div>
         <div style="display:flex; justify-content:space-between; padding:5px 0;">
-          <span style="font-weight:700; color:#16a34a;">Con GestFact (Nov/27)</span>
-          <span style="font-weight:700; color:#16a34a;">Gs. 440.000 ✓ — todo incluido</span>
+          <span style="font-weight:700; color:#16a34a;">Con GestFact Plan A (Nov/27)</span>
+          <span style="font-weight:700; color:#16a34a;">Gs. 480.000 ✓ — todo incluido</span>
         </div>
-        <div style="text-align:right; font-size:11px; color:#6b7280; margin-top:4px;">Ahorro: Gs. 229.000/mes vs. pagar todo por separado</div>
+        <div style="text-align:right; font-size:11px; color:#6b7280; margin-top:4px;">Ahorro: Gs. 290.000/mes vs. pagar todo por separado</div>
       </div>
     </div>
 
@@ -1027,8 +1057,8 @@
           </div>
         </div>
 
-        <div style="margin-top:8px; font-size:11px; color:#16a34a; text-align:center; font-weight:600;">
-          ✓ En las dos opciones: transmisión SIFEN incluida — sin costo externo adicional
+        <div style="margin-top:8px; font-size:11px; color:#6b7280; text-align:center;">
+          En las dos opciones: + BillPy Gs. 79.000/mes (transmisión SIFEN — externo, independiente de IsabSoft)
         </div>
       </div>
     </div>
@@ -1054,18 +1084,13 @@
   <div class="section-detail open">
     <div class="card card-highlight">
       <ul class="feature-list">
-        <li><span class="check">🔒</span><div><strong>Precio congelado 12 meses</strong><br><small style="color:#6b7280">Gs. 200.000 quincenal fijo hasta octubre 2027 — sin ajustes, sin sorpresas.</small></div></li>
-        <li><span class="check">⚡</span><div><strong>Factura Electrónica incluida desde noviembre 2026</strong><br><small style="color:#6b7280">FE activa en GestFact sin costo adicional — transmisión SIFEN incluida en tu plan.</small></div></li>
-        <li><span class="check">📱</span><div><strong>GestFact Móvil incluido 🎁 — desde nov/2027</strong><br><small style="color:#6b7280">Acceso desde celular o navegador — activable cuando quieras, sin costo extra. Si está listo antes, lo activamos antes.</small></div></li>
-        <li><span class="check">📋</span><div><strong>AnotDigi Full incluido 🎁 — desde nov/2027</strong><br><small style="color:#6b7280">Lalo anota en AnotDigi y los trabajos entran solos a GestFact — activable cuando quieras. Si está listo antes, lo activamos antes.</small></div></li>
         <li><span class="check">🥇</span><div><strong>Prioridad en soporte</strong><br><small style="color:#6b7280">Lalo y Cristian no esperan turno — atención antes que nuevos clientes.</small></div></li>
-
+        <li><span class="check">🚀</span><div><strong>Primero en nuevas features</strong><br><small style="color:#6b7280">AnotDigi, GestFact Móvil y futuras funcionalidades — CBTEC las activa antes que nadie.</small></div></li>
         <li><span class="check">🔒</span><div><strong>4.355+ registros protegidos</strong><br><small style="color:#6b7280">Historial completo de clientes y vehículos. Ningún competidor puede replicar 3.5 años de datos.</small></div></li>
-        <li><span class="check">🎓</span><div><strong>Sesiones ilimitadas de capacitación anual</strong><br><small style="color:#6b7280">Para Lalo o Cristian, sin costo. Nuevas funciones, repaso de flujos, lo que necesiten — con coordinación previa de horario, hasta 60 min por sesión.</small></div></li>
+        <li><span class="check">🎓</span><div><strong>1 sesión de capacitación anual</strong><br><small style="color:#6b7280">1 hora para Lalo o Cristian, sin costo. Nuevas funciones, repaso de flujos, lo que necesiten.</small></div></li>
         <li><span class="check">📋</span><div><strong>Actualizaciones DNIT/SET incluidas</strong><br><small style="color:#6b7280">Cuando el SET cambia las reglas, IsabSoft adapta el sistema sin costo ni sorpresas.</small></div></li>
         <li><span class="check">✅</span><div><strong>Verificación semanal del sistema</strong><br><small style="color:#6b7280">Presupuestos, facturación y backup local + nube verificados cada semana. Sin que Cristian tenga que pedir.</small></div></li>
-        <li><span class="check">💻</span><div><strong>Soporte operativo general incluido</strong><br><small style="color:#6b7280">Word, Excel, Windows (actualizaciones y configuración básica), antivirus básico, impresoras y uso general del equipo — sin cargo. Reinstalación de sistema operativo, recuperación de datos y reparación de hardware se presupuestan antes de iniciar.</small></div></li>
-        <li><span class="check">🔧</span><div><strong>FSB Informática — Asistencia de Hardware</strong><br><small style="color:#6b7280">Proveedor de hardware independiente recomendado por IsabSoft. Disponible para asistencia, diagnóstico y soporte de equipos bajo presupuesto. Los trabajos se contratan directamente con FSB — IsabSoft coordina el contacto.</small></div></li>
+        <li><span class="check">💻</span><div><strong>Soporte operativo general incluido</strong><br><small style="color:#6b7280">Word, Excel, equipo, sistema operativo, actualizaciones del día a día — sin cargo. Trabajos complejos se presupuestan antes de iniciar.</small></div></li>
       </ul>
     </div>
   </div>
@@ -1108,22 +1133,22 @@
           <li>✓ Soporte técnico por WhatsApp y sesión remota (RustDesk) con Carlos</li>
           <li>✓ Actualizaciones por cambios normativos SET/DNIT (formatos TXT/ZIP, SIFEN, timbrado)</li>
           <li>✓ Corrección de errores (bugs) del sistema</li>
-          <li>✓ Módulo Factura Electrónica SIFEN — incluido desde la activación en noviembre 2026, sujeto a la habilitación del timbrado electrónico por el DNIT para el RUC 4116977-8</li>
-          <li style="color:#16a34a;">✓ <em>Incluye</em> IsabFE — middleware de transmisión SIFEN propio de IsabSoft, sin costo externo</li>
+          <li>✓ Módulo Factura Electrónica SIFEN — incluido desde la activación en noviembre 2026</li>
+          <li style="color:#64748b;">✗ <em>No incluye</em> el middleware de transmisión SIFEN (BillPy/MiFactu) — servicio de tercero, CBTEC paga directamente</li>
           <li style="color:#64748b;">✗ <em>No incluye</em> trámites presenciales ante SET/DNIT (Certificado F1, inscripción emisor electrónico)</li>
         </ul>
       </div>
 
-      <!-- 4. IsabFE -->
+      <!-- 4. Middleware FE -->
       <div style="margin-bottom:14px;">
-        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">4. Middleware de transmisión FE (IsabFE)</div>
-        <p>IsabFE es el middleware propio de IsabSoft para la transmisión de facturas electrónicas al SIFEN SET. Está incluido en el abono mensual sin costo adicional para CBTEC. Carlos mantiene y actualiza IsabFE según los cambios de la API SIFEN. GestFact incluye además el modo contingencia SIFEN: si el DNIT no está disponible, las facturas se generan localmente y se transmiten automáticamente cuando se restablece la conexión (hasta 72 hs).</p>
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">4. Middleware de transmisión FE (BillPy / MiFactu)</div>
+        <p>El middleware es un servicio externo e independiente de IsabSoft. Carlos coordina la configuración e integración, pero las caídas, interrupciones o cambios de precio del middleware son responsabilidad del proveedor elegido. GestFact incluye modo contingencia SIFEN para operar sin middleware durante cortes.</p>
       </div>
 
       <!-- 5. Terminación -->
       <div style="margin-bottom:14px;">
         <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">5. Terminación del servicio</div>
-        <p>Cualquiera de las partes puede finalizar el acuerdo con <strong>15 días de aviso previo</strong> por WhatsApp al (0981) 153.477 o por correo electrónico a carcoragu@gmail.com. Al terminar, IsabSoft entrega la exportación completa de datos de CBTEC sin costo adicional. Cuotas ya abonadas no son reembolsables, excepto en caso de incumplimiento comprobado de IsabSoft, en cuyo caso se acredita la parte proporcional del período no prestado.</p>
+        <p>Cualquiera de las partes puede finalizar el acuerdo con <strong>15 días de aviso previo</strong> por WhatsApp. Al terminar, IsabSoft entrega la exportación completa de datos de CBTEC sin costo adicional. Cuotas ya abonadas no son reembolsables.</p>
       </div>
 
       <!-- 6. Confidencialidad -->
@@ -1142,18 +1167,17 @@
       <!-- 8. Responsabilidad limitada -->
       <div style="margin-bottom:14px;">
         <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">8. Responsabilidad limitada</div>
-        <p>IsabSoft no es responsable por daños derivados de caídas del servicio SIFEN, cambios normativos no previstos por el DNIT, problemas de hardware del cliente, interrupciones de internet o del middleware de terceros. <strong>Esta limitación no aplica en caso de dolo o culpa grave de IsabSoft.</strong></p>
+        <p>IsabSoft no es responsable por daños derivados de caídas del servicio SIFEN, cambios normativos no previstos por el DNIT, problemas de hardware del cliente, interrupciones de internet o del middleware de terceros.</p>
       </div>
 
-      <!-- 9. Jurisdicción -->
+      <!-- 8. Jurisdicción -->
       <div>
-        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">9. Jurisdicción</div>
+        <div style="font-weight:700; color:#1e293b; margin-bottom:4px;">8. Jurisdicción</div>
         <p>Este acuerdo se rige por las leyes de la <strong>República del Paraguay</strong>, en particular la Ley N° 1328/1998 de Derechos de Autor y Derechos Conexos. Cualquier controversia se resolverá en los tribunales competentes de la República del Paraguay.</p>
       </div>
 
       <div style="margin-top:14px; padding:8px 12px; background:#f8fafc; border-radius:8px; font-size:11px; color:#64748b; border-left:3px solid #e2e8f0;">
-        IsabSoft Soluciones Oportunas · Carlos Coronel · carcoragu@gmail.com · (0981) 153.477 · Octubre 2026<br><br>
-      <strong>Aceptación:</strong> La confirmación del primer pago quincenal a partir de octubre 2026, o el envío de un mensaje confirmatorio por WhatsApp al (0981) 153.477 o por correo a carcoragu@gmail.com, constituye aceptación de las condiciones de este acuerdo por parte de CBTEC (Cristian Britos, RUC 4116977-8).
+        IsabSoft Soluciones Oportunas · Carlos Coronel · carcoragu@gmail.com · (0981) 153.477 · Octubre 2026
       </div>
 
     </div>
@@ -1222,7 +1246,6 @@
   }
 </script>
 
-</div><!-- /page-wrap -->
 </body>
 </html>
 
