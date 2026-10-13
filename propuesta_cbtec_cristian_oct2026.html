@@ -1575,28 +1575,53 @@ function generatePDF() {
     alert('Faltan firmas. Ambas partes deben firmar antes de guardar.');
     return;
   }
+  // Funcionalidades por plan GestFact
+  var planFeatures = {
+    400000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets'],
+    450000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets', 'GestFact Móvil — Cristian accede desde celular/tablet en tiempo real'],
+    500000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets', 'GestFact Móvil — Cristian accede desde celular/tablet en tiempo real', 'AnotDigi — Lalo carga trabajos por texto, entran solos a GestFact']
+  };
+  // Funcionalidades por nivel FE
+  var feFeatures = {
+    150000: ['Transmisión SIFEN + XML + firma digital', 'KUDE PDF + QR verificación', 'Email KUDE automático al cliente', 'NC Electrónica (emitir)', 'Contingencia 72hs offline — siempre facturás', 'IsabSoft gestiona Sifende PRO — sin proveedor externo visible'],
+    200000: ['Todo FE Básico incluido', 'NC con reenvío automático al cliente', 'Asesoría FE mensual — revisión proactiva + novedades SIFEN', 'Libro Ventas actualizado (FE + AI)'],
+    250000: ['Todo FE Estándar incluido', 'Soporte ante errores SIFEN — respuesta ≤ 2hs', 'Sesión de capacitación mensual FE']
+  };
+  function buildFeatureList(items) {
+    return items.map(function(f){ return '<li style="padding:2px 0; font-size:11px; color:#374151;">✓ ' + f + '</li>'; }).join('');
+  }
   var img1 = document.getElementById('canvas-isabsoft').toDataURL('image/png');
   var img2 = document.getElementById('canvas-cliente').toDataURL('image/png');
   var pc = document.getElementById('print-contract');
   pc.innerHTML =
     '<div style="font-family:Arial,sans-serif; max-width:700px; margin:0 auto; padding:20px;">' +
-    '<div style="text-align:center; border-bottom:2px solid #1a56db; padding-bottom:12px; margin-bottom:20px;">' +
+    '<div style="text-align:center; border-bottom:2px solid #1a56db; padding-bottom:12px; margin-bottom:16px;">' +
       '<div style="font-size:22px; font-weight:800; color:#1a56db;">IsabSoft</div>' +
       '<div style="font-size:16px; font-weight:700; color:#1e293b; margin-top:4px;">Contrato de Servicio — GestFact CBTEC</div>' +
     '</div>' +
-    '<div style="margin-bottom:20px;">' + document.getElementById('contract-summary').innerHTML + '</div>' +
-    '<div style="margin-bottom:16px; font-size:12px; color:#374151; background:#f8fafc; padding:12px; border-radius:8px;">' +
+    '<div style="margin-bottom:16px;">' + document.getElementById('contract-summary').innerHTML + '</div>' +
+    '<div style="display:flex; gap:12px; margin-bottom:16px;">' +
+      '<div style="flex:1; border:1px solid #bfdbfe; border-radius:8px; padding:10px; background:#eff6ff;">' +
+        '<div style="font-size:11px; font-weight:700; color:#1d4ed8; text-transform:uppercase; margin-bottom:6px;">' + planLabel[_plan] + ' — incluye</div>' +
+        '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(planFeatures[_plan]) + '</ul>' +
+      '</div>' +
+      '<div style="flex:1; border:1px solid #fde68a; border-radius:8px; padding:10px; background:#fffbeb;">' +
+        '<div style="font-size:11px; font-weight:700; color:#92400e; text-transform:uppercase; margin-bottom:6px;">' + feLabel[_fe] + ' — incluye</div>' +
+        '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(feFeatures[_fe]) + '</ul>' +
+      '</div>' +
+    '</div>' +
+    '<div style="margin-bottom:14px; font-size:11px; color:#374151; background:#f8fafc; padding:10px; border-radius:8px;">' +
       '<strong>Términos:</strong> El servicio se presta según los términos y condiciones aceptados en la propuesta digital fechada ' +
       new Date().toLocaleDateString('es-PY',{day:'2-digit',month:'2-digit',year:'numeric'}) +
       '. El precio acordado queda fijo por el período contratado. Cualquier modificación requiere acuerdo escrito de ambas partes.' +
     '</div>' +
-    '<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px;">' +
-      '<div style="text-align:center;">' +
+    '<div style="display:flex; gap:20px; margin-top:16px;">' +
+      '<div style="flex:1; text-align:center;">' +
         '<img src="'+img1+'" style="width:100%; border:1px solid #e2e8f0; border-radius:8px;"/>' +
         '<div style="margin-top:6px; font-size:12px; font-weight:600; color:#374151;">IsabSoft — Carlos Coronel</div>' +
         '<div style="font-size:11px; color:#64748b;">Proveedor</div>' +
       '</div>' +
-      '<div style="text-align:center;">' +
+      '<div style="flex:1; text-align:center;">' +
         '<img src="'+img2+'" style="width:100%; border:1px solid #e2e8f0; border-radius:8px;"/>' +
         '<div style="margin-top:6px; font-size:12px; font-weight:600; color:#374151;">Cristian Britos — RUC 4116977-8</div>' +
         '<div style="font-size:11px; color:#64748b;">Cliente — CBTEC</div>' +
