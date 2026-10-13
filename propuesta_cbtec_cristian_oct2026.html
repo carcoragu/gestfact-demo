@@ -68,6 +68,18 @@
     .tl-content strong { display: block; font-size: 14px; color: #1e293b; margin-bottom: 2px; }
     .tl-content span { font-size: 13px; color: #6b7280; line-height: 1.4; display: block; }
 
+    /* ── STICKY NAV ── */
+    #sticky-nav { position: sticky; top: 0; z-index: 200; background: #fff; border-bottom: 2px solid #e2e8f0; display: flex; gap: 6px; padding: 8px 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    #sticky-nav::-webkit-scrollbar { display: none; }
+    .snav-btn { flex-shrink: 0; padding: 7px 14px; border: 1.5px solid #e2e8f0; border-radius: 20px; font-size: 12px; font-weight: 600; background: #f8fafc; color: #374151; cursor: pointer; font-family: inherit; white-space: nowrap; transition: background 0.15s, border-color 0.15s; }
+    .snav-btn:active { background: #e2e8f0; }
+    .snav-btn.snav-amber { border-color: #f59e0b; color: #92400e; background: #fffbeb; }
+    .snav-btn.snav-cyan  { border-color: #22d3ee; color: #0e7490; background: #ecfeff; }
+    .snav-btn.snav-purple{ border-color: #7c3aed; color: #6d28d9; background: #faf5ff; }
+    .snav-btn.snav-green { border-color: #16a34a; color: #15803d; background: #f0fdf4; }
+    /* scroll offset so sticky nav doesn't cover anchors */
+    .nav-anchor { scroll-margin-top: 56px; }
+
     /* ── COMPARISON TABLE ── */
     .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 14px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
     table { width: 100%; border-collapse: collapse; background: white; min-width: 460px; }
@@ -192,6 +204,14 @@
   </div>
 </div>
 
+<!-- ═══════════════ STICKY NAV ═══════════════ -->
+<nav id="sticky-nav">
+  <button class="snav-btn snav-amber" onclick="navTo('sec-fe-table')">⚡ FE SIFEN</button>
+  <button class="snav-btn snav-cyan"  onclick="navTo('sec-movil')">📲 GestFact Móvil</button>
+  <button class="snav-btn snav-purple" onclick="navTo('sec-anotdigi')">🤖 AnotDigi</button>
+  <button class="snav-btn snav-green" onclick="navTo('sec-precios')">💰 Precios</button>
+</nav>
+
 <div class="divider"></div>
 
 <!-- ═════════════════════════ HISTORIAL INVERSIÓN ═════════════════════════ -->
@@ -305,7 +325,7 @@
 <div class="divider"></div>
 
 <!-- ═══════════════════════════ LO QUE VIENE ═══════════════════════════ -->
-<div class="section">
+<div id="sec-novedades" class="section nav-anchor">
   <div class="section-title"><span>🚀</span> Lo que viene — incluido en tu plan</div>
 
   <div class="summary-line">
@@ -367,7 +387,7 @@
     </div>
 
     <!-- OPCIÓN CUOTAS FE -->
-    <div class="card" style="margin-top:12px; border-left: 4px solid #f59e0b; background:#fffbeb;">
+    <div id="sec-fe-table" class="card nav-anchor" style="margin-top:12px; border-left: 4px solid #f59e0b; background:#fffbeb;">
       <div class="card-title" style="color:#92400e;">💳 Servicio FE — Transmisión SIFEN (Sifende PRO)</div>
       <p style="font-size:13px; color:#374151; line-height:1.55; margin-bottom:10px;">
         IsabSoft gestiona Sifende PRO por vos — no tenés que contratar nada externo. Elegís el nivel de servicio y cómo pagarlo:
@@ -620,7 +640,7 @@
     </div>
 
     <!-- GESTFACT MOVIL -->
-    <div class="card" style="margin-top:12px; border-left:4px solid #0891b2; background:#f0f9ff;">
+    <div id="sec-movil" class="card nav-anchor" style="margin-top:12px; border-left:4px solid #0891b2; background:#f0f9ff;">
       <div class="card-title" style="color:#0e7490;">📲 GestFact Móvil — Cristian ve el taller desde el celular</div>
       <p style="font-size:13px; color:#374151; line-height:1.55; margin-bottom:12px;">
         El mismo GestFact de la PC, accesible desde el celular o tablet de Cristian — en tiempo real, sin instalar nada extra.
@@ -672,7 +692,7 @@
     </div>
 
     <!-- ANOTDIGI -->
-    <div class="card" style="margin-top:12px; border-left:4px solid #7c3aed; background:#faf5ff;">
+    <div id="sec-anotdigi" class="card nav-anchor" style="margin-top:12px; border-left:4px solid #7c3aed; background:#faf5ff;">
       <div class="card-title" style="color:#6d28d9;">📱 AnotDigi — Los trabajos entran al sistema desde el taller</div>
       <p style="font-size:13px; color:#374151; line-height:1.55; margin-bottom:12px;">
         Lalo anota los trabajos en AnotDigi al terminarlos, desde el celular — AnotDigi los transforma en registros de GestFact sin que nadie tenga que ir a la PC.
@@ -1011,7 +1031,7 @@
 <div class="divider"></div>
 
 <!-- ═══════════════════════════ PRECIOS ═══════════════════════════ -->
-<div class="section">
+<div id="sec-precios" class="section nav-anchor">
   <div class="section-title"><span>💰</span> Tus precios — sin sorpresas</div>
 
   <div class="summary-line">
@@ -1408,6 +1428,26 @@
         header.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }, 50);
     }
+  }
+
+  function navTo(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    // Find closest section-detail ancestor
+    var node = el, detail = null;
+    while (node && node !== document.body) {
+      if (node.classList && node.classList.contains('section-detail')) { detail = node; break; }
+      node = node.parentElement;
+    }
+    var wasCollapsed = detail && !detail.classList.contains('open');
+    if (wasCollapsed) {
+      var prevBtn = detail.previousElementSibling;
+      while (prevBtn && !prevBtn.classList.contains('toggle-detail')) prevBtn = prevBtn.previousElementSibling;
+      if (prevBtn) toggleDetail(prevBtn);
+    }
+    setTimeout(function() {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, wasCollapsed ? 280 : 60);
   }
 
   function toggleDetail(btn) {
