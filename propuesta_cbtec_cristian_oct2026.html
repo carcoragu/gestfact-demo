@@ -1109,6 +1109,11 @@
     </div>
   </div>
 
+  <!-- ── NOTA ACTIVACIÓN ── -->
+  <div id="activation-note" style="display:none; margin:0 0 14px; padding:10px 14px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:10px; font-size:12px; color:#166534; line-height:1.6;">
+    📅 <strong>Compromiso de activación:</strong> <span id="activation-text"></span>
+  </div>
+
   <!-- ── TOTAL ESTIMADO ── -->
   <div id="calc-result" style="display:none; background:#f0fdf4; border:2px solid #15803d; border-radius:12px; padding:14px; margin-bottom:14px;">
     <!-- se llena con JS -->
@@ -1480,6 +1485,17 @@ function selectPlan(price, el) {
   _plan = price;
   document.querySelectorAll('.plan-card').forEach(function(c){ c.classList.remove('plan-selected'); });
   el.classList.add('plan-selected');
+  var note = document.getElementById('activation-note');
+  var txt  = document.getElementById('activation-text');
+  if (price === 400000) {
+    if (note) note.style.display = 'none';
+  } else if (price === 450000) {
+    if (txt) txt.innerHTML = '<strong>GestFact Móvil</strong> se activa en hasta 2 semanas desde la activación de FE SIFEN.';
+    if (note) note.style.display = 'block';
+  } else if (price === 500000) {
+    if (txt) txt.innerHTML = '<strong>GestFact Móvil + AnotDigi</strong> se activan en hasta 2 semanas desde la activación de FE SIFEN.';
+    if (note) note.style.display = 'block';
+  }
   updateCalc();
 }
 function fmt(n) { return 'Gs. ' + n.toLocaleString('es-PY'); }
@@ -1563,6 +1579,12 @@ function scrollToSign() {
   var totalStr = _pago === 'quincenal'
     ? 'Gs. ' + _pagoTotal['quincenal'].toLocaleString('es-PY') + '/mes (quincenal, sin compromiso)'
     : 'Gs. ' + _pagoTotal[_pago].toLocaleString('es-PY') + ' total — ' + _pagoLabel[_pago];
+  var activRow = '';
+  if (_plan === 450000) {
+    activRow = '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Activación GestFact Móvil</span><strong style="color:#15803d;">≤ 2 semanas desde FE activa</strong></div>';
+  } else if (_plan === 500000) {
+    activRow = '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Activación GestFact Móvil + AnotDigi</span><strong style="color:#15803d;">≤ 2 semanas desde FE activa</strong></div>';
+  }
   d.innerHTML =
     '<div style="font-size:13px; color:#1e293b; line-height:1.8;">' +
     '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Fecha</span><strong>' + fecha + '</strong></div>' +
@@ -1570,6 +1592,7 @@ function scrollToSign() {
     '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Proveedor</span><strong>IsabSoft — Carlos Coronel</strong></div>' +
     '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Plan GestFact</span><strong>' + planLabel[_plan] + '</strong></div>' +
     '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>FE SIFEN Add-on</span><strong>' + feLabel[_fe] + '</strong></div>' +
+    activRow +
     '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Forma de pago</span><strong>' + totalStr + '</strong></div>' +
     '</div>';
   document.getElementById('sign-section').style.display = 'block';
@@ -1650,6 +1673,15 @@ function generatePDF() {
         '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(feFeatures[_fe]) + '</ul>' +
       '</div>' +
     '</div>' +
+    (function(){
+      var activPDF = '';
+      if (_plan === 450000) {
+        activPDF = '<div style="margin-bottom:10px; padding:8px 12px; background:#f0fdf4; border-left:3px solid #16a34a; border-radius:6px; font-size:11px; color:#166534;"><strong>Compromiso de activación:</strong> IsabSoft activará GestFact Móvil en un plazo máximo de 2 semanas desde la activación de FE SIFEN, según el Plan Premium elegido.</div>';
+      } else if (_plan === 500000) {
+        activPDF = '<div style="margin-bottom:10px; padding:8px 12px; background:#f0fdf4; border-left:3px solid #16a34a; border-radius:6px; font-size:11px; color:#166534;"><strong>Compromiso de activación:</strong> IsabSoft activará GestFact Móvil y AnotDigi en un plazo máximo de 2 semanas desde la activación de FE SIFEN, según el Plan Full elegido.</div>';
+      }
+      return activPDF;
+    })() +
     '<div style="margin-bottom:14px; font-size:11px; color:#374151; background:#f8fafc; padding:10px; border-radius:8px;">' +
       '<strong>Términos:</strong> El servicio se presta según los términos y condiciones aceptados en la propuesta digital fechada ' +
       new Date().toLocaleDateString('es-PY',{day:'2-digit',month:'2-digit',year:'numeric'}) +
