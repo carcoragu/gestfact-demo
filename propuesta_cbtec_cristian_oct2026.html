@@ -1493,27 +1493,38 @@ function updateCalc() {
   result.style.display = 'block';
   result.innerHTML =
     '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + ' + ' + planLabel[_plan] + '</div>' +
-    '<div style="background:white;border-radius:8px;padding:10px 12px;margin-bottom:8px;border:1px solid #bbf7d0;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-        '<span style="font-size:12px;color:#374151;">Total mensual (quincenal)</span>' +
-        '<span style="font-size:18px;font-weight:800;color:#1a56db;">' + fmt(mensual) + '</span>' +
+    '<div style="display:flex;flex-direction:column;gap:8px;">' +
+      '<div style="background:white;border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0;">' +
+        '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:6px;">Quincenal — sin compromiso</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+          '<div>' +
+            '<div style="font-size:17px;font-weight:800;color:#374151;">' + fmt(mensual) + '/mes</div>' +
+            '<div style="font-size:11px;color:#6b7280;">Pagás cada 15 días · cancelás cuando quieras</div>' +
+          '</div>' +
+        '</div>' +
       '</div>' +
-    '</div>' +
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
       '<div style="background:white;border-radius:8px;padding:10px 12px;border:2px solid #1a56db;">' +
-        '<div style="font-size:10px;font-weight:700;color:#1a56db;text-transform:uppercase;margin-bottom:6px;">12 meses ⭐ (desc. plan 12% + FE 16%)</div>' +
-        '<div style="font-size:17px;font-weight:800;color:#1a56db;margin-bottom:2px;">' + fmt(total12) + '</div>' +
-        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly12) + '/mes</div>' +
-        '<div style="font-size:11px;color:#15803d;font-weight:600;">ahorrás ' + fmt(saving12) + '</div>' +
+        '<div style="font-size:10px;font-weight:700;color:#1a56db;text-transform:uppercase;margin-bottom:6px;">12 meses contado ⭐ — desc. plan 12% + FE 16%</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;">' +
+          '<div>' +
+            '<div style="font-size:17px;font-weight:800;color:#1a56db;">' + fmt(total12) + '</div>' +
+            '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly12) + '/mes</div>' +
+          '</div>' +
+          '<div style="font-size:12px;color:#15803d;font-weight:700;text-align:right;">ahorrás<br>' + fmt(saving12) + '</div>' +
+        '</div>' +
       '</div>' +
       '<div style="background:white;border-radius:8px;padding:10px 12px;border:2px solid #6d28d9;">' +
-        '<div style="font-size:10px;font-weight:700;color:#6d28d9;text-transform:uppercase;margin-bottom:6px;">18 meses (desc. plan 15% + FE 25%)</div>' +
-        '<div style="font-size:17px;font-weight:800;color:#6d28d9;margin-bottom:2px;">' + fmt(total18) + '</div>' +
-        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly18) + '/mes</div>' +
-        '<div style="font-size:11px;color:#15803d;font-weight:600;">ahorrás ' + fmt(saving18) + '</div>' +
+        '<div style="font-size:10px;font-weight:700;color:#6d28d9;text-transform:uppercase;margin-bottom:6px;">18 meses contado — desc. plan 15% + FE 25%</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;">' +
+          '<div>' +
+            '<div style="font-size:17px;font-weight:800;color:#6d28d9;">' + fmt(total18) + '</div>' +
+            '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly18) + '/mes</div>' +
+          '</div>' +
+          '<div style="font-size:12px;color:#15803d;font-weight:700;text-align:right;">ahorrás<br>' + fmt(saving18) + '</div>' +
+        '</div>' +
       '</div>' +
     '</div>' +
-    '<div style="font-size:10px;color:#6b7280;text-align:center;margin-top:8px;">Precio fijo por el período elegido — sin ajustes.</div>';
+    '<div style="font-size:10px;color:#6b7280;text-align:center;margin-top:8px;">Precio fijo por el período contado — sin ajustes. Quincenal sin compromiso.</div>';
 }
 </script>
 
