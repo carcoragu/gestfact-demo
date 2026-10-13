@@ -42,6 +42,12 @@
     .card { background: white; border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .card-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #374151; }
     .card-success { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .fe-card { cursor:pointer; transition: box-shadow 0.15s, border-color 0.15s; }
+    .fe-card.fe-selected { border-color:#b45309 !important; box-shadow: 0 0 0 3px rgba(180,83,9,0.2); }
+    .fe-card.fe-selected::after { content:'✓ elegido'; float:right; font-size:10px; font-weight:700; color:#b45309; background:#fef3c7; padding:2px 7px; border-radius:20px; margin-top:2px; }
+    .plan-card { cursor:pointer; transition: box-shadow 0.15s, border-color 0.15s; }
+    .plan-card.plan-selected { border-color:#6d28d9 !important; box-shadow: 0 0 0 3px rgba(109,40,217,0.2); }
+    .plan-card.plan-selected::after { content:'✓ elegido'; float:right; font-size:10px; font-weight:700; color:#6d28d9; background:#ede9fe; padding:2px 7px; border-radius:20px; margin-top:2px; }
     .card-highlight { background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%); border: 1px solid #bfdbfe; }
     .card-warning { background: #fffbeb; border: 1px solid #fde68a; }
 
@@ -1010,7 +1016,7 @@
     <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#92400e; margin-bottom:10px; text-align:center;">① Eleg&iacute; tu nivel FE &mdash; add-on independiente</div>
 
     <!-- FE Básico -->
-    <div style="border:2px solid #f59e0b; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#fffbeb;">
+    <div class="fe-card" onclick="selectFE(150000, this)" style="border:2px solid #f59e0b; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#fffbeb;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span style="font-size:13px; font-weight:700; color:#92400e;">FE B&aacute;sico</span>
         <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 150.000/mes</span>
@@ -1019,7 +1025,7 @@
     </div>
 
     <!-- FE Estándar -->
-    <div style="border:2px solid #d97706; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#fef3c7;">
+    <div class="fe-card" onclick="selectFE(200000, this)" style="border:2px solid #d97706; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#fef3c7;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span style="font-size:13px; font-weight:700; color:#78350f;">FE Est&aacute;ndar</span>
         <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 200.000/mes</span>
@@ -1028,7 +1034,7 @@
     </div>
 
     <!-- FE Premium -->
-    <div style="border:2px solid #b45309; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:linear-gradient(135deg,#fef3c7,#fff7ed); position:relative; margin-top:14px;">
+    <div class="fe-card" onclick="selectFE(250000, this)" style="border:2px solid #b45309; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:linear-gradient(135deg,#fef3c7,#fff7ed); position:relative; margin-top:14px;">
       <div style="position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:#b45309; color:white; font-size:10px; font-weight:700; padding:3px 14px; border-radius:20px; white-space:nowrap;">&#11088; M&Aacute;S COMPLETO</div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span style="font-size:13px; font-weight:700; color:#7c2d12;">FE Premium &#11088;</span>
@@ -1043,7 +1049,7 @@
     <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#1e40af; margin-bottom:10px; text-align:center;">② Eleg&iacute; tu plan GestFact</div>
 
     <!-- Estándar -->
-    <div style="border:2px solid #e2e8f0; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:white;">
+    <div class="plan-card" onclick="selectPlan(400000, this)" style="border:2px solid #e2e8f0; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:white;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span style="font-size:13px; font-weight:700; color:#374151;">Plan Est&aacute;ndar</span>
         <span style="font-size:16px; font-weight:800; color:#1a56db;">Gs. 200.000 quin.</span>
@@ -1052,7 +1058,7 @@
     </div>
 
     <!-- Premium -->
-    <div style="border:2px solid #bfdbfe; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#eff6ff;">
+    <div class="plan-card" onclick="selectPlan(450000, this)" style="border:2px solid #bfdbfe; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#eff6ff;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span style="font-size:13px; font-weight:700; color:#1d4ed8;">Plan Premium</span>
         <span style="font-size:16px; font-weight:800; color:#1a56db;">Gs. 225.000 quin.</span>
@@ -1061,7 +1067,7 @@
     </div>
 
     <!-- Full -->
-    <div style="border:2px solid #7c3aed; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:linear-gradient(135deg,#faf5ff,#eff6ff); position:relative; margin-top:14px;">
+    <div class="plan-card" onclick="selectPlan(500000, this)" style="border:2px solid #7c3aed; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:linear-gradient(135deg,#faf5ff,#eff6ff); position:relative; margin-top:14px;">
       <div style="position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:#7c3aed; color:white; font-size:10px; font-weight:700; padding:3px 14px; border-radius:20px; white-space:nowrap;">&#11088; M&Aacute;S COMPLETO</div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span style="font-size:13px; font-weight:700; color:#6d28d9;">Plan Full &#11088;</span>
@@ -1076,27 +1082,11 @@
   </div>
 
   <!-- ── TOTAL ESTIMADO ── -->
-  <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:12px 14px; margin-bottom:14px;">
-    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#166534; margin-bottom:10px; text-align:center;">Total mensual seg&uacute;n lo que eleg&iacute;s</div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:12px;">
-      <div style="background:white; border-radius:8px; padding:8px 10px; border:1px solid #d1fae5;">
-        <div style="color:#6b7280; font-size:11px; margin-bottom:2px;">FE B&aacute;sico + Est&aacute;ndar</div>
-        <div style="font-weight:700; color:#1a56db;">Gs. 550.000/mes</div>
-      </div>
-      <div style="background:white; border-radius:8px; padding:8px 10px; border:1px solid #d1fae5;">
-        <div style="color:#6b7280; font-size:11px; margin-bottom:2px;">FE B&aacute;sico + Full</div>
-        <div style="font-weight:700; color:#6d28d9;">Gs. 650.000/mes</div>
-      </div>
-      <div style="background:white; border-radius:8px; padding:8px 10px; border:1px solid #d1fae5;">
-        <div style="color:#6b7280; font-size:11px; margin-bottom:2px;">FE Est&aacute;ndar + Est&aacute;ndar</div>
-        <div style="font-weight:700; color:#1a56db;">Gs. 600.000/mes</div>
-      </div>
-      <div style="background:#fefce8; border-radius:8px; padding:8px 10px; border:2px solid #b45309;">
-        <div style="color:#78350f; font-size:11px; margin-bottom:2px; font-weight:600;">&#11088; FE Premium + Full</div>
-        <div style="font-weight:800; color:#b45309;">Gs. 750.000/mes</div>
-      </div>
-    </div>
-    <div style="font-size:11px; color:#6b7280; text-align:center; margin-top:8px;">Cualquier combinaci&oacute;n es v&aacute;lida. El total = FE elegida + plan elegido.</div>
+  <div id="calc-result" style="display:none; background:#f0fdf4; border:2px solid #15803d; border-radius:12px; padding:14px; margin-bottom:14px;">
+    <!-- se llena con JS -->
+  </div>
+  <div id="calc-hint" style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:12px; padding:14px; margin-bottom:14px; text-align:center; color:#94a3b8; font-size:12px;">
+    ☝️ Tocá un nivel FE y un plan para ver el total al instante
   </div>
 
   <!-- ── PREPAGO ── -->
@@ -1463,6 +1453,68 @@
     arrow.classList.toggle('open');
     btn.childNodes[0].textContent = wasOpen ? 'Ver detalle ' : 'Ocultar detalle ';
   }
+</script>
+
+<script>
+var _fe = null, _plan = null;
+var feLabel = {150000:'FE Básico', 200000:'FE Estándar', 250000:'FE Premium ⭐'};
+var planLabel = {400000:'Plan Estándar', 450000:'Plan Premium', 500000:'Plan Full ⭐'};
+
+function selectFE(price, el) {
+  _fe = price;
+  document.querySelectorAll('.fe-card').forEach(function(c){ c.classList.remove('fe-selected'); });
+  el.classList.add('fe-selected');
+  updateCalc();
+}
+function selectPlan(price, el) {
+  _plan = price;
+  document.querySelectorAll('.plan-card').forEach(function(c){ c.classList.remove('plan-selected'); });
+  el.classList.add('plan-selected');
+  updateCalc();
+}
+function fmt(n) { return 'Gs. ' + n.toLocaleString('es-PY'); }
+function updateCalc() {
+  var result = document.getElementById('calc-result');
+  var hint = document.getElementById('calc-hint');
+  if (!_fe || !_plan) { result.style.display='none'; hint.style.display='block'; return; }
+  var mensual = _fe + _plan;
+  // descuentos separados: plan 12%/15%, FE 16%/25%
+  var p12 = Math.round(_plan * 12 * 0.88);
+  var fe12 = Math.round(_fe * 12 * 0.84);
+  var total12 = p12 + fe12;
+  var saving12 = (_plan + _fe) * 12 - total12;
+  var monthly12 = Math.round(total12 / 12);
+  var p18 = Math.round(_plan * 18 * 0.85);
+  var fe18 = Math.round(_fe * 18 * 0.75);
+  var total18 = p18 + fe18;
+  var saving18 = (_plan + _fe) * 18 - total18;
+  var monthly18 = Math.round(total18 / 18);
+  hint.style.display = 'none';
+  result.style.display = 'block';
+  result.innerHTML =
+    '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + ' + ' + planLabel[_plan] + '</div>' +
+    '<div style="background:white;border-radius:8px;padding:10px 12px;margin-bottom:8px;border:1px solid #bbf7d0;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<span style="font-size:12px;color:#374151;">Total mensual (quincenal)</span>' +
+        '<span style="font-size:18px;font-weight:800;color:#1a56db;">' + fmt(mensual) + '</span>' +
+      '</div>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+      '<div style="background:white;border-radius:8px;padding:10px 12px;border:2px solid #1a56db;">' +
+        '<div style="font-size:10px;font-weight:700;color:#1a56db;text-transform:uppercase;margin-bottom:6px;">12 meses ⭐ (desc. plan 12% + FE 16%)</div>' +
+        '<div style="font-size:17px;font-weight:800;color:#1a56db;margin-bottom:2px;">' + fmt(total12) + '</div>' +
+        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly12) + '/mes</div>' +
+        '<div style="font-size:11px;color:#15803d;font-weight:600;">ahorrás ' + fmt(saving12) + '</div>' +
+      '</div>' +
+      '<div style="background:white;border-radius:8px;padding:10px 12px;border:2px solid #6d28d9;">' +
+        '<div style="font-size:10px;font-weight:700;color:#6d28d9;text-transform:uppercase;margin-bottom:6px;">18 meses (desc. plan 15% + FE 25%)</div>' +
+        '<div style="font-size:17px;font-weight:800;color:#6d28d9;margin-bottom:2px;">' + fmt(total18) + '</div>' +
+        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly18) + '/mes</div>' +
+        '<div style="font-size:11px;color:#15803d;font-weight:600;">ahorrás ' + fmt(saving18) + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="font-size:10px;color:#6b7280;text-align:center;margin-top:8px;">Precio fijo por el período elegido — sin ajustes.</div>';
+}
 </script>
 
 </body>
