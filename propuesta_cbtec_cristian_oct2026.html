@@ -136,10 +136,12 @@
     }
   @keyframes nudge-btn{0%,100%{transform:scale(1)}40%{transform:scale(1.03)}60%{transform:scale(0.98)}}
   @media print {
-    body * { visibility: hidden !important; }
-    #print-contract, #print-contract * { visibility: visible !important; }
-    #print-contract { position: fixed; top: 0; left: 0; width: 100%; padding: 20px; box-sizing: border-box; }
-    .no-print { display: none !important; }
+    body * { display: none !important; }
+    #print-contract { display: block !important; position: absolute; top: 0; left: 0; width: 100%; padding: 20px; box-sizing: border-box; }
+    #print-contract * { display: block !important; }
+    #print-contract img { display: block !important; width: 100% !important; max-width: 300px !important; }
+    #print-contract div[style*="grid"] { display: flex !important; gap: 20px !important; }
+    #print-contract div[style*="grid"] > div { flex: 1 !important; }
   }
   </style>
 </head>
@@ -1576,7 +1578,6 @@ function generatePDF() {
   var img1 = document.getElementById('canvas-isabsoft').toDataURL('image/png');
   var img2 = document.getElementById('canvas-cliente').toDataURL('image/png');
   var pc = document.getElementById('print-contract');
-  pc.style.display = 'block';
   pc.innerHTML =
     '<div style="font-family:Arial,sans-serif; max-width:700px; margin:0 auto; padding:20px;">' +
     '<div style="text-align:center; border-bottom:2px solid #1a56db; padding-bottom:12px; margin-bottom:20px;">' +
@@ -1602,8 +1603,11 @@ function generatePDF() {
       '</div>' +
     '</div>' +
     '</div>';
-  window.print();
-  setTimeout(function() { pc.style.display='none'; }, 1000);
+  pc.style.display = 'block';
+  setTimeout(function() {
+    window.print();
+    setTimeout(function() { pc.style.display = 'none'; }, 500);
+  }, 300);
 }
 window.addEventListener('load', function() {
   initCanvas('canvas-isabsoft');
