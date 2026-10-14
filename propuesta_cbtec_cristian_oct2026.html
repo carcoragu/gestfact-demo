@@ -1216,7 +1216,7 @@
         <input type="radio" name="cfg-lic" value="1900000" onchange="calcCfg()" style="accent-color:#15803d;">
         <div style="flex:1;">
           <span style="font-weight:700; color:#15803d;">Licencia B&aacute;sica</span>
-          <span style="font-size:11px; color:#6b7280;"> &mdash; Solo FE · 6 meses garant&iacute;a</span>
+          <span style="font-size:11px; color:#6b7280;"> &mdash; Solo FE · NC b&aacute;sica · 6 meses garant&iacute;a</span>
         </div>
         <strong style="color:#15803d; white-space:nowrap;">Gs. 1.900.000</strong>
       </label>
@@ -1224,7 +1224,7 @@
         <input type="radio" name="cfg-lic" value="3000000" onchange="calcCfg()" style="accent-color:#1a56db;">
         <div style="flex:1;">
           <span style="font-weight:700; color:#1a56db;">Licencia Est&aacute;ndar</span>
-          <span style="font-size:11px; color:#6b7280;"> &mdash; FE + M&oacute;vil 12m · backup · updates</span>
+          <span style="font-size:11px; color:#6b7280;"> &mdash; FE + M&oacute;vil 12m · NC reenv&iacute;o autom&aacute;tico · backup · updates</span>
         </div>
         <strong style="color:#1a56db; white-space:nowrap;">Gs. 3.000.000</strong>
       </label>
@@ -1232,7 +1232,7 @@
         <input type="radio" name="cfg-lic" value="4000000" onchange="calcCfg()" style="accent-color:#7c3aed;">
         <div style="flex:1;">
           <span style="font-weight:700; color:#7c3aed;">Licencia Premium</span>
-          <span style="font-size:11px; color:#6b7280;"> &mdash; FE + M&oacute;vil + AnotDigi 18m · cobertura completa</span>
+          <span style="font-size:11px; color:#6b7280;"> &mdash; FE + M&oacute;vil + AnotDigi 18m · NC reenv&iacute;o + soporte &le;2hs · cobertura completa</span>
         </div>
         <strong style="color:#7c3aed; white-space:nowrap;">Gs. 4.000.000</strong>
       </label>
@@ -1340,9 +1340,10 @@
     var totalMes = 180000 + (gfVal * 2);
     document.getElementById('cfg-total-mes').textContent = fmt(totalMes) + '/mes';
 
-    var cubre = ['&#10003; Licencia FE perpetua en GestFact PC', '&#10003; Transmisión SIFEN + XML + firma digital', '&#10003; KUDE PDF + QR verificación', '&#10003; Email KUDE automático al cliente', '&#10003; NC Electrónica · Contingencia 72hs offline'];
-    if (licVal >= 3000000) { cubre.push('&#10003; GestFact Móvil incluido (período contratado)'); }
-    if (licVal >= 4000000) { cubre.push('&#10003; AnotDigi Básico incluido (período contratado)'); }
+    var cubre = ['&#10003; Licencia FE perpetua en GestFact PC', '&#10003; Transmisión SIFEN + XML + firma digital', '&#10003; KUDE PDF + QR verificación', '&#10003; Email KUDE automático al cliente', '&#10003; Contingencia 72hs offline'];
+    if (licVal === 1900000) { cubre.push('&#10003; NC Electrónica básica'); }
+    if (licVal >= 3000000) { cubre.push('&#10003; NC con reenvío automático al cliente', '&#10003; Asesoría FE mensual — revisión proactiva', '&#10003; GestFact Móvil incluido (período contratado)'); }
+    if (licVal >= 4000000) { cubre.push('&#10003; Soporte ante errores SIFEN — respuesta ≤ 2hs', '&#10003; Capacitación mensual FE', '&#10003; AnotDigi Básico incluido (período contratado)'); }
     if (gfVal >= 185000) { cubre.push('&#10003; GestFact taller · presupuestos · fichas · historial', '&#10003; Backup local + nube · Asistencia Carlos'); }
     if (gfVal >= 200000) { cubre.push('&#10003; TXT/ZIP Marangatú (Nora)'); }
     if (gfVal >= 225000) { cubre.push('&#10003; GestFact Móvil (plan mensual)'); }
