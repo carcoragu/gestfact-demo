@@ -1258,6 +1258,36 @@
       </label>
     </div>
 
+    <!-- PASO 3: PLAN GESTFACT OPCIONAL -->
+    <div style="font-size:12px; font-weight:700; color:#374151; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">3 · Plan GestFact <span style="font-weight:400; color:#94a3b8;">(opcional)</span></div>
+    <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;">
+      <label style="display:flex; align-items:center; gap:10px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-gf" value="0" data-nombre="" onchange="calcCfg()" checked style="accent-color:#64748b;">
+        <div style="flex:1;"><span style="font-weight:600; color:#374151;">Sin plan GestFact</span><span style="font-size:11px; color:#6b7280;"> &mdash; solo FE, sin soporte otras funcionalidades</span></div>
+        <strong style="color:#64748b; white-space:nowrap;">Gs. 0</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#f0fdf4; border:1.5px solid #86efac; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-gf" value="185000" data-nombre="Plan Básico GestFact" onchange="calcCfg()" style="accent-color:#15803d;">
+        <div style="flex:1;"><span style="font-weight:600; color:#15803d;">Plan B&aacute;sico</span><span style="font-size:11px; color:#6b7280;"> &mdash; GestFact taller &middot; Backup &middot; Soporte &middot; Asistencia Carlos</span></div>
+        <strong style="color:#15803d; white-space:nowrap;">Gs. 185.000/quin</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-gf" value="200000" data-nombre="Plan Estándar GestFact" onchange="calcCfg()" style="accent-color:#1a56db;">
+        <div style="flex:1;"><span style="font-weight:600; color:#1a56db;">Plan Est&aacute;ndar</span><span style="font-size:11px; color:#6b7280;"> &mdash; Todo Plan B&aacute;sico &middot; Asistencia mensual &middot; TXT/ZIP Nora</span></div>
+        <strong style="color:#1a56db; white-space:nowrap;">Gs. 200.000/quin</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#faf5ff; border:1.5px solid #a78bfa; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-gf" value="225000" data-nombre="Plan Premium GestFact" onchange="calcCfg()" style="accent-color:#7c3aed;">
+        <div style="flex:1;"><span style="font-weight:600; color:#7c3aed;">Plan Premium</span><span style="font-size:11px; color:#6b7280;"> &mdash; Todo Plan Est&aacute;ndar + GestFact M&oacute;vil</span></div>
+        <strong style="color:#7c3aed; white-space:nowrap;">Gs. 225.000/quin</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#fff7ed; border:1.5px solid #fed7aa; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-gf" value="250000" data-nombre="Plan Full GestFact" onchange="calcCfg()" style="accent-color:#ea580c;">
+        <div style="flex:1;"><span style="font-weight:600; color:#ea580c;">Plan Full &#11088;</span><span style="font-size:11px; color:#6b7280;"> &mdash; Todo Plan Premium + AnotDigi</span></div>
+        <strong style="color:#ea580c; white-space:nowrap;">Gs. 250.000/quin</strong>
+      </label>
+    </div>
+
     <!-- RESULTADO -->
     <div id="cfg-result" style="display:none; background:#f8fafc; border-radius:10px; padding:14px; border:1.5px solid #e2e8f0;">
       <div style="font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">&#128203; Tu resumen</div>
@@ -1268,6 +1298,13 @@
       <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
         <span style="font-size:12px; color:#b45309;" id="cfg-fe-label">FE B&aacute;sico &mdash; Sifende PRO</span>
         <strong style="font-size:12px; color:#b45309;" id="cfg-fe-monto">Gs. 180.000/mes</strong>
+      </div>
+      <div id="cfg-gf-row" style="display:none; flex-direction:column; padding:5px 0; border-bottom:1px solid #e2e8f0;">
+        <div style="display:flex; justify-content:space-between;">
+          <span style="font-size:12px; color:#374151;" id="cfg-gf-label">Plan B&aacute;sico GestFact</span>
+          <strong style="font-size:12px; color:#15803d;" id="cfg-gf-monto">Gs. 185.000/quin</strong>
+        </div>
+        <div style="font-size:10px; color:#94a3b8; font-style:italic; margin-top:2px;">Se abona cada 15 d&iacute;as</div>
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#1e293b; border-radius:7px; margin-top:8px;">
         <span style="font-size:13px; font-weight:700; color:white;">Total mensual</span>
@@ -1284,15 +1321,18 @@
   function calcCfg() {
     var licInput = document.querySelector('input[name="cfg-lic"]:checked');
     var planInput = document.querySelector('input[name="cfg-plan"]:checked');
+    var gfInput = document.querySelector('input[name="cfg-gf"]:checked');
     if (!licInput) return;
 
     var licVal = parseInt(licInput.value);
     var planVal = planInput ? parseInt(planInput.value) : 180000;
+    var gfVal = gfInput ? parseInt(gfInput.value) : 0;
 
     var licLabels = {1900000:'Licencia Básica — pago único', 3000000:'Licencia Estándar — pago único', 4000000:'Licencia Premium — pago único'};
     var licColors = {1900000:'#15803d', 3000000:'#1a56db', 4000000:'#7c3aed'};
     var feLabels = {180000:'FE Básico — Sifende PRO', 200000:'FE Estándar — Sifende PRO', 250000:'FE Premium — Sifende PRO ⭐'};
     var feColors = {180000:'#b45309', 200000:'#92400e', 250000:'#7c2d12'};
+    var gfColors = {185000:'#15803d', 200000:'#1a56db', 225000:'#7c3aed', 250000:'#ea580c'};
 
     var fmt = function(n){ return 'Gs. ' + n.toLocaleString('es-PY'); };
 
@@ -1306,13 +1346,29 @@
     document.getElementById('cfg-fe-monto').textContent = fmt(planVal) + '/mes';
     document.getElementById('cfg-fe-monto').style.color = feColors[planVal];
 
-    document.getElementById('cfg-total-mes').textContent = fmt(planVal) + '/mes';
+    var gfRow = document.getElementById('cfg-gf-row');
+    if (gfVal > 0) {
+      gfRow.style.display = 'flex';
+      document.getElementById('cfg-gf-label').textContent = gfInput.dataset.nombre;
+      document.getElementById('cfg-gf-label').style.color = gfColors[gfVal] || '#374151';
+      document.getElementById('cfg-gf-monto').textContent = fmt(gfVal) + '/quin';
+      document.getElementById('cfg-gf-monto').style.color = gfColors[gfVal] || '#374151';
+    } else {
+      gfRow.style.display = 'none';
+    }
+
+    var totalMes = planVal + (gfVal * 2);
+    document.getElementById('cfg-total-mes').textContent = fmt(totalMes) + '/mes';
 
     var cubre = ['&#10003; Licencia FE perpetua en GestFact PC', '&#10003; Transmisión SIFEN + XML + firma digital', '&#10003; KUDE PDF + QR verificación', '&#10003; Email KUDE automático al cliente', '&#10003; NC Electrónica · Contingencia 72hs offline'];
     if (licVal >= 3000000) { cubre.push('&#10003; GestFact Móvil incluido (período contratado)'); }
     if (licVal >= 4000000) { cubre.push('&#10003; AnotDigi Básico incluido (período contratado)'); }
     if (planVal >= 200000) { cubre.push('&#10003; NC con reenvío automático al cliente', '&#10003; Asesoría FE mensual — revisión proactiva'); }
     if (planVal >= 250000) { cubre.push('&#10003; Soporte ante errores SIFEN — respuesta ≤ 2hs', '&#10003; Capacitación mensual FE'); }
+    if (gfVal >= 185000) { cubre.push('&#10003; GestFact taller · presupuestos · fichas · historial', '&#10003; Backup local + nube · Asistencia Carlos'); }
+    if (gfVal >= 200000) { cubre.push('&#10003; TXT/ZIP Marangatú (Nora)'); }
+    if (gfVal >= 225000) { cubre.push('&#10003; GestFact Móvil (plan mensual)'); }
+    if (gfVal >= 250000) { cubre.push('&#10003; AnotDigi — Lalo carga trabajos por texto'); }
 
     document.getElementById('cfg-cubre-lista').innerHTML = cubre.join('<br>');
     document.getElementById('cfg-result').style.display = 'block';
