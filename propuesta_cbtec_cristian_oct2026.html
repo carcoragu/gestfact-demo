@@ -1239,10 +1239,11 @@
     </div>
 
     <!-- PASO 2: SERVICIO FE MENSUAL -->
-    <div style="font-size:12px; font-weight:700; color:#374151; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">2 · Servicio FE mensual</div>
+    <div style="font-size:12px; font-weight:700; color:#374151; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">2 · Servicio FE mensual <span style="font-weight:400; color:#dc2626;">(obligatorio)</span></div>
+    <div id="cfg-fe-error" style="display:none; background:#fee2e2; border:1.5px solid #fca5a5; border-radius:7px; padding:8px 12px; font-size:11px; color:#dc2626; margin-bottom:8px;">&#9888; Seleccion&aacute; un nivel de servicio FE para continuar.</div>
     <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;">
       <label style="display:flex; align-items:center; gap:10px; background:#fffbeb; border:1.5px solid #fbbf24; border-radius:8px; padding:9px 12px; cursor:pointer;">
-        <input type="radio" name="cfg-plan" value="180000" data-nombre="FE Básico" onchange="calcCfg()" checked style="accent-color:#b45309;">
+        <input type="radio" name="cfg-plan" value="180000" data-nombre="FE Básico" onchange="calcCfg()" style="accent-color:#b45309;">
         <div style="flex:1;"><span style="font-weight:600; color:#b45309;">FE B&aacute;sico</span><span style="font-size:11px; color:#6b7280;"> &mdash; Transmisi&oacute;n SIFEN &middot; XML &middot; KUDE PDF/QR &middot; Email KUDE &middot; NC &middot; Contingencia 72hs</span></div>
         <strong style="color:#b45309; white-space:nowrap;">Gs. 180.000/mes</strong>
       </label>
@@ -1325,8 +1326,17 @@
     if (!licInput) return;
 
     var licVal = parseInt(licInput.value);
-    var planVal = planInput ? parseInt(planInput.value) : 180000;
     var gfVal = gfInput ? parseInt(gfInput.value) : 0;
+
+    var feError = document.getElementById('cfg-fe-error');
+    if (!planInput) {
+      feError.style.display = 'block';
+      document.getElementById('cfg-result').style.display = 'none';
+      return;
+    }
+    feError.style.display = 'none';
+
+    var planVal = parseInt(planInput.value);
 
     var licLabels = {1900000:'Licencia Básica — pago único', 3000000:'Licencia Estándar — pago único', 4000000:'Licencia Premium — pago único'};
     var licColors = {1900000:'#15803d', 3000000:'#1a56db', 4000000:'#7c3aed'};
