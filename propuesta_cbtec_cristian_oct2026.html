@@ -1183,6 +1183,147 @@
     </div>
   </div>
 
+  <!-- ── CONFIGURADOR LICENCIA ── -->
+  <div style="margin-bottom:18px; background:white; border-radius:14px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.08); border:1.5px solid #e2e8f0;">
+    <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:4px;">&#129518; Calculá tu combinación</div>
+    <div style="font-size:12px; color:#64748b; margin-bottom:14px;">Elig&iacute; tu nivel de licencia y si quer&eacute;s agregar un plan GestFact — el total se calcula solo.</div>
+
+    <!-- PASO 1: LICENCIA -->
+    <div style="font-size:12px; font-weight:700; color:#374151; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">1 · Licencia FE</div>
+    <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;">
+      <label style="display:flex; align-items:center; gap:10px; background:#f0fdf4; border:1.5px solid #86efac; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-lic" value="1900000" onchange="calcCfg()" style="accent-color:#15803d;">
+        <div style="flex:1;">
+          <span style="font-weight:700; color:#15803d;">Licencia B&aacute;sica</span>
+          <span style="font-size:11px; color:#6b7280;"> &mdash; Solo FE · 6 meses garant&iacute;a</span>
+        </div>
+        <strong style="color:#15803d; white-space:nowrap;">Gs. 1.900.000</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-lic" value="3000000" onchange="calcCfg()" style="accent-color:#1a56db;">
+        <div style="flex:1;">
+          <span style="font-weight:700; color:#1a56db;">Licencia Est&aacute;ndar</span>
+          <span style="font-size:11px; color:#6b7280;"> &mdash; FE + M&oacute;vil 12m · backup · updates</span>
+        </div>
+        <strong style="color:#1a56db; white-space:nowrap;">Gs. 3.000.000</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#faf5ff; border:1.5px solid #a78bfa; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-lic" value="4000000" onchange="calcCfg()" style="accent-color:#7c3aed;">
+        <div style="flex:1;">
+          <span style="font-weight:700; color:#7c3aed;">Licencia Premium</span>
+          <span style="font-size:11px; color:#6b7280;"> &mdash; FE + M&oacute;vil + AnotDigi 18m · cobertura completa</span>
+        </div>
+        <strong style="color:#7c3aed; white-space:nowrap;">Gs. 4.000.000</strong>
+      </label>
+    </div>
+
+    <!-- PASO 2: PLAN GESTFACT MENSUAL -->
+    <div style="font-size:12px; font-weight:700; color:#374151; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">2 · Plan GestFact mensual <span style="font-weight:400; color:#94a3b8;">(opcional)</span></div>
+    <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;">
+      <label style="display:flex; align-items:center; gap:10px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-plan" value="0" data-nombre="Sin plan GestFact" onchange="calcCfg()" checked style="accent-color:#64748b;">
+        <div style="flex:1;"><span style="font-weight:600; color:#374151;">Sin plan GestFact</span><span style="font-size:11px; color:#6b7280;"> &mdash; FE funciona, sin soporte otras funcionalidades</span></div>
+        <strong style="color:#64748b; white-space:nowrap;">Gs. 0</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#f0fdf4; border:1.5px solid #86efac; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-plan" value="370000" data-nombre="Plan Básico GestFact" onchange="calcCfg()" style="accent-color:#15803d;">
+        <div style="flex:1;"><span style="font-weight:600; color:#15803d;">Plan B&aacute;sico</span><span style="font-size:11px; color:#6b7280;"> &mdash; Backup · soporte presupuestos · fichas · WA/email</span></div>
+        <strong style="color:#15803d; white-space:nowrap;">Gs. 370.000/mes</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-plan" value="400000" data-nombre="Plan Estándar GestFact" onchange="calcCfg()" style="accent-color:#1a56db;">
+        <div style="flex:1;"><span style="font-weight:600; color:#1a56db;">Plan Est&aacute;ndar</span><span style="font-size:11px; color:#6b7280;"> &mdash; + TXT/ZIP Nora · asistencia mensual</span></div>
+        <strong style="color:#1a56db; white-space:nowrap;">Gs. 400.000/mes</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#faf5ff; border:1.5px solid #a78bfa; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-plan" value="450000" data-nombre="Plan Premium GestFact" onchange="calcCfg()" style="accent-color:#7c3aed;">
+        <div style="flex:1;"><span style="font-weight:600; color:#7c3aed;">Plan Premium</span><span style="font-size:11px; color:#6b7280;"> &mdash; + M&oacute;vil · asistencia quincenal</span></div>
+        <strong style="color:#7c3aed; white-space:nowrap;">Gs. 450.000/mes</strong>
+      </label>
+      <label style="display:flex; align-items:center; gap:10px; background:#fff7ed; border:1.5px solid #fed7aa; border-radius:8px; padding:9px 12px; cursor:pointer;">
+        <input type="radio" name="cfg-plan" value="500000" data-nombre="Plan Full GestFact" onchange="calcCfg()" style="accent-color:#ea580c;">
+        <div style="flex:1;"><span style="font-weight:600; color:#ea580c;">Plan Full &#11088;</span><span style="font-size:11px; color:#6b7280;"> &mdash; + M&oacute;vil + AnotDigi · cobertura completa</span></div>
+        <strong style="color:#ea580c; white-space:nowrap;">Gs. 500.000/mes</strong>
+      </label>
+    </div>
+
+    <!-- RESULTADO -->
+    <div id="cfg-result" style="display:none; background:#f8fafc; border-radius:10px; padding:14px; border:1.5px solid #e2e8f0;">
+      <div style="font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">&#128203; Tu resumen</div>
+      <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
+        <span style="font-size:12px; color:#374151;" id="cfg-lic-label">Licencia Básica</span>
+        <strong style="font-size:12px;" id="cfg-lic-monto">Gs. 1.900.000</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
+        <span style="font-size:12px; color:#374151;">FE activa &mdash; Sifende PRO</span>
+        <strong style="font-size:12px; color:#92400e;">Gs. 180.000/mes</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
+        <span style="font-size:12px; color:#374151;">Soporte espec&iacute;fico FE</span>
+        <strong style="font-size:12px; color:#92400e;">Gs. 150.000/mes</strong>
+      </div>
+      <div id="cfg-plan-row" style="display:none; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
+        <span style="font-size:12px; color:#374151;" id="cfg-plan-label">Plan Básico GestFact</span>
+        <strong style="font-size:12px;" id="cfg-plan-monto">Gs. 370.000/mes</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#1e293b; border-radius:7px; margin-top:8px;">
+        <span style="font-size:13px; font-weight:700; color:white;">Total mensual</span>
+        <strong style="font-size:17px; color:#38bdf8;" id="cfg-total-mes">Gs. 330.000/mes</strong>
+      </div>
+      <div style="margin-top:10px;" id="cfg-cubre">
+        <div style="font-size:11px; font-weight:700; color:#374151; margin-bottom:4px;">&#10003; Cubre</div>
+        <div id="cfg-cubre-lista" style="font-size:11px; color:#374151; line-height:1.8;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  function calcCfg() {
+    var licInput = document.querySelector('input[name="cfg-lic"]:checked');
+    var planInput = document.querySelector('input[name="cfg-plan"]:checked');
+    if (!licInput) return;
+
+    var licVal = parseInt(licInput.value);
+    var planVal = planInput ? parseInt(planInput.value) : 0;
+
+    var licLabels = {1900000:'Licencia Básica — pago único', 3000000:'Licencia Estándar — pago único', 4000000:'Licencia Premium — pago único'};
+    var licColors = {1900000:'#15803d', 3000000:'#1a56db', 4000000:'#7c3aed'};
+    var planLabel = planInput ? planInput.dataset.nombre : '';
+
+    var feActiva = 180000;
+    var soporteFe = 150000;
+    var totalMes = feActiva + soporteFe + planVal;
+
+    var fmt = function(n){ return 'Gs. ' + n.toLocaleString('es-PY'); };
+
+    document.getElementById('cfg-lic-label').textContent = licLabels[licVal];
+    document.getElementById('cfg-lic-label').style.color = licColors[licVal];
+    document.getElementById('cfg-lic-monto').textContent = fmt(licVal);
+    document.getElementById('cfg-lic-monto').style.color = licColors[licVal];
+
+    var planRow = document.getElementById('cfg-plan-row');
+    if (planVal > 0) {
+      planRow.style.display = 'flex';
+      document.getElementById('cfg-plan-label').textContent = planLabel;
+      document.getElementById('cfg-plan-monto').textContent = fmt(planVal) + '/mes';
+    } else {
+      planRow.style.display = 'none';
+    }
+
+    document.getElementById('cfg-total-mes').textContent = fmt(totalMes) + '/mes';
+
+    var cubre = ['&#10003; Factura Electrónica desde GestFact PC', '&#10003; Sifende PRO activo (transmisión SIFEN)', '&#10003; Soporte ante errores o cambios FE'];
+    if (licVal >= 3000000) { cubre.push('&#10003; GestFact Móvil incluido (período contratado)'); }
+    if (licVal >= 4000000) { cubre.push('&#10003; AnotDigi Básico incluido (período contratado)'); }
+    if (planVal >= 370000) { cubre.push('&#10003; Backup GestFact', '&#10003; Soporte presupuestos · fichas · WA/email'); }
+    if (planVal >= 400000) { cubre.push('&#10003; TXT/ZIP Nora (Marangatú)'); }
+    if (planVal >= 450000) { cubre.push('&#10003; GestFact Móvil (plan mensual)'); }
+    if (planVal >= 500000) { cubre.push('&#10003; AnotDigi — Lalo carga trabajos por texto'); }
+
+    document.getElementById('cfg-cubre-lista').innerHTML = cubre.join('<br>');
+    document.getElementById('cfg-result').style.display = 'block';
+  }
+  </script>
 
   <!-- ── HISTORIAL DE PRECIOS ── -->
   <div style="margin-bottom:18px;">
