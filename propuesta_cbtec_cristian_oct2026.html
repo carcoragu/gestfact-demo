@@ -215,6 +215,7 @@
   <button class="snav-btn snav-green" onclick="navTo('sec-precios')">💰 Precios</button>
   <button class="snav-btn snav-amber" onclick="navTo('sec-nivel-fe')">🔧 Nivel FE</button>
   <button class="snav-btn snav-cyan"  onclick="navTo('sec-plan-gf')">📋 Plan GF</button>
+  <button class="snav-btn snav-green" onclick="navToCalc()">🧮 Calcular</button>
 </nav>
 
 <div class="divider"></div>
@@ -1984,6 +1985,11 @@
     }
   }
 
+  function navToCalc() {
+    var res = document.getElementById('calc-result');
+    if (res && res.style.display !== 'none') { navTo('calc-result'); }
+    else { navTo('sec-nivel-fe'); }
+  }
   function navTo(id) {
     var el = document.getElementById(id);
     if (!el) return;
