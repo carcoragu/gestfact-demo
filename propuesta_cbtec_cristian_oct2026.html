@@ -880,7 +880,7 @@
       <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">Sistema taller internacional (nube) ⁶</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Taller nube + FE aparte</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Gs. 223.000 &ndash; 347.000 <span style="font-size:10px; color:#dc2626;">(sin SIFEN PY)</span></td></tr>
       <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">TracertSystem</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">FE nube (precio no publicado)</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Gs. 90.000 &ndash; 265.000 ³</td></tr>
       <tr><td style="padding:9px 12px; background:#f8fafc; font-weight:500; color:#374151; border-bottom:1px solid #f1f5f9;">BillPy / Sifende</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Solo FE — sin sistema taller</td><td style="padding:9px 8px; text-align:center; color:#6b7280; border-bottom:1px solid #f1f5f9;">Gs. 79.000 &ndash; 100.000</td></tr>
-      <tr style="background:#eff6ff;"><td style="padding:10px 12px; font-weight:700; color:#1d4ed8; border-bottom:1px solid #dbeafe;">GestFact Est&aacute;ndar + FE B&aacute;sico</td><td style="padding:10px 8px; text-align:center; font-weight:600; color:#1d4ed8; border-bottom:1px solid #dbeafe;">Taller + FE + TXT/ZIP + soporte personal + offline</td><td style="padding:10px 8px; text-align:center; font-weight:700; color:#1d4ed8; border-bottom:1px solid #dbeafe;">Gs. 550.000 ²</td></tr>
+      <tr style="background:#eff6ff;"><td style="padding:10px 12px; font-weight:700; color:#1d4ed8; border-bottom:1px solid #dbeafe;">GestFact B&aacute;sico + FE</td><td style="padding:10px 8px; text-align:center; font-weight:600; color:#1d4ed8; border-bottom:1px solid #dbeafe;">Taller + FE + Listado FE+NC + Listado 72hs + TXT/ZIP hist&oacute;rico + soporte personal + offline</td><td style="padding:10px 8px; text-align:center; font-weight:700; color:#1d4ed8; border-bottom:1px solid #dbeafe;">Gs. 550.000 ²</td></tr>
       <tr style="background:#f0fdf4;"><td style="padding:10px 12px; font-weight:700; color:#15803d;">GestFact Full + FE B&aacute;sico</td><td style="padding:10px 8px; text-align:center; font-weight:600; color:#15803d;">Taller + M&oacute;vil + AnotDigi + FE + TXT/ZIP + soporte personal + offline</td><td style="padding:10px 8px; text-align:center; font-weight:700; color:#15803d;">Gs. 650.000</td></tr>
     </tbody>
   </table>
@@ -954,8 +954,8 @@
   <div class="section-title"><span>💡</span> El diferencial real de GestFact</div>
 
   <div class="summary-line">
-    <strong>7 ventajas que ningún otro proveedor combina:</strong><br>
-    Soporte directo · TXT/ZIP · Sistema propio CBTEC · FE sin migrar · Sin internet funciona · Protek y FE explicado · Contingencia 72hs garantizada
+    <strong>9 ventajas que ningún otro proveedor combina:</strong><br>
+    Soporte directo · TXT/ZIP histórico · Sistema propio CBTEC · FE sin migrar · Listado FE + NC (Excel para Nora) · Listado contingencia 72hs · Sin internet funciona · Protek y FE explicado · Contingencia 72hs garantizada
   </div>
 
   <button class="toggle-detail" onclick="toggleDetail(this)">
@@ -1051,6 +1051,29 @@
         <div class="acc-note">TracertSystem es 100% nube: si se va el internet, no pod&eacute;s presupuestar ni facturar &mdash; el sistema entero se detiene. GestFact corre en la PC de Lalo; el internet afecta solo la sincronizaci&oacute;n FE, no el sistema. La contingencia 72hs est&aacute; respaldada por el Manual T&eacute;cnico SIFEN v150.</div>
       </div>
     </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="toggle(this)">
+        <span>&#128202; Listado FE + NC &mdash; control completo para la contadora</span>
+        <span class="acc-arrow">&#9660;</span>
+      </div>
+      <div class="acc-body">
+        Con FE activa, GestFact genera un Listado de todas las Facturas Electr&oacute;nicas emitidas y sus Notas de Cr&eacute;dito &mdash; con filtro por fecha y exportaci&oacute;n directa a Excel. Nora lo descarga, cruza con Marangatú y cierra el mes. SIFEN ya carg&oacute; todo en tiempo real &mdash; ella solo verifica, no carga nada.
+        <div class="acc-note">TracertSystem y BillPy no tienen sistema taller integrado &mdash; no pueden generar este Listado unificado FE + NC. Nora tendr&iacute;a que armar el reporte a mano desde Marangatú. Con GestFact: un clic, exporta Excel, listo.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="toggle(this)">
+        <span>&#128260; Listado de contingencia 72hs &mdash; qu&eacute; FEs est&aacute;n pendientes</span>
+        <span class="acc-arrow">&#9660;</span>
+      </div>
+      <div class="acc-body">
+        Cuando Lalo factura sin internet (modo contingencia), GestFact registra qu&eacute; comprobantes est&aacute;n pendientes de sincronizaci&oacute;n con el SIFEN. El Listado de 72hs muestra en tiempo real: qu&eacute; FEs fueron emitidas en contingencia, cu&aacute;les ya fueron aprobadas al restaurarse la conexi&oacute;n y cu&aacute;les tuvieron error. Sin este control, nadie sabe qu&eacute; qued&oacute; pendiente.
+        <div class="acc-note">Los sistemas cloud como TracertSystem directamente no pueden facturar sin internet &mdash; no existe el concepto de contingencia ni de listado de control. GestFact es el &uacute;nico sistema taller en Paraguay que ofrece FE con contingencia offline real y el Listado de verificaci&oacute;n para cerrar el ciclo.</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
