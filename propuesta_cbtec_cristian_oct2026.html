@@ -1249,7 +1249,7 @@
   </div>
 
   <!-- ── CONFIGURADOR LICENCIA ── -->
-  <div style="margin-bottom:18px; background:white; border-radius:14px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.08); border:1.5px solid #e2e8f0;">
+  <div id="sec-calc" style="margin-bottom:18px; background:white; border-radius:14px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.08); border:1.5px solid #e2e8f0;">
     <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:4px;">&#129518; Calculá tu combinación</div>
     <div style="font-size:12px; color:#64748b; margin-bottom:14px;">Elig&iacute; tu nivel de licencia y si quer&eacute;s agregar un plan GestFact — el total se calcula solo.</div>
 
@@ -1988,7 +1988,7 @@
   function navToCalc() {
     var res = document.getElementById('calc-result');
     if (res && res.style.display !== 'none') { navTo('calc-result'); }
-    else { navTo('sec-nivel-fe'); }
+    else { navTo('sec-calc'); }
   }
   function navTo(id) {
     var el = document.getElementById(id);
