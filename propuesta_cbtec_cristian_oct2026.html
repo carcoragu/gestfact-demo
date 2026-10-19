@@ -1464,7 +1464,7 @@
         <span style="font-size:13px; font-weight:700; color:#92400e;">FE B&aacute;sico</span>
         <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 180.000/mes</span>
       </div>
-      <div style="font-size:12px; color:#78350f;">Transmisi&oacute;n SIFEN &middot; XML &middot; KUDE PDF/QR &middot; Email KUDE &middot; NC Electr&oacute;nica &middot; Contingencia 72hs</div>
+      <div style="font-size:12px; color:#78350f;">Transmisi&oacute;n SIFEN &middot; XML &middot; KUDE PDF/QR &middot; Email KUDE &middot; NC Electr&oacute;nica &middot; Listado FE+NC Excel &middot; Listado contingencia 72hs</div>
       <div style="font-size:11px; color:#92400e; margin-top:5px; font-weight:600; background:#fef3c7; border-radius:5px; padding:3px 7px; display:inline-block;">📄 hasta 250 DTE/mes incluidos</div>
     </div>
 
@@ -1472,7 +1472,7 @@
     <div class="fe-card" onclick="selectFE(200000, this)" style="border:2px solid #d97706; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#fef3c7;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span style="font-size:13px; font-weight:700; color:#78350f;">FE Est&aacute;ndar</span>
-        <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 200.000/mes</span>
+        <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 180.000/mes</span>
       </div>
       <div style="font-size:12px; color:#78350f;">Todo FE B&aacute;sico + NC con reenv&iacute;o autom&aacute;tico al cliente + Asesor&iacute;a FE mensual</div>
       <div style="font-size:11px; color:#92400e; margin-top:5px; font-weight:600; background:rgba(255,255,255,0.6); border-radius:5px; padding:3px 7px; display:inline-block;">📄 hasta 250 DTE/mes incluidos</div>
@@ -1483,7 +1483,7 @@
       <div style="position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:#b45309; color:white; font-size:10px; font-weight:700; padding:3px 14px; border-radius:20px; white-space:nowrap;">&#11088; M&Aacute;S COMPLETO</div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span style="font-size:13px; font-weight:700; color:#7c2d12;">FE Premium &#11088;</span>
-        <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 250.000/mes</span>
+        <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 180.000/mes</span>
       </div>
       <div style="font-size:12px; color:#7c2d12;">Todo FE Est&aacute;ndar + Soporte ante errores SIFEN &le; 2hs + Capacitaci&oacute;n mensual FE</div>
       <div style="font-size:11px; color:#7c2d12; margin-top:5px; font-weight:600; background:rgba(255,255,255,0.5); border-radius:5px; padding:3px 7px; display:inline-block;">📄 hasta 250 DTE/mes incluidos</div>
@@ -2060,17 +2060,17 @@ function updateCalc() {
   var result = document.getElementById('calc-result');
   var hint = document.getElementById('calc-hint');
   if (!_fe || !_plan) { result.style.display='none'; hint.style.display='block'; return; }
-  var mensual = _fe + _plan;
+  var mensual = 180000 + _plan;
   // descuentos separados: plan 12%/15%, FE 16%/25%
   var p12 = Math.round(_plan * 12 * 0.88);
-  var fe12 = Math.round(_fe * 12 * 0.84);
+  var fe12 = Math.round(180000 * 12 * 0.84);
   var total12 = p12 + fe12;
-  var saving12 = (_plan + _fe) * 12 - total12;
+  var saving12 = (_plan + 180000) * 12 - total12;
   var monthly12 = Math.round(total12 / 12);
   var p18 = Math.round(_plan * 18 * 0.85);
-  var fe18 = Math.round(_fe * 18 * 0.75);
+  var fe18 = Math.round(180000 * 18 * 0.75);
   var total18 = p18 + fe18;
-  var saving18 = (_plan + _fe) * 18 - total18;
+  var saving18 = (_plan + 180000) * 18 - total18;
   var monthly18 = Math.round(total18 / 18);
   hint.style.display = 'none';
   result.style.display = 'block';
