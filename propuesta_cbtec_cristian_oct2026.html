@@ -2026,6 +2026,8 @@
 var _fe = null, _plan = null;
 var feLabel = {180000:'FE Básico', 200000:'FE Estándar', 250000:'FE Premium ⭐'};
 var planLabel = {370000:'Plan Básico', 400000:'Plan Estándar', 450000:'Plan Premium', 500000:'Plan Full ⭐'};
+var licPago = {180000:1900000, 200000:2400000, 250000:4000000};
+var licNombre = {180000:'Licencia Básica', 200000:'Licencia Estándar', 250000:'Licencia Premium ⭐'};
 var _pago = null;
 var _pagoLabel = {'quincenal':'Quincenal — sin compromiso', '12m':'12 meses contado ⭐', '18m':'18 meses contado'};
 var _pagoTotal = {};
@@ -2077,8 +2079,20 @@ function updateCalc() {
   _pagoTotal = { quincenal: mensual, '12m': total12, '18m': total18 };
   _pago = null;
   updateApproveBtn();
+  var lic = licPago[_fe];
+  var c2 = Math.round(lic / 2);
+  var c3 = Math.round(lic / 3);
   result.innerHTML =
     '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + ' + ' + planLabel[_plan] + '</div>' +
+    '<div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;padding:10px 12px;margin-bottom:10px;">' +
+      '<div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;margin-bottom:5px;">🔑 ' + licNombre[_fe] + ' — pago único</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<div style="font-size:20px;font-weight:800;color:#15803d;">' + fmt(lic) + '</div>' +
+        '<div style="font-size:11px;color:#374151;text-align:right;line-height:1.6;">2 cuotas: ' + fmt(c2) + ' c/u<br>3 cuotas: ' + fmt(c3) + ' c/u</div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:#166534;margin-top:4px;font-weight:600;">FE activa para siempre en GestFact ✓</div>' +
+    '</div>' +
+    '<div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.4px;">📅 Plan mensual (GestFact + Sifende PRO)</div>' +
     '<div style="display:flex;flex-direction:column;gap:8px;">' +
       '<div id="pago-quincenal" onclick="selectPago(\'quincenal\',this)" style="background:white;border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0;cursor:pointer;">' +
         '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:6px;">Quincenal — sin compromiso</div>' +
