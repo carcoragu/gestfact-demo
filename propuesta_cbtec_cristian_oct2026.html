@@ -1990,7 +1990,7 @@
 
   function navToCalc() {
     var res = document.getElementById('calc-result');
-    if (res && res.style.display !== 'none') { navTo('calc-result'); }
+    if (res && res.style.display !== 'none' && (_fe || _plan)) { navTo('calc-result'); }
     else { navTo('sec-calc'); }
   }
   function navTo(id) {
@@ -2082,19 +2082,45 @@ function buildLicBlock(lic, c2, c3) {
   '</div>';
 }
 
+function buildMonthlyBlock(mensual, lbl12, total12, saving12, monthly12, lbl18, total18, saving18, monthly18) {
+  return '<div style="display:flex;flex-direction:column;gap:8px;">' +
+    '<div id="pago-quincenal" onclick="selectPago(\'quincenal\',this)" style="background:white;border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0;cursor:pointer;">' +
+      '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:6px;">Quincenal — sin compromiso</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;"><div>' +
+        '<div style="font-size:17px;font-weight:800;color:#374151;">' + fmt(mensual) + '/mes</div>' +
+        '<div style="font-size:11px;color:#6b7280;">Pagás cada 15 días · cancelás cuando quieras</div>' +
+      '</div></div>' +
+    '</div>' +
+    '<div id="pago-12m" onclick="selectPago(\'12m\',this)" style="background:white;border-radius:8px;padding:10px 12px;border:2px solid #1a56db;cursor:pointer;">' +
+      '<div style="font-size:10px;font-weight:700;color:#1a56db;text-transform:uppercase;margin-bottom:6px;">' + lbl12 + '</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;"><div>' +
+        '<div style="font-size:17px;font-weight:800;color:#1a56db;">' + fmt(total12) + '</div>' +
+        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly12) + '/mes</div>' +
+      '</div><div style="font-size:12px;color:#15803d;font-weight:700;text-align:right;">ahorrás<br>' + fmt(saving12) + '</div></div>' +
+    '</div>' +
+    '<div id="pago-18m" onclick="selectPago(\'18m\',this)" style="background:white;border-radius:8px;padding:10px 12px;border:2px solid #6d28d9;cursor:pointer;">' +
+      '<div style="font-size:10px;font-weight:700;color:#6d28d9;text-transform:uppercase;margin-bottom:6px;">' + lbl18 + '</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;"><div>' +
+        '<div style="font-size:17px;font-weight:800;color:#6d28d9;">' + fmt(total18) + '</div>' +
+        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly18) + '/mes</div>' +
+      '</div><div style="font-size:12px;color:#15803d;font-weight:700;text-align:right;">ahorrás<br>' + fmt(saving18) + '</div></div>' +
+    '</div>' +
+  '</div>' +
+  '<div style="font-size:10px;color:#6b7280;text-align:center;margin-top:8px;">Tocá una opción para seleccionar la forma de pago.</div>';
+}
+
 function updateCalc() {
   var result = document.getElementById('calc-result');
   var hint = document.getElementById('calc-hint');
-  if (!_fe) { result.style.display='none'; hint.style.display='block'; return; }
-  var lic = licPago[_fe];
-  var c2 = Math.round(lic / 2);
-  var c3 = Math.round(lic / 3);
+  if (!_fe && !_plan) { result.style.display='none'; hint.style.display='block'; return; }
   hint.style.display = 'none';
   result.style.display = 'block';
   _pago = null;
 
-  if (!_plan) {
-    _pagoTotal = {'contado-lic': lic, '2cuotas-lic': lic, '3cuotas-lic': lic};
+  // ── SOLO FE ──
+  if (_fe && !_plan) {
+    var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3);
+    _pagoTotal = {'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic};
     updateApproveBtn();
     result.innerHTML =
       '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + '</div>' +
@@ -2107,56 +2133,32 @@ function updateCalc() {
     return;
   }
 
-  // descuentos separados: plan 12%/15%, FE 16%/25%
+  // ── SOLO PLAN GF ──
+  if (!_fe && _plan) {
+    var pm = _plan;
+    var pt12 = Math.round(_plan*12*0.88); var ps12 = _plan*12-pt12; var pm12 = Math.round(pt12/12);
+    var pt18 = Math.round(_plan*18*0.85); var ps18 = _plan*18-pt18; var pm18 = Math.round(pt18/18);
+    _pagoTotal = {quincenal:pm,'12m':pt12,'18m':pt18};
+    updateApproveBtn();
+    result.innerHTML =
+      '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#1e40af;margin-bottom:10px;text-align:center;">📊 ' + planLabel[_plan] + '</div>' +
+      '<div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.4px;">📅 Plan mensual GestFact</div>' +
+      buildMonthlyBlock(pm,'12 meses contado ⭐ — desc. 12%',pt12,ps12,pm12,'18 meses contado — desc. 15%',pt18,ps18,pm18);
+    return;
+  }
+
+  // ── FE + PLAN ──
+  var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3);
   var mensual = 180000 + _plan;
-  var p12 = Math.round(_plan * 12 * 0.88);
-  var fe12 = Math.round(180000 * 12 * 0.84);
-  var total12 = p12 + fe12;
-  var saving12 = (_plan + 180000) * 12 - total12;
-  var monthly12 = Math.round(total12 / 12);
-  var p18 = Math.round(_plan * 18 * 0.85);
-  var fe18 = Math.round(180000 * 18 * 0.75);
-  var total18 = p18 + fe18;
-  var saving18 = (_plan + 180000) * 18 - total18;
-  var monthly18 = Math.round(total18 / 18);
-  _pagoTotal = {quincenal: mensual, '12m': total12, '18m': total18, 'contado-lic': lic, '2cuotas-lic': lic, '3cuotas-lic': lic};
+  var t12 = Math.round(_plan*12*0.88) + Math.round(180000*12*0.84); var s12 = (_plan+180000)*12-t12; var m12 = Math.round(t12/12);
+  var t18 = Math.round(_plan*18*0.85) + Math.round(180000*18*0.75); var s18 = (_plan+180000)*18-t18; var m18 = Math.round(t18/18);
+  _pagoTotal = {quincenal:mensual,'12m':t12,'18m':t18,'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic};
   updateApproveBtn();
   result.innerHTML =
     '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + ' + ' + planLabel[_plan] + '</div>' +
     buildLicBlock(lic, c2, c3) +
     '<div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.4px;">📅 Plan mensual (GestFact + Sifende PRO)</div>' +
-    '<div style="display:flex;flex-direction:column;gap:8px;">' +
-      '<div id="pago-quincenal" onclick="selectPago(\'quincenal\',this)" style="background:white;border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0;cursor:pointer;">' +
-        '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:6px;">Quincenal — sin compromiso</div>' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-          '<div>' +
-            '<div style="font-size:17px;font-weight:800;color:#374151;">' + fmt(mensual) + '/mes</div>' +
-            '<div style="font-size:11px;color:#6b7280;">Pagás cada 15 días · cancelás cuando quieras</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div id="pago-12m" onclick="selectPago(\'12m\',this)" style="background:white;border-radius:8px;padding:10px 12px;border:2px solid #1a56db;cursor:pointer;">' +
-        '<div style="font-size:10px;font-weight:700;color:#1a56db;text-transform:uppercase;margin-bottom:6px;">12 meses contado ⭐ — desc. plan 12% + FE 16%</div>' +
-        '<div style="display:flex;justify-content:space-between;align-items:baseline;">' +
-          '<div>' +
-            '<div style="font-size:17px;font-weight:800;color:#1a56db;">' + fmt(total12) + '</div>' +
-            '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly12) + '/mes</div>' +
-          '</div>' +
-          '<div style="font-size:12px;color:#15803d;font-weight:700;text-align:right;">ahorrás<br>' + fmt(saving12) + '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div id="pago-18m" onclick="selectPago(\'18m\',this)" style="background:white;border-radius:8px;padding:10px 12px;border:2px solid #6d28d9;cursor:pointer;">' +
-        '<div style="font-size:10px;font-weight:700;color:#6d28d9;text-transform:uppercase;margin-bottom:6px;">18 meses contado — desc. plan 15% + FE 25%</div>' +
-        '<div style="display:flex;justify-content:space-between;align-items:baseline;">' +
-          '<div>' +
-            '<div style="font-size:17px;font-weight:800;color:#6d28d9;">' + fmt(total18) + '</div>' +
-            '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly18) + '/mes</div>' +
-          '</div>' +
-          '<div style="font-size:12px;color:#15803d;font-weight:700;text-align:right;">ahorrás<br>' + fmt(saving18) + '</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div style="font-size:10px;color:#6b7280;text-align:center;margin-top:8px;">Tocá una opción para seleccionar la forma de pago.</div>';
+    buildMonthlyBlock(mensual,'12 meses contado ⭐ — desc. plan 12% + FE 16%',t12,s12,m12,'18 meses contado — desc. plan 15% + FE 25%',t18,s18,m18);
 }
 
 function selectPago(tipo, el) {
@@ -2172,7 +2174,11 @@ function selectPago(tipo, el) {
 
 function updateApproveBtn() {
   var wrap = document.getElementById('approve-btn-wrap');
-  if (wrap) wrap.style.display = (_fe && _pago) ? 'block' : 'none';
+  var licPagos = ['contado-lic','2cuotas-lic','3cuotas-lic'];
+  var mesPagos = ['quincenal','12m','18m'];
+  var fePagado = _fe && licPagos.indexOf(_pago) > -1;
+  var planPagado = _plan && mesPagos.indexOf(_pago) > -1;
+  if (wrap) wrap.style.display = (fePagado || planPagado) ? 'block' : 'none';
 }
 
 function scrollToSign() {
@@ -2192,26 +2198,22 @@ function scrollToSign() {
   } else {
     totalStr = fmt(_pagoTotal[_pago]) + ' total — ' + _pagoLabel[_pago];
   }
-  var planRow = _plan
-    ? '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Plan GestFact</span><strong>' + planLabel[_plan] + '</strong></div>'
-    : '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Plan GestFact</span><strong>Plan existente — sin cambio</strong></div>';
-  var activRow = '';
-  if (_plan === 450000) {
-    activRow = '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Activación GestFact Móvil</span><strong style="color:#15803d;">≤ 2 semanas desde FE activa</strong></div>';
-  } else if (_plan === 500000) {
-    activRow = '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Activación GestFact Móvil + AnotDigi</span><strong style="color:#15803d;">≤ 2 semanas desde FE activa</strong></div>';
+  var row = function(label, val, last) {
+    return '<div style="display:flex;justify-content:space-between;padding:4px 0;' + (last?'':' border-bottom:1px solid #e2e8f0;') + '"><span>' + label + '</span><strong>' + val + '</strong></div>';
+  };
+  var rows = '';
+  rows += row('Fecha', fecha);
+  rows += row('Cliente', 'CBTEC — Cristian Britos — RUC 4116977-8');
+  rows += row('Proveedor', 'IsabSoft — Carlos Coronel Aguirre — RUC 2333029-5');
+  if (_plan) rows += row('Plan GestFact', planLabel[_plan]);
+  if (_fe) {
+    rows += row('FE SIFEN Add-on', feLabel[_fe]);
+    rows += row('Sifende PRO mensual', '<span style="color:#1a56db;">Gs. 180.000/mes</span>');
   }
-  d.innerHTML =
-    '<div style="font-size:13px; color:#1e293b; line-height:1.8;">' +
-    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Fecha</span><strong>' + fecha + '</strong></div>' +
-    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Cliente</span><strong>CBTEC — Cristian Britos — RUC 4116977-8</strong></div>' +
-    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Proveedor</span><strong>IsabSoft — Carlos Coronel Aguirre — RUC 2333029-5</strong></div>' +
-    planRow +
-    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>FE SIFEN Add-on</span><strong>' + feLabel[_fe] + '</strong></div>' +
-    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Sifende PRO mensual</span><strong style="color:#1a56db;">Gs. 180.000/mes</strong></div>' +
-    activRow +
-    '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Forma de pago licencia</span><strong>' + totalStr + '</strong></div>' +
-    '</div>';
+  if (_plan === 450000) rows += row('Activación GestFact Móvil', '<span style="color:#15803d;">≤ 2 semanas desde FE activa</span>');
+  if (_plan === 500000) rows += row('Activación GestFact Móvil + AnotDigi', '<span style="color:#15803d;">≤ 2 semanas desde FE activa</span>');
+  rows += row('Forma de pago', totalStr, true);
+  d.innerHTML = '<div style="font-size:13px; color:#1e293b; line-height:1.8;">' + rows + '</div>';
   document.getElementById('sign-section').style.display = 'block';
   document.getElementById('sign-section').scrollIntoView({behavior:'smooth'});
 }
@@ -2287,16 +2289,30 @@ function generatePDF() {
       '</div>' +
     '</div>' +
     '<div style="margin-bottom:16px;">' + document.getElementById('contract-summary').innerHTML + '</div>' +
-    '<div style="display:flex; gap:12px; margin-bottom:16px;">' +
-      '<div style="flex:1; border:1px solid #bfdbfe; border-radius:8px; padding:10px; background:#eff6ff;">' +
-        '<div style="font-size:11px; font-weight:700; color:#1d4ed8; text-transform:uppercase; margin-bottom:6px;">' + (_plan ? planLabel[_plan] : 'Plan GestFact existente') + ' — incluye</div>' +
-        '<ul style="list-style:none; padding:0; margin:0;">' + (_plan ? buildFeatureList(planFeatures[_plan]) : '<li style="font-size:11px; color:#374151; padding:2px 0;">✓ Las condiciones de tu plan actual siguen vigentes sin cambio</li>') + '</ul>' +
-      '</div>' +
-      '<div style="flex:1; border:1px solid #fde68a; border-radius:8px; padding:10px; background:#fffbeb;">' +
-        '<div style="font-size:11px; font-weight:700; color:#92400e; text-transform:uppercase; margin-bottom:6px;">' + feLabel[_fe] + ' — incluye</div>' +
-        '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(feFeatures[_fe]) + '</ul>' +
-      '</div>' +
-    '</div>' +
+    (function(){
+      if (_fe && _plan) {
+        return '<div style="display:flex; gap:12px; margin-bottom:16px;">' +
+          '<div style="flex:1; border:1px solid #bfdbfe; border-radius:8px; padding:10px; background:#eff6ff;">' +
+            '<div style="font-size:11px; font-weight:700; color:#1d4ed8; text-transform:uppercase; margin-bottom:6px;">' + planLabel[_plan] + ' — incluye</div>' +
+            '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(planFeatures[_plan]) + '</ul>' +
+          '</div>' +
+          '<div style="flex:1; border:1px solid #fde68a; border-radius:8px; padding:10px; background:#fffbeb;">' +
+            '<div style="font-size:11px; font-weight:700; color:#92400e; text-transform:uppercase; margin-bottom:6px;">' + feLabel[_fe] + ' — incluye</div>' +
+            '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(feFeatures[_fe]) + '</ul>' +
+          '</div>' +
+        '</div>';
+      } else if (_fe) {
+        return '<div style="margin-bottom:16px; border:1px solid #fde68a; border-radius:8px; padding:12px; background:#fffbeb;">' +
+          '<div style="font-size:11px; font-weight:700; color:#92400e; text-transform:uppercase; margin-bottom:6px;">' + feLabel[_fe] + ' — incluye</div>' +
+          '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(feFeatures[_fe]) + '</ul>' +
+        '</div>';
+      } else {
+        return '<div style="margin-bottom:16px; border:1px solid #bfdbfe; border-radius:8px; padding:12px; background:#eff6ff;">' +
+          '<div style="font-size:11px; font-weight:700; color:#1d4ed8; text-transform:uppercase; margin-bottom:6px;">' + planLabel[_plan] + ' — incluye</div>' +
+          '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(planFeatures[_plan]) + '</ul>' +
+        '</div>';
+      }
+    })() +
     (function(){
       var activPDF = '';
       if (_plan && _plan === 450000) {
