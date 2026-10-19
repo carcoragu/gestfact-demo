@@ -2181,6 +2181,7 @@ function generatePDF() {
   }
   // Funcionalidades por plan GestFact
   var planFeatures = {
+    370000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets'],
     400000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets'],
     450000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets', 'GestFact Móvil — Cristian accede desde celular/tablet en tiempo real'],
     500000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets', 'GestFact Móvil — Cristian accede desde celular/tablet en tiempo real', 'AnotDigi — Lalo carga trabajos por texto, entran solos a GestFact']
@@ -2253,10 +2254,25 @@ function generatePDF() {
     '</div>' +
     '</div>';
   pc.style.display = 'block';
-  setTimeout(function() {
+  var imgs = pc.querySelectorAll('img');
+  var loaded = 0;
+  var total = imgs.length;
+  function tryPrint() {
+    loaded++;
+    if (loaded >= total) {
+      window.print();
+      setTimeout(function() { pc.style.display = 'none'; }, 500);
+    }
+  }
+  if (total === 0) {
     window.print();
     setTimeout(function() { pc.style.display = 'none'; }, 500);
-  }, 300);
+  } else {
+    imgs.forEach(function(img) {
+      if (img.complete) { tryPrint(); }
+      else { img.onload = tryPrint; img.onerror = tryPrint; }
+    });
+  }
 }
 window.addEventListener('load', function() {
   initCanvas('canvas-isabsoft');
