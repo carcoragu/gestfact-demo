@@ -1286,9 +1286,9 @@
     <div style="background:#fef9c3; border:1px solid #fde68a; border-radius:8px; padding:10px 13px; margin-bottom:14px;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <span style="font-size:12px; font-weight:700; color:#92400e;">&#128197; FE activa &mdash; Sifende PRO</span>
-        <strong style="font-size:13px; color:#92400e;">Gs. 180.000/mes</strong>
+        <strong style="font-size:13px; color:#92400e;">desde Gs. 180.000/mes seg&uacute;n nivel FE</strong>
       </div>
-      <div style="font-size:10px; color:#78350f; margin-top:4px;">Siempre fijo &mdash; cubre transmisi&oacute;n SIFEN &middot; XML &middot; KUDE PDF/QR &middot; NC Electr&oacute;nica &middot; Contingencia 72hs. Soporte FE solo si surge algo: Gs. 200.000 est&aacute;ndar &middot; Gs. 350.000 complejo.</div>
+      <div style="font-size:10px; color:#78350f; margin-top:4px;">B&aacute;sico Gs. 180.000 &middot; Est&aacute;ndar Gs. 200.000 &middot; Premium Gs. 250.000. Cubre transmisi&oacute;n SIFEN &middot; XML &middot; KUDE PDF/QR &middot; NC Electr&oacute;nica &middot; Contingencia 72hs. Soporte FE adicional si surge algo complejo: Gs. 350.000.</div>
     </div>
 
     <!-- PASO 2: PLAN GESTFACT OPCIONAL -->
@@ -1330,7 +1330,7 @@
       </div>
       <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e8f0;">
         <span style="font-size:12px; color:#92400e;">FE activa &mdash; Sifende PRO</span>
-        <strong style="font-size:12px; color:#92400e;">Gs. 180.000/mes</strong>
+        <strong id="cfg-fe-monto" style="font-size:12px; color:#92400e;">Gs. 180.000/mes</strong>
       </div>
       <div id="cfg-gf-row" style="display:none; flex-direction:column; padding:5px 0; border-bottom:1px solid #e2e8f0;">
         <div style="display:flex; justify-content:space-between;">
@@ -1384,13 +1384,16 @@
       gfRow.style.display = 'none';
     }
 
-    var totalMes = 180000 + (gfVal * 2);
+    var feMonthly = {1900000: 180000, 2400000: 200000, 4000000: 250000};
+    var feMes = feMonthly[licVal] || 180000;
+    document.getElementById('cfg-fe-monto').textContent = fmt(feMes) + '/mes';
+    var totalMes = feMes + (gfVal * 2);
     document.getElementById('cfg-total-mes').textContent = fmt(totalMes) + '/mes';
 
     var cubre = ['&#10003; Licencia FE perpetua en GestFact PC', '&#10003; Transmisión SIFEN + XML + firma digital', '&#10003; KUDE PDF + QR verificación', '&#10003; Email KUDE automático al cliente', '&#10003; Contingencia 72hs offline'];
     if (licVal === 1900000) { cubre.push('&#10003; NC Electrónica básica'); }
     if (licVal >= 2400000) { cubre.push('&#10003; NC con reenvío automático al cliente', '&#10003; Asesoría FE mensual — revisión proactiva', '&#10003; GestFact Móvil incluido (período contratado)'); }
-    if (licVal >= 4000000) { cubre.push('&#10003; Soporte ante errores SIFEN — respuesta ≤ 2hs', '&#10003; Capacitación mensual FE', '&#10003; AnotDigi Básico incluido (período contratado)'); }
+    if (licVal >= 4000000) { cubre.push('&#10003; Soporte ante errores SIFEN — respuesta ≤ 2hs', '&#10003; Revisión mensual FE (30 min) — FEs pendientes, F1, novedades SIFEN', '&#10003; AnotDigi Básico incluido (período contratado)'); }
     if (gfVal >= 185000) { cubre.push('&#10003; GestFact taller · presupuestos · fichas · historial', '&#10003; Backup local + nube · Asistencia Carlos'); }
     if (gfVal >= 200000) { cubre.push('&#10003; TXT/ZIP Marangatú (Nora)'); }
     if (gfVal >= 225000) { cubre.push('&#10003; GestFact Móvil (plan mensual)'); }
@@ -1473,7 +1476,7 @@
     <div class="fe-card" onclick="selectFE(200000, this)" style="border:2px solid #d97706; border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#fef3c7;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
         <span style="font-size:13px; font-weight:700; color:#78350f;">FE Est&aacute;ndar</span>
-        <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 180.000/mes</span>
+        <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 200.000/mes</span>
       </div>
       <div style="font-size:11px; color:#b45309; font-weight:700; margin-bottom:4px;">Licencia &uacute;nica: Gs. 2.400.000 &nbsp;&middot;&nbsp; <span style="color:#0891b2;">&#128241; GestFact M&oacute;vil 12m incluido</span></div>
       <div style="font-size:12px; color:#78350f;">Todo FE B&aacute;sico + NC con reenv&iacute;o autom&aacute;tico al cliente + Asesor&iacute;a FE mensual</div>
@@ -1485,10 +1488,10 @@
       <div style="position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:#b45309; color:white; font-size:10px; font-weight:700; padding:3px 14px; border-radius:20px; white-space:nowrap;">&#11088; M&Aacute;S COMPLETO</div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
         <span style="font-size:13px; font-weight:700; color:#7c2d12;">FE Premium &#11088;</span>
-        <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 180.000/mes</span>
+        <span style="font-size:16px; font-weight:800; color:#b45309;">Gs. 250.000/mes</span>
       </div>
       <div style="font-size:11px; color:#b45309; font-weight:700; margin-bottom:4px;">Licencia &uacute;nica: Gs. 4.000.000 &nbsp;&middot;&nbsp; <span style="color:#0891b2;">&#128241; GestFact M&oacute;vil</span> + <span style="color:#7c3aed;">&#129302; AnotDigi 18m incluidos</span></div>
-      <div style="font-size:12px; color:#7c2d12;">Todo FE Est&aacute;ndar + Soporte ante errores SIFEN &le; 2hs + Capacitaci&oacute;n mensual FE</div>
+      <div style="font-size:12px; color:#7c2d12;">Todo FE Est&aacute;ndar + Soporte ante errores SIFEN &le; 2hs + Revisi&oacute;n mensual FE (30 min)</div>
       <div style="font-size:11px; color:#7c2d12; margin-top:5px; font-weight:600; background:rgba(255,255,255,0.5); border-radius:5px; padding:3px 7px; display:inline-block;">📄 hasta 250 DTE/mes incluidos</div>
     </div>
   </div>
@@ -2127,7 +2130,7 @@ function updateCalc() {
       buildLicBlock(lic, c2, c3) +
       '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">' +
         '<span style="font-size:11px;font-weight:700;color:#1e40af;">📅 Sifende PRO — costo mensual</span>' +
-        '<strong style="font-size:15px;color:#1a56db;">Gs. 180.000/mes</strong>' +
+        '<strong style="font-size:15px;color:#1a56db;">' + fmt(_fe) + '/mes</strong>' +
       '</div>' +
       '<div style="font-size:10px;color:#6b7280;text-align:center;margin-top:4px;">Elegí el Plan GestFact para ver el total mensual o tocá una opción de arriba para firmar.</div>';
     return;
@@ -2149,9 +2152,9 @@ function updateCalc() {
 
   // ── FE + PLAN ──
   var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3);
-  var mensual = 180000 + _plan;
-  var t12 = Math.round(_plan*12*0.88) + Math.round(180000*12*0.84); var s12 = (_plan+180000)*12-t12; var m12 = Math.round(t12/12);
-  var t18 = Math.round(_plan*18*0.85) + Math.round(180000*18*0.75); var s18 = (_plan+180000)*18-t18; var m18 = Math.round(t18/18);
+  var mensual = _fe + _plan;
+  var t12 = Math.round(_plan*12*0.88) + Math.round(_fe*12*0.84); var s12 = (_plan+_fe)*12-t12; var m12 = Math.round(t12/12);
+  var t18 = Math.round(_plan*18*0.85) + Math.round(_fe*18*0.75); var s18 = (_plan+_fe)*18-t18; var m18 = Math.round(t18/18);
   _pagoTotal = {quincenal:mensual,'12m':t12,'18m':t18,'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic};
   updateApproveBtn();
   result.innerHTML =
