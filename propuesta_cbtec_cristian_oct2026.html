@@ -489,6 +489,12 @@
               <td style="padding:5px; text-align:center; color:#15803d; font-weight:700;">✓</td>
             </tr>
             <tr style="border-bottom:1px solid #fde68a; background:#fffdf5;">
+              <td style="padding:5px 8px; color:#374151;">Listado NC — Excel para contadora</td>
+              <td style="padding:5px; text-align:center; color:#d1d5db;">—</td>
+              <td style="padding:5px; text-align:center; color:#15803d; font-weight:700;">✓</td>
+              <td style="padding:5px; text-align:center; color:#15803d; font-weight:700;">✓</td>
+            </tr>
+            <tr style="border-bottom:1px solid #fde68a; background:#fffdf5;">
               <td style="padding:5px 8px; color:#374151;">Revisi&oacute;n mensual FE (30 min) &mdash; FEs pendientes, F1, novedades SIFEN</td>
               <td style="padding:5px; text-align:center; color:#d1d5db;">—</td>
               <td style="padding:5px; text-align:center; color:#d1d5db;">—</td>
@@ -2269,8 +2275,8 @@ function generatePDF() {
   };
   // Funcionalidades por nivel FE
   var feFeatures = {
-    180000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Transmisión SIFEN + XML + firma digital', 'KUDE PDF + QR verificación', 'Email KUDE automático al cliente', 'NC Electrónica (emitir)', 'Contingencia 72hs offline — siempre facturás sin internet', 'Listado FE + NC exportable Excel — control completo para la contadora', 'Listado de contingencia 72hs — qué FEs emitieron offline, cuáles sincronizaron y cuáles fallaron', 'IsabSoft gestiona Sifende PRO — sin proveedor externo visible'],
-    200000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Todo FE Básico incluido', 'NC con reenvío automático al cliente', 'Asesoría FE mensual — revisión proactiva + novedades SIFEN', 'Listado Ventas FE — Excel para contadora (cruce Marangatú)', 'GestFact Móvil — incluido 12 meses con la licencia'],
+    180000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Transmisión SIFEN + XML + firma digital', 'KUDE PDF + QR verificación', 'Email KUDE automático al cliente (Sifende envía el PDF)', 'NC Electrónica (emitir)', 'Contingencia 72hs offline — siempre facturás sin internet', 'Listado de contingencia 72hs — qué FEs emitieron offline, cuáles sincronizaron y cuáles fallaron', 'IsabSoft gestiona Sifende PRO — sin proveedor externo visible'],
+    200000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Todo FE Básico incluido', 'NC con reenvío automático al cliente (sin tipear email)', 'Asesoría FE mensual — revisión proactiva + novedades SIFEN', 'Listado Ventas FE — Excel para contadora (cruce Marangatú)', 'Listado NC — Excel para contadora', 'GestFact Móvil — incluido 12 meses con la licencia'],
     250000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Todo FE Estándar incluido', 'Soporte ante errores SIFEN — respuesta ≤ 2hs', 'Revisión mensual FE (30 min) — FEs pendientes, F1, novedades SIFEN', 'GestFact Móvil — incluido 18 meses con la licencia', 'AnotDigi Básico — incluido 18 meses con la licencia']
   };
   function buildFeatureList(items) {
