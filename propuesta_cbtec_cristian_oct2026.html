@@ -2255,16 +2255,13 @@ function scrollToSign() {
   if (_plan) rows += row('Plan GestFact', planLabel[_plan]);
   if (_fe) {
     var instalacion = 180000;
-    var isLicPago = ['contado-lic','2cuotas-lic','3cuotas-lic'].indexOf(_pago) > -1;
+    var totalInicial = lic + instalacion;
+    var adelanto50 = Math.round(totalInicial / 2);
     rows += row('Licencia FE (pago único)', licNombre[_fe] + ' — ' + fmt(lic));
     rows += row('Instalación IsabSoft (configuración + activación FE)', fmt(instalacion));
-    if (isLicPago) {
-      var totalInicial = lic + instalacion;
-      var adelanto50 = Math.round(totalInicial / 2);
-      rows += row('Total inicial (Licencia + Instalación)', '<strong style="color:#1e293b;">' + fmt(totalInicial) + '</strong>');
-      rows += row('✅ Adelanto para activar (50%) — al firmar', '<span style="color:#dc2626;font-weight:700;">' + fmt(adelanto50) + '</span>');
-      rows += row('Saldo restante (50%) — al activar FE en producción', fmt(adelanto50));
-    }
+    rows += row('Total inicial (Licencia + Instalación)', '<strong style="color:#1e293b;">' + fmt(totalInicial) + '</strong>');
+    rows += row('✅ Adelanto para activar (50%) — al firmar', '<span style="color:#dc2626;font-weight:700;">' + fmt(adelanto50) + '</span>');
+    rows += row('Saldo restante (50%) — al activar FE en producción', fmt(adelanto50));
     rows += row('Mensual FE activa (Sifende PRO)', '<span style="color:#1a56db;">' + fmt(_fe) + '/mes</span>');
   }
   if (_plan === 450000) rows += row('Activación GestFact Móvil', '<span style="color:#15803d;">≤ 2 semanas desde FE activa</span>');
