@@ -2127,12 +2127,13 @@ function buildLicBlock(lic, c2, c3) {
   '</div>';
 }
 
-function buildMonthlyBlock(mensual, lbl12, total12, saving12, monthly12, lbl18, total18, saving18, monthly18) {
+function buildMonthlyBlock(mensual, lbl12, total12, saving12, monthly12, lbl18, total18, saving18, monthly18, unit) {
+  unit = unit || '/mes';
   return '<div style="display:flex;flex-direction:column;gap:8px;">' +
     '<div id="pago-quincenal" onclick="selectPago(\'quincenal\',this)" style="background:white;border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0;cursor:pointer;">' +
       '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:6px;">Quincenal — sin compromiso</div>' +
       '<div style="display:flex;justify-content:space-between;align-items:center;"><div>' +
-        '<div style="font-size:17px;font-weight:800;color:#374151;">' + fmt(mensual) + '/mes</div>' +
+        '<div style="font-size:17px;font-weight:800;color:#374151;">' + fmt(mensual) + unit + '</div>' +
         '<div style="font-size:11px;color:#6b7280;">Pagás cada 15 días · cancelás cuando quieras</div>' +
       '</div></div>' +
     '</div>' +
@@ -2140,14 +2141,14 @@ function buildMonthlyBlock(mensual, lbl12, total12, saving12, monthly12, lbl18, 
       '<div style="font-size:10px;font-weight:700;color:#1a56db;text-transform:uppercase;margin-bottom:6px;">' + lbl12 + '</div>' +
       '<div style="display:flex;justify-content:space-between;align-items:baseline;"><div>' +
         '<div style="font-size:17px;font-weight:800;color:#1a56db;">' + fmt(total12) + '</div>' +
-        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly12) + '/mes</div>' +
+        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly12) + unit + '</div>' +
       '</div><div style="font-size:12px;color:#15803d;font-weight:700;text-align:right;">ahorrás<br>' + fmt(saving12) + '</div></div>' +
     '</div>' +
     '<div id="pago-18m" onclick="selectPago(\'18m\',this)" style="background:white;border-radius:8px;padding:10px 12px;border:2px solid #6d28d9;cursor:pointer;">' +
       '<div style="font-size:10px;font-weight:700;color:#6d28d9;text-transform:uppercase;margin-bottom:6px;">' + lbl18 + '</div>' +
       '<div style="display:flex;justify-content:space-between;align-items:baseline;"><div>' +
         '<div style="font-size:17px;font-weight:800;color:#6d28d9;">' + fmt(total18) + '</div>' +
-        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly18) + '/mes</div>' +
+        '<div style="font-size:11px;color:#374151;">= ' + fmt(monthly18) + unit + '</div>' +
       '</div><div style="font-size:12px;color:#15803d;font-weight:700;text-align:right;">ahorrás<br>' + fmt(saving18) + '</div></div>' +
     '</div>' +
   '</div>' +
@@ -2194,7 +2195,8 @@ function updateCalc() {
 
   // ── FE + PLAN ──
   var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3);
-  var quincenal = _plan + Math.round(_fe/2);
+  var planQuin = Math.round(_plan/2); var feQuin = Math.round(_fe/2);
+  var quincenal = planQuin + feQuin;
   var t12 = Math.round(quincenal*24*0.88); var s12 = quincenal*24-t12; var m12 = Math.round(t12/24);
   var t18 = Math.round(quincenal*36*0.85); var s18 = quincenal*36-t18; var m18 = Math.round(t18/36);
   _pagoTotal = {quincenal:quincenal,'12m':t12,'18m':t18,'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic};
@@ -2203,7 +2205,7 @@ function updateCalc() {
     '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + ' + ' + planLabel[_plan] + '</div>' +
     buildLicBlock(lic, c2, c3) +
     '<div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.4px;">📅 Quincenal todo incluido (GestFact + FE Sifende)</div>' +
-    buildMonthlyBlock(quincenal,'12 meses contado ⭐ — desc. 12%',t12,s12,m12,'18 meses contado — desc. 15%',t18,s18,m18);
+    buildMonthlyBlock(quincenal,'12 meses contado ⭐ — desc. 12%',t12,s12,m12,'18 meses contado — desc. 15%',t18,s18,m18,'/quin');
 }
 
 function selectPago(tipo, el) {
