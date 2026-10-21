@@ -2077,7 +2077,8 @@ var planLabel = {370000:'Plan Básico', 400000:'Plan Estándar', 450000:'Plan Pr
 var licPago = {180000:1900000, 200000:2400000, 250000:4000000};
 var licNombre = {180000:'Licencia Básica', 200000:'Licencia Estándar', 250000:'Licencia Premium ⭐'};
 var _pago = null;
-var _pagoLabel = {'quincenal':'Quincenal — sin compromiso', '12m':'12 meses contado ⭐', '18m':'18 meses contado', 'contado-lic':'Licencia contado', '2cuotas-lic':'2 cuotas licencia', '3cuotas-lic':'3 cuotas licencia', '6cuotas-lic':'6 cuotas licencia', '12cuotas-lic':'12 cuotas licencia'};
+var _pagoLabel = {'quincenal':'Quincenal — sin compromiso', '12m':'12 meses contado ⭐', '18m':'18 meses contado', 'contado-lic':'Licencia contado', '2cuotas-lic':'2 cuotas licencia', '3cuotas-lic':'3 cuotas licencia', '6cuotas-lic':'6 cuotas licencia', '12cuotas-lic':'12 cuotas licencia', 'custom-lic':'Cuotas personalizadas'};
+var _pagoCustomN = 12;
 var _pagoTotal = {};
 
 function selectFE(price, el) {
@@ -2130,9 +2131,41 @@ function buildLicBlock(lic, c2, c3, c6, c12) {
         '<span style="font-size:11px;font-weight:700;color:#166534;">12 cuotas</span>' +
         '<strong style="font-size:15px;color:#15803d;">' + fmt(c12) + ' × 12</strong>' +
       '</div>' +
+      '<div id="pago-custom-lic" onclick="selectPago(\'custom-lic\',this)" style="background:white;border:1px solid #86efac;border-radius:6px;padding:7px 10px;cursor:pointer;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+          '<span style="font-size:11px;font-weight:700;color:#166534;">Cuotas a tu medida</span>' +
+          '<span id="custom-lic-preview" style="font-size:13px;font-weight:700;color:#15803d;">' + fmt(Math.round(lic/_pagoCustomN)) + ' × ' + _pagoCustomN + '</span>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;" onclick="event.stopPropagation()">' +
+          '<button onclick="adjCuotas(-1)" style="width:28px;height:28px;border:1px solid #86efac;border-radius:5px;background:#f0fdf4;color:#166534;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;line-height:1;">−</button>' +
+          '<input id="custom-cuotas-n" type="number" min="1" max="36" value="' + _pagoCustomN + '" oninput="calcCustomCuotas(' + lic + ')" style="width:48px;height:28px;text-align:center;border:1px solid #86efac;border-radius:5px;font-size:14px;font-weight:700;color:#15803d;font-family:inherit;">' +
+          '<button onclick="adjCuotas(1,' + lic + ')" style="width:28px;height:28px;border:1px solid #86efac;border-radius:5px;background:#f0fdf4;color:#166534;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;line-height:1;">+</button>' +
+          '<span style="font-size:11px;color:#64748b;">cuotas · máx 36</span>' +
+        '</div>' +
+      '</div>' +
     '</div>' +
     '<div style="font-size:11px;color:#166534;margin-top:6px;font-weight:600;">FE activa para siempre en GestFact ✓</div>' +
   '</div>';
+}
+
+function adjCuotas(delta, lic) {
+  var inp = document.getElementById('custom-cuotas-n');
+  if (!inp) return;
+  var n = Math.min(36, Math.max(1, (parseInt(inp.value) || _pagoCustomN) + delta));
+  inp.value = n;
+  calcCustomCuotas(lic || licPago[_fe]);
+}
+function calcCustomCuotas(lic) {
+  var inp = document.getElementById('custom-cuotas-n');
+  if (!inp) return;
+  var n = Math.min(36, Math.max(1, parseInt(inp.value) || 1));
+  inp.value = n;
+  _pagoCustomN = n;
+  var licVal = lic || licPago[_fe];
+  var cuota = Math.round(licVal / n);
+  var prev = document.getElementById('custom-lic-preview');
+  if (prev) prev.textContent = 'Gs. ' + cuota.toLocaleString('es-PY') + ' × ' + n;
+  if (_pago === 'custom-lic') { selectPago('custom-lic', document.getElementById('pago-custom-lic')); }
 }
 
 function buildMonthlyBlock(mensual, lbl12, total12, saving12, monthly12, lbl18, total18, saving18, monthly18, unit) {
@@ -2174,7 +2207,7 @@ function updateCalc() {
   // ── SOLO FE ──
   if (_fe && !_plan) {
     var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3); var c6 = Math.round(lic/6); var c12 = Math.round(lic/12);
-    _pagoTotal = {'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic,'6cuotas-lic':lic,'12cuotas-lic':lic};
+    _pagoTotal = {'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic,'6cuotas-lic':lic,'12cuotas-lic':lic,'custom-lic':lic};
     updateApproveBtn();
     result.innerHTML =
       '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + '</div>' +
@@ -2207,7 +2240,7 @@ function updateCalc() {
   var quincenal = planQuin + feQuin;
   var t12 = Math.round(quincenal*24*0.88); var s12 = quincenal*24-t12; var m12 = Math.round(t12/24);
   var t18 = Math.round(quincenal*36*0.85); var s18 = quincenal*36-t18; var m18 = Math.round(t18/36);
-  _pagoTotal = {quincenal:quincenal,'12m':t12,'18m':t18,'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic,'6cuotas-lic':lic,'12cuotas-lic':lic};
+  _pagoTotal = {quincenal:quincenal,'12m':t12,'18m':t18,'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic,'6cuotas-lic':lic,'12cuotas-lic':lic,'custom-lic':lic};
   updateApproveBtn();
   result.innerHTML =
     '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + ' + ' + planLabel[_plan] + '</div>' +
@@ -2218,7 +2251,7 @@ function updateCalc() {
 
 function selectPago(tipo, el) {
   _pago = tipo;
-  ['quincenal','12m','18m','contado-lic','2cuotas-lic','3cuotas-lic','6cuotas-lic','12cuotas-lic'].forEach(function(t) {
+  ['quincenal','12m','18m','contado-lic','2cuotas-lic','3cuotas-lic','6cuotas-lic','12cuotas-lic','custom-lic'].forEach(function(t) {
     var d = document.getElementById('pago-'+t);
     if (d) { d.style.border = (t === 'quincenal') ? '1px solid #e2e8f0' : (t.indexOf('lic') > -1 ? '1px solid #86efac' : '2px solid ' + (t==='12m'?'#1a56db':'#6d28d9')); d.style.background = 'white'; }
   });
@@ -2229,7 +2262,7 @@ function selectPago(tipo, el) {
 
 function updateApproveBtn() {
   var wrap = document.getElementById('approve-btn-wrap');
-  var licPagos = ['contado-lic','2cuotas-lic','3cuotas-lic','6cuotas-lic','12cuotas-lic'];
+  var licPagos = ['contado-lic','2cuotas-lic','3cuotas-lic','6cuotas-lic','12cuotas-lic','custom-lic'];
   var mesPagos = ['quincenal','12m','18m'];
   var fePagado = _fe && licPagos.indexOf(_pago) > -1;
   var planPagado = _plan && mesPagos.indexOf(_pago) > -1;
@@ -2254,6 +2287,8 @@ function scrollToSign() {
     totalStr = fmt(Math.round(lic/6)) + ' × 6 cuotas licencia';
   } else if (_pago === '12cuotas-lic') {
     totalStr = fmt(Math.round(lic/12)) + ' × 12 cuotas licencia';
+  } else if (_pago === 'custom-lic') {
+    totalStr = fmt(Math.round(lic/_pagoCustomN)) + ' × ' + _pagoCustomN + ' cuotas licencia';
   } else {
     totalStr = fmt(_pagoTotal[_pago]) + ' total — ' + _pagoLabel[_pago];
   }
@@ -2276,7 +2311,7 @@ function scrollToSign() {
     rows += row('✅ Adelanto para activar (50%) — al firmar', '<span style="color:#dc2626;font-weight:700;">' + fmt(adelanto50) + '</span>');
     rows += row('Saldo restante (50%) — al activar FE en producción', fmt(adelanto50));
     rows += row('Mensual FE activa (Sifende PRO)', '<span style="color:#1a56db;">' + fmt(_fe) + '/mes</span>');
-    var cuotasMap = {'2cuotas-lic':2,'3cuotas-lic':3,'6cuotas-lic':6,'12cuotas-lic':12};
+    var cuotasMap = {'2cuotas-lic':2,'3cuotas-lic':3,'6cuotas-lic':6,'12cuotas-lic':12,'custom-lic':_pagoCustomN};
     if (cuotasMap[_pago]) {
       var nCuotas = cuotasMap[_pago];
       var cuotaImporte = Math.round(lic / nCuotas);
