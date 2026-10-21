@@ -2077,7 +2077,7 @@ var planLabel = {370000:'Plan Básico', 400000:'Plan Estándar', 450000:'Plan Pr
 var licPago = {180000:1900000, 200000:2400000, 250000:4000000};
 var licNombre = {180000:'Licencia Básica', 200000:'Licencia Estándar', 250000:'Licencia Premium ⭐'};
 var _pago = null;
-var _pagoLabel = {'quincenal':'Quincenal — sin compromiso', '12m':'12 meses contado ⭐', '18m':'18 meses contado', 'contado-lic':'Licencia contado', '2cuotas-lic':'2 cuotas licencia', '3cuotas-lic':'3 cuotas licencia'};
+var _pagoLabel = {'quincenal':'Quincenal — sin compromiso', '12m':'12 meses contado ⭐', '18m':'18 meses contado', 'contado-lic':'Licencia contado', '2cuotas-lic':'2 cuotas licencia', '3cuotas-lic':'3 cuotas licencia', '6cuotas-lic':'6 cuotas licencia', '12cuotas-lic':'12 cuotas licencia'};
 var _pagoTotal = {};
 
 function selectFE(price, el) {
@@ -2106,7 +2106,7 @@ function selectPlan(price, el) {
   updateCalc();
 }
 function fmt(n) { return 'Gs. ' + n.toLocaleString('es-PY'); }
-function buildLicBlock(lic, c2, c3) {
+function buildLicBlock(lic, c2, c3, c6, c12) {
   return '<div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;padding:10px 12px;margin-bottom:10px;">' +
     '<div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;margin-bottom:8px;">🔑 ' + licNombre[_fe] + ' — pago único</div>' +
     '<div style="display:flex;flex-direction:column;gap:6px;">' +
@@ -2121,6 +2121,14 @@ function buildLicBlock(lic, c2, c3) {
       '<div id="pago-3cuotas-lic" onclick="selectPago(\'3cuotas-lic\',this)" style="background:white;border:1px solid #86efac;border-radius:6px;padding:7px 10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
         '<span style="font-size:11px;font-weight:700;color:#166534;">3 cuotas</span>' +
         '<strong style="font-size:15px;color:#15803d;">' + fmt(c3) + ' × 3</strong>' +
+      '</div>' +
+      '<div id="pago-6cuotas-lic" onclick="selectPago(\'6cuotas-lic\',this)" style="background:white;border:1px solid #86efac;border-radius:6px;padding:7px 10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
+        '<span style="font-size:11px;font-weight:700;color:#166534;">6 cuotas</span>' +
+        '<strong style="font-size:15px;color:#15803d;">' + fmt(c6) + ' × 6</strong>' +
+      '</div>' +
+      '<div id="pago-12cuotas-lic" onclick="selectPago(\'12cuotas-lic\',this)" style="background:white;border:1px solid #86efac;border-radius:6px;padding:7px 10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
+        '<span style="font-size:11px;font-weight:700;color:#166534;">12 cuotas</span>' +
+        '<strong style="font-size:15px;color:#15803d;">' + fmt(c12) + ' × 12</strong>' +
       '</div>' +
     '</div>' +
     '<div style="font-size:11px;color:#166534;margin-top:6px;font-weight:600;">FE activa para siempre en GestFact ✓</div>' +
@@ -2165,12 +2173,12 @@ function updateCalc() {
 
   // ── SOLO FE ──
   if (_fe && !_plan) {
-    var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3);
-    _pagoTotal = {'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic};
+    var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3); var c6 = Math.round(lic/6); var c12 = Math.round(lic/12);
+    _pagoTotal = {'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic,'6cuotas-lic':lic,'12cuotas-lic':lic};
     updateApproveBtn();
     result.innerHTML =
       '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + '</div>' +
-      buildLicBlock(lic, c2, c3) +
+      buildLicBlock(lic, c2, c3, c6, c12) +
       '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">' +
         '<span style="font-size:11px;font-weight:700;color:#1e40af;">📅 Sifende PRO — costo mensual</span>' +
         '<strong style="font-size:15px;color:#1a56db;">' + fmt(_fe) + '/mes</strong>' +
@@ -2194,23 +2202,23 @@ function updateCalc() {
   }
 
   // ── FE + PLAN ──
-  var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3);
+  var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3); var c6 = Math.round(lic/6); var c12 = Math.round(lic/12);
   var planQuin = Math.round(_plan/2); var feQuin = Math.round(_fe/2);
   var quincenal = planQuin + feQuin;
   var t12 = Math.round(quincenal*24*0.88); var s12 = quincenal*24-t12; var m12 = Math.round(t12/24);
   var t18 = Math.round(quincenal*36*0.85); var s18 = quincenal*36-t18; var m18 = Math.round(t18/36);
-  _pagoTotal = {quincenal:quincenal,'12m':t12,'18m':t18,'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic};
+  _pagoTotal = {quincenal:quincenal,'12m':t12,'18m':t18,'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic,'6cuotas-lic':lic,'12cuotas-lic':lic};
   updateApproveBtn();
   result.innerHTML =
     '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + ' + ' + planLabel[_plan] + '</div>' +
-    buildLicBlock(lic, c2, c3) +
+    buildLicBlock(lic, c2, c3, c6, c12) +
     '<div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.4px;">📅 Quincenal todo incluido (GestFact + FE Sifende)</div>' +
     buildMonthlyBlock(quincenal,'12 meses contado ⭐ — desc. 12%',t12,s12,m12,'18 meses contado — desc. 15%',t18,s18,m18,'/quin');
 }
 
 function selectPago(tipo, el) {
   _pago = tipo;
-  ['quincenal','12m','18m','contado-lic','2cuotas-lic','3cuotas-lic'].forEach(function(t) {
+  ['quincenal','12m','18m','contado-lic','2cuotas-lic','3cuotas-lic','6cuotas-lic','12cuotas-lic'].forEach(function(t) {
     var d = document.getElementById('pago-'+t);
     if (d) { d.style.border = (t === 'quincenal') ? '1px solid #e2e8f0' : (t.indexOf('lic') > -1 ? '1px solid #86efac' : '2px solid ' + (t==='12m'?'#1a56db':'#6d28d9')); d.style.background = 'white'; }
   });
@@ -2221,7 +2229,7 @@ function selectPago(tipo, el) {
 
 function updateApproveBtn() {
   var wrap = document.getElementById('approve-btn-wrap');
-  var licPagos = ['contado-lic','2cuotas-lic','3cuotas-lic'];
+  var licPagos = ['contado-lic','2cuotas-lic','3cuotas-lic','6cuotas-lic','12cuotas-lic'];
   var mesPagos = ['quincenal','12m','18m'];
   var fePagado = _fe && licPagos.indexOf(_pago) > -1;
   var planPagado = _plan && mesPagos.indexOf(_pago) > -1;
@@ -2242,6 +2250,10 @@ function scrollToSign() {
     totalStr = fmt(Math.round(lic/2)) + ' × 2 cuotas licencia';
   } else if (_pago === '3cuotas-lic') {
     totalStr = fmt(Math.round(lic/3)) + ' × 3 cuotas licencia';
+  } else if (_pago === '6cuotas-lic') {
+    totalStr = fmt(Math.round(lic/6)) + ' × 6 cuotas licencia';
+  } else if (_pago === '12cuotas-lic') {
+    totalStr = fmt(Math.round(lic/12)) + ' × 12 cuotas licencia';
   } else {
     totalStr = fmt(_pagoTotal[_pago]) + ' total — ' + _pagoLabel[_pago];
   }
@@ -2264,6 +2276,24 @@ function scrollToSign() {
     rows += row('✅ Adelanto para activar (50%) — al firmar', '<span style="color:#dc2626;font-weight:700;">' + fmt(adelanto50) + '</span>');
     rows += row('Saldo restante (50%) — al activar FE en producción', fmt(adelanto50));
     rows += row('Mensual FE activa (Sifende PRO)', '<span style="color:#1a56db;">' + fmt(_fe) + '/mes</span>');
+    var cuotasMap = {'2cuotas-lic':2,'3cuotas-lic':3,'6cuotas-lic':6,'12cuotas-lic':12};
+    if (cuotasMap[_pago]) {
+      var nCuotas = cuotasMap[_pago];
+      var cuotaImporte = Math.round(lic / nCuotas);
+      var cuotaQuin = Math.round(cuotaImporte / 2);
+      var feQuin2 = Math.round(_fe / 2);
+      var planQuin2 = _plan ? Math.round(_plan / 2) : 0;
+      var totalDurante = cuotaQuin + feQuin2 + planQuin2;
+      var totalDespues = feQuin2 + planQuin2;
+      rows += '<div style="margin-top:8px;padding:8px 10px;background:#fef9c3;border:1px solid #fde68a;border-radius:7px;">';
+      rows += '<div style="font-size:10px;font-weight:700;color:#92400e;text-transform:uppercase;margin-bottom:6px;">📅 Desglose quincenal mientras dura la cuota</div>';
+      rows += row('Cuota licencia (' + nCuotas + ' × ' + fmt(cuotaImporte) + ' → ÷2)', fmt(cuotaQuin) + '/quin');
+      rows += row('FE Sifende PRO (' + fmt(_fe) + '/mes → ÷2)', fmt(feQuin2) + '/quin');
+      if (_plan) rows += row(planLabel[_plan], fmt(planQuin2) + '/quin');
+      rows += '<div style="display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid #fde68a;margin-top:4px;"><span style="font-weight:700;color:#92400e;">Total quincenal (durante cuotas)</span><strong style="color:#92400e;">' + fmt(totalDurante) + '/quin</strong></div>';
+      rows += '<div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="color:#15803d;font-size:11px;">Total quincenal (después de cuotas)</span><strong style="color:#15803d;font-size:11px;">' + fmt(totalDespues) + '/quin</strong></div>';
+      rows += '</div>';
+    }
   }
   if (_plan === 450000) rows += row('Activación GestFact Móvil', '<span style="color:#15803d;">≤ 2 semanas desde FE activa</span>');
   if (_plan === 500000) rows += row('Activación GestFact Móvil + AnotDigi', '<span style="color:#15803d;">≤ 2 semanas desde FE activa</span>');
