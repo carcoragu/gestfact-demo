@@ -1375,7 +1375,7 @@
         <div style="font-size:10px; color:#94a3b8; font-style:italic; margin-top:2px;">Se abona cada 15 d&iacute;as</div>
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#1e293b; border-radius:7px; margin-top:8px;">
-        <span style="font-size:13px; font-weight:700; color:white;">Total mensual</span>
+        <span style="font-size:13px; font-weight:700; color:white;" id="cfg-total-label">Total mensual</span>
         <strong style="font-size:17px; color:#38bdf8;" id="cfg-total-mes">Gs. 330.000/mes</strong>
       </div>
       <div style="margin-top:10px;" id="cfg-cubre">
@@ -1421,9 +1421,16 @@
 
     var feMonthly = {1900000: 180000, 2400000: 200000, 4000000: 250000};
     var feMes = feMonthly[licVal] || 180000;
-    document.getElementById('cfg-fe-monto').textContent = fmt(feMes) + '/mes';
-    var totalMes = feMes + (gfVal * 2);
-    document.getElementById('cfg-total-mes').textContent = fmt(totalMes) + '/mes';
+    if (gfVal > 0) {
+      var feQuin = Math.round(feMes / 2);
+      document.getElementById('cfg-fe-monto').textContent = fmt(feQuin) + '/quin';
+      document.getElementById('cfg-total-label').textContent = 'Quincenal (GestFact + FE)';
+      document.getElementById('cfg-total-mes').textContent = fmt(gfVal + feQuin) + '/quin';
+    } else {
+      document.getElementById('cfg-fe-monto').textContent = fmt(feMes) + '/mes';
+      document.getElementById('cfg-total-label').textContent = 'Total mensual';
+      document.getElementById('cfg-total-mes').textContent = fmt(feMes) + '/mes';
+    }
 
     var cubre = ['&#10003; Licencia FE perpetua en GestFact PC', '&#10003; Transmisión SIFEN + XML + firma digital', '&#10003; KUDE PDF + QR verificación', '&#10003; Email KUDE automático al cliente', '&#10003; Contingencia 72hs offline'];
     if (licVal === 1900000) { cubre.push('&#10003; NC Electrónica básica'); }
@@ -2187,16 +2194,16 @@ function updateCalc() {
 
   // ── FE + PLAN ──
   var lic = licPago[_fe]; var c2 = Math.round(lic/2); var c3 = Math.round(lic/3);
-  var mensual = _fe + _plan;
-  var t12 = Math.round(_plan*12*0.88) + Math.round(_fe*12*0.84); var s12 = (_plan+_fe)*12-t12; var m12 = Math.round(t12/12);
-  var t18 = Math.round(_plan*18*0.85) + Math.round(_fe*18*0.75); var s18 = (_plan+_fe)*18-t18; var m18 = Math.round(t18/18);
-  _pagoTotal = {quincenal:mensual,'12m':t12,'18m':t18,'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic};
+  var quincenal = _plan + Math.round(_fe/2);
+  var t12 = Math.round(quincenal*24*0.88); var s12 = quincenal*24-t12; var m12 = Math.round(t12/24);
+  var t18 = Math.round(quincenal*36*0.85); var s18 = quincenal*36-t18; var m18 = Math.round(t18/36);
+  _pagoTotal = {quincenal:quincenal,'12m':t12,'18m':t18,'contado-lic':lic,'2cuotas-lic':lic,'3cuotas-lic':lic};
   updateApproveBtn();
   result.innerHTML =
     '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#166534;margin-bottom:10px;text-align:center;">📊 ' + feLabel[_fe] + ' + ' + planLabel[_plan] + '</div>' +
     buildLicBlock(lic, c2, c3) +
-    '<div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.4px;">📅 Plan mensual (GestFact + Sifende PRO)</div>' +
-    buildMonthlyBlock(mensual,'12 meses contado ⭐ — desc. plan 12% + FE 16%',t12,s12,m12,'18 meses contado — desc. plan 15% + FE 25%',t18,s18,m18);
+    '<div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.4px;">📅 Quincenal todo incluido (GestFact + FE Sifende)</div>' +
+    buildMonthlyBlock(quincenal,'12 meses contado ⭐ — desc. 12%',t12,s12,m12,'18 meses contado — desc. 15%',t18,s18,m18);
 }
 
 function selectPago(tipo, el) {
@@ -2226,7 +2233,7 @@ function scrollToSign() {
   var lic = licPago[_fe];
   var totalStr;
   if (_pago === 'quincenal') {
-    totalStr = fmt(_pagoTotal['quincenal']) + '/mes — quincenal, sin compromiso';
+    totalStr = fmt(_pagoTotal['quincenal']) + '/quin — sin compromiso';
   } else if (_pago === 'contado-lic') {
     totalStr = fmt(lic) + ' — licencia contado';
   } else if (_pago === '2cuotas-lic') {
