@@ -1866,17 +1866,16 @@ function generatePDF() {
   }
 
   // ── OPCIÓN B: PLAN LICENCIA FE ──
-  // Funcionalidades por plan GestFact
   var planFeatures = {
+    370000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets'],
     400000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets'],
     450000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets', 'GestFact Móvil — Cristian accede desde celular/tablet en tiempo real'],
     500000: ['GestFact taller — presupuestos, fichas, historial, vehículos', 'TXT/ZIP Marangatú — archivo para Nora generado automáticamente', 'Asistencia mensual Carlos — soporte directo sin tickets', 'GestFact Móvil — Cristian accede desde celular/tablet en tiempo real', 'AnotDigi — Lalo carga trabajos por texto, entran solos a GestFact']
   };
-  // Funcionalidades por nivel FE
   var feFeatures = {
-    180000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Transmisión SIFEN + XML + firma digital', 'KUDE PDF + QR verificación', 'Email KUDE automático al cliente', 'NC Electrónica (emitir)', 'Contingencia 72hs offline — siempre facturás', 'IsabSoft gestiona Sifende PRO — sin proveedor externo visible'],
-    200000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Todo FE Básico incluido', 'NC con reenvío automático al cliente', 'Asesoría FE mensual — revisión proactiva + novedades SIFEN', 'Libro Ventas actualizado (FE + AI)'],
-    250000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Todo FE Estándar incluido', 'Soporte ante errores SIFEN — respuesta ≤ 2hs', 'Sesión de capacitación mensual FE']
+    180000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Transmisión SIFEN + XML + firma digital', 'KUDE PDF + QR verificación', 'Email KUDE automático al cliente (Sifende envía el PDF)', 'NC Electrónica (emitir)', 'Contingencia 72hs offline — siempre facturás sin internet', 'Listado de contingencia 72hs — qué FEs emitieron offline, cuáles sincronizaron y cuáles fallaron', 'IsabSoft gestiona Sifende PRO — sin proveedor externo visible'],
+    200000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Todo FE Básico incluido', 'NC con reenvío automático al cliente (sin tipear email)', 'Asesoría FE mensual — revisión proactiva + novedades SIFEN', 'Listado Ventas FE — Excel para contadora (cruce Marangatú)', 'Listado NC — Excel para contadora', 'GestFact Móvil — incluido 12 meses con la licencia'],
+    250000: ['Hasta 250 DTE/mes incluidos (Sifende PRO)', 'Todo FE Estándar incluido', 'Soporte ante errores SIFEN — respuesta ≤ 2hs', 'Revisión mensual FE (30 min) — FEs pendientes, F1, novedades SIFEN', 'GestFact Móvil — incluido 18 meses con la licencia', 'AnotDigi Básico — incluido 18 meses con la licencia']
   };
   function buildFeatureList(items) {
     return items.map(function(f){ return '<li style="padding:2px 0; font-size:11px; color:#374151;">✓ ' + f + '</li>'; }).join('');
@@ -1886,36 +1885,63 @@ function generatePDF() {
   var pc = document.getElementById('print-contract');
   pc.innerHTML =
     '<div style="font-family:Arial,sans-serif; max-width:700px; margin:0 auto; padding:20px;">' +
-    '<div style="text-align:center; border-bottom:2px solid #1a56db; padding-bottom:12px; margin-bottom:16px;">' +
-      '<div style="font-size:22px; font-weight:800; color:#1a56db;">IsabSoft</div>' +
-      '<div style="font-size:16px; font-weight:700; color:#1e293b; margin-top:4px;">Contrato de Servicio — GestFact CBTEC</div>' +
+    '<div style="margin-bottom:16px;">' +
+      '<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">' +
+        '<img src="https://carcoragu.github.io/gestfact-demo/logo_isabsoft.jpg" style="height:44px; width:120px; object-fit:contain; object-position:left;" />' +
+        '<img src="https://carcoragu.github.io/gestfact-demo/logo_cbtec.png" style="height:44px; width:120px; object-fit:contain; object-position:right;" />' +
+      '</div>' +
+      '<div style="border-top:2px solid #1a56db; border-bottom:1px solid #e2e8f0; padding:8px 0; text-align:center;">' +
+        '<div style="font-size:15px; font-weight:800; color:#1a56db; letter-spacing:0.5px; text-transform:uppercase;">Contrato de Servicio</div>' +
+        '<div style="font-size:12px; color:#475569; margin-top:2px;">GestFact CBTEC &nbsp;·&nbsp; IsabSoft &nbsp;·&nbsp; ' + new Date().toLocaleDateString("es-PY") + '</div>' +
+      '</div>' +
     '</div>' +
     '<div style="margin-bottom:16px;">' + document.getElementById('contract-summary').innerHTML + '</div>' +
-    '<div style="display:flex; gap:12px; margin-bottom:16px;">' +
-      '<div style="flex:1; border:1px solid #bfdbfe; border-radius:8px; padding:10px; background:#eff6ff;">' +
-        '<div style="font-size:11px; font-weight:700; color:#1d4ed8; text-transform:uppercase; margin-bottom:6px;">' + planLabel[_plan] + ' — incluye</div>' +
-        '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(planFeatures[_plan]) + '</ul>' +
-      '</div>' +
-      '<div style="flex:1; border:1px solid #fde68a; border-radius:8px; padding:10px; background:#fffbeb;">' +
-        '<div style="font-size:11px; font-weight:700; color:#92400e; text-transform:uppercase; margin-bottom:6px;">' + feLabel[_fe] + ' — incluye</div>' +
-        '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(feFeatures[_fe]) + '</ul>' +
-      '</div>' +
-    '</div>' +
+    (function(){
+      if (_fe && _plan) {
+        return '<div style="display:flex; gap:12px; margin-bottom:16px;">' +
+          '<div style="flex:1; border:1px solid #bfdbfe; border-radius:8px; padding:10px; background:#eff6ff;">' +
+            '<div style="font-size:11px; font-weight:700; color:#1d4ed8; text-transform:uppercase; margin-bottom:6px;">' + planLabel[_plan] + ' — incluye</div>' +
+            '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(planFeatures[_plan]) + '</ul>' +
+          '</div>' +
+          '<div style="flex:1; border:1px solid #fde68a; border-radius:8px; padding:10px; background:#fffbeb;">' +
+            '<div style="font-size:11px; font-weight:700; color:#92400e; text-transform:uppercase; margin-bottom:6px;">' + feLabel[_fe] + ' — incluye</div>' +
+            '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(feFeatures[_fe]) + '</ul>' +
+          '</div>' +
+        '</div>';
+      } else if (_fe) {
+        return '<div style="margin-bottom:16px; border:1px solid #fde68a; border-radius:8px; padding:12px; background:#fffbeb;">' +
+          '<div style="font-size:11px; font-weight:700; color:#92400e; text-transform:uppercase; margin-bottom:6px;">' + feLabel[_fe] + ' — incluye</div>' +
+          '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(feFeatures[_fe]) + '</ul>' +
+        '</div>';
+      } else {
+        return '<div style="margin-bottom:16px; border:1px solid #bfdbfe; border-radius:8px; padding:12px; background:#eff6ff;">' +
+          '<div style="font-size:11px; font-weight:700; color:#1d4ed8; text-transform:uppercase; margin-bottom:6px;">' + planLabel[_plan] + ' — incluye</div>' +
+          '<ul style="list-style:none; padding:0; margin:0;">' + buildFeatureList(planFeatures[_plan]) + '</ul>' +
+        '</div>';
+      }
+    })() +
     (function(){
       var activPDF = '';
-      if (_plan === 450000) {
-        activPDF = '<div style="margin-bottom:10px; padding:8px 12px; background:#f0fdf4; border-left:3px solid #16a34a; border-radius:6px; font-size:11px; color:#166534;"><strong>Compromiso de activación:</strong> IsabSoft activará GestFact Móvil en un plazo máximo de 2 semanas desde la activación de FE SIFEN, según el Plan Premium elegido.</div>';
-      } else if (_plan === 500000) {
-        activPDF = '<div style="margin-bottom:10px; padding:8px 12px; background:#f0fdf4; border-left:3px solid #16a34a; border-radius:6px; font-size:11px; color:#166534;"><strong>Compromiso de activación:</strong> IsabSoft activará GestFact Móvil y AnotDigi en un plazo máximo de 2 semanas desde la activación de FE SIFEN, según el Plan Full elegido.</div>';
+      if (_plan && _plan === 450000) {
+        activPDF = '<div style="margin-bottom:10px; padding:8px 12px; background:#f0fdf4; border-left:3px solid #16a34a; border-radius:6px; font-size:11px; color:#166534;"><strong>Compromiso de activación:</strong> IsabSoft activará GestFact Móvil en un plazo máximo de 2 semanas desde la firma de este acuerdo, según el Plan Premium elegido.</div>';
+      } else if (_plan && _plan === 500000) {
+        activPDF = '<div style="margin-bottom:10px; padding:8px 12px; background:#f0fdf4; border-left:3px solid #16a34a; border-radius:6px; font-size:11px; color:#166534;"><strong>Compromiso de activación:</strong> IsabSoft activará GestFact Móvil y AnotDigi en un plazo máximo de 2 semanas desde la firma de este acuerdo, según el Plan Full elegido.</div>';
       }
       return activPDF;
     })() +
-    '<div style="margin-bottom:14px; font-size:11px; color:#374151; background:#f8fafc; padding:10px; border-radius:8px; line-height:1.7;">' +
-      '<strong>Términos:</strong> El servicio se presta según los términos y condiciones aceptados en la propuesta digital fechada ' +
-      new Date().toLocaleDateString('es-PY',{day:'2-digit',month:'2-digit',year:'numeric'}) +
-      '. El precio acordado queda fijo por el período contratado. Cualquier modificación requiere acuerdo escrito de ambas partes.<br>' +
-      '<strong>Vigencia:</strong> A partir del pago del período contratado.<br>' +
-      '<strong>Certificado Digital F1:</strong> La activación de FE SIFEN y el inicio del plazo de activación de GestFact Móvil y/o AnotDigi quedan sujetos a la obtención del Certificado Digital F1 por parte del cliente (trámite presencial SET/DNIT, responsabilidad exclusiva del cliente).' +
+    '<div style="margin-bottom:14px; font-size:11px; color:#374151; background:#f8fafc; padding:12px 14px; border-radius:8px; border:1px solid #e2e8f0;">' +
+      '<div style="font-size:11px; font-weight:700; color:#1e293b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #e2e8f0;">Términos y condiciones del servicio</div>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px;"><strong>Términos:</strong> El servicio se presta según los términos y condiciones aceptados en la propuesta digital fechada ' + new Date().toLocaleDateString('es-PY',{day:'2-digit',month:'2-digit',year:'numeric'}) + '. El precio acordado queda fijo por el período contratado. Cualquier modificación requiere acuerdo escrito de ambas partes.</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px;"><strong>Naturaleza del abono:</strong> El abono no es el pago del software — el software ya fue desarrollado e instalado. El abono corresponde al derecho de uso activo, soporte continuo, actualizaciones normativas SET/DNIT y disponibilidad del servicio. Sin abono activo el sistema queda suspendido, como cualquier servicio de suscripción.</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px;"><strong>Nuevas funcionalidades:</strong> Cualquier nueva funcionalidad, módulo adicional o desarrollo fuera del plan actual será analizado, presupuestado y acordado por escrito antes de iniciar. IsabSoft no iniciará ningún trabajo adicional sin confirmación escrita del precio por parte del cliente.</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px;"><strong>Vigencia del servicio:</strong> A partir del pago del período contratado. <strong>Validez de esta propuesta:</strong> Hasta el 31/10/2026 — pasada esa fecha IsabSoft se reserva el derecho de actualizar precios con un mínimo de 30 días de aviso previo. Los precios firmados y abonados quedan fijos por el período contratado, sin modificación unilateral.</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px;"><strong>Certificado Digital F1:</strong> La activación de FE SIFEN queda sujeta a la obtención del Certificado Digital F1 por parte del cliente (trámite presencial SET/DNIT, responsabilidad exclusiva del cliente).</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px;"><strong>Mora — plan quincenal:</strong> Si CBTEC no abona el quincenal dentro de los 5 días corridos del vencimiento, IsabSoft queda facultada a suspender el sistema GestFact PC hasta confirmar el pago. La reactivación se realiza dentro de las 24 horas hábiles posteriores al pago confirmado, sin costo adicional si la mora no supera los 30 días corridos.</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px;"><strong>Mora — cuotas Licencia FE:</strong> Si CBTEC optó por pago en cuotas del Plan Licencia FE y no abona cualquier cuota dentro de los 10 días corridos del vencimiento pactado, IsabSoft queda facultada a suspender el módulo FE hasta regularizar el saldo. El período de garantía contratado no se interrumpe por la suspensión.</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px;"><strong>Qué cubre la Licencia FE y qué no:</strong> La Licencia FE otorga el derecho permanente de uso del módulo FE dentro de GestFact, una vez abonada en su totalidad. No incluye ni reemplaza: (1) el abono quincenal GestFact — obligatorio para que el sistema funcione; (2) el costo mensual Sifende PRO — obligatorio para transmitir facturas al SET. Suspender cualquiera de los dos suspende la facturación electrónica, independientemente del estado de la licencia.</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px; background:#fef2f2; border-left:3px solid #dc2626; padding:7px 10px; border-radius:4px;"><strong>Titularidad condicional de Licencia FE:</strong> Conforme a la Ley N° 1328/98 de Derecho de Autor (Arts. 62 y 64), IsabSoft conserva la plena titularidad de los derechos patrimoniales sobre el software hasta el pago íntegro del precio de licencia pactado. El cliente goza de un derecho de uso provisional bajo condición resolutoria (Arts. 344 y ss., Ley N° 1183/85 — Código Civil Paraguayo): ante incumplimiento del pago por más de 10 (diez) días corridos desde el vencimiento acordado, IsabSoft queda facultada a suspender o revocar el acceso al módulo FE sin previo aviso judicial, sin que ello genere derecho a indemnización a favor del cliente. El derecho de uso pleno y definitivo solo se consolida una vez abonado el 100% del precio de licencia acordado.</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:7px; background:#fef2f2; border-left:3px solid #dc2626; padding:7px 10px; border-radius:4px;"><strong>Política de no devolución:</strong> Dado que el presente contrato involucra la configuración, personalización e instalación de software adaptado específicamente a las necesidades operativas de CBTEC, no procede la devolución parcial ni total de los montos abonados bajo ninguna circunstancia, conforme al Art. 27 inc. b) de la Ley N° 1334/98 de Defensa del Consumidor, que exceptúa expresamente los bienes y servicios elaborados o configurados conforme a las especificaciones del consumidor. Los montos abonados como adelanto, cuotas de licencia o mensualidades de servicio, una vez acreditados, son irrecuperables, incluyendo el caso de desistimiento voluntario del cliente.</p>' +
+      '<p style="text-align:justify; line-height:1.7; margin-bottom:0;"><strong>Dependencia FE y quincenal:</strong> La Licencia FE activa el módulo de forma permanente, pero dicho módulo opera dentro del sistema GestFact PC. Si el plan quincenal vence y el sistema PC queda suspendido, el módulo FE también deja de funcionar — aunque la licencia esté íntegramente abonada. Al regularizar el quincenal, el módulo FE se reactiva automáticamente sin trámite adicional.</p>' +
     '</div>' +
     '<div style="display:flex; gap:20px; margin-top:16px;">' +
       '<div style="flex:1; text-align:center;">' +
@@ -1931,10 +1957,25 @@ function generatePDF() {
     '</div>' +
     '</div>';
   pc.style.display = 'block';
-  setTimeout(function() {
+  var imgs = pc.querySelectorAll('img');
+  var loaded = 0;
+  var total = imgs.length;
+  function tryPrint() {
+    loaded++;
+    if (loaded >= total) {
+      window.print();
+      setTimeout(function() { pc.style.display = 'none'; }, 500);
+    }
+  }
+  if (total === 0) {
     window.print();
     setTimeout(function() { pc.style.display = 'none'; }, 500);
-  }, 300);
+  } else {
+    imgs.forEach(function(img) {
+      if (img.complete) { tryPrint(); }
+      else { img.onload = tryPrint; img.onerror = tryPrint; }
+    });
+  }
 }
 window.addEventListener('load', function() {
   initCanvas('canvas-isabsoft');
