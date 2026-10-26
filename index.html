@@ -2036,9 +2036,7 @@ function imprimirPresupuesto(){
       '<span>N&deg; ORDEN '+(ord.id||'').replace(/^#/,'')+'</span>'+
     '</div>'+
   '</div>';
-  var ventana=window.open('','_blank');
-  if(!ventana){window.print();return;}
-  ventana.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Presupuesto '+(ord.id||'')+'</title><style>'+
+  var estilos=
     'body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#000;padding:24px;font-size:13px;}'+
     '.doc-header{display:flex;justify-content:space-between;align-items:flex-start;}'+
     '.doc-logo{height:70px;}'+
@@ -2064,8 +2062,29 @@ function imprimirPresupuesto(){
     '.doc-firma-txt{font-weight:700;margin-bottom:10px;}'+
     '.doc-firma-campo{text-align:left;max-width:340px;margin:0 auto;font-size:12px;}'+
     '.doc-footer{display:flex;justify-content:space-between;margin-top:50px;padding-top:8px;border-top:1px solid #ccc;font-size:10px;color:#555;}'+
-    '@media print{body{padding:0;}}'+
-  '</style></head><body>'+html+'</body></html>');
+    '@media print{body{padding:0;}}';
+  var docCompleto='<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Presupuesto '+(ord.id||'')+'</title><style>'+estilos+'</style></head><body>'+html+'</body></html>';
+  // iOS: window.open bloqueado en modo PWA → usar blob descargable
+  var esIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(esIOS){
+    try{
+      var blob=new Blob([docCompleto],{type:'text/html'});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');
+      a.href=url;
+      a.download='presupuesto-'+(ord.id||'').replace(/^#/,'')+'.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},1000);
+    }catch(e){
+      window.print();
+    }
+    return;
+  }
+  var ventana=window.open('','_blank');
+  if(!ventana){window.print();return;}
+  ventana.document.write(docCompleto);
   ventana.document.close();
   ventana.focus();
   setTimeout(function(){ventana.print();},500);
