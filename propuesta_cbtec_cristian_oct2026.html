@@ -1061,7 +1061,8 @@
           <li>✓ F1 propio = independencia total para siempre</li>
           <li>✓ Todos tus datos del taller quedan igual, sin tocar nada</li>
           <li style="color:#b45309;">⚠ Requiere F1 propio (~820.000/año a Code100)</li>
-          <li style="color:#b45309;">⚠ Soporte puntual adicional: 100.000/sesión cuando lo necesitás</li>
+          <li style="color:#059669;">✓ Meses 1–3: soporte de arranque incluido</li>
+          <li style="color:#b45309;">⚠ Mes 4+: soporte adicional 100.000/sesión</li>
         </ul>
       </div>
       <div style="flex:1; min-width:220px; border:2px solid #1a56db; border-radius:10px; padding:12px; background:#eff6ff;">
@@ -1135,8 +1136,9 @@
 
       <!-- Soporte -->
       <div style="background:#f8fafc; border-radius:8px; padding:10px 12px; font-size:12px; color:#374151; line-height:1.7;">
-        <strong>Soporte FE incluido:</strong> IsabFE, SIFEN, timbrado, F1, contingencia<br>
-        <strong>Por evento (100.000/sesi&oacute;n):</strong> bugs generales GestFact, nuevas funciones, PC/red
+        <strong>Meses 1–3 incluidos:</strong> soporte de arranque (instalación, FE SIFEN, capacitación, contingencia)<br>
+        <strong>Siempre incluido:</strong> IsabFE, SIFEN, timbrado, F1, contingencia, TXT/ZIP<br>
+        <strong>Mes 4+ (100.000/sesi&oacute;n):</strong> bugs GestFact, nuevas funciones, capacitación, PC/red
       </div>
 
       <!-- Flexibilidad -->
@@ -1847,8 +1849,9 @@ function generatePDF() {
       'Sin costo mensual a ningún proveedor FE externo'
     ];
     var sopFeats = [
-      'Soporte FE INCLUIDO — IsabFE, SIFEN, timbrado, F1, contingencia',
-      'Soporte general: 100.000/sesión — bugs GestFact, capacitación, PC/red',
+      'Meses 1–3: soporte de arranque incluido (FE SIFEN, capacitación, contingencia)',
+      'Siempre: IsabFE, SIFEN, timbrado, F1, contingencia, TXT/ZIP incluidos',
+      'Mes 4+: soporte adicional 100.000/sesión — bugs, capacitación, PC/red',
       'Sin compromiso fijo — cancelable con 15 días de aviso por WhatsApp'
     ];
     function liL(arr) {
@@ -1881,10 +1884,10 @@ function generatePDF() {
         '</div>' +
       '</div>' +
       '<div style="margin-bottom:14px;font-size:11px;color:#374151;background:#f8fafc;padding:10px;border-radius:8px;line-height:1.7;">' +
-        '<strong>Términos:</strong> El servicio se presta según los términos y condiciones aceptados en la propuesta digital fechada ' + fechaL + '. El Plan FE (80.000/mes) reemplaza el abono quincenal vigente e incluye FE vía IsabFE + servicios GestFact (soporte, TXT/ZIP, actualizaciones) con menor frecuencia y a demanda. El soporte puntual adicional fuera del alcance ordinario se cobra a 100.000/sesión previo acuerdo. Sin compromiso de período mínimo; cualquiera de las partes puede cancelar con 15 días de aviso por WhatsApp.<br>' +
+        '<strong>Términos:</strong> El servicio se presta según los términos y condiciones aceptados en la propuesta digital fechada ' + fechaL + '. El Plan FE (80.000/mes) reemplaza el abono quincenal vigente e incluye FE vía IsabFE + servicios GestFact (soporte, TXT/ZIP, actualizaciones). Meses 1 a 3: soporte de arranque incluido (instalación, FE SIFEN, capacitación, contingencia). Mes 4 en adelante: el soporte puntual fuera del alcance FE se cobra a 100.000/sesión previo acuerdo. Sin compromiso de período mínimo; cualquiera de las partes puede cancelar con 15 días de aviso por WhatsApp.<br>' +
         '<strong>Setup:</strong> El pago de 400.000 cubre la instalación y configuración de GestFact PC + IsabFE (activación inmediata) + GestFact Móvil + AnotDigi (activación dentro de 30 días). Se abona antes del inicio del servicio y no es reembolsable una vez iniciada la configuración.<br>' +
         '<strong>Certificado F1:</strong> La activación de FE SIFEN queda sujeta a la obtención del Certificado Digital F1 por parte del cliente (trámite presencial, responsabilidad exclusiva del cliente). IsabSoft no tiene vinculación comercial con Code100.<br>' +
-        '<strong>Soporte general:</strong> Los eventos de soporte fuera del alcance FE (bugs GestFact, capacitación, configuración PC/red) se cobran a 50.000 por sesión previo acuerdo.' +
+        '<strong>Soporte general:</strong> Meses 1–3 incluidos como soporte de arranque. Mes 4 en adelante: los eventos fuera del alcance FE (bugs GestFact, capacitación, configuración PC/red) se cobran a 100.000 por sesión previo acuerdo.' +
       '</div>' +
       '<div style="display:flex;gap:20px;margin-top:16px;">' +
         '<div style="flex:1;text-align:center;">' +
