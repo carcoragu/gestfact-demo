@@ -1054,13 +1054,14 @@
       <div style="flex:1; min-width:220px; border:2px solid #059669; border-radius:10px; padding:12px; background:#f0fdf4;">
         <div style="font-size:12px; font-weight:800; color:#059669; margin-bottom:6px;">✅ Opción A — Plan FE</div>
         <ul style="font-size:11px; color:#374151; list-style:none; padding:0; margin:0; line-height:1.8;">
-          <li>✓ 80.000/mes — menos que Sifende PRO (99.900/mes)</li>
+          <li>✓ <strong>Reemplaza el abono actual — dejás de pagar 400.000/mes</strong></li>
+          <li>✓ 80.000/mes cubre FE + GestFact servicios cuando los necesitás</li>
+          <li>✓ Ahorro: 320.000/mes · 3.840.000/año</li>
           <li>✓ IsabFE: transmisión directa SIFEN, sin PSE externo</li>
-          <li>✓ Sin costo mensual a ningún proveedor FE</li>
           <li>✓ F1 propio = independencia total para siempre</li>
-          <li>✓ Sin compromiso fijo — cancelable con 15 días de aviso</li>
+          <li>✓ Todos tus datos del taller quedan igual, sin tocar nada</li>
           <li style="color:#b45309;">⚠ Requiere F1 propio (~820.000/año a Code100)</li>
-          <li style="color:#b45309;">⚠ Soporte general GestFact: 100.000/sesión por evento</li>
+          <li style="color:#b45309;">⚠ Soporte puntual adicional: 100.000/sesión cuando lo necesitás</li>
         </ul>
       </div>
       <div style="flex:1; min-width:220px; border:2px solid #1a56db; border-radius:10px; padding:12px; background:#eff6ff;">
@@ -1075,7 +1076,7 @@
       </div>
     </div>
     <div style="background:#fef9c3; border-left:3px solid #ca8a04; border-radius:6px; padding:10px 12px; font-size:12px; color:#713f12;">
-      <strong>Para CBTEC recomendamos Opción A</strong> &mdash; 80.000/mes con IsabFE directo al SIFEN, sin pagar a ningún PSE externo, y con F1 propio que te da independencia total. Sin compromiso fijo — si en algún momento querés pausar, avisás con 15 días.
+      <strong>Para CBTEC recomendamos Opción A</strong> &mdash; reemplaza el abono actual de 400.000/mes. Con 80.000/mes tenés FE IsabFE directo al SIFEN + todos los servicios GestFact cuando los necesitás. Ahorro inmediato: 320.000/mes. Tus datos del taller quedan intactos, Lalo no aprende nada nuevo.
     </div>
   </div>
 
@@ -1660,7 +1661,7 @@ function scrollToSignLanz() {
     '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Setup instalación y config. (único)</span><strong>400.000</strong></div>' +
     '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Certificado F1 (cliente tramita)</span><strong>~820.000/año · Code100 WA +595 974 433-003</strong></div>' +
     '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;"><span>Soporte FE incluido</span><strong>IsabFE, SIFEN, timbrado, F1, contingencia</strong></div>' +
-    '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Soporte general por evento</span><strong>100.000/sesión (bugs GestFact, funciones, PC/red)</strong></div>' +
+    '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Soporte puntual adicional</span><strong>100.000/sesión cuando lo necesitás</strong></div>' +
     '</div>';
   document.getElementById('sign-section').style.display = 'block';
   document.getElementById('sign-section').scrollIntoView({behavior:'smooth'});
@@ -1880,7 +1881,7 @@ function generatePDF() {
         '</div>' +
       '</div>' +
       '<div style="margin-bottom:14px;font-size:11px;color:#374151;background:#f8fafc;padding:10px;border-radius:8px;line-height:1.7;">' +
-        '<strong>Términos:</strong> El servicio se presta según los términos y condiciones aceptados en la propuesta digital fechada ' + fechaL + '. El Plan FE (80.000/mes) cubre exclusivamente la transmisión FE vía IsabFE — no incluye la licencia GestFact (abono quincenal vigente por separado). Sin compromiso de período mínimo; cualquiera de las partes puede cancelar con 15 días de aviso por WhatsApp.<br>' +
+        '<strong>Términos:</strong> El servicio se presta según los términos y condiciones aceptados en la propuesta digital fechada ' + fechaL + '. El Plan FE (80.000/mes) reemplaza el abono quincenal vigente e incluye FE vía IsabFE + servicios GestFact (soporte, TXT/ZIP, actualizaciones) con menor frecuencia y a demanda. El soporte puntual adicional fuera del alcance ordinario se cobra a 100.000/sesión previo acuerdo. Sin compromiso de período mínimo; cualquiera de las partes puede cancelar con 15 días de aviso por WhatsApp.<br>' +
         '<strong>Setup:</strong> El pago de 400.000 cubre la instalación y configuración de GestFact PC + IsabFE (activación inmediata) + GestFact Móvil + AnotDigi (activación dentro de 30 días). Se abona antes del inicio del servicio y no es reembolsable una vez iniciada la configuración.<br>' +
         '<strong>Certificado F1:</strong> La activación de FE SIFEN queda sujeta a la obtención del Certificado Digital F1 por parte del cliente (trámite presencial, responsabilidad exclusiva del cliente). IsabSoft no tiene vinculación comercial con Code100.<br>' +
         '<strong>Soporte general:</strong> Los eventos de soporte fuera del alcance FE (bugs GestFact, capacitación, configuración PC/red) se cobran a 50.000 por sesión previo acuerdo.' +
