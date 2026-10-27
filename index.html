@@ -1882,7 +1882,8 @@ function emitirFE(){
     if(btn){btn.disabled=false;btn.textContent='⚡ Emitir Factura Electrónica';}
     if(resp.estado==='APROBADO'||resp.cdc){
       var idx=ordenes.findIndex(function(o){return o.id===currentOrdenId;});
-      if(idx>=0){ordenes[idx].fe_cdc=resp.cdc;ordenes[idx].fe_numero=resp.numero;ordenes[idx].fe_kude=resp.kudeUrl||'';_persistAll();}
+      if(idx>=0){ordenes[idx].fe_cdc=resp.cdc;ordenes[idx].fe_numero=resp.numero;ordenes[idx].fe_kude=resp.kudeUrl||'';ordenes[idx].estado_fe='APROBADO';_persistAll();
+        apiFire({action:'updateOrden',id:currentOrdenId,fields:{fe_cdc:resp.cdc||'',fe_numero:resp.numero||'',fe_kude:resp.kudeUrl||'',estado_fe:'APROBADO'}});}
       openOrden(idx);
     } else if(resp.estado==='CONTINGENCIA'){
       alert('⚠️ Contingencia\n\nAutoimpresor emitió la factura. Se sincroniza con SIFEN al volver la conexión.');
