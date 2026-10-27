@@ -2134,13 +2134,19 @@ function imprimirPresupuesto(){
   setTimeout(function(){ventana.print();},500);
 }
 
+function pyNum(tel){
+  var n=(tel||'').replace(/[^0-9]/g,'');
+  if(n.charAt(0)==='0') n='595'+n.substring(1);
+  else if(n.substring(0,3)!=='595') n='595'+n;
+  return n;
+}
 function abrirWA(tel, msg){
-  var num=(tel||'').replace(/[^0-9]/g,'');
+  var num=pyNum(tel);
   var url='https://wa.me/'+num+(msg?'?text='+encodeURIComponent(msg):'');
   window.location.href=url;
 }
 function enviarWACliente(nombre, tel){
-  var num=(tel||'').replace(/[^0-9]/g,'');
+  var num=pyNum(tel);
   var ord=ordenes.find(function(o){return o.cliente===nombre;});
   var txt='';
   if(ord){
@@ -2199,7 +2205,7 @@ function enviarPresupuestoWA(){
   txt+='*Total: Gs. '+fmtGs(ord2.monto||0)+'*\n\n';
   txt+='Consultas: '+EMPRESA_TEL+'\n_'+EMPRESA_NOMBRE+'_';
   var cl=clientes.find(function(c){return c.nombre===(ord2.cliente||'');})||{};
-  var num=(cl.tel||'').replace(/[^0-9]/g,'');
+  var num=pyNum(cl.tel||'');
   window.location.href='https://wa.me/'+num+'?text='+encodeURIComponent(txt);
 }
 
