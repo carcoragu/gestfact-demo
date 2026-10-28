@@ -921,6 +921,8 @@ var CLIENTES_INFO={
     EMPRESA_LOGO=_b.logo||EMPRESA_LOGO;
     EMPRESA_NOMBRE=_b.empresa||_b.nombre||'GestFact';
     EMPRESA_DIR=_b.dir_empresa||'';EMPRESA_TEL=_b.tel_empresa||'';
+    ISABFE_CLIENT_ID=_b.isabfeClientId||'';
+    if(window.location.port==='8765'){ISABFE_URL=window.location.origin;}
     function _autoStart(){
       checkLicense().then(function(lic){if(!applyLicense(lic))return;go('s-dashboard');loadAllData();}).catch(function(){go('s-dashboard');loadAllData();});
     }
@@ -1145,7 +1147,7 @@ function loginAndLoad(){
         }).catch(function(){});
       }
       if(!data.demo){
-        try{localStorage.setItem('gf_boot',JSON.stringify({key:data.clientKey,token:data.token,url:data.scriptUrl,nombre:data.nombre,demo:false,logo:info.logo||'',empresa:info.empresa||'',dir_empresa:info.dir_empresa||'',tel_empresa:info.tel_empresa||''}));}catch(e){}
+        try{localStorage.setItem('gf_boot',JSON.stringify({key:data.clientKey,token:data.token,url:data.scriptUrl,nombre:data.nombre,demo:false,logo:info.logo||'',empresa:info.empresa||'',dir_empresa:info.dir_empresa||'',tel_empresa:info.tel_empresa||'',isabfeClientId:info.isabfeClientId||''}));}catch(e){}
       }
       if(data.demo&&(!_load('clientes')||!_load('clientes').length)){
         clientes=[
@@ -1892,7 +1894,7 @@ function emitirFE(){
   .then(function(r){return r.json();})
   .then(function(resp){
     if(btn){btn.disabled=false;btn.textContent='⚡ Emitir Factura Electrónica';}
-    if(resp.estado==='APROBADO'||resp.cdc){
+    if(resp.estado==='APROBADO'){
       var idx=ordenes.findIndex(function(o){return o.id===currentOrdenId;});
       if(idx>=0){ordenes[idx].fe_cdc=resp.cdc;ordenes[idx].fe_numero=resp.numero;ordenes[idx].fe_kude=resp.kudeUrl||'';ordenes[idx].estado_fe='APROBADO';_persistAll();
         apiFire({action:'updateOrden',id:currentOrdenId,fields:{fe_cdc:resp.cdc||'',fe_numero:resp.numero||'',fe_kude:resp.kudeUrl||'',estado_fe:'APROBADO'}});}
