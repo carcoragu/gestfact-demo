@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Test API — Miguel</title>
+<style>
+body{font-family:monospace;background:#111;color:#eee;padding:16px;font-size:13px;}
+h2{color:#60a5fa;margin-bottom:12px;}
+.test{background:#1a1a1a;border-radius:8px;padding:12px;margin-bottom:10px;}
+.label{color:#f59e0b;font-weight:bold;margin-bottom:4px;}
+.ok{color:#4ade80;}.err{color:#f87171;}.pend{color:#94a3b8;}
+button{background:#1e88e5;color:#fff;border:none;padding:12px 20px;border-radius:8px;font-size:15px;cursor:pointer;width:100%;margin-bottom:16px;}
+</style>
+</head>
+<body>
+<h2>Diagnóstico API — AnotDigi Miguel</h2>
+<button onclick="runTests()">▶ Ejecutar pruebas</button>
+<div id="results"></div>
+<script>
+const GF_API = 'https://script.google.com/macros/s/AKfycbxqMQhEAUsIY974xGf7KmnJ5zDtOJHnI9zavzpHr4vohcnMQPXBbFD_GujXL-XupBthkA/exec';
+
+async function testUrl(label, url) {
+  const div = document.createElement('div');
+  div.className = 'test';
+  div.innerHTML = `<div class="label">${label}</div><div class="pend">⏳ probando...</div>`;
+  document.getElementById('results').appendChild(div);
+  const res_div = div.querySelector('div:last-child');
+  try {
+    const r = await fetch(url);
+    const txt = await r.text();
+    const preview = txt.substring(0, 120).replace(/</g,'&lt;');
+    if (r.ok && !txt.includes('"No autorizado"')) {
+      res_div.className = 'ok';
+      res_div.innerHTML = `✅ HTTP ${r.status}<br><small>${preview}</small>`;
+    } else {
+      res_div.className = 'err';
+      res_div.innerHTML = `❌ HTTP ${r.status}<br><small>${preview}</small>`;
+    }
+  } catch(e) {
+    res_div.className = 'err';
+    res_div.innerHTML = `❌ Error: ${e.message}`;
+  }
+}
+
+async function runTests() {
+  document.getElementById('results').innerHTML = '';
+  await testUrl('1. syncExportOrdenes', GF_API + '?action=syncExportOrdenes');
+  await testUrl('2. getPlan', GF_API + '?action=getPlan');
+  await testUrl('3. syncPushCliente', GF_API + '?action=syncPushCliente&nombre=TEST+DIAG&vehiculo=Test');
+  await testUrl('4. syncPush', GF_API + '?action=syncPush&gf_id=DIAGTEST-001&cliente=TEST&vehiculo=TEST&patente=DIAG001&monto=1&fecha=2026-11-02&items=Test~1~1~1&estado_pres=Pendiente&cobrado=false&origen=anotdigi');
+  await testUrl('5. Sin action (debe dar 401)', GF_API);
+}
+</script>
+</body>
+</html>
