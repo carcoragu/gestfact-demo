@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Limpiar caché — AnotDigi</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a2e;color:#eee;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:20px;box-sizing:border-box;}
+.card{background:#16213e;border-radius:16px;padding:32px 24px;max-width:360px;width:100%;text-align:center;box-shadow:0 4px 24px #0006;}
+h2{color:#60a5fa;margin-bottom:8px;font-size:20px;}
+p{color:#94a3b8;font-size:14px;margin-bottom:24px;line-height:1.5;}
+.log{background:#0f0f1a;border-radius:8px;padding:12px;margin-bottom:20px;text-align:left;font-size:13px;font-family:monospace;min-height:100px;}
+.log div{margin-bottom:4px;}
+.ok{color:#4ade80;}.err{color:#f87171;}.pend{color:#94a3b8;}
+button{background:#1e88e5;color:#fff;border:none;padding:14px 20px;border-radius:10px;font-size:16px;cursor:pointer;width:100%;font-weight:600;}
+button:disabled{background:#334155;color:#64748b;cursor:not-allowed;}
+.redirect{margin-top:16px;font-size:13px;color:#94a3b8;}
+.redirect a{color:#60a5fa;}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>Limpiar caché</h2>
+  <p>Esto elimina la versión guardada de la app para cargar la más reciente.</p>
+  <div class="log" id="log"><div class="pend">Presioná el botón para comenzar...</div></div>
+  <button id="btn" onclick="limpiar()">Limpiar y actualizar</button>
+  <div class="redirect" id="redirect" style="display:none"></div>
+</div>
+<script>
+function log(msg, tipo){
+  var d = document.createElement('div');
+  d.className = tipo || 'pend';
+  d.textContent = msg;
+  document.getElementById('log').appendChild(d);
+}
+
+async function limpiar(){
+  document.getElementById('btn').disabled = true;
+  document.getElementById('log').innerHTML = '';
+
+  // 1. Desregistrar Service Workers
+  if('serviceWorker' in navigator){
+    try{
+      var regs = await navigator.serviceWorker.getRegistrations();
+      for(var r of regs){
+        await r.unregister();
+        log('✅ Service Worker desregistrado', 'ok');
+      }
+      if(regs.length === 0) log('ℹ️ No había Service Worker activo', 'pend');
+    }catch(e){ log('⚠️ SW: ' + e.message, 'err'); }
+  } else {
+    log('ℹ️ Service Worker no soportado', 'pend');
+  }
+
+  // 2. Limpiar Cache API
+  if('caches' in window){
+    try{
+      var keys = await caches.keys();
+      for(var k of keys){
+        await caches.delete(k);
+        log('✅ Caché eliminado: ' + k, 'ok');
+      }
+      if(keys.length === 0) log('ℹ️ No había cachés guardados', 'pend');
+    }catch(e){ log('⚠️ Cache: ' + e.message, 'err'); }
+  }
+
+  // 3. Limpiar localStorage
+  try{
+    var total = localStorage.length;
+    localStorage.clear();
+    log('✅ localStorage limpiado (' + total + ' entradas)', 'ok');
+  }catch(e){ log('⚠️ localStorage: ' + e.message, 'err'); }
+
+  // 4. Limpiar sessionStorage
+  try{
+    sessionStorage.clear();
+    log('✅ sessionStorage limpiado', 'ok');
+  }catch(e){}
+
+  log('— Listo. Redirigiendo a la app...', 'ok');
+
+  // Redirigir al app después de 2 segundos
+  setTimeout(function(){
+    var dest = 'registro.html' + window.location.search;
+    document.getElementById('redirect').style.display = 'block';
+    document.getElementById('redirect').innerHTML =
+      'Si no redirige automáticamente: <a href="' + dest + '">abrir app</a>';
+    window.location.href = dest;
+  }, 2000);
+}
+</script>
+</body>
+</html>
