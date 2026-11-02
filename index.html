@@ -1877,9 +1877,9 @@ function emitirFE(){
     +String(ahora.getMinutes()).padStart(2,'0')+':00';
   var cli=clientes.find(function(c){return c.nombre===ord.cliente;});
   var ruc=cli&&cli.ruc?cli.ruc:'';
-  var receptor=ruc
-    ?{tipoOperacion:'B2B',rucReceptor:ruc,razonSocial:ord.cliente}
-    :{tipoOperacion:'B2C',nombreReceptor:ord.cliente||'CONSUMIDOR FINAL'};
+  var receptor;
+  if(ruc){var rp=ruc.split('-');receptor={tipoContribuyente:'CONTRIBUYENTE',tipoOperacion:'B2B',tipoContribuyenteReceptor:'PERSONA_FISICA',numeroDocumento:rp[0],digitoVerificador:rp.length>1?rp[1]:'0',nombreRazonSocial:ord.cliente};}
+  else{receptor={tipoContribuyente:'NO_CONTRIBUYENTE',tipoOperacion:'B2C',tipoDocumento:'INNOMINADO',numeroDocumento:'0',nombreRazonSocial:ord.cliente||'SIN NOMBRE'};}
   var payload={
     tipoDocumento:'FACTURA_ELECTRONICA',
     fechaEmision:fechaEmi,
