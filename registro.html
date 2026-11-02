@@ -2329,7 +2329,7 @@ function enviarBulk() {
 
     // Plan Full: bloqueo duro — cliente_nuevo no bloquea (se auto-crea en GestFact)
     if ((localStorage.getItem('anotdigi_plan') || '').toUpperCase() === 'FULL') {
-        const warns = recolectarWarningsBulk().filter(w => w.tipo !== 'cliente_nuevo');
+        const warns = recolectarWarningsBulk().filter(w => w.tipo !== 'cliente_nuevo' && w.tipo !== 'repetida');
         if (warns.length) {
             // Limpiar warns previos
             parsedJobs.forEach((_, idx) => {
