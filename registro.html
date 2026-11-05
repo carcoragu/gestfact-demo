@@ -406,6 +406,11 @@
             Egresos
             <span class="modo-sub">Registrar gastos del taller</span>
         </button>
+        <button class="modo-btn" id="btnIngresoRapido" onclick="irIngresoRapido()" style="display:none">
+            <span class="modo-icon">⚡</span>
+            Ingreso Rápido
+            <span class="modo-sub">Voz o texto, directo a GestFact</span>
+        </button>
     </div>
     <button onclick="mostrarScreen('sinfo')" style="margin-top:18px;background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.8rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;">
         ¿Cómo funciona AnotDigi?
@@ -748,6 +753,158 @@
         </div>
         <button class="btn-back" style="margin-top:18px;width:100%;text-align:center;" onclick="mostrarScreen('s0')">← Volver</button>
     </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     INGRESO RÁPIDO — 5 pantallas (sir1–sir5)
+     ══════════════════════════════════════ -->
+
+<!-- IR 1: texto libre + mic -->
+<div class="screen" id="sir1">
+    <div class="progress"><div class="progress-bar" style="width:20%"></div></div>
+    <div class="question">¿Qué trabajo?</div>
+    <div class="hint">Hablá o escribí — chapa, trabajo y monto</div>
+    <div class="mic-wrap">
+        <input class="big-input" id="ir-texto"
+               placeholder="JDN099 frenos 400.000"
+               autocorrect="off" autocapitalize="characters" spellcheck="false"
+               oninput="irTextoChange(this.value)">
+        <button class="btn-mic" id="micIR1" onclick="activarMic('ir-texto','micIR1')">🎤</button>
+    </div>
+    <div id="ir1-badge" style="min-height:30px;text-align:center;margin-top:10px;"></div>
+    <button class="btn-next" onclick="irPaso2()">Siguiente →</button>
+    <button class="btn-back" onclick="mostrarScreen('s0')">← Atrás</button>
+</div>
+
+<!-- IR 2: confirmar cliente -->
+<div class="screen" id="sir2">
+    <div class="progress"><div class="progress-bar" style="width:40%"></div></div>
+    <div class="question" id="ir2-titulo" style="font-size:1.3rem;margin-bottom:8px;">¿Es este el cliente?</div>
+    <div class="hint" id="ir2-hint" style="margin-bottom:20px;"></div>
+
+    <!-- Tarjeta cliente encontrado en GestFact -->
+    <div id="ir2-card" style="display:none;width:100%;background:rgba(74,222,128,0.07);border:1.5px solid rgba(74,222,128,0.3);border-radius:16px;padding:16px 18px;margin-bottom:20px;">
+        <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Encontrado en GestFact</div>
+        <div style="font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:4px;" id="ir2-nombre"></div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.5);" id="ir2-vehiculo-lbl"></div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.3);margin-top:6px;" id="ir2-chapa-info"></div>
+    </div>
+
+    <!-- Botones confirmar (si se encontró) -->
+    <div id="ir2-btns-si-no" style="display:none;width:100%;gap:12px;margin-bottom:20px;">
+        <button onclick="irConfirmarCliente(true)"
+                style="width:100%;padding:14px;background:#4ade80;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;color:#1a1a2e;cursor:pointer;margin-bottom:10px;">
+            Sí, es este →
+        </button>
+        <button onclick="irConfirmarCliente(false)"
+                style="width:100%;padding:12px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.18);border-radius:12px;font-size:0.85rem;font-weight:600;color:rgba(255,255,255,0.65);cursor:pointer;">
+            No, otro cliente
+        </button>
+    </div>
+
+    <!-- Formulario manual (si no encontrado o si eligió "No") -->
+    <div id="ir2-manual" style="display:none;width:100%;margin-bottom:20px;">
+        <div class="rev-label" style="margin-bottom:7px;">Nombre del cliente <span style="color:#f87171">*</span></div>
+        <input class="big-input" id="ir2-cliente-inp" list="clientes-list"
+               placeholder="NOMBRE CLIENTE"
+               autocorrect="off" autocapitalize="characters" spellcheck="false"
+               style="margin-bottom:14px;">
+        <div class="rev-label" style="margin-bottom:7px;">Vehículo</div>
+        <input class="big-input" id="ir2-vehiculo-inp"
+               placeholder="Ej: toyota vitz"
+               autocorrect="off" autocapitalize="words" spellcheck="false">
+        <button class="btn-next" style="margin-top:18px;" onclick="irConfirmarManual()">Siguiente →</button>
+    </div>
+
+    <button class="btn-back" onclick="mostrarScreen('sir1')">← Atrás</button>
+</div>
+
+<!-- IR 3: servicio + monto + fecha -->
+<div class="screen" id="sir3">
+    <div class="progress"><div class="progress-bar" style="width:60%"></div></div>
+    <div class="question" style="font-size:1.3rem;margin-bottom:6px;">Trabajo y monto</div>
+    <div class="hint" style="margin-bottom:20px;">Revisá lo extraído — podés corregir</div>
+
+    <div style="width:100%;display:flex;flex-direction:column;gap:14px;">
+        <div>
+            <div class="rev-label" style="margin-bottom:7px;">Descripción del trabajo</div>
+            <div class="mic-wrap" style="align-items:flex-start;">
+                <textarea class="big-input" id="ir3-servicio"
+                          style="min-height:90px;text-align:left;font-size:1rem;padding:12px 56px 12px 14px;line-height:1.6;resize:vertical;"
+                          placeholder="Cambio de frenos delanteros"></textarea>
+                <button class="btn-mic" id="micIR3" onclick="activarMic('ir3-servicio','micIR3')"
+                        style="top:12px;transform:none;">🎤</button>
+            </div>
+        </div>
+        <div>
+            <div class="rev-label" style="margin-bottom:7px;">Monto (Gs.)</div>
+            <input class="big-input" id="ir3-monto" type="text" inputmode="numeric"
+                   placeholder="400.000" autocorrect="off" spellcheck="false" style="text-align:right;">
+        </div>
+        <div>
+            <div class="rev-label" style="margin-bottom:7px;">Fecha</div>
+            <input class="big-input" id="ir3-fecha" type="date">
+        </div>
+    </div>
+
+    <button class="btn-next" style="margin-top:22px;" onclick="irPaso4()">Siguiente →</button>
+    <button class="btn-back" onclick="mostrarScreen('sir2')">← Atrás</button>
+</div>
+
+<!-- IR 4: Factura Electrónica -->
+<div class="screen" id="sir4">
+    <div class="progress"><div class="progress-bar" style="width:80%"></div></div>
+    <div class="question" style="margin-bottom:8px;">¿Factura Electrónica?</div>
+    <div class="hint" style="margin-bottom:28px;" id="ir4-hint">¿El cliente necesita FE para este trabajo?</div>
+
+    <div style="display:flex;gap:12px;width:100%;margin-bottom:20px;">
+        <button id="ir4-btn-si" onclick="irFE(true)"
+                style="flex:1;padding:18px 10px;background:rgba(74,222,128,0.07);border:2px solid rgba(74,222,128,0.25);border-radius:14px;font-size:1rem;font-weight:700;color:rgba(255,255,255,0.8);cursor:pointer;transition:all .15s;">
+            ⚡ Sí, con FE
+        </button>
+        <button id="ir4-btn-no" onclick="irFE(false)"
+                style="flex:1;padding:18px 10px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.12);border-radius:14px;font-size:1rem;font-weight:700;color:rgba(255,255,255,0.8);cursor:pointer;transition:all .15s;">
+            Sin FE
+        </button>
+    </div>
+
+    <!-- Datos FE (solo si eligió Sí) -->
+    <div id="ir4-fe-data" style="display:none;width:100%;flex-direction:column;gap:12px;margin-bottom:20px;">
+        <div>
+            <div class="rev-label" style="margin-bottom:7px;">RUC del cliente</div>
+            <input class="big-input" id="ir4-ruc" type="text"
+                   placeholder="12345678-9" autocorrect="off" spellcheck="false">
+        </div>
+        <div>
+            <div class="rev-label" style="margin-bottom:7px;">Email del cliente</div>
+            <input class="big-input" id="ir4-email" type="email"
+                   placeholder="cliente@email.com" autocorrect="off" spellcheck="false">
+        </div>
+        <button class="btn-next" onclick="irPaso5()">Ver resumen →</button>
+    </div>
+
+    <button class="btn-back" onclick="mostrarScreen('sir3')">← Atrás</button>
+</div>
+
+<!-- IR 5: resumen + estado + crear -->
+<div class="screen" id="sir5">
+    <div class="progress"><div class="progress-bar" style="width:100%"></div></div>
+    <div class="question" style="font-size:1.2rem;margin-bottom:6px;">Confirmá y creá</div>
+    <div class="hint" style="margin-bottom:16px;">Revisá todo antes de crear en GestFact</div>
+
+    <div id="ir5-resumen" style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px 18px;margin-bottom:20px;font-size:0.88rem;line-height:2;"></div>
+
+    <div class="estado-wrap" id="estadoWrapIR">
+        <div class="estado-label">Estado del trabajo <span style="color:#f87171">*</span></div>
+        <div class="estado-btns">
+            <button class="btn-estado" id="btnPendienteIR"  onclick="setEstadoIR('pendiente')">⏳ Pendiente</button>
+            <button class="btn-estado" id="btnCobradoIR"    onclick="setEstadoIR('cobrado')">✅ Cobrado</button>
+            <button class="btn-estado" id="btnVerificarIR"  onclick="setEstadoIR('verificar')">🔍 Verificar</button>
+        </div>
+    </div>
+
+    <button class="btn-next" id="ir5-btn-crear" style="margin-top:18px;" onclick="irCrear()">⚡ Crear en GestFact</button>
+    <button class="btn-back" onclick="irVolverA4()">← Atrás</button>
 </div>
 
 <datalist id="clientes-list"></datalist>
@@ -2704,6 +2861,7 @@ async function checkActivacionURL() {
     promoIniciar();
     promoActualizarBanner();
     actualizarBtnEgresos();
+    actualizarBtnIngresoRapido();
     if (!promoActivo()) {
         renderizarPlanes(false);
         mostrarScreen('sp');
@@ -2839,6 +2997,305 @@ document.addEventListener('keydown', function(e) {
     const siguiente = paso === 4 ? 6 : paso + 1;
     if (paso < 6) ir(siguiente);
 });
+
+// ═══════════════════════════════════════════════════
+//  INGRESO RÁPIDO — módulo GestFact directo
+// ═══════════════════════════════════════════════════
+
+const irState = {
+    textoBruto: '', chapa: '', cliente: '', vehiculo: '',
+    servicio: '', monto: 0, fecha: '',
+    fe: false, feRuc: '', feEmail: ''
+};
+let estadoIR = '';
+
+function irIngresoRapido() {
+    if (!promoActivo()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    const p = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
+    if (!p || p === 'BASICO' || p === 'SESION') { renderizarPlanes(false); mostrarScreen('sp'); return; }
+    Object.assign(irState, { textoBruto:'', chapa:'', cliente:'', vehiculo:'', servicio:'', monto:0, fe:false, feRuc:'', feEmail:'' });
+    estadoIR = '';
+    document.getElementById('ir-texto').value = '';
+    document.getElementById('ir1-badge').innerHTML = '';
+    ['Pendiente','Cobrado','Verificar'].forEach(n => {
+        const el = document.getElementById('btn' + n + 'IR');
+        if (el) el.className = 'btn-estado';
+    });
+    document.getElementById('estadoWrapIR').classList.remove('sin-seleccion');
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Asuncion' }));
+    irState.fecha = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+    mostrarScreen('sir1');
+}
+
+function irTextoChange(val) {
+    const chapa = extraerChapaDeTexto(val);
+    document.getElementById('ir1-badge').innerHTML = chapa
+        ? '<span style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.4);border-radius:8px;padding:4px 14px;color:#4ade80;font-size:0.82rem;font-weight:700;letter-spacing:1px;">' + chapa + '</span>'
+        : '';
+}
+
+function irExtraerMonto(texto) {
+    // Formato "ddd.ddd" Paraguay  →  400.000
+    const m1 = (texto || '').match(/\b\d{1,3}(?:\.\d{3})+\b/g);
+    if (m1) return parseInt(m1[m1.length - 1].replace(/\./g,''), 10);
+    // "X mil" (hablado)
+    const m3 = (texto || '').match(/(\d+)\s*mil/i);
+    if (m3) return parseInt(m3[1], 10) * 1000;
+    // Número plano ≥ 4 dígitos
+    const m2 = (texto || '').match(/\b(\d{4,7})\b/g);
+    if (m2) return parseInt(m2[m2.length - 1], 10);
+    return 0;
+}
+
+function irBuscarClientePorChapa(chapa) {
+    if (!chapa || !registrosGF.length) return null;
+    const ch = chapa.toUpperCase().replace(/\s/g,'');
+    const matches = registrosGF.filter(r => r.chapa === ch && r.cliente);
+    if (!matches.length) return null;
+    const freq = {};
+    matches.forEach(r => { freq[r.cliente] = (freq[r.cliente] || 0) + 1; });
+    const topCliente = Object.entries(freq).sort((a,b) => b[1]-a[1])[0][0];
+    const conVeh = matches.filter(r => r.vehiculo).sort((a,b) => (b.fecha||'').localeCompare(a.fecha||''));
+    return { cliente: topCliente, vehiculo: conVeh.length ? conVeh[0].vehiculo : '' };
+}
+
+function irPaso2() {
+    const texto = document.getElementById('ir-texto').value.trim();
+    if (!texto) {
+        document.getElementById('ir-texto').classList.add('error');
+        setTimeout(() => document.getElementById('ir-texto').classList.remove('error'), 800);
+        toast('⚠️ Escribí o hablá el trabajo primero');
+        return;
+    }
+    irState.textoBruto = texto;
+    irState.chapa      = extraerChapaDeTexto(texto) || '';
+    irState.monto      = irExtraerMonto(texto);
+    // Servicio = texto sin la chapa detectada
+    let srv = texto;
+    if (irState.chapa) srv = srv.replace(new RegExp(irState.chapa.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), '').replace(/\s{2,}/g,' ').trim();
+    irState.servicio = srv;
+
+    const encontrado = irState.chapa ? irBuscarClientePorChapa(irState.chapa) : null;
+    const titulo  = document.getElementById('ir2-titulo');
+    const hint    = document.getElementById('ir2-hint');
+    const card    = document.getElementById('ir2-card');
+    const manual  = document.getElementById('ir2-manual');
+    const btnsSN  = document.getElementById('ir2-btns-si-no');
+
+    if (encontrado) {
+        titulo.textContent = '¿Es este el cliente?';
+        hint.textContent   = irState.chapa ? 'Chapa ' + irState.chapa : '';
+        document.getElementById('ir2-nombre').textContent      = encontrado.cliente;
+        document.getElementById('ir2-vehiculo-lbl').textContent = encontrado.vehiculo || '(vehículo no registrado)';
+        document.getElementById('ir2-chapa-info').textContent  = irState.chapa ? 'Historial en GestFact' : '';
+        card.style.display   = '';
+        manual.style.display = 'none';
+        btnsSN.style.display = '';
+        document.getElementById('ir2-cliente-inp').value  = encontrado.cliente;
+        document.getElementById('ir2-vehiculo-inp').value = encontrado.vehiculo || '';
+    } else {
+        titulo.textContent = irState.chapa ? 'Chapa ' + irState.chapa + ' — sin historial' : 'Datos del cliente';
+        hint.textContent   = irState.chapa ? 'Primera vez con esta chapa' : 'No se detectó chapa en el texto';
+        card.style.display   = 'none';
+        manual.style.display = '';
+        btnsSN.style.display = 'none';
+        document.getElementById('ir2-cliente-inp').value  = '';
+        document.getElementById('ir2-vehiculo-inp').value = '';
+    }
+    mostrarScreen('sir2');
+}
+
+function irConfirmarCliente(usarEncontrado) {
+    if (usarEncontrado) {
+        irState.cliente  = document.getElementById('ir2-nombre').textContent.trim();
+        irState.vehiculo = document.getElementById('ir2-vehiculo-lbl').textContent.replace('(vehículo no registrado)','').trim();
+        irIrPaso3();
+    } else {
+        document.getElementById('ir2-card').style.display   = 'none';
+        document.getElementById('ir2-btns-si-no').style.display = 'none';
+        document.getElementById('ir2-manual').style.display = '';
+        document.getElementById('ir2-titulo').textContent   = 'Ingresá los datos';
+        document.getElementById('ir2-hint').textContent     = irState.chapa ? 'Cliente de la chapa ' + irState.chapa : '';
+        document.getElementById('ir2-cliente-inp').focus();
+    }
+}
+
+function irConfirmarManual() {
+    const cliente  = document.getElementById('ir2-cliente-inp').value.trim().toUpperCase();
+    const vehiculo = document.getElementById('ir2-vehiculo-inp').value.trim();
+    if (!cliente) {
+        document.getElementById('ir2-cliente-inp').classList.add('error');
+        setTimeout(() => document.getElementById('ir2-cliente-inp').classList.remove('error'), 800);
+        toast('⚠️ El nombre del cliente es obligatorio');
+        return;
+    }
+    irState.cliente  = cliente;
+    irState.vehiculo = vehiculo;
+    irIrPaso3();
+}
+
+function irIrPaso3() {
+    document.getElementById('ir3-servicio').value = irState.servicio;
+    document.getElementById('ir3-monto').value     = irState.monto ? irState.monto : '';
+    document.getElementById('ir3-fecha').value     = irState.fecha;
+    mostrarScreen('sir3');
+}
+
+function irPaso4() {
+    const servicio = document.getElementById('ir3-servicio').value.trim();
+    const montoRaw = document.getElementById('ir3-monto').value.replace(/\./g,'').replace(/\s/g,'');
+    const monto    = parseInt(montoRaw, 10) || 0;
+    const fecha    = document.getElementById('ir3-fecha').value;
+    if (!servicio) {
+        document.getElementById('ir3-servicio').classList.add('error');
+        setTimeout(() => document.getElementById('ir3-servicio').classList.remove('error'), 800);
+        toast('⚠️ Describí el trabajo');
+        return;
+    }
+    irState.servicio = servicio;
+    irState.monto    = monto;
+    irState.fecha    = fecha;
+    // Reset FE buttons
+    document.getElementById('ir4-btn-si').style.border     = '2px solid rgba(74,222,128,0.25)';
+    document.getElementById('ir4-btn-si').style.background = 'rgba(74,222,128,0.07)';
+    document.getElementById('ir4-btn-no').style.border     = '2px solid rgba(255,255,255,0.12)';
+    document.getElementById('ir4-btn-no').style.background = 'rgba(255,255,255,0.05)';
+    document.getElementById('ir4-fe-data').style.display   = 'none';
+    irState.fe = false;
+    mostrarScreen('sir4');
+}
+
+function irFE(quiere) {
+    irState.fe = quiere;
+    document.getElementById('ir4-btn-si').style.border     = quiere ? '2px solid #4ade80' : '2px solid rgba(74,222,128,0.25)';
+    document.getElementById('ir4-btn-si').style.background = quiere ? 'rgba(74,222,128,0.18)' : 'rgba(74,222,128,0.07)';
+    document.getElementById('ir4-btn-no').style.border     = !quiere ? '2px solid #fff' : '2px solid rgba(255,255,255,0.12)';
+    document.getElementById('ir4-btn-no').style.background = !quiere ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)';
+    if (quiere) {
+        document.getElementById('ir4-fe-data').style.display = 'flex';
+    } else {
+        document.getElementById('ir4-fe-data').style.display = 'none';
+        irPaso5();
+    }
+}
+
+function irPaso5() {
+    if (irState.fe) {
+        irState.feRuc   = document.getElementById('ir4-ruc').value.trim();
+        irState.feEmail = document.getElementById('ir4-email').value.trim();
+    }
+    const f = irState.fecha ? irState.fecha.split('-') : [];
+    const fechaLabel = f.length === 3 ? f[2] + '/' + f[1] + '/' + f[0].slice(2) : irState.fecha;
+    const montoLabel = irState.monto ? 'Gs. ' + Number(irState.monto).toLocaleString('es-PY') : '— sin monto —';
+    document.getElementById('ir5-resumen').innerHTML =
+        irResumenFila('Cliente', irState.cliente, '#fff', true) +
+        irResumenFila('Chapa',   irState.chapa || '—', '#4ade80', true) +
+        irResumenFila('Vehículo', irState.vehiculo || '—', 'rgba(255,255,255,0.65)', true) +
+        irResumenFilaBloque('Trabajo', irState.servicio) +
+        irResumenFila('Monto', montoLabel, '#fbbf24', true) +
+        irResumenFila('Fecha', fechaLabel, 'rgba(255,255,255,0.65)', !!irState.fe) +
+        (irState.fe ? irResumenFila('FE', '⚡ Sí' + (irState.feRuc ? ' · ' + irState.feRuc : ''), '#4ade80', false) : '');
+    mostrarScreen('sir5');
+}
+
+function irResumenFila(label, valor, color, borde) {
+    return '<div style="display:flex;justify-content:space-between;align-items:center;' +
+           (borde ? 'border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:8px;margin-bottom:8px;' : '') + '">' +
+           '<span style="color:rgba(255,255,255,0.4);font-size:0.78rem;">' + label + '</span>' +
+           '<span style="font-weight:700;color:' + color + ';">' + valor + '</span></div>';
+}
+function irResumenFilaBloque(label, valor) {
+    return '<div style="border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:8px;margin-bottom:8px;">' +
+           '<div style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin-bottom:4px;">' + label + '</div>' +
+           '<div style="color:rgba(255,255,255,0.85);line-height:1.5;">' + valor + '</div></div>';
+}
+
+function irVolverA4() { mostrarScreen('sir4'); }
+
+function setEstadoIR(estado) {
+    estadoIR = estado;
+    _aplicarEstadoBtns('IR', estado);
+}
+
+async function irCrear() {
+    if (!estadoIR) {
+        const wrap = document.getElementById('estadoWrapIR');
+        wrap.classList.add('sin-seleccion');
+        wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        toast('⚠️ Indicá si está pendiente o cobrado');
+        return;
+    }
+    const btn = document.getElementById('ir5-btn-crear');
+    btn.disabled = true;
+    btn.textContent = '⏳ Creando...';
+
+    const chapa      = irState.chapa;
+    const fecha      = irState.fecha;
+    const cliente    = irState.cliente;
+    const vehiculo   = irState.vehiculo;
+    const servicio   = irState.servicio;
+    const monto      = irState.monto;
+    const cobrado    = estadoIR === 'cobrado'   ? '1' : '0';
+    const estadoPres = estadoIR === 'cobrado'   ? 'Cobrado'
+                     : estadoIR === 'verificar' ? 'Verificar' : 'Pendiente';
+    const gfId       = 'IR-' + (chapa||'XX') + '-' + (fecha||'').replace(/-/g,'') + '-' + String(Date.now()).slice(-4);
+    const items      = servicio + '~1~' + monto + '~' + monto;
+
+    if (esClienteNuevo(cliente)) {
+        try {
+            await fetchConTimeout(GF_API + '?action=syncPushCliente'
+                + '&nombre='   + encodeURIComponent(cliente)
+                + '&vehiculo=' + encodeURIComponent(vehiculo)
+                + '&patente='  + encodeURIComponent(chapa));
+        } catch(_) {}
+    }
+
+    const feParam = irState.fe
+        ? '&fe_requerida=1'
+          + (irState.feRuc   ? '&fe_ruc='   + encodeURIComponent(irState.feRuc)   : '')
+          + (irState.feEmail ? '&fe_email=' + encodeURIComponent(irState.feEmail) : '')
+        : '';
+
+    const url = GF_API
+        + '?action=syncPush'
+        + '&gf_id='       + encodeURIComponent(gfId)
+        + '&cliente='     + encodeURIComponent(cliente)
+        + '&vehiculo='    + encodeURIComponent(vehiculo)
+        + '&patente='     + encodeURIComponent(chapa)
+        + '&monto='       + monto
+        + '&fecha='       + encodeURIComponent(fecha)
+        + '&items='       + encodeURIComponent(items)
+        + '&estado_pres=' + encodeURIComponent(estadoPres)
+        + '&cobrado='     + cobrado
+        + '&origen=ingreso_rapido'
+        + feParam;
+
+    try {
+        const resp = await fetchConTimeout(url);
+        let data;
+        try { data = JSON.parse(await resp.text()); } catch(_) { data = { ok: false, error: 'Respuesta inválida' }; }
+        if (!data.ok) {
+            toast('⚠️ Error al crear: ' + (data.error || 'intenta de nuevo'));
+            btn.disabled = false; btn.textContent = '⚡ Crear en GestFact';
+            return;
+        }
+        registrosGF.push({ chapa: chapa.replace(/\s/g,''), fecha, cliente, vehiculo: vehiculo.toUpperCase().trim() });
+        addClienteToList(cliente);
+        localStorage.setItem(LS('registros_cache_gf'), JSON.stringify(registrosGF));
+        toast('✅ Creado en GestFact');
+        btn.disabled = false; btn.textContent = '⚡ Crear en GestFact';
+        setTimeout(() => mostrarScreen('s0'), 1600);
+    } catch(e) {
+        toast('⚠️ Sin conexión — intentá de nuevo');
+        btn.disabled = false; btn.textContent = '⚡ Crear en GestFact';
+    }
+}
+
+function actualizarBtnIngresoRapido() {
+    const p   = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
+    const btn = document.getElementById('btnIngresoRapido');
+    if (btn) btn.style.display = (p === 'FULL') ? '' : 'none';
+}
 </script>
 <script>
 if ('serviceWorker' in navigator) {
