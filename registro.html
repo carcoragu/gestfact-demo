@@ -765,6 +765,10 @@ const ANOTDIGI_MAP = {
     fer: {
         gfApi: 'https://script.google.com/macros/s/AKfycbwhywMDqZRPB0YqHQxMvvke5T1PeoivFQ9mKBOXOhybrQEmv2Wf2VWbmq5_RE6Tc8L1/exec',
         clientesDefault: []
+    },
+    cbtec: {
+        gfApi: 'https://script.google.com/macros/s/AKfycbwtgN4NUOQoz66MVengpxQVXbFDj1leKdLybuYYUtvTpNPTX3J19E2eEkqX3o8taICQaw/exec',
+        clientesDefault: []
     }
     // nuevo cliente: id: { gfApi: 'https://...exec', clientesDefault: [] }
 };
@@ -775,6 +779,7 @@ const ANOTDIGI_MAP = {
 const CLIENTE_ID       = localStorage.getItem('anotdigi_id') || 'miguel';
 const _cfg             = ANOTDIGI_MAP[CLIENTE_ID] || ANOTDIGI_MAP.miguel;
 const GF_API           = _cfg.gfApi;
+const LS               = k => k + '_' + CLIENTE_ID;
 
 // ─── Estado ───
 const datos = { cliente: '', chapa: '', fecha: '', servicio: '' };
@@ -794,14 +799,14 @@ let estadoPagoWizard = ''; // 'pendiente' | 'cobrado' — para wizard uno-a-uno
 const CLIENTES_DEFAULT = _cfg.clientesDefault;
 
 function loadClientes(extra = []) {
-    const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
-    const cache     = JSON.parse(localStorage.getItem('clientes_cache_gf') || '[]');
+    const guardados = JSON.parse(localStorage.getItem(LS('clientes_lista')) || '[]');
+    const cache     = JSON.parse(localStorage.getItem(LS('clientes_cache_gf')) || '[]');
     const todos = [...new Set([...CLIENTES_DEFAULT, ...cache, ...guardados, ...extra])].sort();
     document.getElementById('clientes-list').innerHTML =
         todos.map(c => `<option value="${c}">`).join('');
 }
 
-let registrosGF = JSON.parse(localStorage.getItem('registros_cache_gf') || '[]'); // {chapa, fecha YYYY-MM-DD} para detección de duplicados
+let registrosGF = JSON.parse(localStorage.getItem(LS('registros_cache_gf')) || '[]'); // {chapa, fecha YYYY-MM-DD} para detección de duplicados
 let gfEstado = 'cargando'; // 'ok' | 'vacio' | 'error'
 
 function normalizarFecha(f) {
@@ -847,8 +852,8 @@ async function fetchClientesSheet() {
             }
         });
         gfEstado = registrosGF.length > 0 ? 'ok' : 'vacio';
-        localStorage.setItem('registros_cache_gf', JSON.stringify(registrosGF));
-        localStorage.setItem('clientes_cache_gf', JSON.stringify([...clientes]));
+        localStorage.setItem(LS('registros_cache_gf'), JSON.stringify(registrosGF));
+        localStorage.setItem(LS('clientes_cache_gf'), JSON.stringify([...clientes]));
         loadClientes([...clientes]);
         // Si ya hay tarjetas renderizadas, actualizarlas con los duplicados recién cargados
         if (parsedJobs.length) renderizarJobs();
@@ -982,13 +987,13 @@ function detectarClienteEnTexto(texto) {
 }
 
 function esPlanPremium() {
-    const p = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    const p = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
     return p === 'COMPLETO' || p === 'FULL';
 }
 
 function getPlanLabel() {
     const labels = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
-    return labels[(localStorage.getItem('anotdigi_plan') || '').toUpperCase()] || 'Prueba';
+    return labels[(localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase()] || 'Prueba';
 }
 
 function esClienteNuevo(nombre) {
@@ -1026,10 +1031,10 @@ function setEstadoWizard(estado) {
 
 function addClienteToList(c) {
     if (!c) return;
-    const guardados = JSON.parse(localStorage.getItem('clientes_lista') || '[]');
+    const guardados = JSON.parse(localStorage.getItem(LS('clientes_lista')) || '[]');
     if (!CLIENTES_DEFAULT.includes(c) && !guardados.includes(c)) {
         guardados.push(c);
-        localStorage.setItem('clientes_lista', JSON.stringify(guardados));
+        localStorage.setItem(LS('clientes_lista'), JSON.stringify(guardados));
         loadClientes(guardados);
     }
 }
@@ -1326,7 +1331,7 @@ function recolectarWarningsWizard() {
         warns.push({ msg: `Esta chapa habitualmente es de ${clienteChapa}.`, tipo: 'cliente_chapa' });
 
     if (esClienteNuevo(cliente)) {
-        const planActivo = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+        const planActivo = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
         const msgNuevo   = planActivo === 'FULL'
             ? `${cliente} no está en GestFact — se creará la ficha automáticamente.`
             : `${cliente} no está en GestFact — IsabSoft creará la ficha.`;
@@ -1357,7 +1362,7 @@ function mostrarRevisionPreviaWizard(warns) {
 function confirmarRevisionWizard() { _doEnviarWizard(); }
 
 async function _doEnviarWizard() {
-    const planId       = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    const planId       = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
     const chapa        = document.getElementById('rev-chapa').value.trim().toUpperCase();
     const marca        = document.getElementById('rev-marca').value.trim();
     const fecha        = document.getElementById('rev-fecha').value;
@@ -1468,7 +1473,7 @@ function enviarIsabSoft() {
         return;
     }
 
-    const planId = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    const planId = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
 
     // Plan Full: bloqueo duro — cliente_nuevo no bloquea (se auto-crea en GestFact)
     if (planId === 'FULL') {
@@ -1567,7 +1572,7 @@ function _precioHtml(p) {
 function renderizarPlanesInfo() {
     const c = document.getElementById('sinfoPlanes');
     if (!c) return;
-    const planActual = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    const planActual = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
 
     const comboHtml = `
     <div style="background:rgba(74,222,128,0.06);border:1.5px solid rgba(74,222,128,0.4);border-radius:14px;padding:16px;margin-bottom:12px;position:relative;">
@@ -1637,14 +1642,14 @@ function renderizarPlanesInfo() {
 
 function activarPruebaPlan(planId) {
     // Si ya tiene expiry vigente, conservarlo — el trial es por cuenta, no por plan
-    const expiryExistente = localStorage.getItem('anotdigi_expiry');
+    const expiryExistente = localStorage.getItem(LS('anotdigi_expiry'));
     const estaVigente     = expiryExistente && new Date(expiryExistente) >= new Date();
     if (!estaVigente) {
         const expiry = new Date();
         expiry.setDate(expiry.getDate() + 30);
-        localStorage.setItem('anotdigi_expiry', expiry.toISOString().split('T')[0]);
+        localStorage.setItem(LS('anotdigi_expiry'), expiry.toISOString().split('T')[0]);
     }
-    localStorage.setItem('anotdigi_plan', planId.toUpperCase());
+    localStorage.setItem(LS('anotdigi_plan'), planId.toUpperCase());
     new Image().src = `https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=anotdigi&ev=plan_trial_iniciado&id=${CLIENTE_ID}&plan=${encodeURIComponent(planId.toUpperCase())}`;
     promoActualizarBanner();
     mostrarScreen('s0');
@@ -1659,7 +1664,7 @@ function activarPruebaPlan(planId) {
 function stripClientesDeJobs(jobs) {
     const lista = [...new Set([
         ...CLIENTES_DEFAULT,
-        ...(JSON.parse(localStorage.getItem('clientes_lista') || '[]')),
+        ...(JSON.parse(localStorage.getItem(LS('clientes_lista')) || '[]')),
         ...registrosGF.map(r => r.cliente).filter(Boolean)
     ])].map(c => c.trim().toUpperCase()).filter(c => c.length >= 3);
     if (!lista.length) return;
@@ -1896,7 +1901,7 @@ function renderizarJobs() {
         const dupe       = esDuplicado(j.chapa, j.fechaVal);
         const chapaVista = !dupe && chapaExiste(j.chapa);
         const repetida   = !!j.chapa && conteoChapas[j.chapa] > 1;
-        const _planActivo = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+        const _planActivo = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
         const dupeHtml = dupe
             ? (_planActivo === 'FULL'
                 ? `<div style="font-size:0.75rem;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(248,113,113,0.1);border-radius:8px;border:1px solid rgba(248,113,113,0.4);">
@@ -1924,7 +1929,7 @@ function renderizarJobs() {
                    ℹ️ "${j.clientesEliminados.join('", "')}" removido del trabajo
                </div>`
             : '';
-        const _planCN = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+        const _planCN = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
         const clienteNuevoHtml = esClienteNuevo(j.cliente)
             ? `<div style="font-size:0.72rem;color:#fbbf24;margin-top:6px;padding:4px 10px;background:rgba(251,191,36,0.07);border-radius:8px;border:1px solid rgba(251,191,36,0.25);">
                    ${_planCN === 'FULL'
@@ -1935,7 +1940,7 @@ function renderizarJobs() {
         const vehiculoGF       = chapaGetVehiculo(j.chapa);
         const vehiculoActual   = (j.marcaModelo || '').toUpperCase().trim();
         const vehiculoDistinto = vehiculoGF && vehiculoActual && !vehiculoActual.includes(vehiculoGF) && !vehiculoGF.includes(vehiculoActual);
-        const planId           = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+        const planId           = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
         const vehiculoMismatchHtml = vehiculoDistinto && planId !== 'SESION'
             ? `<div style="font-size:0.72rem;color:#fbbf24;margin-top:6px;padding:4px 10px;background:rgba(251,191,36,0.07);border-radius:8px;border:1px solid rgba(251,191,36,0.25);">
                    ℹ️ En GestFact esta chapa figura como <strong>${vehiculoGF}</strong>
@@ -2101,7 +2106,7 @@ function recolectarWarningsBulk() {
             warns.push({ i, chapa, msg: `Esta chapa habitualmente es de ${clienteChapa}.`, tipo: 'cliente_chapa' });
 
         if (esClienteNuevo(j.cliente)) {
-            const planActivo = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+            const planActivo = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
             const msgNuevo   = planActivo === 'FULL'
                 ? `${j.cliente || '(sin nombre)'} no está en GestFact — se creará la ficha automáticamente.`
                 : `${j.cliente || '(sin nombre)'} no está en GestFact — IsabSoft creará la ficha.`;
@@ -2138,7 +2143,7 @@ function mostrarRevisionPrevia(warns) {
 function confirmarRevisionBulk() { _doEnviarBulk(); }
 
 async function _doEnviarBulk() {
-    const planId = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    const planId = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
     parsedJobs.forEach(j => addClienteToList(j.cliente));
 
     const clienteGlobalWA = document.getElementById('bulkCliente').value.trim().toUpperCase();
@@ -2328,7 +2333,7 @@ function enviarBulk() {
     }
 
     // Plan Full: bloqueo duro — cliente_nuevo no bloquea (se auto-crea en GestFact)
-    if ((localStorage.getItem('anotdigi_plan') || '').toUpperCase() === 'FULL') {
+    if ((localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase() === 'FULL') {
         const warns = recolectarWarningsBulk().filter(w => w.tipo !== 'cliente_nuevo' && w.tipo !== 'repetida');
         if (warns.length) {
             // Limpiar warns previos
@@ -2360,7 +2365,7 @@ function enviarBulk() {
     }
 
     // Plan Completo: revisión previa si hay warnings suaves
-    if ((localStorage.getItem('anotdigi_plan') || '').toUpperCase() === 'COMPLETO') {
+    if ((localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase() === 'COMPLETO') {
         const warns = recolectarWarningsBulk();
         if (warns.length) { mostrarRevisionPrevia(warns); return; }
     }
@@ -2427,29 +2432,29 @@ const PLANES_DATA = [
 ];
 
 function promoIniciar() {
-    if (!localStorage.getItem('anotdigi_inicio')) {
-        localStorage.setItem('anotdigi_inicio', new Date().toISOString().split('T')[0]);
+    if (!localStorage.getItem(LS('anotdigi_inicio'))) {
+        localStorage.setItem(LS('anotdigi_inicio'), new Date().toISOString().split('T')[0]);
     }
 }
 
 function promoActivo() {
-    const expiry = localStorage.getItem('anotdigi_expiry');
+    const expiry = localStorage.getItem(LS('anotdigi_expiry'));
     if (expiry) return new Date(expiry) >= new Date();
 
-    const inicio = localStorage.getItem('anotdigi_inicio');
+    const inicio = localStorage.getItem(LS('anotdigi_inicio'));
     if (!inicio) return true; // primer uso, todavía no se registró
     const dias = Math.floor((new Date() - new Date(inicio)) / 86400000);
     return dias < PROMO_DIAS;
 }
 
 function promoDiasRestantes() {
-    const expiry = localStorage.getItem('anotdigi_expiry');
-    const plan   = localStorage.getItem('anotdigi_plan');
+    const expiry = localStorage.getItem(LS('anotdigi_expiry'));
+    const plan   = localStorage.getItem(LS('anotdigi_plan'));
     if (expiry && plan) {
         const d = Math.ceil((new Date(expiry) - new Date()) / 86400000);
         return { dias: Math.max(0, d), plan, esPlan: true };
     }
-    const inicio = localStorage.getItem('anotdigi_inicio');
+    const inicio = localStorage.getItem(LS('anotdigi_inicio'));
     if (!inicio) return { dias: PROMO_DIAS, plan: null, esPlan: false };
     const pasados = Math.floor((new Date() - new Date(inicio)) / 86400000);
     return { dias: Math.max(0, PROMO_DIAS - pasados), plan: null, esPlan: false };
@@ -2509,7 +2514,7 @@ function promoActualizarBanner() {
 }
 
 function renovarPlan() {
-    const plan = localStorage.getItem('anotdigi_plan') || '';
+    const plan = localStorage.getItem(LS('anotdigi_plan')) || '';
     const PLAN_LABELS = { SESION: 'Sesión', BASICO: 'Básico', COMPLETO: 'Completo', FULL: 'Full' };
     const nombre = PLAN_LABELS[plan.toUpperCase()] || plan || 'mi plan';
     const msg = `Hola IsabSoft! Quiero renovar AnotDigi *Plan ${nombre}*.\n\nVoy a transferir al alias *0981 153 477* (Itaú — Carlos Coronel). Te mando el comprobante. ¿Confirmo?`;
@@ -2627,8 +2632,8 @@ async function cargarPlanServidor() {
         const r = await fetchConTimeout(GF_API + '?action=getPlan', 5000);
         const d = JSON.parse(await r.text());
         if (d.plan && d.expiry) {
-            localStorage.setItem('anotdigi_plan',   d.plan.toUpperCase());
-            localStorage.setItem('anotdigi_expiry', d.expiry);
+            localStorage.setItem(LS('anotdigi_plan'),   d.plan.toUpperCase());
+            localStorage.setItem(LS('anotdigi_expiry'), d.expiry);
         }
     } catch(e) { /* sin conexión → usa localStorage cacheado */ }
 }
@@ -2667,8 +2672,8 @@ async function checkActivacionURL() {
         const expiry = new Date();
         expiry.setDate(expiry.getDate() + dias);
         const _exp = expiry.toISOString().split('T')[0];
-        localStorage.setItem('anotdigi_plan',   plan.toUpperCase());
-        localStorage.setItem('anotdigi_expiry', _exp);
+        localStorage.setItem(LS('anotdigi_plan'),   plan.toUpperCase());
+        localStorage.setItem(LS('anotdigi_expiry'), _exp);
 
         // Persistir en servidor (PropertiesService del cliente)
         await guardarPlanServidor(plan.toUpperCase(), _exp);
@@ -2691,8 +2696,8 @@ async function checkActivacionURL() {
     if (_te !== null) {
         const _d = new Date();
         _d.setDate(_d.getDate() + (parseInt(_te) || 0));
-        localStorage.setItem('anotdigi_expiry', _d.toISOString().split('T')[0]);
-        if (!localStorage.getItem('anotdigi_plan')) localStorage.setItem('anotdigi_plan', 'BASICO');
+        localStorage.setItem(LS('anotdigi_expiry'), _d.toISOString().split('T')[0]);
+        if (!localStorage.getItem(LS('anotdigi_plan'))) localStorage.setItem(LS('anotdigi_plan'), 'BASICO');
         window.history.replaceState({}, '', window.location.pathname);
     }
 
@@ -2737,17 +2742,17 @@ function toast(msg) {
 }
 
 // ─── Egresos (Plan Full) ───
-const EGKEY = 'egresos_anotdigi';
+const EGKEY = LS('egresos_anotdigi');
 
 function actualizarBtnEgresos() {
-    const p = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    const p = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
     const btn = document.getElementById('btnEgresos');
     if (btn) btn.style.display = p === 'FULL' ? '' : 'none';
 }
 
 function irEgresos() {
     if (!promoActivo()) { renderizarPlanes(false); mostrarScreen('sp'); return; }
-    const p = (localStorage.getItem('anotdigi_plan') || '').toUpperCase();
+    const p = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
     if (p !== 'FULL') { renderizarPlanes(false); mostrarScreen('sp'); return; }
     renderEgresosAnotdigi();
     mostrarScreen('se2');
