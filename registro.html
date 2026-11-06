@@ -4,8 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Registro de Trabajo</title>
-    <link rel="manifest" href="manifest-miguel.json">
-    <script>(function(){var id=(new URLSearchParams(location.search).get('id')||localStorage.getItem('anotdigi_id')||'miguel').toLowerCase();var m={cbtec:'manifest-anotdigi-cbtec.json',fer:'manifest-anotdigi-fer.json'};if(m[id]){var l=document.querySelector('link[rel="manifest"]');if(l)l.href=m[id];}})();</script>
+    <script>
+    // ── PWA: manifest dinámico + captura temprana de beforeinstallprompt ──
+    (function(){
+        var id = (new URLSearchParams(location.search).get('id') || localStorage.getItem('anotdigi_id') || 'miguel').toLowerCase();
+        var manifests = { cbtec: 'manifest-anotdigi-cbtec.json', fer: 'manifest-anotdigi-fer.json', miguel: 'manifest-anotdigi-miguel.json' };
+        var link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifests[id] || 'manifest-anotdigi-miguel.json';
+        document.head.appendChild(link);
+    })();
+    // Listener registrado en <head> — antes de que el browser pueda dispararlo
+    window._pwaPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window._pwaPrompt = e;
+        var btn = document.getElementById('btnInstalar');
+        if (btn) { btn.style.display = ''; }
+        else { window._pwaPromptPending = true; }
+    });
+    window.addEventListener('appinstalled', function() {
+        window._pwaPrompt = null;
+        var btn = document.getElementById('btnInstalar');
+        if (btn) btn.style.display = 'none';
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window._pwaPromptPending) {
+            var btn = document.getElementById('btnInstalar');
+            if (btn) { btn.style.display = ''; window._pwaPromptPending = false; }
+        }
+    });
+    function instalarPWA() {
+        if (!window._pwaPrompt) return;
+        window._pwaPrompt.prompt();
+        window._pwaPrompt.userChoice.then(function(){ window._pwaPrompt = null; });
+    }
+    </script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -418,6 +452,9 @@
     </button>
     <button id="btnInstalar" onclick="instalarPWA()" style="display:none;margin-top:14px;width:100%;padding:13px;background:rgba(74,222,128,0.12);border:1.5px solid rgba(74,222,128,0.4);border-radius:12px;color:#4ade80;font-size:0.9rem;font-weight:700;cursor:pointer;">
         📲 Instalar app en este celular
+    </button>
+    <button onclick="limpiarCache()" style="margin-top:10px;background:none;border:none;color:rgba(255,255,255,0.2);font-size:0.72rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;">
+        Limpiar caché
     </button>
 </div>
 
@@ -3309,29 +3346,28 @@ function actualizarBtnIngresoRapido() {
     if (btn) btn.style.display = (p === 'FULL') ? '' : 'none';
 }
 
-// PWA install
-let _pwaPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    _pwaPrompt = e;
-    const btn = document.getElementById('btnInstalar');
-    if (btn) btn.style.display = '';
-});
-window.addEventListener('appinstalled', () => {
-    _pwaPrompt = null;
-    const btn = document.getElementById('btnInstalar');
-    if (btn) btn.style.display = 'none';
-});
-function instalarPWA() {
-    if (!_pwaPrompt) return;
-    _pwaPrompt.prompt();
-    _pwaPrompt.userChoice.then(() => { _pwaPrompt = null; });
-}
+
 </script>
 <script>
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/gestfact-demo/sw.js')
         .catch(function(){});
+}
+async function limpiarCache() {
+    try {
+        if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            for (const r of regs) await r.unregister();
+        }
+        if ('caches' in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => caches.delete(k)));
+        }
+        toast('✅ Caché limpiada — recargando...');
+        setTimeout(() => location.reload(true), 1200);
+    } catch(e) {
+        toast('⚠️ ' + e.message);
+    }
 }
 </script>
 </body>
