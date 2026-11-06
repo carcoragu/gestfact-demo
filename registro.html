@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Registro de Trabajo</title>
     <link rel="manifest" href="manifest-miguel.json">
+    <script>(function(){var id=(new URLSearchParams(location.search).get('id')||localStorage.getItem('anotdigi_id')||'miguel').toLowerCase();var m={cbtec:'manifest-anotdigi-cbtec.json',fer:'manifest-anotdigi-fer.json'};if(m[id]){var l=document.querySelector('link[rel="manifest"]');if(l)l.href=m[id];}})();</script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -414,6 +415,9 @@
     </div>
     <button onclick="mostrarScreen('sinfo')" style="margin-top:18px;background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.8rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;">
         ¿Cómo funciona AnotDigi?
+    </button>
+    <button id="btnInstalar" onclick="instalarPWA()" style="display:none;margin-top:14px;width:100%;padding:13px;background:rgba(74,222,128,0.12);border:1.5px solid rgba(74,222,128,0.4);border-radius:12px;color:#4ade80;font-size:0.9rem;font-weight:700;cursor:pointer;">
+        📲 Instalar app en este celular
     </button>
 </div>
 
@@ -3295,6 +3299,25 @@ function actualizarBtnIngresoRapido() {
     const p   = (localStorage.getItem(LS('anotdigi_plan')) || '').toUpperCase();
     const btn = document.getElementById('btnIngresoRapido');
     if (btn) btn.style.display = (p === 'FULL') ? '' : 'none';
+}
+
+// PWA install
+let _pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    _pwaPrompt = e;
+    const btn = document.getElementById('btnInstalar');
+    if (btn) btn.style.display = '';
+});
+window.addEventListener('appinstalled', () => {
+    _pwaPrompt = null;
+    const btn = document.getElementById('btnInstalar');
+    if (btn) btn.style.display = 'none';
+});
+function instalarPWA() {
+    if (!_pwaPrompt) return;
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(() => { _pwaPrompt = null; });
 }
 </script>
 <script>
