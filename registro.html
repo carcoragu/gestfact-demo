@@ -1060,8 +1060,16 @@ function buildItemsStr(servicio, montoTotal) {
     if (!partes.length) return '(sin descripcion)~1~' + montoTotal + '~' + montoTotal;
     return partes.map(p => {
         let desc = p, monto = 0, cant = 1;
-        const mMatch = desc.match(/\s+(\d{1,3}(?:\.\d{3})+)$/);
-        if (mMatch) { monto = parseInt(mMatch[1].replace(/\./g,''), 10); desc = desc.slice(0, -mMatch[0].length).trim(); }
+        // Precio: "X mil" / "X k"
+        const milM = desc.match(/\s+(\d+(?:[.,]\d+)?)\s*(?:mil|k)$/i);
+        if (milM) {
+            monto = Math.round(parseFloat(milM[1].replace(',', '.')) * 1000);
+            desc  = desc.slice(0, desc.length - milM[0].length).trim();
+        } else {
+            // Con puntos (50.000) o sin puntos (50000 / 450000)
+            const mMatch = desc.match(/\s+(\d{1,3}(?:\.\d{3})+|\d{4,})$/);
+            if (mMatch) { monto = parseInt(mMatch[1].replace(/\./g, ''), 10); desc = desc.slice(0, -mMatch[0].length).trim(); }
+        }
         const cMatch = desc.match(/\s+(\d{1,2})$/);
         if (cMatch) { cant = parseInt(cMatch[1], 10); desc = desc.slice(0, -cMatch[0].length).trim(); }
         return `${desc.toUpperCase()}~${cant}~${monto}~${monto}`;
@@ -1542,7 +1550,7 @@ async function _doEnviarWizard() {
         }
         const monto      = extraerMontoDeServicio(servicio);
         const gfId       = 'ANOTD-' + chapa + '-' + (fecha || '').replace(/-/g,'');
-        const items      = servicio + '~1~' + monto + '~' + monto;
+        const items      = buildItemsStr(servicio, monto);
         const cobrado    = estadoPagoWizard === 'cobrado' ? '1' : '0';
         const estadoPres = estadoPagoWizard === 'cobrado' ? 'Cobrado' : estadoPagoWizard === 'verificar' ? 'Verificar' : 'Pendiente';
         const url = GF_API
@@ -3243,7 +3251,7 @@ async function irCrear() {
     const estadoPres = estadoIR === 'cobrado'   ? 'Cobrado'
                      : estadoIR === 'verificar' ? 'Verificar' : 'Pendiente';
     const gfId       = 'IR-' + (chapa||'XX') + '-' + (fecha||'').replace(/-/g,'') + '-' + String(Date.now()).slice(-4);
-    const items      = servicio + '~1~' + monto + '~' + monto;
+    const items      = buildItemsStr(servicio, monto);
 
     if (esClienteNuevo(cliente)) {
         try {
