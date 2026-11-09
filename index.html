@@ -922,7 +922,8 @@ var CLIENTES_INFO={
     EMPRESA_NOMBRE=_b.empresa||_b.nombre||'GestFact';
     EMPRESA_DIR=_b.dir_empresa||'';EMPRESA_TEL=_b.tel_empresa||'';
     ISABFE_CLIENT_ID=_b.isabfeClientId||'';
-    if(window.location.port==='8765'){ISABFE_URL=window.location.origin;}
+    ISABFE_URL=_b.isabfeUrl||'';
+    if(window.location.port==='8765'||!window.location.hostname.includes('github.io')){ISABFE_URL=window.location.origin;}
     function _autoStart(){
       checkLicense().then(function(lic){if(!applyLicense(lic))return;go('s-dashboard');loadAllData();}).catch(function(){go('s-dashboard');loadAllData();});
     }
@@ -1148,7 +1149,7 @@ function loginAndLoad(){
       EMPRESA_NOMBRE=info.empresa||data.nombre||'GestFact';
       EMPRESA_DIR=info.dir_empresa||'';EMPRESA_TEL=info.tel_empresa||'';
       ISABFE_URL=info.isabfeUrl||'';
-      if(window.location.port==='8765'){ISABFE_URL=window.location.origin;}
+      if(window.location.port==='8765'||!window.location.hostname.includes('github.io')){ISABFE_URL=window.location.origin;}
       ISABFE_CLIENT_ID=info.isabfeClientId||'';
       if(ISABFE_URL){
         fetch(ISABFE_URL+'/health').then(function(r){return r.json();}).then(function(h){
