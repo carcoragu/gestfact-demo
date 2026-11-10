@@ -2847,6 +2847,15 @@ function generarReporte(){
   '</div>'+
   '<div class="stamp">Generado: '+stamp+' — IsabSoft GestFact</div>'+
   '</body></html>';
+  var esIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(esIOS){
+    try{
+      var blob=new Blob([html],{type:'text/html'});
+      var blobUrl=URL.createObjectURL(blob);
+      window.location.href=blobUrl;
+    }catch(e){window.print();}
+    return;
+  }
   var v=window.open('','_blank');
   if(!v){alert('Permitir popups para imprimir.');return;}
   v.document.write(html);v.document.close();v.focus();setTimeout(function(){v.print();},600);
