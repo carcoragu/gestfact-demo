@@ -1596,7 +1596,7 @@ function go(id){
   if(id==='s-fotos')renderFotos();
   if(id==='s-gestion')renderGestion();
   if(id==='s-reportes')initReportes();
-  if(id==='s-nuevo'){if(!_fromPicker)limpiarOrden();_fromPicker=false;if(!editandoOrden){renderNuevoSelect(_preselClienteOrden);_preselClienteOrden=null;}}
+  if(id==='s-nuevo'){var _wp=_fromPicker;if(!_fromPicker)limpiarOrden();_fromPicker=false;if(!editandoOrden){var _ks=null;if(_wp){var _ksel=document.getElementById('orden-cliente-sel');_ks=_ksel&&_ksel.value&&_ksel.value!=='__placeholder__'?_ksel.value:null;}renderNuevoSelect(_ks||_preselClienteOrden);_preselClienteOrden=null;}}
   if(id==='s-egresos')renderEgresos();
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
