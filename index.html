@@ -211,6 +211,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 .veh-pick-btn.nuevo{border-style:dashed;color:#8b949e;background:transparent;}
 .voz-btn.escuchando{color:#e53935;animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#gf-rpt-print{display:none;}
 @media print{
   body *{visibility:hidden;}
   #print-pres,#print-pres *{visibility:visible;}
@@ -222,6 +223,8 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   #print-pres .print-header{text-align:center;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #000;}
   #print-pres .print-header img{height:70px;display:block;margin:0 auto 6px;}
   #print-pres .print-header div{color:#000 !important;}
+  #gf-rpt-print,#gf-rpt-print *{visibility:visible;}
+  #gf-rpt-print{display:block!important;position:fixed;top:0;left:0;width:100%;background:#fff;}
 }
 .rep-check{display:flex;align-items:center;gap:7px;font-size:.82rem;color:#c9d1d9;cursor:pointer;padding:8px 10px;border:1px solid #1e3a5f;border-radius:8px;}
 .rep-check input{accent-color:#1e88e5;width:15px;height:15px;cursor:pointer;flex-shrink:0;}
@@ -2849,11 +2852,22 @@ function generarReporte(){
   '</body></html>';
   var esIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
   if(esIOS){
-    try{
-      var blob=new Blob([html],{type:'text/html'});
-      var blobUrl=URL.createObjectURL(blob);
-      window.location.href=blobUrl;
-    }catch(e){window.print();}
+    var sm=html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+    var bm=html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+    var rptStyles=sm?sm[1]:'';var rptContent=bm?bm[1]:html;
+    var rEl=document.getElementById('gf-rpt-print')||document.createElement('div');
+    rEl.id='gf-rpt-print';rEl.innerHTML=rptContent;
+    var sEl=document.getElementById('gf-rpt-style')||document.createElement('style');
+    sEl.id='gf-rpt-style';sEl.textContent=rptStyles;
+    if(!document.getElementById('gf-rpt-print'))document.body.appendChild(rEl);
+    if(!document.getElementById('gf-rpt-style'))document.head.appendChild(sEl);
+    setTimeout(function(){
+      window.print();
+      setTimeout(function(){
+        if(rEl.parentNode)rEl.parentNode.removeChild(rEl);
+        if(sEl.parentNode)sEl.parentNode.removeChild(sEl);
+      },1500);
+    },200);
     return;
   }
   var v=window.open('','_blank');
