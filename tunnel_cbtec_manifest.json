@@ -1,0 +1,16 @@
+{
+  "name": "IsabFE CBTEC",
+  "short_name": "CBTEC",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "2000x2000",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "tunnel_cbtec.html",
+  "display": "browser",
+  "background_color": "#f0f4f8",
+  "theme_color": "#2563eb"
+}
