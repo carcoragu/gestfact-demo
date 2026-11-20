@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Hector — Propuesta IsabSoft Taller</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+:root{--pri:#1d4ed8;--green:#16a34a;--green2:#15803d;--bg:#f1f5f9;--text:#1e293b;--sub:#64748b;--border:#e2e8f0}
+body{background:var(--bg);color:var(--text);min-height:100vh}
+
+#propuesta{min-height:100vh;background:linear-gradient(150deg,#0f172a 0%,#1e3a8a 60%,#0f172a 100%);padding:20px 16px 48px;display:flex;justify-content:center}
+.prop-wrap{width:100%;max-width:600px;color:#fff}
+.prop-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-top:4px}
+.prop-logo{width:50px;height:50px;background:#fff;border-radius:14px;flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.35);padding:6px;object-fit:contain}
+.prop-brand{font-size:20px;font-weight:800}
+.prop-brand-sub{font-size:12px;opacity:.65}
+.prop-hero{text-align:center;margin-bottom:22px}
+.prop-greeting{font-size:13px;opacity:.75;margin-bottom:4px}
+.prop-name{font-size:26px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px}
+.prop-sub{font-size:13px;background:rgba(255,255,255,.12);display:inline-block;padding:5px 18px;border-radius:30px;border:1px solid rgba(255,255,255,.15)}
+
+.plan-card{border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#064e3b,#065f46);border:2px solid #34d399;box-shadow:0 8px 32px rgba(52,211,153,.25);margin-bottom:16px}
+.plan-top{padding:18px 18px 14px}
+.plan-icon{font-size:28px;margin-bottom:8px}
+.plan-nombre{font-size:17px;font-weight:800;margin-bottom:4px}
+.plan-precio{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1}
+.plan-precio span{font-size:16px;font-weight:600;opacity:.8}
+.plan-precio-sub{font-size:11px;opacity:.7;margin-top:4px}
+.plan-cuotas{font-size:12px;opacity:.8;margin-top:10px;background:rgba(0,0,0,.2);border-radius:10px;padding:10px 12px;line-height:1.9}
+.plan-feats{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1)}
+.plan-feats-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:10px}
+.feat-item{font-size:12px;padding:4px 0;display:flex;align-items:flex-start;gap:7px;line-height:1.4}
+.feat-check{flex-shrink:0;font-size:13px}
+.feat-hl{font-size:9px;background:rgba(52,211,153,.25);color:#6ee7b7;padding:1px 6px;border-radius:10px;margin-left:4px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
+.plan-btn{display:block;margin:16px 18px 18px;padding:14px;border-radius:14px;font-size:14px;font-weight:800;text-align:center;text-decoration:none;cursor:pointer;border:none;width:calc(100% - 36px);background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 20px rgba(22,163,74,.4)}
+
+.btn-ver-demo{width:100%;padding:14px;background:rgba(255,255,255,.1);color:#fff;border:2px solid rgba(255,255,255,.25);border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px}
+.prop-footer{font-size:11px;opacity:.4;text-align:center;line-height:1.7;margin-top:24px}
+</style>
+</head>
+<body>
+<script>(function(){new Image().src='https://script.google.com/macros/s/AKfycby06EJyHfN1lTZmCoe5xKvpMFInnXzVmy-ZX4djCsoWmnajx6uG-WL3nQgkc_y-wZZp8w/exec?p=gestfact_demo&ev=vista&id=hector_taller&ua='+encodeURIComponent(navigator.userAgent)+'&ref='+encodeURIComponent(document.referrer);})();</script>
+
+<div id="propuesta">
+<div class="prop-wrap">
+
+  <div class="prop-header">
+    <img src="./logo.png" class="prop-logo" alt="IsabSoft">
+    <div>
+      <div class="prop-brand">IsabSoft</div>
+      <div class="prop-brand-sub">Soluciones Oportunas — Lambaré, Paraguay</div>
+    </div>
+  </div>
+
+  <div class="prop-hero">
+    <div class="prop-greeting">Propuesta preparada especialmente para</div>
+    <div class="prop-name">Hector 🔧</div>
+    <div class="prop-sub">Sistema de Gestión — Taller Multi-Servicio</div>
+  </div>
+
+  <!-- SERVICIOS CONFIGURADOS -->
+  <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px;margin-bottom:16px">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:10px">⚙️ Configurado para sus 6 servicios</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:9px 11px;font-size:12px;display:flex;align-items:center;gap:7px">⚡ Electricidad</div>
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:9px 11px;font-size:12px;display:flex;align-items:center;gap:7px">🔌 Electrónica</div>
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:9px 11px;font-size:12px;display:flex;align-items:center;gap:7px">❄️ Aire Acond.</div>
+      <div style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:10px;padding:9px 11px;font-size:12px;display:flex;align-items:center;gap:7px;color:#6ee7b7">🛢️ Lubricentro ✦</div>
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:9px 11px;font-size:12px;display:flex;align-items:center;gap:7px">🚗 Tren Delantero</div>
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:9px 11px;font-size:12px;display:flex;align-items:center;gap:7px">🚗 Tren Trasero</div>
+    </div>
+    <div style="font-size:11px;color:#94a3b8;margin-top:10px;line-height:1.6">✦ Lubricentro incluye control de km — el sistema avisa al cliente cuándo cambiar el aceite.</div>
+  </div>
+
+  <!-- PLAN -->
+  <div class="plan-card">
+    <div class="plan-top">
+      <div class="plan-icon">💳</div>
+      <div class="plan-nombre">Plan Pago Único</div>
+      <div class="plan-precio">Gs. <span>1.100.000</span></div>
+      <div class="plan-precio-sub">IVA incluido · pago en 2 cuotas</div>
+      <div class="plan-cuotas">
+        💰 <strong>Cuota 1 — Al instalar:</strong> Gs. 550.000<br>
+        💰 <strong>Cuota 2 — Al mes:</strong> Gs. 550.000<br>
+        🛢️ <strong>Lubricentro + km:</strong> activo ~3 semanas<br>
+        📋 <strong>3 meses soporte</strong> incluidos
+      </div>
+    </div>
+
+    <div class="plan-feats">
+      <div class="plan-feats-title">Incluye desde el día 1</div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Presupuesto por tipo de servicio (6 configurados)</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Presupuesto en PDF → envío WhatsApp al cliente</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Ficha vehículo + historial de trabajos</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Gestión clientes + vehículos</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Cobros pendientes → WhatsApp cliente</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Orden de trabajo — pendiente / en proceso / listo</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Acceso desde PC y celular</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Funciona sin internet (datos guardados en su equipo)</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Capacitación incluida — usás el sistema el primer día</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>3 meses soporte técnico incluido</span></div>
+      <div class="feat-item"><span class="feat-check">✅</span><span>Hasta 2 equipos</span></div>
+    </div>
+
+    <!-- LUBRICENTRO HIGHLIGHT -->
+    <div style="margin:0 18px 16px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:12px;padding:14px">
+      <div style="font-size:13px;font-weight:800;color:#6ee7b7;margin-bottom:8px">🛢️ Módulo Lubricentro — activo ~3 semanas</div>
+      <div style="font-size:12px;color:#a7f3d0;line-height:1.7">
+        Al cobrar un cambio de aceite, el sistema registra los km del vehículo.<br>
+        Cuando el cliente llega de nuevo, ve automáticamente cuántos km hizo desde el último cambio.<br><br>
+        <strong>Fidelización automática:</strong> el sistema puede avisar al cliente por WhatsApp cuando se acerca el próximo cambio — sin que usted tenga que hacer nada.
+      </div>
+    </div>
+
+    <!-- MES 4+ -->
+    <div style="margin:0 18px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px;font-size:11px;color:#cbd5e1;line-height:1.7">
+      📋 <strong>Mes 4 en adelante:</strong> Gs. 100.000 por sesión de asistencia o actualización.<br>
+      <span style="opacity:.7">Sin abono fijo — solo cuando lo necesite.</span>
+    </div>
+
+    <!-- FE ADD-ON -->
+    <div style="margin:0 18px 16px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.25);border-radius:10px;padding:10px 12px;font-size:11px;color:#c7d2fe;line-height:1.7">
+      🧾 <strong>Factura Electrónica SET:</strong> disponible como módulo add-on.<br>
+      <span style="opacity:.7">Cuando lo necesite, se activa sin cambiar el sistema — cotizar aparte.</span>
+    </div>
+
+    <a class="plan-btn"
+      href="https://wa.me/595981153477?text=Hola+Carlos%21+Vi+la+propuesta+y+quiero+avanzar+con+el+Plan+Gs.1.100.000.+%C2%BFCu%C3%A1ndo+instalamos%3F"
+      target="_blank">✅ CONFIRMAR — WhatsApp</a>
+  </div>
+
+  <!-- DEMO -->
+  <button class="btn-ver-demo" onclick="verDemo()">👁 Ver demo del sistema en vivo</button>
+  <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.5);margin-top:-6px;margin-bottom:20px">🔑 Acceso: <strong style="color:rgba(255,255,255,.75)">demo2026</strong></div>
+
+  <!-- CONDICIONES -->
+  <div style="background:rgba(255,255,255,.05);border-radius:14px;padding:14px;margin-bottom:18px;display:flex;flex-direction:column;gap:8px">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.5;margin-bottom:4px">Condiciones</div>
+    <div style="font-size:12px;display:flex;align-items:flex-start;gap:8px;opacity:.8;line-height:1.5"><span>📋</span><span>Propuesta válida por 15 días.</span></div>
+    <div style="font-size:12px;display:flex;align-items:flex-start;gap:8px;opacity:.8;line-height:1.5"><span>💾</span><span>Sus datos son suyos — puede exportarlos en cualquier momento sin costo.</span></div>
+    <div style="font-size:12px;display:flex;align-items:flex-start;gap:8px;opacity:.8;line-height:1.5"><span>🔒</span><span>El software es propiedad de IsabSoft. No se transfiere el código fuente.</span></div>
+    <div style="font-size:12px;display:flex;align-items:flex-start;gap:8px;opacity:.8;line-height:1.5"><span>🌐</span><span>Funciona sin internet — sus datos siempre disponibles en su equipo.</span></div>
+    <div style="font-size:12px;display:flex;align-items:flex-start;gap:8px;opacity:.8;line-height:1.5"><span>⚙️</span><span>Funcionalidades nuevas bajo presupuesto previo — sin sorpresas.</span></div>
+  </div>
+
+  <div class="prop-footer">
+    IsabSoft — Lambaré, Paraguay · 0981-153477<br>
+    isacoroajboston@gmail.com
+  </div>
+
+</div>
+</div>
+
+<script>
+function verDemo(){
+  window.open('https://carcoragu.github.io/gestfact-demo/index.html','_blank');
+}
+</script>
+</body>
+</html>
