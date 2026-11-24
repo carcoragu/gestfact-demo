@@ -922,7 +922,8 @@ var CLIENTES_INFO={
     EMPRESA_NOMBRE=_b.empresa||_b.nombre||'GestFact';
     EMPRESA_DIR=_b.dir_empresa||'';EMPRESA_TEL=_b.tel_empresa||'';
     ISABFE_CLIENT_ID=_b.isabfeClientId||'';
-    if(window.location.port==='8765'){ISABFE_URL=window.location.origin;}
+    ISABFE_URL=_b.isabfeUrl||'';
+    if(window.location.port==='8765'||!window.location.hostname.includes('github.io')){ISABFE_URL=window.location.origin;}
     function _autoStart(){
       checkLicense().then(function(lic){if(!applyLicense(lic))return;go('s-dashboard');loadAllData();}).catch(function(){go('s-dashboard');loadAllData();});
     }
@@ -1148,7 +1149,7 @@ function loginAndLoad(){
       EMPRESA_NOMBRE=info.empresa||data.nombre||'GestFact';
       EMPRESA_DIR=info.dir_empresa||'';EMPRESA_TEL=info.tel_empresa||'';
       ISABFE_URL=info.isabfeUrl||'';
-      if(window.location.port==='8765'){ISABFE_URL=window.location.origin;}
+      if(window.location.port==='8765'||!window.location.hostname.includes('github.io')){ISABFE_URL=window.location.origin;}
       ISABFE_CLIENT_ID=info.isabfeClientId||'';
       if(ISABFE_URL){
         fetch(ISABFE_URL+'/health').then(function(r){return r.json();}).then(function(h){
@@ -2681,9 +2682,9 @@ function _repFiltrarOrdenes(){
   return ordenes.filter(function(o){
     if(clienteFiltro&&o.cliente!==clienteFiltro)return false;
     if(desdeVal||hastaVal){
-      var d=new Date(o.fecha||'');
-      var dDesde=desdeVal?new Date(desdeVal):null;
-      var dHasta=hastaVal?new Date(hastaVal+'T23:59:59'):null;
+      var d=_parseFecha(o.fecha||'');
+      var dDesde=desdeVal?new Date(parseInt(desdeVal.split('-')[0]),parseInt(desdeVal.split('-')[1])-1,parseInt(desdeVal.split('-')[2])):null;
+      var dHasta=hastaVal?new Date(parseInt(hastaVal.split('-')[0]),parseInt(hastaVal.split('-')[1])-1,parseInt(hastaVal.split('-')[2]),23,59,59):null;
       if(dDesde&&d<dDesde)return false;
       if(dHasta&&d>dHasta)return false;
     }
@@ -2846,9 +2847,16 @@ function generarReporte(){
   '</div>'+
   '<div class="stamp">Generado: '+stamp+' — IsabSoft GestFact</div>'+
   '</body></html>';
-  var v=window.open('','_blank');
-  if(!v){alert('Permitir popups para imprimir.');return;}
-  v.document.write(html);v.document.close();v.focus();setTimeout(function(){v.print();},600);
+  var blob=new Blob([html],{type:'text/html'});
+  var burl=URL.createObjectURL(blob);
+  var v=window.open(burl,'_blank');
+  if(!v){
+    var a=document.createElement('a');a.href=burl;a.download='informe-gestfact.html';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(burl);},10000);
+    return;
+  }
+  v.focus();setTimeout(function(){try{v.print();}catch(e){}setTimeout(function(){URL.revokeObjectURL(burl);},10000);},800);
 }
 function enviarReporteWA(){
   var lista=_getSelectedOrdenes();
