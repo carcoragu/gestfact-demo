@@ -1,4 +1,4 @@
-const CACHE = 'gestfact-v16';
+const CACHE = 'gestfact-v17';
 
 self.addEventListener('install', e => {
   e.waitUntil(self.skipWaiting());

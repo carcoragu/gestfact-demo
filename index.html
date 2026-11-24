@@ -2857,36 +2857,21 @@ function generarReporte(){
   '</div>'+
   '<div class="stamp">Generado: '+stamp+' — IsabSoft GestFact</div>'+
   '</body></html>';
-  var esIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
-  if(esIOS){
-    var sm=html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
-    var bm=html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    var rptStyles=sm?sm[1]:'';var rptContent=bm?bm[1]:html;
-    var rEl=document.getElementById('gf-rpt-print')||document.createElement('div');
-    rEl.id='gf-rpt-print';rEl.innerHTML=rptContent;
-    var sEl=document.getElementById('gf-rpt-style')||document.createElement('style');
-    sEl.id='gf-rpt-style';sEl.textContent=rptStyles;
-    if(!document.getElementById('gf-rpt-print'))document.body.appendChild(rEl);
-    if(!document.getElementById('gf-rpt-style'))document.head.appendChild(sEl);
+  var sm=html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+  var bm=html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  var rptStyles=sm?sm[1]:'';var rptContent=bm?bm[1]:html;
+  var rEl=document.getElementById('gf-rpt-print');
+  if(!rEl){rEl=document.createElement('div');rEl.id='gf-rpt-print';document.body.appendChild(rEl);}
+  rEl.innerHTML=rptContent;
+  var sEl=document.getElementById('gf-rpt-style');
+  if(!sEl){sEl=document.createElement('style');sEl.id='gf-rpt-style';document.head.appendChild(sEl);}
+  sEl.textContent=rptStyles;
+  setTimeout(function(){
+    window.print();
     setTimeout(function(){
-      window.print();
-      setTimeout(function(){
-        if(rEl.parentNode)rEl.parentNode.removeChild(rEl);
-        if(sEl.parentNode)sEl.parentNode.removeChild(sEl);
-      },1500);
-    },200);
-    return;
-  }
-  var blob=new Blob([html],{type:'text/html'});
-  var burl=URL.createObjectURL(blob);
-  var v=window.open(burl,'_blank');
-  if(!v){
-    var a=document.createElement('a');a.href=burl;a.download='informe-gestfact.html';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-    setTimeout(function(){URL.revokeObjectURL(burl);},10000);
-    return;
-  }
-  v.focus();setTimeout(function(){try{v.print();}catch(e){}setTimeout(function(){URL.revokeObjectURL(burl);},10000);},800);
+      rEl.innerHTML='';sEl.textContent='';
+    },2000);
+  },300);
 }
 function enviarReporteWA(){
   var lista=_getSelectedOrdenes();
