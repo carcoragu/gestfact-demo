@@ -2866,11 +2866,15 @@ function generarReporte(){
   var sEl=document.getElementById('gf-rpt-style');
   if(!sEl){sEl=document.createElement('style');sEl.id='gf-rpt-style';document.head.appendChild(sEl);}
   sEl.textContent=rptStyles;
+  var ocultos=Array.from(document.body.children).filter(function(el){return el.id!=='gf-rpt-print'&&el.id!=='gf-rpt-style';});
+  ocultos.forEach(function(el){el.dataset.pd=el.style.display;el.style.display='none';});
+  rEl.style.display='block';
   setTimeout(function(){
     window.print();
     setTimeout(function(){
-      rEl.innerHTML='';sEl.textContent='';
-    },2000);
+      ocultos.forEach(function(el){el.style.display=el.dataset.pd||'';});
+      rEl.innerHTML='';sEl.textContent='';rEl.style.display='';
+    },2500);
   },300);
 }
 function enviarReporteWA(){
