@@ -211,6 +211,7 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
 .veh-pick-btn.nuevo{border-style:dashed;color:#8b949e;background:transparent;}
 .voz-btn.escuchando{color:#e53935;animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#gf-rpt-print{display:none;}
 @media print{
   body *{visibility:hidden;}
   #print-pres,#print-pres *{visibility:visible;}
@@ -222,6 +223,8 @@ input,textarea,select{-webkit-user-select:text!important;user-select:text!import
   #print-pres .print-header{text-align:center;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #000;}
   #print-pres .print-header img{height:70px;display:block;margin:0 auto 6px;}
   #print-pres .print-header div{color:#000 !important;}
+  #gf-rpt-print,#gf-rpt-print *{visibility:visible;}
+  #gf-rpt-print{display:block!important;position:fixed;top:0;left:0;width:100%;background:#fff;}
 }
 .rep-check{display:flex;align-items:center;gap:7px;font-size:.82rem;color:#c9d1d9;cursor:pointer;padding:8px 10px;border:1px solid #1e3a5f;border-radius:8px;}
 .rep-check input{accent-color:#1e88e5;width:15px;height:15px;cursor:pointer;flex-shrink:0;}
@@ -1373,6 +1376,12 @@ function renderNuevoSelect(preselect){
   var sel=document.getElementById('orden-cliente-sel');
   if(!sel)return;
   sel.innerHTML='';
+  if(!preselect){
+    var ph=document.createElement('option');
+    ph.value='__placeholder__';ph.textContent='-- Seleccioná un cliente --';
+    ph.disabled=true;ph.selected=true;
+    sel.appendChild(ph);
+  }
   clientes.forEach(function(cl){
     var opt=document.createElement('option');
     opt.value=cl.nombre+' -- '+cl.vehiculo;
@@ -1384,7 +1393,7 @@ function renderNuevoSelect(preselect){
   nuevoOpt.textContent='+ Nuevo cliente...';
   sel.appendChild(nuevoOpt);
   if(preselect&&preselect!=='__nuevo__')sel.value=preselect;
-  if(sel.value&&sel.value!=='__nuevo__')autoFillCliente(sel.value);
+  if(sel.value&&sel.value!=='__nuevo__'&&sel.value!=='__placeholder__')autoFillCliente(sel.value);
 }
 
 var ncReturnScreen='s-clientes';
@@ -1398,6 +1407,7 @@ function selectCliente(val){
     go('s-nuevo-cliente');
     return;
   }
+  if(!val||val==='__placeholder__')return;
   autoFillCliente(val);
 }
 
@@ -1586,7 +1596,7 @@ function go(id){
   if(id==='s-fotos')renderFotos();
   if(id==='s-gestion')renderGestion();
   if(id==='s-reportes')initReportes();
-  if(id==='s-nuevo'){if(!_fromPicker)limpiarOrden();_fromPicker=false;if(!editandoOrden){renderNuevoSelect(_preselClienteOrden);_preselClienteOrden=null;}}
+  if(id==='s-nuevo'){var _wp=_fromPicker;if(!_fromPicker)limpiarOrden();_fromPicker=false;if(!editandoOrden){var _ks=null;if(_wp){var _ksel=document.getElementById('orden-cliente-sel');_ks=_ksel&&_ksel.value&&_ksel.value!=='__placeholder__'?_ksel.value:null;}renderNuevoSelect(_ks||_preselClienteOrden);_preselClienteOrden=null;}}
   if(id==='s-egresos')renderEgresos();
 }
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
@@ -2847,6 +2857,26 @@ function generarReporte(){
   '</div>'+
   '<div class="stamp">Generado: '+stamp+' — IsabSoft GestFact</div>'+
   '</body></html>';
+  var esIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(esIOS){
+    var sm=html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+    var bm=html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+    var rptStyles=sm?sm[1]:'';var rptContent=bm?bm[1]:html;
+    var rEl=document.getElementById('gf-rpt-print')||document.createElement('div');
+    rEl.id='gf-rpt-print';rEl.innerHTML=rptContent;
+    var sEl=document.getElementById('gf-rpt-style')||document.createElement('style');
+    sEl.id='gf-rpt-style';sEl.textContent=rptStyles;
+    if(!document.getElementById('gf-rpt-print'))document.body.appendChild(rEl);
+    if(!document.getElementById('gf-rpt-style'))document.head.appendChild(sEl);
+    setTimeout(function(){
+      window.print();
+      setTimeout(function(){
+        if(rEl.parentNode)rEl.parentNode.removeChild(rEl);
+        if(sEl.parentNode)sEl.parentNode.removeChild(sEl);
+      },1500);
+    },200);
+    return;
+  }
   var blob=new Blob([html],{type:'text/html'});
   var burl=URL.createObjectURL(blob);
   var v=window.open(burl,'_blank');
