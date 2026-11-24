@@ -2910,6 +2910,11 @@ function enviarReporteWA(){
   }
 })();
 </script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/gestfact-demo/sw.js').catch(function(){});
+}
+</script>
 </body>
 </html>
 
