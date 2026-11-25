@@ -2857,25 +2857,12 @@ function generarReporte(){
   '</div>'+
   '<div class="stamp">Generado: '+stamp+' — IsabSoft GestFact</div>'+
   '</body></html>';
-  var sm=html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
-  var bm=html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-  var rptStyles=sm?sm[1]:'';var rptContent=bm?bm[1]:html;
-  var rEl=document.getElementById('gf-rpt-print');
-  if(!rEl){rEl=document.createElement('div');rEl.id='gf-rpt-print';document.body.appendChild(rEl);}
-  rEl.innerHTML=rptContent;
-  var sEl=document.getElementById('gf-rpt-style');
-  if(!sEl){sEl=document.createElement('style');sEl.id='gf-rpt-style';document.head.appendChild(sEl);}
-  sEl.textContent=rptStyles;
-  var ocultos=Array.from(document.body.children).filter(function(el){return el.id!=='gf-rpt-print'&&el.id!=='gf-rpt-style';});
-  ocultos.forEach(function(el){el.dataset.pd=el.style.display;el.style.display='none';});
-  rEl.style.display='block';
-  setTimeout(function(){
-    window.print();
-    setTimeout(function(){
-      ocultos.forEach(function(el){el.style.display=el.dataset.pd||'';});
-      rEl.innerHTML='';sEl.textContent='';rEl.style.display='';
-    },2500);
-  },300);
+  var w=window.open('','_blank');
+  if(!w){alert('Habilitá los pop-ups para generar el informe.');return;}
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(function(){w.print();},600);
 }
 function enviarReporteWA(){
   var lista=_getSelectedOrdenes();
