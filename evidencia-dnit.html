@@ -206,6 +206,27 @@ a:hover { text-decoration: underline; }
   margin-bottom: 4px;
 }
 .ev-desc { font-size: 12px; color: #64748b; }
+.ev-img {
+  margin-top: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.ev-img img {
+  width: 100%;
+  display: block;
+  max-height: 340px;
+  object-fit: contain;
+  background: #0a0f1e;
+}
+.ev-img-caption {
+  padding: 6px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #475569;
+  background: rgba(255,255,255,0.03);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
 .ev-badge {
   font-size: 10px;
   font-weight: 700;
@@ -459,24 +480,40 @@ a:hover { text-decoration: underline; }
       <div class="ev-badge badge-blue">PRESENTADO</div>
     </div>
 
-    <div class="ev-card">
-      <div class="ev-num">04</div>
-      <div class="ev-body">
-        <div class="ev-title">Comunicado oficial DNIT — Falla sistémica reconocida</div>
-        <div class="ev-date">25/11/2026</div>
-        <div class="ev-desc">Hugo López (coordinador SIFEN): <em>"Los afectados pueden gestionar ante la institución un timbrado para utilizar facturas preimpresas o autoimpresas."</em> Fuente: ADN Digital. La propia DNIT reconoció públicamente que su sistema electrónico no es confiable como canal único.</div>
+    <div class="ev-card" style="flex-direction:column;">
+      <div style="display:flex; align-items:flex-start; gap:14px;">
+        <div class="ev-num">04</div>
+        <div class="ev-body">
+          <div class="ev-title">Comunicado oficial DNIT — Falla sistémica reconocida</div>
+          <div class="ev-date">25/11/2026</div>
+          <div class="ev-desc">Hugo López (coordinador SIFEN): <em>"Los afectados pueden gestionar ante la institución un timbrado para utilizar facturas preimpresas o autoimpresas."</em> Fuente: ADN Digital. La propia DNIT reconoció públicamente que su sistema electrónico no es confiable como canal único.</div>
+        </div>
+        <div class="ev-badge badge-warn">ADMISIÓN DNIT</div>
       </div>
-      <div class="ev-badge badge-warn">ADMISIÓN DNIT</div>
+      <div class="ev-img">
+        <img src="ev-wa0021.jpg" alt="Titular ADN Digital — DNIT habilita facturas en papel ante fallas del sistema electrónico">
+        <div class="ev-img-caption">📰 Titular — ADN Digital · 25/11/2026 · "DNIT habilita facturas en papel ante fallas del sistema electrónico"</div>
+      </div>
+      <div class="ev-img" style="margin-top:8px;">
+        <img src="ev-wa0020.jpg" alt="Comunicado DNIT — Hugo López declaraciones completas">
+        <div class="ev-img-caption">📋 Declaraciones completas de Hugo López, coordinador SIFEN · 25/11/2026</div>
+      </div>
     </div>
 
-    <div class="ev-card">
-      <div class="ev-num">05</div>
-      <div class="ev-body">
-        <div class="ev-title">Certificado digital F1 vigente — portal DNIT caído</div>
-        <div class="ev-date">17/11/2026 — 17/11/2028</div>
-        <div class="ev-desc">Identificador: 67t1817n2r2unoec5b3aq5aru5. Emitido por DINATIC. Estado en portal: Vigente ✅. El .pfx no se puede descargar porque el portal servicios.set.gov.py arroja error "No se pudo ejecutar la acción, intente más tarde". La falla es del portal DNIT, no del certificado ni del contribuyente.</div>
+    <div class="ev-card" style="flex-direction:column;">
+      <div style="display:flex; align-items:flex-start; gap:14px;">
+        <div class="ev-num">05</div>
+        <div class="ev-body">
+          <div class="ev-title">Certificado digital F1 vigente — portal DNIT caído</div>
+          <div class="ev-date">17/11/2026 — 17/11/2028</div>
+          <div class="ev-desc">Identificador: 67t1817n2r2unoec5b3aq5aru5. Emitido por DINATIC. Estado en portal: Vigente ✅. El .pfx no se puede descargar porque el portal servicios.set.gov.py arroja error "No se pudo ejecutar la acción, intente más tarde". La falla es del portal DNIT, no del certificado ni del contribuyente.</div>
+        </div>
+        <div class="ev-badge badge-warn">PORTAL CAÍDO</div>
       </div>
-      <div class="ev-badge badge-warn">PORTAL CAÍDO</div>
+      <div class="ev-img" style="margin-top:10px;">
+        <img src="ev-wa0018.jpg" alt="Portal DNIT — Certificado F1 Vigente pero error al descargar">
+        <div class="ev-img-caption">🖥️ Portal DNIT servicios.set.gov.py · 25/11/2026 · Certificado "Vigente" — Error: "No se pudo ejecutar la acción, intente más tarde"</div>
+      </div>
     </div>
 
     <div class="ev-card">
