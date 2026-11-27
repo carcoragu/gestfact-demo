@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IsabSoft — Evidencia de Bloqueo DNIT | Recurso para Contribuyentes Afectados</title>
+<title>DNIT Paraguay — Contribuyentes Bloqueados | Documentación Ciudadana</title>
+<meta name="description" content="Documentación pública de fallas del sistema DNIT Paraguay. Contribuyentes que quisieron cumplir. Estado que no garantizó los medios. Evidencias verificables.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,650 +23,602 @@ a:hover { text-decoration: underline; }
 
 /* ── TOPBAR ── */
 .topbar {
-  background: #0f172a;
+  background: rgba(255,255,255,0.02);
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  padding: 16px 24px;
+  padding: 14px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
 }
-.brand { font-weight: 900; font-size: 18px; color: #fff; letter-spacing: -.01em; }
-.brand span { color: #3b82f6; }
-.topbar-meta {
+.topbar-brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.flag { font-size: 20px; }
+.brand-text { font-weight: 800; font-size: 15px; color: #fff; }
+.brand-text span { color: #f87171; }
+.curator-tag {
+  font-size: 11px; color: #475569;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: #475569;
+}
+.curator-tag strong { color: #94a3b8; }
+.updated-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: #334155;
   letter-spacing: .06em;
 }
-.ruc-badge {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: #93c5fd;
-  background: rgba(59,130,246,0.12);
-  border: 1px solid rgba(59,130,246,0.25);
-  padding: 3px 10px;
-  border-radius: 99px;
+
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(180deg, rgba(239,68,68,0.08) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(239,68,68,0.15);
+  padding: 36px 24px 32px;
+  text-align: center;
 }
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: #f87171; margin-bottom: 12px;
+}
+.hero-title {
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 900; color: #fff;
+  letter-spacing: -.02em; margin-bottom: 12px;
+  line-height: 1.2;
+}
+.hero-title span { color: #f87171; }
+.hero-subtitle {
+  font-size: 15px; color: #94a3b8;
+  max-width: 580px; margin: 0 auto 20px;
+}
+.hero-badges {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  justify-content: center;
+}
+.hero-badge {
+  font-size: 12px; font-weight: 600;
+  padding: 4px 14px; border-radius: 99px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.hb-red  { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #f87171; }
+.hb-warn { background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3); color: #fbbf24; }
+.hb-blue { background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.3); color: #93c5fd; }
 
 /* ── CONTAINER ── */
-.container {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 32px 20px 60px;
-}
+.container { max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
 
 /* ── SECTION TITLE ── */
 .section-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: #475569;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: #475569; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
 }
 .section-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
+  content: ''; flex: 1; height: 1px;
   background: rgba(255,255,255,0.06);
 }
 
-/* ── ALERT ── */
-.alert {
-  background: rgba(239,68,68,0.1);
-  border: 1px solid rgba(239,68,68,0.3);
-  border-radius: 10px;
-  padding: 18px 20px;
+/* ── QUÉ ES ESTA PÁGINA ── */
+.intro-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 22px 24px;
   margin-bottom: 28px;
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
 }
-.alert-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
-.alert-title { font-size: 14px; font-weight: 700; color: #fca5a5; margin-bottom: 4px; }
-.alert-body { font-size: 13px; color: #fca5a5; opacity: .85; }
+.intro-box p { font-size: 14px; color: #cbd5e1; margin-bottom: 10px; }
+.intro-box p:last-child { margin-bottom: 0; }
+.intro-box strong { color: #e2e8f0; }
 
 /* ── STATUS GRID ── */
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 10px;
-  margin-bottom: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px; margin-bottom: 28px;
 }
 .status-card {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px;
-  padding: 14px 16px;
+  border-radius: 10px; padding: 14px 16px;
 }
-.status-top {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
+.status-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.dot-red    { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.6); }
-.dot-yellow { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,.6); }
-.dot-green  { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,.6); }
-.status-name { font-size: 12px; font-weight: 600; color: #94a3b8; }
-.status-label { font-size: 13px; font-weight: 700; }
+.dot-red    { background: #ef4444; box-shadow: 0 0 7px rgba(239,68,68,.7); }
+.dot-yellow { background: #f59e0b; box-shadow: 0 0 7px rgba(245,158,11,.7); }
+.dot-green  { background: #22c55e; box-shadow: 0 0 7px rgba(34,197,94,.7); }
+.status-name { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .06em; }
+.status-label { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
 .label-red    { color: #f87171; }
 .label-yellow { color: #fbbf24; }
 .label-green  { color: #4ade80; }
-.status-detail { font-size: 11px; color: #475569; margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+.status-detail { font-size: 11px; color: #475569; font-family: 'JetBrains Mono', monospace; line-height: 1.5; }
 
-/* ── PARA EL CLIENTE ── */
-.client-box {
-  background: rgba(59,130,246,0.07);
-  border: 1px solid rgba(59,130,246,0.2);
-  border-radius: 10px;
-  padding: 20px 22px;
-  margin-bottom: 28px;
+/* ── CASO CARD ── */
+.caso-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; overflow: hidden;
+  margin-bottom: 16px;
 }
-.client-box h3 {
-  font-size: 14px;
-  font-weight: 700;
-  color: #93c5fd;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.caso-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px;
+  flex-wrap: wrap;
 }
-.client-box p { font-size: 13px; color: #cbd5e1; margin-bottom: 8px; }
-.client-box p:last-child { margin-bottom: 0; }
-.highlight { color: #93c5fd; font-weight: 600; }
+.caso-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  color: #475569; letter-spacing: .1em;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.caso-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.caso-meta { font-size: 12px; color: #64748b; font-family: 'JetBrains Mono', monospace; }
+.caso-badge {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .08em; padding: 4px 12px;
+  border-radius: 99px; white-space: nowrap; flex-shrink: 0;
+}
+.cb-red   { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #f87171; }
+.cb-warn  { background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3); color: #fbbf24; }
+.cb-blue  { background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.3); color: #93c5fd; }
+.cb-green { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); color: #4ade80; }
+
+.caso-body { padding: 16px 20px; }
+.caso-body p { font-size: 13px; color: #94a3b8; margin-bottom: 10px; }
+.caso-body p:last-child { margin-bottom: 0; }
+
+/* Steps inside caso */
+.pasos { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.paso {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 13px; padding: 8px 12px;
+  border-radius: 8px; background: rgba(255,255,255,0.02);
+}
+.paso-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+.paso-text { color: #94a3b8; }
+.paso-text strong { color: #e2e8f0; }
+.paso.ok   { border-left: 2px solid #22c55e; }
+.paso.fail { border-left: 2px solid #ef4444; }
+
+/* ── IMAGE GRID ── */
+.img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px; margin-top: 12px;
+}
+.img-frame {
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.img-frame img {
+  width: 100%; display: block;
+  max-height: 260px; object-fit: contain;
+  background: #0a0f1e;
+}
+.img-caption {
+  padding: 6px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: #475569;
+  background: rgba(255,255,255,0.03);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  line-height: 1.4;
+}
 
 /* ── TIMELINE ── */
 .timeline { margin-bottom: 28px; }
-.tl-item {
-  display: flex;
-  gap: 16px;
-  padding-bottom: 20px;
-  position: relative;
-}
+.tl-item { display: flex; gap: 14px; padding-bottom: 18px; }
 .tl-item:last-child { padding-bottom: 0; }
 .tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-.tl-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  margin-top: 5px;
-  flex-shrink: 0;
-}
-.tl-line {
-  width: 2px;
-  flex: 1;
-  background: rgba(255,255,255,0.08);
-  margin-top: 4px;
-  min-height: 20px;
-}
-.tl-content { flex: 1; }
-.tl-date {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: #475569;
-  margin-bottom: 2px;
-}
+.tl-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.tl-line { width: 2px; flex: 1; background: rgba(255,255,255,0.07); margin-top: 4px; min-height: 16px; }
+.tl-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #475569; margin-bottom: 1px; }
 .tl-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
 .tl-desc { font-size: 12px; color: #64748b; }
-.tl-ok    { color: #4ade80; }
-.tl-warn  { color: #fbbf24; }
-.tl-bad   { color: #f87171; }
-.tl-info  { color: #93c5fd; }
+.c-ok   { color: #4ade80; }
+.c-warn { color: #fbbf24; }
+.c-bad  { color: #f87171; }
+.c-blue { color: #93c5fd; }
 
-/* ── EVIDENCIA ── */
-.evidencia-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-.ev-card {
+/* ── DERECHOS ── */
+.derechos-grid {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 28px;
+}
+.derecho-item {
+  display: flex; gap: 14px;
   background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px; padding: 14px 16px;
 }
-.ev-num {
+.derecho-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  font-weight: 700;
-  color: #475569;
-  min-width: 24px;
-  margin-top: 1px;
+  font-size: 20px; font-weight: 900;
+  color: rgba(255,255,255,0.08); flex-shrink: 0;
+  line-height: 1; min-width: 28px;
 }
-.ev-body { flex: 1; }
-.ev-title { font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 3px; }
-.ev-date {
+.derecho-title { font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 3px; }
+.derecho-desc { font-size: 12px; color: #64748b; }
+.derecho-desc strong { color: #94a3b8; }
+
+/* ── REPORTAR CASO ── */
+.report-box {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.08));
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 12px; padding: 24px;
+  margin-bottom: 28px; text-align: center;
+}
+.report-box h3 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.report-box p { font-size: 13px; color: #94a3b8; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; }
+.report-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 700;
+  padding: 10px 20px; border-radius: 8px;
+  letter-spacing: -.01em; cursor: pointer;
+  text-decoration: none;
+}
+.btn-wa  { background: #25d366; color: #fff; }
+.btn-mail { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; }
+.report-note {
+  font-size: 11px; color: #334155;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: #475569;
-  margin-bottom: 4px;
+  margin-top: 14px;
 }
-.ev-desc { font-size: 12px; color: #64748b; }
-.ev-img {
-  margin-top: 10px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.ev-img img {
-  width: 100%;
-  display: block;
-  max-height: 340px;
-  object-fit: contain;
-  background: #0a0f1e;
-}
-.ev-img-caption {
-  padding: 6px 10px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: #475569;
-  background: rgba(255,255,255,0.03);
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-.ev-badge {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  padding: 2px 8px;
-  border-radius: 99px;
-  white-space: nowrap;
-  margin-top: 1px;
-  flex-shrink: 0;
-}
-.badge-green { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); color: #4ade80; }
-.badge-red   { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #f87171; }
-.badge-blue  { background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.3); color: #93c5fd; }
-.badge-warn  { background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3); color: #fbbf24; }
 
 /* ── LEGAL ── */
 .legal-box {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px;
-  padding: 18px 20px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px; padding: 18px 20px;
   margin-bottom: 28px;
 }
-.legal-box h3 { font-size: 13px; font-weight: 700; color: #94a3b8; margin-bottom: 10px; }
+.legal-box h3 { font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px; }
 .legal-items { display: flex; flex-direction: column; gap: 8px; }
-.legal-item { display: flex; gap: 10px; }
+.legal-row { display: flex; gap: 12px; }
 .legal-ref {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 700;
-  color: #60a5fa;
-  min-width: 190px;
-  flex-shrink: 0;
+  font-size: 11px; font-weight: 700; color: #60a5fa;
+  min-width: 200px; flex-shrink: 0;
 }
 .legal-desc { font-size: 12px; color: #64748b; }
 
-/* ── DECLARACIÓN ── */
-.declaracion {
-  background: rgba(34,197,94,0.06);
-  border: 1px solid rgba(34,197,94,0.2);
-  border-radius: 10px;
-  padding: 20px 22px;
+/* ── DISCLAIMER ── */
+.disclaimer {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px; padding: 14px 16px;
   margin-bottom: 28px;
-}
-.declaracion h3 { font-size: 14px; font-weight: 700; color: #4ade80; margin-bottom: 10px; }
-.declaracion p { font-size: 13px; color: #cbd5e1; margin-bottom: 8px; }
-.declaracion p:last-child { margin-bottom: 0; }
-
-/* ── QR / NOTA COMPROBANTE ── */
-.comprobante-obs {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  padding: 16px 20px;
-  margin-bottom: 28px;
+  font-size: 11px; color: #334155;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: #94a3b8;
+  line-height: 1.7;
 }
-.comprobante-obs .obs-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #475569;
-  margin-bottom: 8px;
-}
-.comprobante-obs .obs-text { color: #cbd5e1; line-height: 1.7; }
 
 /* ── FOOTER ── */
 .footer {
   border-top: 1px solid rgba(255,255,255,0.06);
   padding: 20px 24px;
-  text-align: center;
-  font-size: 11px;
-  color: #475569;
-  font-family: 'JetBrains Mono', monospace;
-  line-height: 1.8;
+  display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 10px;
 }
+.footer-brand { font-weight: 800; font-size: 14px; color: #fff; }
+.footer-brand span { color: #3b82f6; }
+.footer-meta { font-size: 11px; color: #334155; font-family: 'JetBrains Mono', monospace; text-align: right; line-height: 1.6; }
 
 @media (max-width: 600px) {
-  .topbar { flex-direction: column; align-items: flex-start; }
   .status-grid { grid-template-columns: 1fr 1fr; }
-  .legal-ref { min-width: 140px; font-size: 10px; }
+  .legal-ref { min-width: 130px; font-size: 10px; }
+  .hero-title { font-size: 20px; }
+  .img-grid { grid-template-columns: 1fr; }
+  .footer { flex-direction: column; text-align: center; }
+  .footer-meta { text-align: center; }
 }
 </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
+<!-- TOPBAR -->
 <div class="topbar">
-  <div class="brand">ISAB<span>SOFT</span></div>
-  <div class="ruc-badge">RUC 2333029-5</div>
-  <div class="topbar-meta">Actualizado: 27/11/2026 · Verificación pública</div>
+  <div class="topbar-brand">
+    <div class="flag">🇵🇾</div>
+    <div>
+      <div class="brand-text">DNIT Paraguay — <span>Documentación Ciudadana</span></div>
+    </div>
+  </div>
+  <div class="curator-tag">Curado por <strong>IsabSoft · RUC 2333029-5</strong></div>
+  <div class="updated-tag">Actualizado: 27/11/2026</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Recurso público · Acceso libre · Evidencia verificable</div>
+  <h1 class="hero-title">Contribuyentes que quisieron cumplir.<br><span>El Estado que no garantizó los medios.</span></h1>
+  <p class="hero-subtitle">Esta página documenta, con evidencia pública y verificable, fallas del sistema DNIT que bloquearon a contribuyentes formales que intentaron cumplir con sus obligaciones tributarias en Paraguay.</p>
+  <div class="hero-badges">
+    <div class="hero-badge hb-red">🔴 Bloqueo Marangatú activo 93+ días</div>
+    <div class="hero-badge hb-red">🔴 Portal DNIT caído nov/2026</div>
+    <div class="hero-badge hb-warn">⚠️ Amparo constitucional en trámite</div>
+    <div class="hero-badge hb-blue">📋 Defensoría Pública solicitada</div>
+  </div>
 </div>
 
 <div class="container">
 
-  <!-- ALERTA PRINCIPAL -->
-  <div class="alert">
-    <div class="alert-icon">⚠️</div>
-    <div>
-      <div class="alert-title">Sistema parcialmente restringido por bloqueo DNIT</div>
-      <div class="alert-body">IsabSoft (Carlos Coronel Aguirre, RUC 2333029-5) opera bajo restricción técnica impuesta por la DNIT desde agosto de 2026, a pesar de contar con Facilidad de Pago activa. Esta página documenta la situación con evidencia completa para clientes, autoridades y la propia DNIT.</div>
-    </div>
+  <!-- QUÉ ES ESTA PÁGINA -->
+  <div class="section-title">¿Qué es esta página?</div>
+  <div class="intro-box">
+    <p>Esta página es un <strong>recurso ciudadano de acceso libre</strong>, creado para documentar públicamente las fallas del sistema tributario digital de la DNIT (Dirección Nacional de Ingresos Tributarios) de Paraguay, que afectan a contribuyentes formales que cumplen o intentan cumplir con sus obligaciones fiscales.</p>
+    <p>Toda la información publicada aquí fue <strong>presentada previamente ante instituciones del Estado</strong> (DNIT, Contraloría, Defensoría del Pueblo, Ministerio Público) como parte de recursos administrativos y acciones legales en curso. No se incluyen datos personales de terceros sin consentimiento expreso, en cumplimiento de la <strong>Ley 1682/2001 de Protección de Datos Personales</strong> de la República del Paraguay.</p>
+    <p>Si vos también estás en una situación similar, encontrarás al final de esta página una guía de pasos y un canal para reportar tu caso.</p>
   </div>
 
   <!-- ESTADO ACTUAL -->
-  <div class="section-title">Estado actual del sistema</div>
+  <div class="section-title">Estado actual del sistema DNIT</div>
   <div class="status-grid">
     <div class="status-card">
       <div class="status-top"><div class="status-dot dot-red"></div><div class="status-name">Autoimpresor</div></div>
-      <div class="status-label label-red">🔴 Bloqueado</div>
-      <div class="status-detail">Marangatú — bloqueo DNIT<br>Amparo constitucional en proceso</div>
+      <div class="status-label label-red">Bloqueado</div>
+      <div class="status-detail">Marangatú bloquea dosificación<br>a pesar de FP activa</div>
     </div>
     <div class="status-card">
-      <div class="status-top"><div class="status-dot dot-yellow"></div><div class="status-name">Factura Virtual</div></div>
-      <div class="status-label label-yellow">⚠️ Limitada</div>
-      <div class="status-detail">Timbrado 19082555 activo<br>Canal alternativo habilitado</div>
+      <div class="status-top"><div class="status-dot dot-red"></div><div class="status-name">Portal F1 / DNIT</div></div>
+      <div class="status-label label-red">Caído</div>
+      <div class="status-detail">servicios.set.gov.py<br>Error nov/2026 (caso Ueno Bank)</div>
     </div>
     <div class="status-card">
-      <div class="status-top"><div class="status-dot dot-red"></div><div class="status-name">FE SIFEN / Portal F1</div></div>
-      <div class="status-label label-red">🔴 Caído</div>
-      <div class="status-detail">Portal DNIT caído desde nov/2026<br>(caso Itti/Ueno Bank)</div>
+      <div class="status-top"><div class="status-dot dot-yellow"></div><div class="status-name">FE SIFEN general</div></div>
+      <div class="status-label label-yellow">Parcial</div>
+      <div class="status-detail">60.000 emisores operativos<br>Nuevas altas bloqueadas</div>
     </div>
     <div class="status-card">
-      <div class="status-top"><div class="status-dot dot-yellow"></div><div class="status-name">Amparo constitucional</div></div>
-      <div class="status-label label-yellow">⏳ En proceso</div>
-      <div class="status-detail">Defensoría Pública solicitada<br>Seguimiento 26/11/2026</div>
+      <div class="status-top"><div class="status-dot dot-yellow"></div><div class="status-name">Acciones legales</div></div>
+      <div class="status-label label-yellow">En proceso</div>
+      <div class="status-detail">Amparo Art.134 CN<br>Defensoría Pública solicitada</div>
     </div>
   </div>
 
-  <!-- PARA EL CLIENTE -->
-  <div class="client-box">
-    <h3>📋 Para el cliente que recibió este comprobante</h3>
-    <p>Si usted recibió un comprobante de <span class="highlight">IsabSoft</span> con la observación <em>"IsabSoft — Bloqueo DNIT documentado. Verificá: [esta URL]"</em>, sepa que:</p>
-    <p>✅ <strong>El comprobante que usted recibió es un documento legítimo</strong> emitido con timbrado vigente, habilitado y autorizado por la propia DNIT como mecanismo de facturación temporal durante las fallas del sistema electrónico.</p>
-    <p>✅ <strong>IsabSoft cumplió todas sus obligaciones tributarias</strong>, regularizó su situación mediante Facilidad de Pago activa y presentó los recursos legales correspondientes. El bloqueo es unilateral e injustificado de parte de la DNIT.</p>
-    <p>✅ <strong>Esta página es evidencia pública</strong>. Puede compartirla, descargarla o presentarla ante cualquier autoridad, incluyendo la propia DNIT, si en algún momento le consultaran sobre la validez del comprobante que usted recibió.</p>
+  <!-- CASOS DOCUMENTADOS -->
+  <div class="section-title">Casos documentados</div>
+
+  <!-- CASO 1 — ISABSOFT (completo) -->
+  <div class="caso-card">
+    <div class="caso-header">
+      <div>
+        <div class="caso-num">Caso documentado N°1 — Completo con evidencia</div>
+        <div class="caso-title">IsabSoft — Desarrollo de Software · Asunción, Paraguay</div>
+        <div class="caso-meta">RUC 2333029-5 · Bloqueo desde 26/08/2026 · 93+ días consecutivos</div>
+      </div>
+      <div class="caso-badge cb-red">🔴 BLOQUEO ACTIVO</div>
+    </div>
+    <div class="caso-body">
+      <p>Empresa unipersonal de desarrollo de software para pequeñas y medianas empresas. Regularizó su situación fiscal mediante Facilidad de Pago activa (FP N°3210861391) aprobada por la propia DNIT. A pesar del cumplimiento activo, el sistema Marangatú bloquea la dosificación de timbrado desde el 26 de agosto de 2026.</p>
+
+      <div class="pasos">
+        <div class="paso ok"><div class="paso-icon">✅</div><div class="paso-text"><strong>Declaraciones IVA:</strong> presentadas correctamente hasta la fecha</div></div>
+        <div class="paso ok"><div class="paso-icon">✅</div><div class="paso-text"><strong>Facilidad de Pago N°3210861391:</strong> aprobada por DNIT, cuotas abonadas</div></div>
+        <div class="paso ok"><div class="paso-icon">✅</div><div class="paso-text"><strong>Recurso N°72600010979:</strong> presentado vía Marangatú (Form.726-2) el 30/10/2026</div></div>
+        <div class="paso ok"><div class="paso-icon">✅</div><div class="paso-text"><strong>Defensoría Pública solicitada:</strong> email con 8 adjuntos enviado 20/11/2026 — seguimiento 26/11/2026</div></div>
+        <div class="paso ok"><div class="paso-icon">✅</div><div class="paso-text"><strong>Contraloría General notificada:</strong> código F829V464 — en análisis</div></div>
+        <div class="paso fail"><div class="paso-icon">🔴</div><div class="paso-text"><strong>Bloqueo Marangatú:</strong> persiste 93+ días — sin resolución de fondo</div></div>
+      </div>
+
+      <div class="img-grid">
+        <div class="img-frame">
+          <img src="ev-bloqueo-inicio.png" alt="Bloqueo Marangatú inicio 26/08/2026">
+          <div class="img-caption">Día 1 del bloqueo · 26/08/2026<br>Marangatú bloquea solicitud de preimpresos</div>
+        </div>
+        <div class="img-frame">
+          <img src="ev-bloqueo-oct.png" alt="Bloqueo Marangatú octubre 2026">
+          <div class="img-caption">Día 62 · 27/10/2026<br>Bloqueo persiste — sin resolución</div>
+        </div>
+        <div class="img-frame">
+          <img src="ev-bloqueo-nov.png" alt="Bloqueo Marangatú noviembre 2026">
+          <div class="img-caption">Día 76 · 10/11/2026<br>Bloqueo continúa activo</div>
+        </div>
+        <div class="img-frame">
+          <img src="ev-fp-pago.png" alt="Primera cuota Facilidad de Pago pagada">
+          <div class="img-caption">💳 Primera cuota FP N°3210861391<br>Contribuyente cumplió el acuerdo</div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- CRONOLOGÍA -->
-  <div class="section-title">Cronología documentada</div>
+  <!-- CASO 2 — ANÓNIMO (CBTEC) -->
+  <div class="caso-card">
+    <div class="caso-header">
+      <div>
+        <div class="caso-num">Caso documentado N°2 — Anónimo (identidad disponible si se requiere)</div>
+        <div class="caso-title">Taller de Electrónica Automotriz · Villa Elisa, Paraguay</div>
+        <div class="caso-meta">Cliente de IsabSoft · Bloqueo portal F1 · Noviembre 2026</div>
+      </div>
+      <div class="caso-badge cb-warn">⚠️ PORTAL DNIT CAÍDO</div>
+    </div>
+    <div class="caso-body">
+      <p>Taller de electrónica automotriz que contrató e instaló un sistema de Factura Electrónica SIFEN homologado. El contribuyente completó íntegramente todos los pasos requeridos por la DNIT para activar la FE.</p>
+
+      <div class="pasos">
+        <div class="paso ok"><div class="paso-icon">✅</div><div class="paso-text"><strong>Software FE instalado y validado</strong> — XML aprobado por Prevalidador oficial SIFEN</div></div>
+        <div class="paso ok"><div class="paso-icon">✅</div><div class="paso-text"><strong>Marangatú Paso 1 completado</strong> — Timbrado TEST N°364010085871 registrado el 24/11/2026</div></div>
+        <div class="paso ok"><div class="paso-icon">✅</div><div class="paso-text"><strong>Certificado F1 vigente</strong> — emitido por DINATIC (CA autorizada), válido hasta 17/11/2028</div></div>
+        <div class="paso fail"><div class="paso-icon">🔴</div><div class="paso-text"><strong>Portal DNIT caído</strong> — no permite descargar el archivo .pfx del certificado. Error: "No se pudo ejecutar la acción, intente más tarde"</div></div>
+      </div>
+
+      <p style="margin-top:4px;">El contribuyente quiso cumplir. Hizo todo lo que se le exigió. El único obstáculo es la infraestructura del Estado. Esta situación fue reconocida por la propia DNIT cuando Hugo López (coordinador SIFEN) autorizó el retorno temporal a la factura en papel el 25/11/2026.</p>
+
+      <div class="img-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+        <div class="img-frame">
+          <img src="ev-wa0018.jpg" alt="Portal DNIT — Certificado Vigente pero error al descargar">
+          <div class="img-caption">🖥️ Portal DNIT · 25/11/2026<br>Certificado "Vigente" — Error al intentar descargar el .pfx</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRONOLOGÍA DNIT -->
+  <div class="section-title" style="margin-top:8px;">Cronología del sistema DNIT — 2026</div>
   <div class="timeline">
-
     <div class="tl-item">
       <div class="tl-left"><div class="tl-dot dot-green"></div><div class="tl-line"></div></div>
-      <div class="tl-content">
+      <div>
         <div class="tl-date">Agosto 2026</div>
-        <div class="tl-title tl-ok">✅ Facilidad de Pago aprobada por DNIT</div>
-        <div class="tl-desc">IsabSoft formaliza la regularización de su situación fiscal. Facilidad de Pago N°3210861391 aprobada. Las obligaciones principales quedan bajo plan de pago activo.</div>
+        <div class="tl-title c-ok">✅ DNIT aprueba Facilidad de Pago a IsabSoft</div>
+        <div class="tl-desc">FP N°3210861391 aprobada. Las obligaciones principales quedan bajo plan de pago activo.</div>
       </div>
     </div>
-
     <div class="tl-item">
       <div class="tl-left"><div class="tl-dot dot-red"></div><div class="tl-line"></div></div>
-      <div class="tl-content">
-        <div class="tl-date">26 de agosto 2026</div>
-        <div class="tl-title tl-bad">🔴 DNIT bloquea dosificación de timbrado</div>
-        <div class="tl-desc">A pesar de la Facilidad de Pago activa, el sistema Marangatú bloquea la posibilidad de solicitar preimpresos y autoimpresor. Se inician gestiones ante la DNIT. El bloqueo persiste 93+ días consecutivos.</div>
+      <div>
+        <div class="tl-date">26 agosto 2026</div>
+        <div class="tl-title c-bad">🔴 DNIT bloquea dosificación de timbrado — sin sustento normativo claro</div>
+        <div class="tl-desc">A pesar de la FP activa, Marangatú bloquea la posibilidad de solicitar preimpresos y autoimpresor. Inicio del bloqueo de 93+ días.</div>
       </div>
     </div>
-
     <div class="tl-item">
       <div class="tl-left"><div class="tl-dot dot-yellow"></div><div class="tl-line"></div></div>
-      <div class="tl-content">
-        <div class="tl-date">27 de agosto 2026</div>
-        <div class="tl-title tl-warn">⚠️ DNIT habilita Factura Virtual — contradicción documentada</div>
-        <div class="tl-desc">La DNIT habilita el canal de Factura Virtual (timbrado 19082555) con los mismos incumplimientos que usa para justificar el bloqueo del autoimpresor. Esto documenta una contradicción interna de la propia institución.</div>
+      <div>
+        <div class="tl-date">27 agosto 2026</div>
+        <div class="tl-title c-warn">⚠️ DNIT habilita Factura Virtual — contradicción documentada</div>
+        <div class="tl-desc">La DNIT habilita un canal alternativo con los mismos incumplimientos que usa para justificar el bloqueo del autoimpresor. Contradicción interna registrada.</div>
       </div>
     </div>
-
-    <div class="tl-item">
-      <div class="tl-left"><div class="tl-dot dot-green"></div><div class="tl-line"></div></div>
-      <div class="tl-content">
-        <div class="tl-date">30 de octubre 2026</div>
-        <div class="tl-title tl-ok">✅ Recurso de Reconsideración presentado</div>
-        <div class="tl-desc">Recurso formal N°72600010979 presentado vía Marangatú (Form.726-2). 6 fundamentos jurídicos, 7 pedidos formales, medida cautelar solicitada. Dependencia DGRAC.</div>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <div class="tl-left"><div class="tl-dot dot-green"></div><div class="tl-line"></div></div>
-      <div class="tl-content">
-        <div class="tl-date">20 de noviembre 2026</div>
-        <div class="tl-title tl-ok">✅ Solicitud de Defensor Público (Amparo Art.134 CN)</div>
-        <div class="tl-desc">Email enviado a defensoria.asuncion@ministeriopublico.gov.py con 8 adjuntos documentando el caso. Solicita defensor para Amparo Constitucional por violación Art.87, 107 y 9 CN.</div>
-      </div>
-    </div>
-
     <div class="tl-item">
       <div class="tl-left"><div class="tl-dot dot-red"></div><div class="tl-line"></div></div>
-      <div class="tl-content">
-        <div class="tl-date">Noviembre 2026</div>
-        <div class="tl-title tl-bad">🔴 Portal DNIT cae por caso Itti/Ueno Bank</div>
-        <div class="tl-desc">El portal servicios.set.gov.py cae por una falla sistémica vinculada al caso Itti/Ueno Bank. Ningún contribuyente puede descargar su certificado digital F1. Afecta a todos los emisores de Factura Electrónica del país.</div>
+      <div>
+        <div class="tl-date">Octubre — Noviembre 2026</div>
+        <div class="tl-title c-bad">🔴 Portal DNIT cae por caso Itti/Ueno Bank</div>
+        <div class="tl-desc">El portal servicios.set.gov.py sufre falla sistémica. Ningún contribuyente puede descargar su certificado digital F1. Afecta a todos los emisores de Factura Electrónica del país.</div>
       </div>
     </div>
-
     <div class="tl-item">
       <div class="tl-left"><div class="tl-dot dot-yellow"></div><div class="tl-line"></div></div>
-      <div class="tl-content">
-        <div class="tl-date">25 de noviembre 2026</div>
-        <div class="tl-title tl-warn">⚠️ DNIT reconoce su falla — autoriza facturas en papel</div>
-        <div class="tl-desc">Hugo López, coordinador general de SIFEN (DNIT), declara públicamente: <em>"Los contribuyentes que no logren emitir comprobantes electrónicos podrán recurrir temporalmente a la facturación en papel."</em> (Fuente: ADN Digital, 25/11/2026). Admisión institucional documentada.</div>
+      <div>
+        <div class="tl-date">25 noviembre 2026</div>
+        <div class="tl-title c-warn">⚠️ DNIT reconoce su falla — autoriza facturas en papel</div>
+        <div class="tl-desc">Hugo López, coordinador SIFEN: "Los contribuyentes que no logren emitir comprobantes electrónicos podrán recurrir temporalmente a la facturación en papel." Admisión institucional documentada (ADN Digital, 25/11/2026).</div>
       </div>
     </div>
-
     <div class="tl-item">
       <div class="tl-left"><div class="tl-dot dot-green"></div></div>
-      <div class="tl-content">
-        <div class="tl-date">26 de noviembre 2026</div>
-        <div class="tl-title tl-ok">✅ Seguimiento formal a Defensoría Pública</div>
-        <div class="tl-desc">Segundo email a Defensoría Pública con hechos nuevos: falla sistémica DNIT + caso documentado de cliente (CBTEC) bloqueado a pesar de haber completado todos los pasos de activación FE.</div>
+      <div>
+        <div class="tl-date">26 noviembre 2026</div>
+        <div class="tl-title c-ok">✅ Seguimiento formal a Defensoría Pública — Amparo en trámite</div>
+        <div class="tl-desc">Segundo seguimiento enviado con evidencias del caso sistémico. Se espera asignación de defensor para interponer Amparo Constitucional Art.134 CN.</div>
       </div>
     </div>
-
   </div>
 
-  <!-- EVIDENCIAS -->
-  <div class="section-title">Evidencias documentadas</div>
-  <div class="evidencia-list">
-
-    <div class="ev-card">
-      <div class="ev-num">01</div>
-      <div class="ev-body">
-        <div class="ev-title">Facilidad de Pago activa — DNIT aprobó regularización</div>
-        <div class="ev-date">Agosto 2026</div>
-        <div class="ev-desc">FP N°3210861391 — aprobada por DNIT. Las obligaciones principales de IsabSoft están bajo plan de pago vigente. El bloqueo posterior es unilateral y sin sustento normativo uniforme.</div>
+  <!-- COMUNICADO DNIT -->
+  <div class="section-title">Admisión institucional — DNIT reconoció la falla</div>
+  <div class="caso-card" style="margin-bottom:28px;">
+    <div class="caso-header">
+      <div>
+        <div class="caso-num">Comunicado oficial · 25 de noviembre 2026</div>
+        <div class="caso-title">"DNIT habilita facturas en papel ante fallas del sistema electrónico"</div>
+        <div class="caso-meta">Fuente: ADN Digital · Hugo López, coordinador general SIFEN (DNIT)</div>
       </div>
-      <div class="ev-badge badge-green">VERIFICADO</div>
+      <div class="caso-badge cb-warn">ADMISIÓN DNIT</div>
     </div>
-
-    <div class="ev-card" style="flex-direction:column;">
-      <div style="display:flex; align-items:flex-start; gap:14px;">
-        <div class="ev-num">02</div>
-        <div class="ev-body">
-          <div class="ev-title">Bloqueo Marangatú — 93+ días consecutivos documentados</div>
-          <div class="ev-date">26/08/2026 — vigente al 27/11/2026</div>
-          <div class="ev-desc">El sistema Marangatú bloquea la solicitud de timbrado a pesar de la Facilidad de Pago activa. Se documentaron capturas en 20+ fechas distintas. Las tres imágenes a continuación muestran el inicio del bloqueo (26/08), su persistencia en octubre y en noviembre de 2026.</div>
+    <div class="caso-body">
+      <p><em>"Los contribuyentes que no logren emitir comprobantes electrónicos por inconvenientes en sus sistemas podrán recurrir temporalmente a la facturación en papel. La DNIT habilitó esta salida mientras se realizan las reparaciones."</em></p>
+      <p><em>"Los afectados pueden gestionar ante la institución un timbrado para utilizar facturas preimpresas o autoimpresas. Esta autorización les permitirá continuar documentando sus operaciones hasta que recuperen el funcionamiento normal de sus plataformas."</em></p>
+      <div class="img-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 10px;">
+        <div class="img-frame">
+          <img src="ev-wa0021.jpg" alt="Titular ADN Digital — DNIT habilita facturas en papel">
+          <div class="img-caption">📰 ADN Digital · 25/11/2026 · Titular del comunicado</div>
         </div>
-        <div class="ev-badge badge-red">93+ DÍAS</div>
-      </div>
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:8px; margin-top:10px;">
-        <div class="ev-img">
-          <img src="ev-bloqueo-inicio.png" alt="Bloqueo Marangatú — 26/08/2026 — primer día">
-          <div class="ev-img-caption">Día 1 — 26/08/2026 · Inicio del bloqueo</div>
-        </div>
-        <div class="ev-img">
-          <img src="ev-bloqueo-oct.png" alt="Bloqueo Marangatú — 27/10/2026">
-          <div class="ev-img-caption">Día 62 — 27/10/2026 · Bloqueo persiste</div>
-        </div>
-        <div class="ev-img">
-          <img src="ev-bloqueo-nov.png" alt="Bloqueo Marangatú — 10/11/2026">
-          <div class="ev-img-caption">Día 76 — 10/11/2026 · Sin resolución</div>
+        <div class="img-frame">
+          <img src="ev-wa0020.jpg" alt="Declaraciones Hugo López coordinador SIFEN">
+          <div class="img-caption">📋 Declaraciones completas · Hugo López · Coordinador SIFEN</div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="ev-card" style="flex-direction:column;">
-      <div style="display:flex; align-items:flex-start; gap:14px;">
-        <div class="ev-num">02b</div>
-        <div class="ev-body">
-          <div class="ev-title">Primera cuota de Facilidad de Pago — abonada</div>
-          <div class="ev-date">Agosto 2026</div>
-          <div class="ev-desc">IsabSoft cumplió con el plan de pago aprobado por DNIT. La imagen muestra el comprobante de la primera cuota pagada. El contribuyente honró el acuerdo — el bloqueo continuó de todas formas.</div>
-        </div>
-        <div class="ev-badge badge-green">PAGADO</div>
-      </div>
-      <div class="ev-img" style="margin-top:10px;">
-        <img src="ev-fp-pago.png" alt="Comprobante pago primera cuota Facilidad de Pago DNIT">
-        <div class="ev-img-caption">💳 Comprobante pago 1ra cuota FP N°3210861391 · IsabSoft cumplió el acuerdo</div>
+  <!-- DERECHOS DEL CONTRIBUYENTE -->
+  <div class="section-title">Si estás en la misma situación — tus derechos y pasos</div>
+  <div class="derechos-grid">
+    <div class="derecho-item">
+      <div class="derecho-num">01</div>
+      <div>
+        <div class="derecho-title">Documentá todo con fecha</div>
+        <div class="derecho-desc">Capturas de pantalla de Marangatú, comprobantes de pago, correos enviados y recibidos. Cada fecha importa. <strong>Sin documentación no hay reclamo posible.</strong></div>
       </div>
     </div>
-
-    <div class="ev-card">
-      <div class="ev-num">03</div>
-      <div class="ev-body">
-        <div class="ev-title">Recurso formal N°72600010979 ante DGRAC</div>
-        <div class="ev-date">30/10/2026</div>
-        <div class="ev-desc">Presentado vía Marangatú. 6 fundamentos jurídicos, 7 pedidos formales. Incluye medida cautelar para no cancelar FP durante el proceso. Archivo: solicitud de recurso en marangatu.pdf</div>
-      </div>
-      <div class="ev-badge badge-blue">PRESENTADO</div>
-    </div>
-
-    <div class="ev-card" style="flex-direction:column;">
-      <div style="display:flex; align-items:flex-start; gap:14px;">
-        <div class="ev-num">04</div>
-        <div class="ev-body">
-          <div class="ev-title">Comunicado oficial DNIT — Falla sistémica reconocida</div>
-          <div class="ev-date">25/11/2026</div>
-          <div class="ev-desc">Hugo López (coordinador SIFEN): <em>"Los afectados pueden gestionar ante la institución un timbrado para utilizar facturas preimpresas o autoimpresas."</em> Fuente: ADN Digital. La propia DNIT reconoció públicamente que su sistema electrónico no es confiable como canal único.</div>
-        </div>
-        <div class="ev-badge badge-warn">ADMISIÓN DNIT</div>
-      </div>
-      <div class="ev-img">
-        <img src="ev-wa0021.jpg" alt="Titular ADN Digital — DNIT habilita facturas en papel ante fallas del sistema electrónico">
-        <div class="ev-img-caption">📰 Titular — ADN Digital · 25/11/2026 · "DNIT habilita facturas en papel ante fallas del sistema electrónico"</div>
-      </div>
-      <div class="ev-img" style="margin-top:8px;">
-        <img src="ev-wa0020.jpg" alt="Comunicado DNIT — Hugo López declaraciones completas">
-        <div class="ev-img-caption">📋 Declaraciones completas de Hugo López, coordinador SIFEN · 25/11/2026</div>
+    <div class="derecho-item">
+      <div class="derecho-num">02</div>
+      <div>
+        <div class="derecho-title">Presentá un Recurso de Reconsideración ante DNIT</div>
+        <div class="derecho-desc">Vía Marangatú · Form.726-2 · Dirigido a DGRAC. Fundamentos: FP activa, Art.171 Ley 125/91 (no pueden cancelarla sin resolución fundada durante el recurso), bloqueo desproporcionado, Art.87+107 CN. <strong>Guardá el número de recurso que te asignen.</strong></div>
       </div>
     </div>
-
-    <div class="ev-card" style="flex-direction:column;">
-      <div style="display:flex; align-items:flex-start; gap:14px;">
-        <div class="ev-num">05</div>
-        <div class="ev-body">
-          <div class="ev-title">Certificado digital F1 vigente — portal DNIT caído</div>
-          <div class="ev-date">17/11/2026 — 17/11/2028</div>
-          <div class="ev-desc">Identificador: 67t1817n2r2unoec5b3aq5aru5. Emitido por DINATIC. Estado en portal: Vigente ✅. El .pfx no se puede descargar porque el portal servicios.set.gov.py arroja error "No se pudo ejecutar la acción, intente más tarde". La falla es del portal DNIT, no del certificado ni del contribuyente.</div>
-        </div>
-        <div class="ev-badge badge-warn">PORTAL CAÍDO</div>
-      </div>
-      <div class="ev-img" style="margin-top:10px;">
-        <img src="ev-wa0018.jpg" alt="Portal DNIT — Certificado F1 Vigente pero error al descargar">
-        <div class="ev-img-caption">🖥️ Portal DNIT servicios.set.gov.py · 25/11/2026 · Certificado "Vigente" — Error: "No se pudo ejecutar la acción, intente más tarde"</div>
+    <div class="derecho-item">
+      <div class="derecho-num">03</div>
+      <div>
+        <div class="derecho-title">Escribí a la Defensoría Pública — es gratuita</div>
+        <div class="derecho-desc">Email: <strong>defensoria.asuncion@ministeriopublico.gov.py</strong> · Adjuntá tus evidencias. Pedí un defensor para Amparo Constitucional (Art.134 CN) por violación del derecho al trabajo (Art.87 y 107 CN). Todo es electrónico, no necesitás ir en persona.</div>
       </div>
     </div>
-
-    <div class="ev-card">
-      <div class="ev-num">06</div>
-      <div class="ev-body">
-        <div class="ev-title">Solicitud Defensoría Pública — Amparo Art.134 CN</div>
-        <div class="ev-date">20/11/2026 · Seguimiento 26/11/2026</div>
-        <div class="ev-desc">Email enviado con 8 adjuntos al Ministerio Público. Solicita defensor para Amparo Constitucional. Fundamentos: Art.87 (derecho al trabajo), Art.107 (industria lícita), Art.9 CN. Archivo: Solicitud de defensor publico.pdf + enviado_seguimiento_26112026.pdf</div>
+    <div class="derecho-item">
+      <div class="derecho-num">04</div>
+      <div>
+        <div class="derecho-title">Seguí facturando — la DNIT lo autorizó</div>
+        <div class="derecho-desc">El comunicado oficial del 25/11/2026 (Hugo López, coordinador SIFEN) autorizó explícitamente el uso de facturas en papel o autoimpresas mientras duren las fallas del sistema. <strong>Usá ese mecanismo, documentá cada comprobante y adjuntá esta URL como referencia.</strong></div>
       </div>
-      <div class="ev-badge badge-blue">EN PROCESO</div>
     </div>
-
-    <div class="ev-card">
-      <div class="ev-num">07</div>
-      <div class="ev-body">
-        <div class="ev-title">Autoimpresor funcional — el sistema que nunca falló</div>
-        <div class="ev-date">Histórico — vigente</div>
-        <div class="ev-desc">El sistema autoimpresor de IsabSoft (GestFact) opera sin interrupciones. Es prueba directa de que la infraestructura del contribuyente es operativa. Los únicos fallos documentados provienen de la infraestructura del Estado (Marangatú, portal F1, SIFEN).</div>
+    <div class="derecho-item">
+      <div class="derecho-num">05</div>
+      <div>
+        <div class="derecho-title">Amparo Constitucional — el único instrumento que puede ordenar al DNIT</div>
+        <div class="derecho-desc">Si el recurso administrativo no prospera, el Amparo ante juez (Art.134 CN) es la herramienta que puede <strong>ordenarle al DNIT levantar el bloqueo</strong>. Requiere abogado matriculado — la Defensoría Pública puede asignarte uno gratuitamente.</div>
       </div>
-      <div class="ev-badge badge-green">SIEMPRE OK</div>
     </div>
+  </div>
 
+  <!-- REPORTAR CASO -->
+  <div class="report-box">
+    <h3>¿Tu caso es similar? Reportalo.</h3>
+    <p>Si la DNIT te bloqueó injustamente y querés que tu caso sea documentado en esta página (con o sin identificación), escribinos. Cuantos más casos documentados existan, más difícil le resulta a la DNIT ignorar el problema y más fuerte se vuelve el argumento sistémico ante cualquier instancia judicial o pública.</p>
+    <div class="report-buttons">
+      <!-- REEMPLAZAR el número: wa.me/595XXXXXXXXX con tu número de WhatsApp -->
+      <a class="btn btn-wa" href="https://wa.me/595XXXXXXXXX?text=Hola%2C%20quiero%20reportar%20un%20caso%20similar%20al%20de%20la%20p%C3%A1gina%20evidencia-dnit" target="_blank">💬 Reportar por WhatsApp</a>
+      <a class="btn btn-mail" href="mailto:isacoroajboston@gmail.com?subject=Caso%20similar%20bloqueo%20DNIT&body=Nombre%20o%20alias%3A%0ARUC%3A%0ASituaci%C3%B3n%3A" target="_blank">✉️ Reportar por email</a>
+    </div>
+    <div class="report-note">Los datos que compartas serán tratados con confidencialidad. Se publicarán solo con tu autorización y, si lo preferís, de forma anónima · Ley 1682/2001</div>
   </div>
 
   <!-- BASE LEGAL -->
-  <div class="section-title">Base legal</div>
+  <div class="section-title">Base legal aplicable</div>
   <div class="legal-box">
-    <h3>Derechos constitucionales y legales afectados</h3>
+    <h3>Derechos constitucionales y normas afectadas</h3>
     <div class="legal-items">
-      <div class="legal-item">
-        <div class="legal-ref">Art. 87 CN</div>
-        <div class="legal-desc">Derecho al trabajo — nadie puede ser privado de ejercer su actividad lícita sin causa justificada.</div>
-      </div>
-      <div class="legal-item">
-        <div class="legal-ref">Art. 107 CN</div>
-        <div class="legal-desc">Derecho a ejercer toda industria lícita — el Estado no puede imponer obligaciones que hagan imposible su cumplimiento.</div>
-      </div>
-      <div class="legal-item">
-        <div class="legal-ref">Art. 9 CN</div>
-        <div class="legal-desc">Nadie puede ser obligado a hacer lo que la ley no manda ni privado de lo que ella no prohíbe.</div>
-      </div>
-      <div class="legal-item">
-        <div class="legal-ref">Art. 134 CN</div>
-        <div class="legal-desc">Acción de Amparo — protección urgente ante actos u omisiones manifiestamente ilegítimos de autoridades.</div>
-      </div>
-      <div class="legal-item">
-        <div class="legal-ref">Ley 7143/2023 Art.11 num.6</div>
-        <div class="legal-desc">La DNIT tiene el deber de agilizar trámites y eliminar barreras al contribuyente formal — no de crearlas.</div>
-      </div>
-      <div class="legal-item">
-        <div class="legal-ref">Art. 171 Ley 125/91</div>
-        <div class="legal-desc">La FP activa no puede ser cancelada durante el proceso recursivo sin resolución fundada.</div>
-      </div>
+      <div class="legal-row"><div class="legal-ref">CN Art. 87</div><div class="legal-desc">Derecho al trabajo — nadie puede ser privado de ejercer su actividad lícita sin causa justificada en la ley.</div></div>
+      <div class="legal-row"><div class="legal-ref">CN Art. 107</div><div class="legal-desc">Derecho a ejercer industria lícita — el Estado no puede imponer obligaciones imposibles de cumplir por sus propias fallas.</div></div>
+      <div class="legal-row"><div class="legal-ref">CN Art. 9</div><div class="legal-desc">Nadie puede ser obligado a hacer lo que la ley no manda ni privado de lo que ella no prohíbe.</div></div>
+      <div class="legal-row"><div class="legal-ref">CN Art. 134</div><div class="legal-desc">Acción de Amparo — protección urgente ante actos u omisiones manifiestamente ilegítimos de autoridades públicas.</div></div>
+      <div class="legal-row"><div class="legal-ref">Ley 125/91 Art. 171</div><div class="legal-desc">La Facilidad de Pago activa no puede ser cancelada durante el proceso recursivo sin resolución fundada.</div></div>
+      <div class="legal-row"><div class="legal-ref">Ley 7143/2023 Art. 11 num. 6</div><div class="legal-desc">La DNIT tiene el deber legal de agilizar trámites y eliminar barreras al contribuyente formal — no de crearlas.</div></div>
+      <div class="legal-row"><div class="legal-ref">Ley 1682/2001</div><div class="legal-desc">Protección de datos personales — base legal para la anonimización de casos de terceros en esta página.</div></div>
+      <div class="legal-row"><div class="legal-ref">Ley 6534/2020</div><div class="legal-desc">Acceso a la información pública — toda documentación presentada ante organismos del Estado es de carácter público.</div></div>
     </div>
   </div>
 
-  <!-- DECLARACIÓN -->
-  <div class="declaracion">
-    <h3>✅ Declaración del contribuyente</h3>
-    <p><strong>IsabSoft (Carlos Coronel Aguirre, RUC 2333029-5) NO es evasor fiscal.</strong></p>
-    <p>IsabSoft regularizó su situación, presentó todos los recursos legales disponibles, cooperó con las instituciones competentes y documentó cada paso. El bloqueo no fue por evasión — fue impuesto unilateralmente por la DNIT a pesar del cumplimiento activo.</p>
-    <p>La diferencia entre un evasor y un contribuyente bloqueado es precisamente esta documentación. Esta página existe para que cualquier persona — cliente, autoridad, o la propia DNIT — pueda verificar los hechos.</p>
-  </div>
-
-  <!-- PARA OTROS CIUDADANOS -->
-  <div class="section-title">¿Estás en la misma situación?</div>
-
-  <div class="client-box" style="background:rgba(245,158,11,0.07); border-color:rgba(245,158,11,0.2);">
-    <h3 style="color:#fbbf24;">🇵🇾 Este caso no es único — es un problema sistémico en Paraguay</h3>
-    <p>Si vos también tenés una <strong>Facilidad de Pago activa</strong> y la DNIT igualmente te bloquea el timbrado en Marangatú, no estás solo. Esta situación afecta a cientos de trabajadores independientes y pequeñas empresas que intentan cumplir con sus obligaciones tributarias y el sistema del Estado no les permite hacerlo.</p>
-    <p>Esta página existe para documentar el problema y servir como recurso público. Si tu caso es similar, podés usar esta evidencia como referencia en tus propios reclamos.</p>
-  </div>
-
-  <div class="legal-box">
-    <h3>¿Qué podés hacer si la DNIT te bloqueó injustamente?</h3>
-    <div class="legal-items" style="gap:12px;">
-      <div class="legal-item" style="flex-direction:column; gap:3px;">
-        <div class="legal-ref" style="min-width:unset; color:#fbbf24;">Paso 1 — Documentá todo</div>
-        <div class="legal-desc">Guardá capturas de pantalla de Marangatú con fecha visible. Guardá todos los comprobantes de pago, correos enviados y respuestas (o silencios) de la DNIT. La documentación es tu única herramienta.</div>
-      </div>
-      <div class="legal-item" style="flex-direction:column; gap:3px;">
-        <div class="legal-ref" style="min-width:unset; color:#fbbf24;">Paso 2 — Presentá un Recurso de Reconsideración</div>
-        <div class="legal-desc">Vía Marangatú, Form.726-2, dirigido a la DGRAC. Fundamentos: Facilidad de Pago activa, Art.171 Ley 125/91 (no pueden cancelarla sin resolución fundada), bloqueo desproporcionado, Art.87+107 CN.</div>
-      </div>
-      <div class="legal-item" style="flex-direction:column; gap:3px;">
-        <div class="legal-ref" style="min-width:unset; color:#fbbf24;">Paso 3 — Escribí a la Defensoría Pública</div>
-        <div class="legal-desc">Email a <strong>defensoria.asuncion@ministeriopublico.gov.py</strong> — gratuita, todo electrónico. Pedí un defensor para interponer Amparo Constitucional (Art.134 CN) por violación del derecho al trabajo (Art.87+107 CN). Adjuntá tus evidencias.</div>
-      </div>
-      <div class="legal-item" style="flex-direction:column; gap:3px;">
-        <div class="legal-ref" style="min-width:unset; color:#fbbf24;">Paso 4 — Amparo Constitucional</div>
-        <div class="legal-desc">Si el recurso no prospera, el Amparo ante juez es el único instrumento que puede ORDENAR a la DNIT levantar el bloqueo. Requiere abogado matriculado — la Defensoría Pública puede asignarte uno gratuitamente.</div>
-      </div>
-      <div class="legal-item" style="flex-direction:column; gap:3px;">
-        <div class="legal-ref" style="min-width:unset; color:#fbbf24;">Mientras tanto — seguí facturando legalmente</div>
-        <div class="legal-desc">La DNIT autorizó explícitamente el uso de facturas en papel/autoimpresor mientras duren las fallas del sistema electrónico (Hugo López, coordinador SIFEN, 25/11/2026 — ver Evidencia 04). Usá ese mecanismo y documentá cada comprobante emitido.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="declaracion" style="background:rgba(245,158,11,0.06); border-color:rgba(245,158,11,0.2);">
-    <h3 style="color:#fbbf24;">📢 Compartí esta página</h3>
-    <p>Si conocés a alguien en la misma situación, compartí esta URL. Cuantos más casos documentados existan, más difícil le resulta a la DNIT ignorar el problema y más fuerte se vuelve el argumento sistémico ante cualquier instancia judicial o pública.</p>
-    <p>Esta página es de acceso libre, puede descargarse, citarse e imprimirse. No tiene fines comerciales — es un recurso ciudadano.</p>
-    <p style="margin-top:6px; font-size:12px; color:#94a3b8;">Contacto para casos similares: <strong>IsabSoft — Carlos Coronel · RUC 2333029-5 · Asunción, Paraguay</strong></p>
-  </div>
-
-  <!-- OBSERVACIÓN EN COMPROBANTE -->
-  <div class="section-title">Texto de observación en comprobantes emitidos</div>
-  <div class="comprobante-obs">
-    <div class="obs-label">OBS. en comprobante</div>
-    <div class="obs-text">IsabSoft — Factura Electrónica SIFEN en proceso de activación. Bloqueo técnico DNIT documentado públicamente. Verificá la evidencia completa en: carcoragu.github.io/gestfact-demo/evidencia-dnit · RUC 2333029-5 · Amparo Art.134 CN en trámite.</div>
+  <!-- DISCLAIMER LEGAL -->
+  <div class="disclaimer">
+    ⚖️ AVISO LEGAL · Esta página no constituye asesoramiento jurídico. La información publicada fue presentada previamente ante instituciones del Estado paraguayo como parte de recursos administrativos y acciones legales en curso. No se publican datos personales de terceros sin consentimiento expreso (Ley 1682/2001). Las afirmaciones contenidas están respaldadas por documentación verificable. Esta página es de acceso libre, puede descargarse, citarse e imprimirse sin restricciones.
   </div>
 
 </div>
 
 <!-- FOOTER -->
 <div class="footer">
-  IsabSoft · Carlos Coronel Aguirre · RUC 2333029-5 · Asunción, Paraguay<br>
-  Esta página es de acceso público. Puede ser descargada, citada o presentada ante cualquier autoridad.<br>
-  Última actualización: 27 de noviembre de 2026
+  <div class="footer-brand">ISAB<span>SOFT</span></div>
+  <div class="footer-meta">
+    Carlos Coronel Aguirre · RUC 2333029-5 · Asunción, Paraguay<br>
+    Recurso ciudadano de acceso libre · Última actualización: 27 de noviembre de 2026
+  </div>
 </div>
 
 </body>
